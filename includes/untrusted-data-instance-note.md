@@ -1,2 +1,10 @@
+---
+ms.openlocfilehash: 3e301fb67eb8ee20b43e5ff775c40c6b7a6bc4d8
+ms.sourcegitcommit: 1bb00d2f4343e73ae8d58668f02297a3cf10a4c1
+ms.translationtype: HT
+ms.contentlocale: ru-RU
+ms.lasthandoff: 06/15/2019
+ms.locfileid: "63876866"
+---
 > [!IMPORTANT]
-> <span data-ttu-id="b2967-101">Использование экземпляра этого объекта с ненадежными данными представляет угрозу безопасности.</span><span class="sxs-lookup"><span data-stu-id="b2967-101">Using an instance of this object with untrusted data is a security risk.</span></span> <span data-ttu-id="b2967-102">Используйте этот объект только с надежными данными.</span><span class="sxs-lookup"><span data-stu-id="b2967-102">Use this object only with trusted data.</span></span> <span data-ttu-id="b2967-103">Дополнительные сведения: [Data Validation](https://www.owasp.org/index.php/Data_Validation) (Проверка данных).</span><span class="sxs-lookup"><span data-stu-id="b2967-103">For more information, see [Data Validation](https://www.owasp.org/index.php/Data_Validation).</span></span>
+> <span data-ttu-id="35ae4-101">Использование экземпляра этого объекта с ненадежными данными представляет угрозу безопасности.</span><span class="sxs-lookup"><span data-stu-id="35ae4-101">Using an instance of this object with untrusted data is a security risk.</span></span> <span data-ttu-id="35ae4-102">Используйте этот объект только с надежными данными.</span><span class="sxs-lookup"><span data-stu-id="35ae4-102">Use this object only with trusted data.</span></span> <span data-ttu-id="35ae4-103">Дополнительные сведения: [Data Validation](https://www.owasp.org/index.php/Data_Validation) (Проверка данных).</span><span class="sxs-lookup"><span data-stu-id="35ae4-103">For more information, see [Data Validation](https://www.owasp.org/index.php/Data_Validation).</span></span>

@@ -1,1 +1,9 @@
-<span data-ttu-id="72e40-101">ADO.NET 2.0</span><span class="sxs-lookup"><span data-stu-id="72e40-101">ADO.NET 2.0</span></span>
+---
+ms.openlocfilehash: c4106c80e227105f5797cae3ba1e7a79a498d685
+ms.sourcegitcommit: 1bb00d2f4343e73ae8d58668f02297a3cf10a4c1
+ms.translationtype: HT
+ms.contentlocale: ru-RU
+ms.lasthandoff: 06/15/2019
+ms.locfileid: "63871498"
+---
+<span data-ttu-id="b3d49-101">ADO.NET 2.0</span><span class="sxs-lookup"><span data-stu-id="b3d49-101">ADO.NET 2.0</span></span>
