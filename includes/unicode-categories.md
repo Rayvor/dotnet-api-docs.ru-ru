@@ -1,3 +1,11 @@
+---
+ms.openlocfilehash: 5feab3f469ed6d7017ee0fdc20e78822b5ed4834
+ms.sourcegitcommit: 1bb00d2f4343e73ae8d58668f02297a3cf10a4c1
+ms.translationtype: HT
+ms.contentlocale: ru-RU
+ms.lasthandoff: 06/15/2019
+ms.locfileid: "63867686"
+---
  .NET поддерживает собственную таблицу символов с соответствующими категориями, которая гарантирует, что конкретные реализации .NET будут возвращать одни и те же данные по категориям символов на разных платформах. В .NET Core на Linux и macOS сведения о категориях символов предоставляются библиотеками [International Components for Unicode](http://site.icu-project.org/).
  
  В следующей таблице перечислены версии .NET и версии стандарта Юникод, на котором основаны их категории символов.   
