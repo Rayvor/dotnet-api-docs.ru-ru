@@ -1,1 +1,9 @@
-<span data-ttu-id="c598c-101">Международный совет по прессе и телекоммуникациям (International Press Telecommunications Council, IPTC)</span><span class="sxs-lookup"><span data-stu-id="c598c-101">International Press Telecommunications Council (IPTC)</span></span>
+---
+ms.openlocfilehash: c007597bd593aee3e0ae1dedb2f0b6a2448da7a4
+ms.sourcegitcommit: 1bb00d2f4343e73ae8d58668f02297a3cf10a4c1
+ms.translationtype: HT
+ms.contentlocale: ru-RU
+ms.lasthandoff: 06/15/2019
+ms.locfileid: "63878578"
+---
+<span data-ttu-id="5bf6a-101">Международный совет по прессе и телекоммуникациям (International Press Telecommunications Council, IPTC)</span><span class="sxs-lookup"><span data-stu-id="5bf6a-101">International Press Telecommunications Council (IPTC)</span></span>

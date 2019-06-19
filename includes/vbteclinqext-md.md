@@ -1,1 +1,9 @@
-<span data-ttu-id="5ed36-101">LINQ</span><span class="sxs-lookup"><span data-stu-id="5ed36-101">Language-Integrated Query (LINQ)</span></span>
+---
+ms.openlocfilehash: fe50223a93a4b8a83601fc4bdb89f3271980c61c
+ms.sourcegitcommit: 1bb00d2f4343e73ae8d58668f02297a3cf10a4c1
+ms.translationtype: HT
+ms.contentlocale: ru-RU
+ms.lasthandoff: 06/15/2019
+ms.locfileid: "63867828"
+---
+<span data-ttu-id="e427f-101">LINQ</span><span class="sxs-lookup"><span data-stu-id="e427f-101">Language-Integrated Query (LINQ)</span></span>

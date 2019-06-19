@@ -1,1 +1,9 @@
-<span data-ttu-id="660fb-101">.NET</span><span class="sxs-lookup"><span data-stu-id="660fb-101">.NET</span></span>
+---
+ms.openlocfilehash: 8088ded1b1aa5b474c978e99ec2c2d1bcaa0c33f
+ms.sourcegitcommit: 1bb00d2f4343e73ae8d58668f02297a3cf10a4c1
+ms.translationtype: HT
+ms.contentlocale: ru-RU
+ms.lasthandoff: 06/15/2019
+ms.locfileid: "63870729"
+---
+<span data-ttu-id="12663-101">.NET</span><span class="sxs-lookup"><span data-stu-id="12663-101">.NET</span></span>
