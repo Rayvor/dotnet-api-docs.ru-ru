@@ -1,5 +1,5 @@
 <Type Name="GC" FullName="System.GC">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="3235407965db44270835119fed0cc7298c9157af" /><Meta Name="ms.sourcegitcommit" Value="2dd0eede6edd6dd3d2aa8f79010848658b967609" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="04/17/2019" /><Meta Name="ms.locfileid" Value="59676680" /></Metadata><TypeSignature Language="C#" Value="public static class GC" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="676c88be65c8b9bd8db22e8bf5ebde86f4ac0aa2" /><Meta Name="ms.sourcegitcommit" Value="bc24a3ba616ee1df8b858f9400cae4f058ea3a7e" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="06/19/2019" /><Meta Name="ms.locfileid" Value="67245135" /></Metadata><TypeSignature Language="C#" Value="public static class GC" />
   <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract sealed beforefieldinit GC extends System.Object" />
   <TypeSignature Language="DocId" Value="T:System.GC" />
   <TypeSignature Language="VB.NET" Value="Public Class GC" />
@@ -136,7 +136,7 @@
         <Parameter Name="bytesAllocated" Type="System.Int64" Index="0" FrameworkAlternate="dotnet-uwp-10.0;netcore-1.0;netcore-1.1;netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netstandard-1.0;netstandard-1.1;netstandard-1.2;netstandard-1.3;netstandard-1.4;netstandard-1.5;netstandard-1.6;netstandard-2.0;netstandard-2.1;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
-        <param name="bytesAllocated">Дополнительный объем выделенной неуправляемой памяти.</param>
+        <param name="bytesAllocated">Объем, на который увеличен объем выделенной неуправляемой памяти.</param>
         <summary>Информирует среду выполнения о выделении большого объема неуправляемой памяти, которую необходимо учесть при планировании сборки мусора.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
@@ -435,7 +435,7 @@
         <exception cref="T:System.ArgumentOutOfRangeException">Недопустимый параметр <paramref name="generation" />.  
   
 -или- 
- <paramref name="mode" /> не является одним из значений <see cref="T:System.GCCollectionMode" />.</exception>
+ Параметр <paramref name="mode" /> не является одним из значений <see cref="T:System.GCCollectionMode" />.</exception>
         <related type="Article" href="https://msdn.microsoft.com/library/019008fe-4708-4e65-bebf-04fd9941e149">Индуцированные коллекции</related>
       </Docs>
     </Member>
@@ -482,7 +482,7 @@
       <Docs>
         <param name="generation">Количество старших поколений, для которых следует выполнить сборку мусора.</param>
         <param name="mode">Значение перечисления, указывающее, является ли сборка мусора принудительной (<see cref="F:System.GCCollectionMode.Default" /> или <see cref="F:System.GCCollectionMode.Forced" />) или оптимизированной (<see cref="F:System.GCCollectionMode.Optimized" />).</param>
-        <param name="blocking">Значение <see langword="true" /> для выполнения блокирующей сборки мусора; значение <see langword="false" /> для выполнения фоновой сборки мусора, где это возможно.</param>
+        <param name="blocking">Значение <see langword="true" /> для выполнения сборки мусора с блокировкой; значение <see langword="false" /> для выполнения фоновой сборки мусора, где это возможно.</param>
         <summary>Принудительная сборка мусора с поколения 0 до указанного поколения во время, указанное значением <see cref="T:System.GCCollectionMode" />, со значением, указывающим, должна ли сборка быть блокирующей.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
@@ -490,10 +490,10 @@
 ## Remarks  
  В следующей таблице перечислены взаимодействия `mode` и `blocking` параметры:  
   
-|`mode`|`blocking` равно `true`|`blocking` равно `false`|  
+|`mode`|`blocking` равно `true`|Параметр `blocking` содержит значение `false`|  
 |-|-|-|  
-|<xref:System.GCCollectionMode.Forced> или <xref:System.GCCollectionMode.Default>|Блокирующий сбор выполнится, как только это станет возможным. Если фоновая сборка выполняется и `generation` равен 0 или 1, <xref:System.GC.Collect%28System.Int32%2CSystem.GCCollectionMode%2CSystem.Boolean%29> метод немедленно активирует блокирующую сборку и возвращает при завершении коллекции. Если фоновая сборка выполняется и `generation` равно 2, метод дожидается завершения фоновой сборки, активирует блокирующую сборку поколения 2 и возвращает.|Сборка выполнится, как только это станет возможным. Метод <xref:System.GC.Collect%28System.Int32%2CSystem.GCCollectionMode%2CSystem.Boolean%29> запрашивает фоновую сборку, но не гарантирует этот режим. В зависимости от обстоятельств может выполняться блокирующая сборка. Если фоновая сборка уже выполняется, метод возвращает управление немедленно.|  
-|<xref:System.GCCollectionMode.Optimized>|В зависимости от текущего состояния сборщика мусора и значения параметра `generation` может выполняться блокирующая сборка. Сборщик мусора пытается обеспечить оптимальную производительность.|Сборка может быть выполнена в зависимости от состояния сборщика мусора. Метод <xref:System.GC.Collect%28System.Int32%2CSystem.GCCollectionMode%2CSystem.Boolean%29> запрашивает фоновую сборку, но не гарантирует этот режим. В зависимости от обстоятельств может выполняться блокирующая сборка. Сборщик мусора пытается обеспечить оптимальную производительность. Если фоновая сборка уже выполняется, метод возвращает управление немедленно.|  
+|<xref:System.GCCollectionMode.Forced> или <xref:System.GCCollectionMode.Default>|Блокирующий сбор выполнится, как только это станет возможным. Если фоновая сборка выполняется и `generation` равен 0 или 1, <xref:System.GC.Collect%28System.Int32%2CSystem.GCCollectionMode%2CSystem.Boolean%29> метод немедленно активирует блокирующую сборку и возвращает при завершении коллекции. Если фоновая сборка выполняется и `generation` равно 2, метод дожидается завершения фоновой сборки, активирует блокирующую сборку поколения 2 и возвращает.|Сборка выполнится, как только это станет возможным. Метод <xref:System.GC.Collect%28System.Int32%2CSystem.GCCollectionMode%2CSystem.Boolean%29> запрашивает фоновую коллекцию, однако это не гарантированно. В зависимости от обстоятельств блокирующая коллекция может выполняться. Если фоновая сборка уже выполняется, метод возвращает управление немедленно.|  
+|<xref:System.GCCollectionMode.Optimized>|Заблокированная коллекция может быть выполнена в зависимости от состояния сборщика мусора и параметра `generation`. Сборщик мусора пытается обеспечить оптимальную производительность.|Коллекция может быть выполнена в зависимости от состояния сборщика мусора. Метод <xref:System.GC.Collect%28System.Int32%2CSystem.GCCollectionMode%2CSystem.Boolean%29> запрашивает фоновую коллекцию, однако это не гарантированно. В зависимости от обстоятельств блокирующая коллекция может выполняться. Сборщик мусора пытается обеспечить оптимальную производительность. Если фоновая сборка уже выполняется, метод возвращает управление немедленно.|  
   
  Если в вызове <xref:System.GC.Collect%28System.Int32%2CSystem.GCCollectionMode%2CSystem.Boolean%29> полной блокирующей сборки мусора выполняет метод, можно также сжать кучу больших объектов, задав <xref:System.Runtime.GCSettings.LargeObjectHeapCompactionMode%2A?displayProperty=nameWithType> свойства <xref:System.Runtime.GCLargeObjectHeapCompactionMode.CompactOnce?displayProperty=nameWithType> перед вызовом <xref:System.GC.Collect%2A> метод.  
   
@@ -502,7 +502,7 @@
         <exception cref="T:System.ArgumentOutOfRangeException">Недопустимый параметр <paramref name="generation" />.  
   
 -или- 
- <paramref name="mode" /> не является одним из значений <see cref="T:System.GCCollectionMode" />.</exception>
+ Параметр <paramref name="mode" /> не является одним из значений <see cref="T:System.GCCollectionMode" />.</exception>
       </Docs>
     </Member>
     <Member MemberName="Collect">
@@ -545,7 +545,7 @@
       <Docs>
         <param name="generation">Количество старших поколений, для которых следует выполнить сборку мусора.</param>
         <param name="mode">Значение перечисления, указывающее, является ли сборка мусора принудительной (<see cref="F:System.GCCollectionMode.Default" /> или <see cref="F:System.GCCollectionMode.Forced" />) или оптимизированной (<see cref="F:System.GCCollectionMode.Optimized" />).</param>
-        <param name="blocking">Значение <see langword="true" /> для выполнения блокирующей сборки мусора; значение <see langword="false" /> для выполнения фоновой сборки мусора, где это возможно.</param>
+        <param name="blocking">Значение <see langword="true" /> для выполнения сборки мусора с блокировкой; значение <see langword="false" /> для выполнения фоновой сборки мусора, где это возможно.</param>
         <param name="compacting">Значение <see langword="true" />, чтобы сжимать кучу маленьких объектов; значение <see langword="false" />, чтобы только очищать.</param>
         <summary>Принудительная сборка мусора с поколения 0 до указанного поколения во время, указанное значением <see cref="T:System.GCCollectionMode" />, со значениями, указывающими, должна ли сборка быть блокирующей и сжимающей.</summary>
         <remarks>
@@ -735,6 +735,34 @@
         </remarks>
       </Docs>
     </Member>
+    <Member MemberName="GetGCMemoryInfo">
+      <MemberSignature Language="C#" Value="public static GCMemoryInfo GetGCMemoryInfo ();" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig valuetype System.GCMemoryInfo GetGCMemoryInfo() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.GC.GetGCMemoryInfo" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function GetGCMemoryInfo () As GCMemoryInfo" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static GCMemoryInfo GetGCMemoryInfo();" />
+      <MemberSignature Language="F#" Value="static member GetGCMemoryInfo : unit -&gt; GCMemoryInfo" Usage="System.GC.GetGCMemoryInfo " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.GCMemoryInfo</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
     <MemberGroup MemberName="GetGeneration">
       <AssemblyInfo>
         <AssemblyName>System.Runtime</AssemblyName>
@@ -864,6 +892,36 @@
         <altmember cref="P:System.GC.MaxGeneration" />
       </Docs>
     </Member>
+    <Member MemberName="GetTotalAllocatedBytes">
+      <MemberSignature Language="C#" Value="public static long GetTotalAllocatedBytes (bool precise = false);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig int64 GetTotalAllocatedBytes(bool precise) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.GC.GetTotalAllocatedBytes(System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function GetTotalAllocatedBytes (Optional precise As Boolean = false) As Long" />
+      <MemberSignature Language="F#" Value="static member GetTotalAllocatedBytes : bool -&gt; int64" Usage="System.GC.GetTotalAllocatedBytes precise" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int64</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="precise" Type="System.Boolean" Index="0" FrameworkAlternate="netcore-3.0" />
+      </Parameters>
+      <Docs>
+        <param name="precise">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
     <Member MemberName="GetTotalMemory">
       <MemberSignature Language="C#" Value="public static long GetTotalMemory (bool forceFullCollection);" />
       <MemberSignature Language="ILAsm" Value=".method public static hidebysig int64 GetTotalMemory(bool forceFullCollection) cil managed" />
@@ -905,7 +963,7 @@
         <Parameter Name="forceFullCollection" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="forceFullCollection">Значение <see langword="true" />, указывающий, что перед возвратом этот метод может дождаться выполнения сборки мусора; в противном случае — <see langword="false" />.</param>
+        <param name="forceFullCollection"><see langword="true" />, чтобы указать, что перед возвратом этот метод может дождаться выполнения сборки мусора; в противном случае — <see langword="false" />.</param>
         <summary>Извлекает предполагаемое количество выделенных в данный момент байтов. Параметр указывает, может ли этот метод выдержать короткий интервал времени ожидания перед возвратом, пока система выполняет сборку мусора и завершает объекты.</summary>
         <returns>Наилучшая доступная аппроксимация числа байтов, распределенных в данный момент в управляемой памяти.</returns>
         <remarks>
@@ -1146,7 +1204,7 @@
         <permission cref="F:System.Security.Permissions.SecurityAction.LinkDemand">для полного доверия для непосредственного вызывающего объекта. Этот член не может быть использован частично доверенным кодом.</permission>
         <permission cref="T:System.Security.SecurityCriticalAttribute">Требует полного доверия для непосредственного вызывающего объекта. Этот член не может использоваться частично доверенным или прозрачным кодом.</permission>
         <related type="Article" href="https://msdn.microsoft.com/library/e12d8e74-31e3-4035-a87d-f3e66f0a9b89">Уведомления о сборке мусора</related>
-        <exception cref="T:System.InvalidOperationException">Этот член недоступен, если включена параллельная сборка мусора. Сведения об отключении параллельной сборки мусора см. в статье, посвященной параметру среды выполнения &lt;gcConcurrent&gt;.</exception>
+        <exception cref="T:System.InvalidOperationException">Данный элемент недоступен, если включена параллельная сборка мусора. Сведения об отключении параллельной сборки мусора см. в статье, посвященной параметру среды выполнения &lt;gcConcurrent&gt;.</exception>
       </Docs>
     </Member>
     <Member MemberName="RemoveMemoryPressure">
@@ -1189,7 +1247,7 @@
         <Parameter Name="bytesAllocated" Type="System.Int64" Index="0" FrameworkAlternate="dotnet-uwp-10.0;netcore-1.0;netcore-1.1;netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netstandard-1.0;netstandard-1.1;netstandard-1.2;netstandard-1.3;netstandard-1.4;netstandard-1.5;netstandard-1.6;netstandard-2.0;netstandard-2.1;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
-        <param name="bytesAllocated">Объем освобожденной неуправляемой памяти.</param>
+        <param name="bytesAllocated">Объем, на который увеличен объем освобожденной неуправляемой памяти.</param>
         <summary>Информирует среду выполнения о том, что неуправляемая память освобождена и ее более не требуется учитывать при планировании сборки мусора.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
@@ -1637,7 +1695,7 @@
         <AssemblyVersion>4.0.0.0</AssemblyVersion>
       </AssemblyInfo>
       <Docs>
-        <summary>Возвращает состояние зарегистрированного уведомления, чтобы определить, является ли неизбежной полная, блокирующая сборка мусора средой CLR.</summary>
+        <summary>Возвращает состояние зарегистрированного уведомления, чтобы определить, является ли неизбежной полная блокировка сборки мусора средой CLR.</summary>
       </Docs>
     </MemberGroup>
     <Member MemberName="WaitForFullGCApproach">
@@ -1674,7 +1732,7 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>Возвращает состояние зарегистрированного уведомления, чтобы определить, является ли неизбежной полная, блокирующая сборка мусора средой CLR.</summary>
+        <summary>Возвращает состояние зарегистрированного уведомления, чтобы определить, является ли неизбежной полная блокировка сборки мусора средой CLR.</summary>
         <returns>Состояние зарегистрированного уведомления о сборке мусора.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[  

@@ -1,5 +1,5 @@
 <Type Name="ProcessStartInfo" FullName="System.Diagnostics.ProcessStartInfo">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="ceb087ee2a19df0fbce2c0e86e86ebada4b3dbd6" /><Meta Name="ms.sourcegitcommit" Value="1bb00d2f4343e73ae8d58668f02297a3cf10a4c1" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="06/15/2019" /><Meta Name="ms.locfileid" Value="63887561" /></Metadata><TypeSignature Language="C#" Value="public sealed class ProcessStartInfo" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="6aae3e941442390152c0bfe1dc86dcbf1bc45ead" /><Meta Name="ms.sourcegitcommit" Value="bc24a3ba616ee1df8b858f9400cae4f058ea3a7e" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="06/19/2019" /><Meta Name="ms.locfileid" Value="67239388" /></Metadata><TypeSignature Language="C#" Value="public sealed class ProcessStartInfo" />
   <TypeSignature Language="ILAsm" Value=".class public sequential ansi sealed beforefieldinit ProcessStartInfo extends System.Object" />
   <TypeSignature Language="DocId" Value="T:System.Diagnostics.ProcessStartInfo" />
   <TypeSignature Language="VB.NET" Value="Public NotInheritable Class ProcessStartInfo" />
@@ -237,7 +237,24 @@
         <summary>Возвращает коллекцию аргументов командной строки, используемых при запуске приложения.</summary>
         <value>Коллекция аргументов командной строки.</value>
         <remarks>
-          <format type="text/markdown"><![CDATA[Если это свойство используется для задания аргументов командной строки, <xref:System.Diagnostics.ProcessStartInfo.Arguments> задана пустая строка.
+          <format type="text/markdown"><![CDATA[
+          
+`ArgumentList`, который поддерживается начиная с .NET Core 2.1 и .NET Standard 2.1 и <xref:System.Diagnostics.ProcessStartInfo.Arguments> свойство независимы друг от друга. То есть строки, назначенные `ArgumentList` коллекции не используются для заполнения <xref:System.Diagnostics.ProcessStartInfo.Arguments> свойство и строкой, назначенной <xref:System.Diagnostics.ProcessStartInfo.Arguments> свойство не разбивается на отдельные строки, назначенные `ArgumentList` коллекции. 
+
+`ArgumentList` проще в использовании, чем <xref:System.Diagnostics.ProcessStartInfo.Arguments> свойство. Так как каждая строка назначается входит в коллекцию, вы можете одно-, вместо того чтобы triple-escape строки, заключенные в разделители в кавычки. Например, приведенный ниже включать `-full "Mary Smith"` членом `ArgumentList` коллекции:
+
+```csharp
+info.ArgumentList.Add("-full \"Mary Smith\"";
+```
+
+Соответствующие назначения <xref:System.Diagnostics.ProcessStartInfo.Arguments> свойство:
+
+```csharp
+info.Arguments = "-full \"\"\"Mary Smith\"\"\""
+```
+
+Если это свойство используется для задания аргументов командной строки, <xref:System.Diagnostics.ProcessStartInfo.Arguments> задана пустая строка.
+
 ## Examples
 
 Этот пример добавляет два аргумента, чтобы информация о запуске процесса.
@@ -322,14 +339,19 @@ info.ArgumentList.Add("-last Smith")
       </ReturnValue>
       <Docs>
         <summary>Возвращает или задает набор аргументов командной строки, используемых при запуске приложения.</summary>
-        <value>Одна строка, содержащая аргументы для передачи в целевое приложение, указанное в свойстве <see cref="P:System.Diagnostics.ProcessStartInfo.FileName" />. Значение по умолчанию — пустая строка (""). В Windows Vista и более ранних версиях операционной системы Windows длина аргументов, добавляемых к длине полного пути к процессу, должна быть меньше 2080. В Windows 7 и более поздних версиях длина должна быть меньше 32699.  
-  
-Аргументы анализируются и интерпретируются целевым приложением, поэтому они должны соответствовать ожидаемым аргументам приложения. Как показано в примерах ниже, для приложений .NET пробелы считаются разделителями между несколькими аргументами. Одиночный аргумент, включающий пробелы, должен быть заключен в кавычки, но кавычки не указываются в целевом приложении. В финальном проанализированном аргументе при включении кавычек к каждому знаку следует добавить escape-символ.</value>
+        <value>Одна строка, содержащая аргументы для передачи в целевое приложение, указанное в свойстве <see cref="P:System.Diagnostics.ProcessStartInfo.FileName" />. Значение по умолчанию — пустая строка ("").</value>
         <remarks>
-          <format type="text/markdown"><![CDATA[Если это свойство используется для задания аргументов командной строки, <xref:System.Diagnostics.ProcessStartInfo.ArgumentList*> не может содержать какие-либо элементы.
+          <format type="text/markdown"><![CDATA[
+
+Длина строки, назначенные `Arguments` свойство должно быть меньше, чем 32,699.
   
+Аргументы анализируются и интерпретируются целевым приложением, поэтому они должны соответствовать ожидаемым аргументам приложения. Для приложений .NET как показано в приведенных ниже примерах пробелы считаются разделителями между несколькими аргументами. Одиночный аргумент, включающий пробелы, должен быть заключен в кавычки, но кавычки не указываются в целевом приложении. Чтобы включить кавычки в последнем аргументе проанализированный, пометить triple-escape каждого.
+Если это свойство используется для задания аргументов командной строки, <xref:System.Diagnostics.ProcessStartInfo.ArgumentList> не может содержать какие-либо элементы.
+  
+`Arguments` и <xref:System.Diagnostics.ProcessStartInfo.ArgumentList>, которая поддерживается начиная с .NET Core 2.1 и .NET Standard 2.1, независимы друг от друга. То есть, строкой, назначенной `Arguments` не заполняет свойство <xref:System.Diagnostics.ProcessStartInfo.ArgumentList> коллекции и членами <xref:System.Diagnostics.ProcessStartInfo.ArgumentList> коллекции не назначаются `Arguments` свойство.
+
 ## Examples  
- В первом примере создается небольшое приложение (argsecho.exe), обозначающие аргументы в консоль. Во втором примере создается приложение, которое вызывает argsecho.exe для демонстрации различных вариантов для свойства Arguments.  
+ В первом примере создается небольшое приложение (argsecho.exe), обозначающие аргументы в консоль. Во втором примере создается приложение, которое вызывает argsecho.exe для демонстрации различных вариантов для `Arguments` свойство.  
   
  [!code-cpp[Process.Start_static#3](~/samples/snippets/cpp/VS_Snippets_CLR/Process.Start_static/CPP/processstartstatic.cpp#3)]
  [!code-csharp[Process.Start_static#3](~/samples/snippets/csharp/VS_Snippets_CLR/Process.Start_static/CS/processstartstatic.cs#3)]
