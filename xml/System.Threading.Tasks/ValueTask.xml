@@ -1,5 +1,5 @@
 <Type Name="ValueTask" FullName="System.Threading.Tasks.ValueTask">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="d776c58674ecb01aa19c16947f3fc4a565957d8a" /><Meta Name="ms.sourcegitcommit" Value="434f60616a9793fa8436744549fc856e94f7a648" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="08/25/2018" /><Meta Name="ms.locfileid" Value="39929270" /></Metadata><TypeSignature Language="C#" Value="public struct ValueTask : IEquatable&lt;System.Threading.Tasks.ValueTask&gt;" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="d58ed24d138ed240c4dd2f5c35cae44cbd69e825" /><Meta Name="ms.sourcegitcommit" Value="61757d0366a172cdbc11436deb1c1ffa49d97238" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="06/28/2019" /><Meta Name="ms.locfileid" Value="67458216" /></Metadata><TypeSignature Language="C#" Value="public struct ValueTask : IEquatable&lt;System.Threading.Tasks.ValueTask&gt;" />
   <TypeSignature Language="ILAsm" Value=".class public sequential ansi sealed beforefieldinit ValueTask extends System.ValueType implements class System.IEquatable`1&lt;valuetype System.Threading.Tasks.ValueTask&gt;" />
   <TypeSignature Language="DocId" Value="T:System.Threading.Tasks.ValueTask" />
   <TypeSignature Language="VB.NET" Value="Public Structure ValueTask&#xA;Implements IEquatable(Of ValueTask)" />
@@ -8,6 +8,13 @@
   <AssemblyInfo>
     <AssemblyName>System.Runtime</AssemblyName>
     <AssemblyVersion>4.2.1.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>System.Threading.Tasks.Extensions</AssemblyName>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>netstandard</AssemblyName>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.ValueType</BaseTypeName>
@@ -18,16 +25,37 @@
     </Interface>
   </Interfaces>
   <Attributes>
-    <Attribute FrameworkAlternate="netcore-2.1">
+    <Attribute FrameworkAlternate="netcore-2.2;netcore-2.1;netcore-3.0;netstandard-2.1">
       <AttributeName>System.Runtime.CompilerServices.AsyncMethodBuilder(typeof(System.Runtime.CompilerServices.AsyncValueTaskMethodBuilder))</AttributeName>
     </Attribute>
-    <Attribute FrameworkAlternate="netcore-2.1">
+    <Attribute FrameworkAlternate="netcore-2.2;netcore-2.1;netcore-3.0;netstandard-2.1">
       <AttributeName>System.Runtime.CompilerServices.IsReadOnly</AttributeName>
     </Attribute>
   </Attributes>
   <Docs>
-    <summary>To be added.</summary>
-    <remarks>To be added.</remarks>
+    <summary>Предоставляет ожидаемый результат асинхронной операции.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[ 
+
+## Remarks  
+Объект `ValueTask` экземпляр может быть ожидается или преобразовать <xref:System.Threading.Tasks.Task> с помощью <xref:System.Threading.Tasks.ValueTask.AsTask%2A>. Объект `ValueTask` экземпляр может ожидать только один раз, и потребители не может вызывать <xref:System.Threading.Tasks.ValueTask.GetAwaiter> до завершения экземпляра. Если эти ограничения неприемлемы, преобразуйте `ValueTask` для <xref:System.Threading.Tasks.Task> путем вызова <xref:System.Threading.Tasks.ValueTask.AsTask%2A>.
+
+Никогда не следует выполнять следующие операции на `ValueTask` экземпляр:
+
+- Ожидается экземпляр несколько раз.
+- Вызов <xref:System.Threading.Tasks.ValueTask.AsTask%2A> несколько раз.
+- С помощью более чем в одной из этих методов для использования экземпляра.
+
+Если выполнять какие-либо из перечисленных выше, результаты будут неопределенными.
+
+Объект `ValueTask` представляет собой структуру, можно включить либо <xref:System.Threading.Tasks.Task> или <xref:System.Threading.Tasks.Sources.IValueTaskSource> экземпляра. Возвращение `ValueTask` , который служит оболочкой <xref:System.Threading.Tasks.Sources.IValueTaskSource> экземпляр из асинхронного метода, позволяет избежать выделений, используя пул для повторного использования приложений высокой пропускной способностью <xref:System.Threading.Tasks.Sources.IValueTaskSource> объектов. Дополнительные сведения см. в разделе [основные сведения о причинах, что, когда и имеет из ValueTask](https://devblogs.microsoft.com/dotnet/understanding-the-whys-whats-and-whens-of-valuetask/).
+
+С помощью `ValueTask` вместо <xref:System.Threading.Tasks.Task> вводит дополнительные издержки. Так как `ValueTask` — это структура с несколькими полями, возвращая его из метода результаты при копировании данных по сравнению с возвратом одного <xref:System.Threading.Tasks.Task> ссылки. Таким образом, выбор по умолчанию для любой асинхронный метод, который не возвращает результат должен быть для возврата <xref:System.Threading.Tasks.Task>. Следует только в том случае, если анализ производительности оказывается оправданной `ValueTask` использоваться вместо <xref:System.Threading.Tasks.Task>. <xref:System.Threading.Tasks.Task.CompletedTask?displayProperty=nameWithType> Свойство должно использоваться передаваемое обратно в случае успешного завершения одноэлементный там, где метод возвратить <xref:System.Threading.Tasks.Task> завершается синхронно и успешно.
+
+> [!NOTE]
+> Использование `ValueTask` тип поддерживается, начиная с C# 7.0 и не поддерживается в любой версии Visual Basic.
+ ]]></format>
+    </remarks>
   </Docs>
   <Members>
     <Member MemberName=".ctor">
@@ -41,12 +69,19 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
       </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading.Tasks.Extensions</AssemblyName>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
       <Parameters>
         <Parameter Name="task" Type="System.Threading.Tasks.Task" />
       </Parameters>
       <Docs>
-        <param name="task">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="task">Задача, представляющая операцию.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Threading.Tasks.ValueTask" />, используя указанную задачу, которая представляет операцию.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -62,14 +97,21 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
       </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading.Tasks.Extensions</AssemblyName>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
       <Parameters>
         <Parameter Name="source" Type="System.Threading.Tasks.Sources.IValueTaskSource" />
         <Parameter Name="token" Type="System.Int16" />
       </Parameters>
       <Docs>
-        <param name="source">To be added.</param>
-        <param name="token">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="source">Объект, представляющий операцию.</param>
+        <param name="token">Непрозрачное значение, которое передается в <see cref="T:System.Threading.Tasks.Sources.IValueTaskSource" /></param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Threading.Tasks.ValueTask" />, используя указанный объект <see cref="T:System.Threading.Tasks.Sources.IValueTaskSource" />, который представляет операцию.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -85,13 +127,20 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
       </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading.Tasks.Extensions</AssemblyName>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Threading.Tasks.Task</ReturnType>
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <summary>Получает объект <see cref="T:System.Threading.Tasks.Task" />, который представляет <see cref="T:System.Threading.Tasks.ValueTask" />.</summary>        
+        <returns>Объект <see cref="T:System.Threading.Tasks.Task" />, который заключается в этот <see cref="T:System.Threading.Tasks.ValueTask" />, если таковой имеется, или новый объект <see cref="T:System.Threading.Tasks.Task" />, представляющий результат.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -107,6 +156,13 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
       </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading.Tasks.Extensions</AssemblyName>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Runtime.CompilerServices.ConfiguredValueTaskAwaitable</ReturnType>
       </ReturnValue>
@@ -114,9 +170,9 @@
         <Parameter Name="continueOnCapturedContext" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="continueOnCapturedContext">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <param name="continueOnCapturedContext">Значение <see langword="true" />, чтобы попытаться выполнить маршалинг продолжения обратно в захваченный контекст; в противном случае значение <see langword="false" />.</param>
+        <summary>Настраивает объект типа awaiter для этого значения.</summary>
+        <returns>Настроенный объект типа awaiter.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -132,6 +188,13 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
       </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading.Tasks.Extensions</AssemblyName>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
@@ -139,10 +202,17 @@
         <Parameter Name="obj" Type="System.Object" />
       </Parameters>
       <Docs>
-        <param name="obj">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="obj">Объект, который требуется сравнить с текущим объектом.</param>
+        <summary>Определяет, равен ли текущий экземпляр <see cref="T:System.Threading.Tasks.ValueTask" /> указанному объекту.</summary>
+        <returns>Значение <see langword="true" />, если указанный объект равен текущему объекту; в противном случае — значение <see langword="false" />.</returns>
+        <remarks>
+      <format type="text/markdown"><![CDATA[ 
+
+## Remarks  
+Два <xref:System.Threading.Tasks.ValueTask> экземпляры являются эквивалентными, если они же wrap <xref:System.Threading.Tasks.Task> или той же парой <xref:System.Threading.Tasks.Sources.IValueTaskSource> объект и маркер.
+
+ ]]></format>
+    </remarks>
       </Docs>
     </Member>
     <Member MemberName="Equals">
@@ -160,6 +230,13 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
       </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading.Tasks.Extensions</AssemblyName>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
@@ -167,10 +244,17 @@
         <Parameter Name="other" Type="System.Threading.Tasks.ValueTask" />
       </Parameters>
       <Docs>
-        <param name="other">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="other">Объект, который требуется сравнить с текущим объектом.</param>
+        <summary>Определяет, равен ли заданный объект <see cref="T:System.Threading.Tasks.ValueTask" /> текущему объекту <see cref="T:System.Threading.Tasks.ValueTask" />.</summary>
+        <returns>Значение <see langword="true" />, если указанный объект равен текущему объекту; в противном случае — значение <see langword="false" />.</returns>
+        <remarks>
+      <format type="text/markdown"><![CDATA[ 
+
+## Remarks  
+Два <xref:System.Threading.Tasks.ValueTask> экземпляры являются эквивалентными, если они же wrap <xref:System.Threading.Tasks.Task> или той же парой <xref:System.Threading.Tasks.Sources.IValueTaskSource> объект и маркер.
+
+ ]]></format>
+    </remarks>
       </Docs>
     </Member>
     <Member MemberName="GetAwaiter">
@@ -185,13 +269,20 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
       </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading.Tasks.Extensions</AssemblyName>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Runtime.CompilerServices.ValueTaskAwaiter</ReturnType>
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <summary>Создает объект типа awaiter для этого значения.</summary>
+        <returns>Объект типа awaiter.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -207,13 +298,20 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
       </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading.Tasks.Extensions</AssemblyName>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Int32</ReturnType>
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <summary>Возвращает хэш-код данного экземпляра.</summary>
+        <returns>Хэш-код для текущего объекта.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -229,12 +327,19 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
       </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading.Tasks.Extensions</AssemblyName>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
+        <summary>Возвращает значение, указывающее, представляет ли этот объект отмененную операцию.</summary>
+        <value><see langword="true" /> Если объект представляет отмененной операции; в противном случае <see langword="false" />.</value>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -250,12 +355,19 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
       </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading.Tasks.Extensions</AssemblyName>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
+        <summary>Возвращает значение, указывающее, представляет ли этот объект завершенную операцию.</summary>
+        <value><see langword="true" /> Если этот объект представляет завершенную операцию; в противном случае <see langword="false" />.</value>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -271,12 +383,19 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
       </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading.Tasks.Extensions</AssemblyName>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
+        <summary>Возвращает значение, указывающее, представляет ли этот объект успешно завершенную операцию.</summary>
+        <value><see langword="true" /> Если этот объект представляет успешно завершенную операцию; в противном случае <see langword="false" />.</value>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -292,12 +411,19 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
       </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading.Tasks.Extensions</AssemblyName>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
+        <summary>Возвращает значение, указывающее, представляет ли этот объект операцию, завершившуюся ошибкой.</summary>
+        <value><see langword="true" /> Если объект представляет сбойной операцией; в противном случае <see langword="false" />.</value>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -313,6 +439,13 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
       </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading.Tasks.Extensions</AssemblyName>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
@@ -321,11 +454,18 @@
         <Parameter Name="right" Type="System.Threading.Tasks.ValueTask" />
       </Parameters>
       <Docs>
-        <param name="left">To be added.</param>
-        <param name="right">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="left">Первое сравниваемое значение.</param>
+        <param name="right">Второе сравниваемое значение.</param>
+        <summary>Сравнивает два значения <see cref="T:System.Threading.Tasks.ValueTask" /> на предмет их равенства.</summary>
+        <returns>Значение <see langword="true" />, если два значения <see cref="T:System.Threading.Tasks.ValueTask" /> равны; в противном случае значение <see langword="false" />.</returns>
+        <remarks>
+      <format type="text/markdown"><![CDATA[ 
+
+## Remarks  
+Два <xref:System.Threading.Tasks.ValueTask> экземпляры являются эквивалентными, если они же wrap <xref:System.Threading.Tasks.Task> или той же парой <xref:System.Threading.Tasks.Sources.IValueTaskSource> объект и маркер.
+
+ ]]></format>
+    </remarks>
       </Docs>
     </Member>
     <Member MemberName="op_Inequality">
@@ -340,6 +480,13 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
       </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading.Tasks.Extensions</AssemblyName>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
@@ -348,11 +495,18 @@
         <Parameter Name="right" Type="System.Threading.Tasks.ValueTask" />
       </Parameters>
       <Docs>
-        <param name="left">To be added.</param>
-        <param name="right">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="left">Первое сравниваемое значение.</param>
+        <param name="right">Второе сравниваемое значение.</param>
+        <summary>Определяет неравенство двух значений <see cref="T:System.Threading.Tasks.ValueTask" />.</summary>
+        <returns>Значение <see langword="true" />, если два значения <see cref="T:System.Threading.Tasks.ValueTask" /> не равны; в противном случае значение <see langword="false" />.</returns>
+        <remarks>
+      <format type="text/markdown"><![CDATA[ 
+
+## Remarks  
+Два <xref:System.Threading.Tasks.ValueTask> экземпляры являются эквивалентными, если они же wrap <xref:System.Threading.Tasks.Task> или той же парой <xref:System.Threading.Tasks.Sources.IValueTaskSource> объект и маркер.
+
+ ]]></format>
+    </remarks>
       </Docs>
     </Member>
     <Member MemberName="Preserve">
@@ -367,13 +521,20 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
       </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading.Tasks.Extensions</AssemblyName>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Threading.Tasks.ValueTask</ReturnType>
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <summary>Получает объект <see cref="T:System.Threading.Tasks.ValueTask" />, который можно будет использовать в любой момент в будущем.</summary>
+        <returns>Сохраненный объект <see cref="T:System.Threading.Tasks.ValueTask" />.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
