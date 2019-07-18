@@ -1,5 +1,5 @@
 <Type Name="DiagnosticSource" FullName="System.Diagnostics.DiagnosticSource">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="7f83117f0aeffb8d575e4d2b554cd5421a13a5bb" /><Meta Name="ms.sourcegitcommit" Value="bc24a3ba616ee1df8b858f9400cae4f058ea3a7e" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="06/19/2019" /><Meta Name="ms.locfileid" Value="67239415" /></Metadata><TypeSignature Language="C#" Value="public abstract class DiagnosticSource" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="d79c7605daf68e0c4169c32fac48c2c1ac277dad" /><Meta Name="ms.sourcegitcommit" Value="cfc0e4215fd0d259582ada2141878befd7c3c8c6" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="07/12/2019" /><Meta Name="ms.locfileid" Value="67854887" /></Metadata><TypeSignature Language="C#" Value="public abstract class DiagnosticSource" />
   <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract beforefieldinit DiagnosticSource extends System.Object" />
   <TypeSignature Language="DocId" Value="T:System.Diagnostics.DiagnosticSource" />
   <TypeSignature Language="VB.NET" Value="Public MustInherit Class DiagnosticSource" />
@@ -139,8 +139,23 @@
       <Docs>
         <param name="activity">To be added.</param>
         <param name="payload">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Передает состояние действия какому-либо событию или операции, например исходящему HTTP-запросу, который будет выполнен за пределами процесса.</summary>
+        <remarks>  
+          <format type="text/markdown"><![CDATA[  
+
+Если на сайте instumentation находится в месте, где действия оставить их (например, исходящие HTTP-запросы), этот сайт необходимо для передачи состояния из действия для исходящего запроса.
+
+В степени, возможно, это должен сделать веб-узел инструментирования, так как отсутствует контракт между <xref:System.Diagnostics.Activity> и логику запроса ougoing на сайте инструментирования.   Тем не менее на сайте инструментирования не может обрабатывать политики (например, ли сведения о действии должны быть отключены или записаны в старом формате для обеспечения совместимости).
+Для этого сайта инструментирования необходимо обратный вызов системой ведения журналов и служит для разрешения политики. Это назначение `OnActivityExport` метод.
+
+`OnActivityExport` Предоставляется метод <xref:System.Diagnostics.Activity> а также объект полезных данных, представляющий исходящего запроса. Объект <xref:System.Diagnostics.DiagnosticSource> подписчик затем имеет возможность обновления исходящего запроса перед его отправкой.
+ 
+Обратите внимание на то, что этот метод редко используется на сайтах инструментирования (только узлы, которые находятся на границе исходящих процесса).   Кроме того как правило политики по умолчанию, что сайт инструментирования выполняет (например, для передачи всех действий состояния в определенной исходящих соглашение о), вероятнее всего порядке. Этот метод предназначен только для случаев, где то есть проблема. Таким образом, этот метод следует использовать очень редко и всегда с главным образом symetry с `OnActivityImport` и перспективность.
+
+Обратите внимание, что `payload` типизируется как <xref:System.Object> здесь, но какого-либо конкретного сайта инструментирования и подписчика должны знать тип полезных данных и таким образом привести и раскодировать их при необходимости.
+
+         ]]></format>
+         </remarks>
       </Docs>
     </Member>
     <Member MemberName="OnActivityImport">
@@ -162,10 +177,22 @@
         <Parameter Name="payload" Type="System.Object" Index="1" FrameworkAlternate="netcore-3.0" />
       </Parameters>
       <Docs>
-        <param name="activity">To be added.</param>
-        <param name="payload">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="activity">Действие, на которое влияет внешнее событие.</param>
+        <param name="payload">Полезные данные, представляющие входящий запрос.</param>
+        <summary>Передает состояние действию из какого-либо события или операции, например входящего запроса, который был выполнен за пределами процесса.</summary>
+        <remarks>  
+          <format type="text/markdown"><![CDATA[  
+
+Если на сайте instumentation создает новое действие в ответ на некоторые события вне процесса, таких как входящими HTTP запрос), `OnActivityImport` метод позволяет потребуется создание нового состояния действия и передачи из входящего запроса для этого сайта действие. 
+
+В степени, возможно, это должен сделать веб-узел инструментария, так как отсутствует контракт между <xref:System.Diagnostics.Activity> и логику запроса входящими на сайте инструментирования.   Тем не менее на сайте инструментирования не может обрабатывать политики. (Например, если выборка выполняется, точно, какие запросы следует брать пробу?) В таком случае сайт инструментирования должен обратный вызов системой ведения журналов и служит для разрешения политики (например, чтобы решить, если бит действия «выборки» должно быть установлено). Это назначение `OnActivityImport` метод. Ему присваивается действия, а также объект полезных данных, представляющий запрос входящими. Подписчики <xref:System.Diagnostics.DiagnosticSource> то иметь возможность обновлять это действие, при необходимости. 
+
+Этот метод редко используется на сайтах инструментирования (только узлы, которые находятся на границе процесса), а на сайте instrumetation реализует некоторые политики по умолчанию (он задает действие, которое *некоторые* способом), и поэтому не требуется Переопределите этот метод, если эту политику по умолчанию подходит. Другими словами следует переопределить этот метод в случаях очень редко (но часто важно).
+
+Обратите внимание, что `payload` типизируется как <xref:System.Object> здесь, но какого-либо конкретного сайта инструментирования и подписчика будут знать тип полезных данных и таким образом привести и декодировать его при необходимости.
+
+         ]]></format>
+         </remarks>
       </Docs>
     </Member>
     <Member MemberName="StartActivity">
