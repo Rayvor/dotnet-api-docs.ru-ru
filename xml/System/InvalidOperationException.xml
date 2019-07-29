@@ -45,72 +45,72 @@
       <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- <xref:System.InvalidOperationException> используется в случаях, когда возникает ошибка вызова метода по причинам, отличным от недопустимые аргументы. Как правило она возникает, когда состояние объекта не поддерживает вызов метода. Например <xref:System.InvalidOperationException> исключение генерируется методами, такими как:  
+ <xref:System.InvalidOperationException>используется в случаях, когда сбой вызова метода вызван по причинам, отличным от недопустимых аргументов. Как правило, он вызывается, когда состояние объекта не поддерживает вызов метода. Например, <xref:System.InvalidOperationException> исключение вызывается такими методами, как:  
   
--   <xref:System.Collections.IEnumerator.MoveNext%2A?displayProperty=nameWithType> Если объекты коллекции изменяются после создания перечислителя. Дополнительные сведения см. в разделе [изменения коллекции во время итерации его](#Iterating).  
+-   <xref:System.Collections.IEnumerator.MoveNext%2A?displayProperty=nameWithType>значение, если объекты коллекции изменяются после создания перечислителя. Дополнительные сведения см. [в разделе изменение коллекции во время итерации](#Iterating).  
   
--   <xref:System.Resources.ResourceSet.GetString%2A?displayProperty=nameWithType> Если набор ресурсов был закрыт до вызов метода.  
+-   <xref:System.Resources.ResourceSet.GetString%2A?displayProperty=nameWithType>значение, если набор ресурсов закрывается до вызова метода.  
   
--   <xref:System.Xml.Linq.XContainer.Add%2A?displayProperty=nameWithType>, если объект или объекты для добавления приведет к неправильно структурированных XML-документа.  
+-   <xref:System.Xml.Linq.XContainer.Add%2A?displayProperty=nameWithType>, если добавляемый объект или объекты приведут к неправильному структурированному XML-документу.  
   
--   Метод, который пытается обработать пользовательский Интерфейс из потока, не являющегося главным или потока пользовательского интерфейса.  
+-   Метод, который пытается управлять пользовательским интерфейсом из потока, который не является основным потоком или потоком пользовательского интерфейса.  
   
 > [!IMPORTANT]
->  Так как <xref:System.InvalidOperationException> исключение может выдаваться в самых разнообразных ситуациях, очень важно прочитать сообщение об исключении, возвращенный <xref:System.Exception.Message%2A> свойство.  
+>  Поскольку исключение может быть создано в самых разных обстоятельствах, важно прочитать сообщение об исключении, возвращаемое <xref:System.Exception.Message%2A> свойством. <xref:System.InvalidOperationException>  
   
  Содержание  
   
- [Наиболее распространенные причины исключения InvalidOperationException](#Causes)   
- [Обновление потока пользовательского интерфейса из потока без пользовательского интерфейса](#UI)  
- [Изменение коллекции при последовательном переходе его](#Iterating)  
- [Сортировка массива или коллекции нельзя сравнивать, объекты](#Sorting)  
- [Приведение Nullable&lt;T&gt; , значение равно null, если к его базовому типу](#Nullable)   
- [Вызов метода System.Linq.Enumerable для пустой коллекции](#Empty)  
- [Вызов Enumerable.Single или Enumerable.SingleOrDefault на последовательность без одного элемента](#Single)  
- [Доступ к полям динамического между доменами приложений](#Emit)  
-[Исключение InvalidOperationException](#Throwing)  
+ [Некоторые распространенные причины исключений InvalidOperationException](#Causes)   
+ [Обновление потока пользовательского интерфейса из потока, не относящегося к пользовательскому интерфейсу](#UI)  
+ [Изменение коллекции во время ее итерации](#Iterating)  
+ [Сортировка массива или коллекции, объекты которой невозможно сравнить](#Sorting)  
+ [Приведение значения&lt;NULL&gt; T, равного null, к базовому типу](#Nullable)   
+ [Вызов метода System. LINQ. Enumerable для пустой коллекции](#Empty)  
+ [Вызов Enumerable. Single или Enumerable. SingleOrDefault для последовательности без одного элемента](#Single)  
+ [Динамическое обращение к полю домена между приложениями](#Emit)  
+[Создание исключения InvalidOperationException](#Throwing)  
 [Прочие сведения](#Misc)  
   
 <a name="Causes"></a>   
-## <a name="some-common-causes-of-invalidoperationexception-exceptions"></a>Наиболее распространенные причины исключения InvalidOperationException  
- В следующих разделах показано, как некоторые наиболее распространенные случаи, в котором в <xref:System.InvalidOperationException> исключения в приложении. Способ решения проблемы зависит от конкретной ситуации. Наиболее часто, однако исключение приводит к после ошибки разработчика и <xref:System.InvalidOperationException> исключение может быть ожидали и избегать.  
+## <a name="some-common-causes-of-invalidoperationexception-exceptions"></a>Некоторые распространенные причины исключений InvalidOperationException  
+ В следующих разделах показано, как часто возникают ситуации, в <xref:System.InvalidOperationException> которых исключение возникает в приложении. Способ решения проблемы зависит от конкретной ситуации. Однако чаще всего исключение возникает из ошибки разработчика, и это <xref:System.InvalidOperationException> исключение можно ожидать и избежать.  
   
 <a name="UI"></a>   
-### <a name="updating-a-ui-thread-from-a-non-ui-thread"></a>Обновление потока пользовательского интерфейса из потока без пользовательского интерфейса  
- Часто рабочие потоки используются для выполнения некоторых фоновой работы, который включает в себя сбор данных для отображения в пользовательском интерфейсе приложения. Тем не менее. Большинство платформ приложений GUI (графический интерфейс пользователя) для .NET Framework, такие как Windows Forms и Windows Presentation Foundation (WPF) разрешают доступ к объектам графического интерфейса пользователя только из потока, который создает и управляет пользовательским Интерфейсом (поток Main или пользовательского интерфейса). <xref:System.InvalidOperationException> Возникает исключение при попытке получить доступ к элементу пользовательского интерфейса из потока, отличного от потока пользовательского интерфейса.  В следующей таблице показан текст сообщений об исключениях.  
+### <a name="updating-a-ui-thread-from-a-non-ui-thread"></a>Обновление потока пользовательского интерфейса из потока, не относящегося к пользовательскому интерфейсу  
+ Часто рабочие потоки используются для выполнения некоторой фоновой работы, включающей сбор данных, отображаемых в пользовательском интерфейсе приложения. Несмотря. Большинство платформ приложений графического пользовательского интерфейса (графический интерфейс пользователя) для .NET Framework, таких как Windows Forms и Windows Presentation Foundation (WPF), позволяют получать доступ к объектам графического пользовательского интерфейса только из потока, который создает пользовательский интерфейс и управляет им (основным потоком или потоком пользовательского интерфейса). <xref:System.InvalidOperationException> Исключение возникает при попытке доступа к элементу пользовательского интерфейса из потока, отличного от потока пользовательского интерфейса.  Текст сообщения об исключении показан в следующей таблице.  
   
 |Тип приложения|Сообщение|  
 |----------------------|-------------|  
-|Приложения WPF|**Вызывающий поток не может доступе к этому объекту, так как им владеет другой поток.**|  
-|Приложения универсальной платформы Windows|**Приложение вызвало интерфейс, который был маршалирован для другого потока.**|  
-|Приложение Windows Forms|**Недопустимая операция в нескольких потоках: Элемент управления 'TextBox1' доступ из потока, отличного от потока, он был создан на.**|  
+|Приложение WPF|**Вызывающий поток не может получить доступ к этому объекту, так как он принадлежит другому потоку.**|  
+|Приложение UWP|**Приложение называется интерфейсом, который был маршалирован для другого потока.**|  
+|Приложение Windows Forms|**Недопустимая операция между потоками: Доступ к элементу "TextBox1" осуществляется из потока, отличного от потока, в котором он был создан.**|  
   
- Платформы пользовательского интерфейса для платформы .NET Framework реализуют *dispatcher* шаблон, который содержит метод для проверки, выполняется ли вызов члена элемента пользовательского интерфейса в потоке пользовательского интерфейса, а также другие методы для планирования вызова в потоке пользовательского интерфейса:  
+ Платформы пользовательского интерфейса для .NET Framework реализуют шаблон *Dispatcher* , который включает метод для проверки того, выполняется ли вызов элемента пользовательского интерфейса в ПОТОКЕ пользовательского интерфейса, а также другие методы для планирования вызова в ПОТОКЕ пользовательского интерфейса:  
   
--   В приложениях WPF, вызовите <xref:System.Windows.Threading.Dispatcher.CheckAccess%2A?displayProperty=nameWithType> метод, чтобы определить, выполняется ли метод в потоке без пользовательского интерфейса. Он возвращает `true` Если метод выполняется в потоке пользовательского интерфейса и `false` в противном случае. Вызовите одну из перегрузок <xref:System.Windows.Threading.Dispatcher.Invoke%2A?displayProperty=nameWithType> метод для планирования вызова в потоке пользовательского интерфейса.  
+-   В приложениях WPF вызовите <xref:System.Windows.Threading.Dispatcher.CheckAccess%2A?displayProperty=nameWithType> метод, чтобы определить, выполняется ли метод в потоке без пользовательского интерфейса. Он возвращает `true` значение, если метод работает в потоке пользовательского интерфейса `false` и в противном случае. Вызовите одну из перегрузок <xref:System.Windows.Threading.Dispatcher.Invoke%2A?displayProperty=nameWithType> метода, чтобы запланировать вызов в потоке пользовательского интерфейса.  
   
--   В приложениях UWP, вызовите [CoreDispatcher.HasThreadAccess](https://msdn.microsoft.com/library/windows/apps/windows.ui.core.coredispatcher.hasthreadaccess.aspx) метод, чтобы определить, выполняется ли метод в потоке без пользовательского интерфейса. Вызовите [CoreDispatcher.RunAsync](https://msdn.microsoft.com/library/windows/apps/windows.ui.core.coredispatcher.runasync.aspx) методом для выполнения делегата, который обновляет поток пользовательского интерфейса. Используйте команду  
+-   В приложениях UWP вызовите метод [CoreDispatcher. хассреадакцесс](https://msdn.microsoft.com/library/windows/apps/windows.ui.core.coredispatcher.hasthreadaccess.aspx) , чтобы определить, выполняется ли метод в потоке без пользовательского интерфейса. Вызовите метод [CoreDispatcher. RunAsync](https://msdn.microsoft.com/library/windows/apps/windows.ui.core.coredispatcher.runasync.aspx) для выполнения делегата, который обновляет поток пользовательского интерфейса. Используйте команду  
   
--   В приложениях Windows Forms, использовать <xref:System.Windows.Forms.Control.InvokeRequired%2A?displayProperty=nameWithType> свойства, чтобы определить, выполняется ли метод в потоке без пользовательского интерфейса. Вызовите одну из перегрузок <xref:System.Windows.Forms.Control.Invoke%2A?displayProperty=nameWithType> методом для выполнения делегата, который обновляет поток пользовательского интерфейса.  
+-   В Windows Forms приложениях используйте <xref:System.Windows.Forms.Control.InvokeRequired%2A?displayProperty=nameWithType> свойство, чтобы определить, выполняется ли метод в потоке без пользовательского интерфейса. Вызовите одну из перегрузок <xref:System.Windows.Forms.Control.Invoke%2A?displayProperty=nameWithType> метода, чтобы выполнить делегат, который обновляет поток пользовательского интерфейса.  
   
- В следующих примерах показаны <xref:System.InvalidOperationException> исключение, возникающее при попытке обновить элемент пользовательского интерфейса из потока, в потоке, создавшем его.  Каждый пример необходимо создать два элемента управления:  
+ В следующих примерах показано <xref:System.InvalidOperationException> исключение, возникающее при попытке обновить элемент пользовательского интерфейса из потока, отличного от создавшего его потока.  Для каждого примера необходимо создать два элемента управления:  
   
--   Элемент управления текстовым полем с именем `textBox1`.  В приложении Windows Forms, необходимо задать его <xref:System.Windows.Forms.TextBox.Multiline%2A> свойства `true`.  
+-   Элемент управления "текстовое поле `textBox1`" с именем.  В Windows Forms приложении следует задать для <xref:System.Windows.Forms.TextBox.Multiline%2A> `true`его свойства значение.  
   
--   Элемент управления кнопки с именем `threadExampleBtn`. Пример содержит обработчик, `ThreadsExampleBtn_Click`, на кнопке `Click` событий.  
+-   Элемент управления Button с `threadExampleBtn`именем. В примере показан обработчик `ThreadsExampleBtn_Click`для `Click` события кнопки.  
   
- В каждом случае `threadExampleBtn_Click` вызовов обработчика событий `DoSomeWork` метод дважды. Первый вызов выполняется синхронно и завершается успешно. Но второй вызов, так как она выполняется асинхронно в потоке пула потоков, пытается обновить интерфейс пользователя из потока без пользовательского интерфейса. В результате <xref:System.InvalidOperationException> исключение.  
+ В каждом случае `threadExampleBtn_Click` обработчик событий `DoSomeWork` вызывает метод дважды. Первый вызов выполняется синхронно и завершился. Но второй вызов, поскольку он выполняется асинхронно в потоке пула потоков, пытается обновить пользовательский интерфейс из потока, не относящегося к пользовательскому интерфейсу. Это приводит к <xref:System.InvalidOperationException> исключению.  
   
  Приложения WPF и UWP  
  [!code-csharp[System.InvalidOperationException.Threading.WPF1#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Invalidoperationexception.threading.wpf1/cs/MainWindow.xaml.cs#1)]
  [!code-vb[System.InvalidOperationException.Threading.WPF1#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Invalidoperationexception.threading.wpf1/vb/MainWindow.xaml.vb#1)]  
   
- В следующей версии `DoSomeWork` метод позволяет избежать исключения в приложении WPF.  
+ Следующая версия `DoSomeWork` метода устраняет исключение в приложении WPF.  
   
  [!code-csharp[System.InvalidOperationException.Threading.WPF2#3](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Invalidoperationexception.threading.wpf2/cs/MainWindowDispatcher.xaml.cs#3)]
  [!code-vb[System.InvalidOperationException.Threading.WPF2#3](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Invalidoperationexception.threading.wpf2/vb/MainWindowDispatcher.xaml.vb#3)]  
   
- В следующей версии `DoSomeWork` метод позволяет избежать исключения в приложении UWP.  
+ Следующая версия `DoSomeWork` метода устраняет исключение в приложении UWP.  
   
  [!code-csharp[System.InvalidOperationException.Threading.UWP#4](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.invalidoperationexception.threading.uwp/cs/MainPage.xaml.cs#4)]
  [!code-vb[System.InvalidOperationException.Threading.UWP#4](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.invalidoperationexception.threading.uwp/vb/MainPage.xaml.vb#4)]  
@@ -119,58 +119,58 @@
  [!code-csharp[System.InvalidOperationException.Threading.WF#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Invalidoperationexception.threading.wf/cs/Form1.cs#2)]
  [!code-vb[System.InvalidOperationException.Threading.WF#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Invalidoperationexception.threading.wf/vb/Form1.vb#2)]  
   
- В следующей версии `DoSomeWork` метод позволяет избежать исключения в приложении Windows Forms.  
+ Следующая версия `DoSomeWork` метода устраняет исключение в Windows Forms приложении.  
   
  [!code-csharp[System.InvalidOperationException.Threading.WF2#5](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Invalidoperationexception.threading.wf2/cs/Form1.cs#5)]
  [!code-vb[System.InvalidOperationException.Threading.WF2#5](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Invalidoperationexception.threading.wf2/vb/Form1.vb#5)]  
   
 <a name="Iterating"></a>   
-### <a name="changing-a-collection-while-iterating-it"></a>Изменение коллекции при последовательном переходе его  
- `foreach` Инструкции на языке C# или `For Each` в Visual Basic используется для итерации элементов коллекции, а также считывать или изменять его отдельные элементы. Тем не менее он не может использоваться для добавления или удаления элементов из коллекции. В этом случае создается это <xref:System.InvalidOperationException> исключение с сообщением об ошибке, "**коллекция была изменена; Невозможно выполнить операцию перечисления.** "  
+### <a name="changing-a-collection-while-iterating-it"></a>Изменение коллекции во время ее итерации  
+ Инструкция в C# операторе `For Each` или в Visual Basic используется для итерации элементов коллекции и чтения или изменения отдельных элементов. `foreach` Однако его нельзя использовать для добавления или удаления элементов из коллекции. При этом создается <xref:System.InvalidOperationException> исключение с сообщением, похожее на "**коллекция была изменена; Операция перечисления не может быть выполнена ".**  
   
- Приведенный ниже пример проходит попыток коллекцию целых чисел, добавляемый в коллекцию квадрат каждого целого числа. В примере создается исключение <xref:System.InvalidOperationException> с первого вызова <xref:System.Collections.Generic.List%601.Add%2A?displayProperty=nameWithType> метод.  
+ В следующем примере выполняется итерация коллекции целых чисел, которая пытается добавить квадрат каждого целого числа в коллекцию. В примере создается <xref:System.InvalidOperationException> исключение с первым вызовом <xref:System.Collections.Generic.List%601.Add%2A?displayProperty=nameWithType> метода.  
   
  [!code-csharp[System.InvalidOperationException#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.invalidoperationexception/cs/Iterating1.cs#1)]
  [!code-vb[System.InvalidOperationException#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.invalidoperationexception/vb/Iterating1.vb#1)]  
   
- В зависимости от логики приложения, то можно исключить исключение в одном из двух способов:  
+ Исключение можно устранить одним из двух способов, в зависимости от логики приложения:  
   
--   Элементы должны быть добавлены в коллекцию при последовательном переходе его, вы можете переключаться с помощью индекса `for` инструкции, а не `foreach` или `For Each`. В следующем примере используется оператор добавить квадрат чисел из коллекции в коллекцию.  
+-   Если во время итерации в коллекцию необходимо добавить элементы, можно выполнить итерацию по индексу, используя `for` инструкцию, `foreach` а `For Each`не или. В следующем примере оператор for используется для добавления квадрата чисел из коллекции в коллекцию.  
   
      [!code-csharp[System.InvalidOperationException#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.invalidoperationexception/cs/Iterating2.cs#2)]
      [!code-vb[System.InvalidOperationException#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.invalidoperationexception/vb/Iterating2.vb#2)]  
   
-     Обратите внимание, что число итераций, которые необходимо установить до начала итерации коллекции, либо с помощью счетчика в цикле для выхода из цикла соответствующим образом, путем итерации назад, из `Count` - 1 к 0, или, как пример, назначив номер элементов в массиве переменной и его использованию для установления верхняя граница цикла. В противном случае если элемент добавляется в коллекцию для каждой итерации, результаты бесконечного цикла.  
+     Обратите внимание, что перед перебором коллекции необходимо установить число итераций с помощью счетчика внутри цикла, который выполнит цикл соответствующим образом, выполнив итерацию назад, от `Count` -1 до 0 или, как в примере, назначив номер элементов массива в переменную и его использование для установления верхней границы цикла. В противном случае, если элемент добавляется в коллекцию при каждой итерации, будет получен бесконечный цикл.  
   
--   Если нет необходимости добавлять элементы в коллекцию при последовательном переходе его, вы можете хранить элементов для добавления в временную коллекцию, можно добавить после завершения итерации коллекции.  В следующем примере используется этот подход для добавления квадрат чисел из в коллекции временную коллекцию, а затем объединить коллекций в один объект массива.  
+-   Если нет необходимости добавлять элементы в коллекцию во время итерации, можно сохранить элементы, добавляемые во временную коллекцию, добавленную при итерации коллекции.  В следующем примере этот подход используется для добавления квадрата чисел из коллекции в временную коллекцию, а затем для объединения коллекций в один объект массива.  
   
      [!code-csharp[System.InvalidOperationException#3](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.invalidoperationexception/cs/Iterating3.cs#3)]
      [!code-vb[System.InvalidOperationException#3](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.invalidoperationexception/vb/Iterating3.vb#3)]  
   
 <a name="Sorting"></a>   
-### <a name="sorting-an-array-or-collection-whose-objects-cannot-be-compared"></a>Сортировка массива или коллекции нельзя сравнивать, объекты  
- Общего назначения, методы, такие как сортировки <xref:System.Array.Sort%28System.Array%29?displayProperty=nameWithType> метод или <xref:System.Collections.Generic.List%601.Sort?displayProperty=nameWithType> метод, обычно требуется реализовать, по крайней мере один из объектов должны быть отсортированы <xref:System.IComparable%601> или <xref:System.IComparable> интерфейс. Если нет, коллекции или массива нельзя отсортировать, и метод вызывает <xref:System.InvalidOperationException> исключение. В следующем примере определяется `Person` класса хранилищ двумя `Person` объекты в универсальной <xref:System.Collections.Generic.List%601> объекта и пытается их сортировки. Как видно в результатах показано в примере, вызов <xref:System.Collections.Generic.List%601.Sort?displayProperty=nameWithType> вызывает метод <xref:System.InvalidOperationException>.  
+### <a name="sorting-an-array-or-collection-whose-objects-cannot-be-compared"></a>Сортировка массива или коллекции, объекты которой невозможно сравнить  
+ Для методов сортировки общего назначения, таких <xref:System.Array.Sort%28System.Array%29?displayProperty=nameWithType> как метод <xref:System.Collections.Generic.List%601.Sort?displayProperty=nameWithType> или метод, обычно требуется, чтобы хотя бы один из объектов был <xref:System.IComparable> отсортирован, реализуя интерфейс или.<xref:System.IComparable%601> В противном случае коллекция или массив не могут быть отсортированы, а метод создает <xref:System.InvalidOperationException> исключение. В следующем примере определяется `Person` класс, хранится два `Person` объекта в универсальном <xref:System.Collections.Generic.List%601> объекте и выполняется попытка их сортировки. Как видно из выходных данных в примере, вызов <xref:System.Collections.Generic.List%601.Sort?displayProperty=nameWithType> метода <xref:System.InvalidOperationException>создает исключение.  
   
  [!code-csharp[System.InvalidOperationException#12](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.invalidoperationexception/cs/List_Sort1.cs#12)]
  [!code-vb[System.InvalidOperationException#12](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.invalidoperationexception/vb/List_Sort1.vb#12)]  
   
- Можно устранить исключение в любом из трех способов:  
+ Исключение можно устранить одним из трех способов:  
   
--   Если у вас может есть тип, который вы пытаетесь сортировки (то есть, если вы его исходный код для элементов управления), можно изменить его, чтобы реализовать <xref:System.IComparable%601> или <xref:System.IComparable> интерфейс. Для этого требуется реализуют либо <xref:System.IComparable%601.CompareTo%2A?displayProperty=nameWithType> или <xref:System.IComparable.CompareTo%2A> метод. Добавление в существующий тип в реализации интерфейса не является критическим изменением.  
+-   Если тип, который вы пытаетесь отсортировать, можно использовать (то есть если вы управляете его исходным кодом), его можно изменить, чтобы реализовать <xref:System.IComparable%601> <xref:System.IComparable> интерфейс или. Для этого необходимо реализовать <xref:System.IComparable%601.CompareTo%2A?displayProperty=nameWithType> <xref:System.IComparable.CompareTo%2A> метод или. Добавление реализации интерфейса в существующий тип не является критическим изменением.  
   
-     В следующем примере используется этот подход для предоставления <xref:System.IComparable%601> внедрению `Person` класса. Можно по-прежнему вызывать коллекции или массива общий способ сортировки, и, как видно из примера, коллекции сортирует успешно.  
+     В следующем примере этот подход используется для предоставления <xref:System.IComparable%601> реализации `Person` класса. По-прежнему можно вызвать общий метод сортировки коллекции или массива и, как показано в выходных данных примера, коллекция сортируется успешно.  
   
      [!code-csharp[System.InvalidOperationException#13](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.invalidoperationexception/cs/List_Sort2.cs#13)]
      [!code-vb[System.InvalidOperationException#13](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.invalidoperationexception/vb/List_Sort2.vb#13)]  
   
--   Если не удается изменить исходный код для типа, который вы пытаетесь сортировки, можно определить специальные сортировки класс, реализующий <xref:System.Collections.Generic.IComparer%601> интерфейс.  Можно вызвать перегрузку `Sort` метод, который включает в себя <xref:System.Collections.Generic.IComparer%601> параметра. Этот подход особенно полезен в тех случаях, если вы хотите разрабатывать специализированный класс сортировки, можно сортировать объекты, на основе нескольких критериев.  
+-   Если не удается изменить исходный код для типа, который вы пытаетесь отсортировать, можно определить специализированный класс сортировки, реализующий <xref:System.Collections.Generic.IComparer%601> интерфейс.  Можно вызвать перегрузку `Sort` метода, который <xref:System.Collections.Generic.IComparer%601> включает параметр. Этот подход особенно удобен, если требуется разработать специализированный класс сортировки, который может сортировать объекты на основе нескольких критериев.  
   
-     В следующем примере используется метод путем разработки пользовательского `PersonComparer` класс, используемый для сортировки `Person` коллекций.  Затем он передает экземпляр этого класса <xref:System.Collections.Generic.List%601.Sort%28System.Collections.Generic.IComparer%7B%600%7D%29?displayProperty=nameWithType> метод.  
+     В следующем примере используется подход путем разработки пользовательского `PersonComparer` класса, который используется для сортировки `Person` коллекций.  Затем он передает экземпляр этого класса в <xref:System.Collections.Generic.List%601.Sort%28System.Collections.Generic.IComparer%7B%600%7D%29?displayProperty=nameWithType> метод.  
   
      [!code-csharp[System.InvalidOperationException#14](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.invalidoperationexception/cs/List_Sort3.cs#14)]
      [!code-vb[System.InvalidOperationException#14](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.invalidoperationexception/vb/List_Sort3.vb#14)]  
   
--   Если не удается изменить исходный код для типа необходимо отсортировать, можно создать <xref:System.Comparison%601> делегат для выполнения сортировки. Сигнатура делегата  
+-   Если не удается изменить исходный код для типа, который вы пытаетесь отсортировать, можно создать <xref:System.Comparison%601> делегат для выполнения сортировки. Сигнатура делегата —  
   
     ```vb  
     Function Comparison(Of T)(x As T, y As T) As Integer  
@@ -180,124 +180,124 @@
     int Comparison<T>(T x, T y)  
     ```  
   
-     В следующем примере используется подход, определив `PersonComparison` метод, который соответствует <xref:System.Comparison%601> сигнатуре делегата.  Затем он передает этот делегат для <xref:System.Collections.Generic.List%601.Sort%28System.Comparison%7B%600%7D%29?displayProperty=nameWithType> метод.  
+     В следующем примере используется подход путем определения `PersonComparison` метода, который <xref:System.Comparison%601> соответствует сигнатуре делегата.  Затем он передает этот делегат <xref:System.Collections.Generic.List%601.Sort%28System.Comparison%7B%600%7D%29?displayProperty=nameWithType> методу.  
   
      [!code-csharp[System.InvalidOperationException#15](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.invalidoperationexception/cs/List_Sort4.cs#15)]
      [!code-vb[System.InvalidOperationException#15](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.invalidoperationexception/vb/List_Sort4.vb#15)]  
   
 <a name="Nullable"></a>   
-### <a name="casting-a-nullablet-that-is-null-to-its-underlying-type"></a>Приведение Nullable\<T >, значение равно null, если к его базовому типу  
- Попытка приведения <xref:System.Nullable%601> значение, которое является `null` к его базовому типу вызывает <xref:System.InvalidOperationException> исключения и отображает сообщение об ошибке "**объектов со значениями NULL должен иметь значение.**  
+### <a name="casting-a-nullablet-that-is-null-to-its-underlying-type"></a>Приведение значения\<NULL T >, равного null, соответствующему типу  
+ Попытка приведения <xref:System.Nullable%601> значения `null` к базовому типу вызывает <xref:System.InvalidOperationException> исключение и отображает сообщение об ошибке "объект, допускающий значение null,**должен иметь значение.**  
   
- В следующем примере возникает исключение <xref:System.InvalidOperationException> исключение при попытке итерация массива, которая включает `Nullable(Of Integer)` значение.  
+ В следующем примере создается <xref:System.InvalidOperationException> исключение при попытке выполнить итерацию массива, `Nullable(Of Integer)` содержащего значение.  
   
  [!code-csharp[System.InvalidOperationException#4](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.invalidoperationexception/cs/Nullable1.cs#4)]
  [!code-vb[System.InvalidOperationException#4](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.invalidoperationexception/vb/Nullable1.vb#4)]  
   
- Чтобы предотвратить это исключение:  
+ Чтобы предотвратить исключение, сделайте следующее:  
   
--   Используйте <xref:System.Nullable%601.HasValue%2A?displayProperty=nameWithType> свойство, чтобы выбрать только те элементы, которые не являются `null`.  
+-   Используйте свойство, чтобы выбрать только те элементы, которые не `null`являются. <xref:System.Nullable%601.HasValue%2A?displayProperty=nameWithType>  
   
--   Вызовите один из <xref:System.Nullable%601.GetValueOrDefault%2A?displayProperty=nameWithType> перегрузок, чтобы предоставить значение по умолчанию для `null` значение.  
+-   Вызовите одну из <xref:System.Nullable%601.GetValueOrDefault%2A?displayProperty=nameWithType> перегрузок, чтобы предоставить значение по умолчанию `null` для значения.  
   
- В следующем примере выполняются оба во избежание <xref:System.InvalidOperationException> исключение.  
+ В следующем примере оба варианта позволяют избежать <xref:System.InvalidOperationException> исключения.  
   
  [!code-csharp[System.InvalidOperationException#5](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.invalidoperationexception/cs/Nullable2.cs#5)]
  [!code-vb[System.InvalidOperationException#5](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.invalidoperationexception/vb/Nullable2.vb#5)]  
   
 <a name="Empty"></a>   
-### <a name="calling-a-systemlinqenumerable-method-on-an-empty-collection"></a>Вызов метода System.Linq.Enumerable для пустой коллекции  
- <xref:System.Linq.Enumerable.Aggregate%2A?displayProperty=nameWithType>, <xref:System.Linq.Enumerable.Average%2A?displayProperty=nameWithType>, <xref:System.Linq.Enumerable.First%2A?displayProperty=nameWithType>, <xref:System.Linq.Enumerable.Last%2A?displayProperty=nameWithType>, <xref:System.Linq.Enumerable.Max%2A?displayProperty=nameWithType>, <xref:System.Linq.Enumerable.Min%2A?displayProperty=nameWithType>, <xref:System.Linq.Enumerable.Single%2A?displayProperty=nameWithType>, И <xref:System.Linq.Enumerable.SingleOrDefault%2A?displayProperty=nameWithType> методы выполняют операции над последовательностью и возвращают один результат.   Некоторые перегрузки этих методов throw <xref:System.InvalidOperationException> исключение, если последовательность пуста, пока другие перегрузки возвращают `null`. <xref:System.Linq.Enumerable.SingleOrDefault%2A?displayProperty=nameWithType> Метод также выдает <xref:System.InvalidOperationException> исключение, если последовательность содержит более одного элемента.  
+### <a name="calling-a-systemlinqenumerable-method-on-an-empty-collection"></a>Вызов метода System. LINQ. Enumerable для пустой коллекции  
+ <xref:System.Linq.Enumerable.Aggregate%2A?displayProperty=nameWithType>Методы, <xref:System.Linq.Enumerable.Average%2A?displayProperty=nameWithType>, ,,<xref:System.Linq.Enumerable.Last%2A?displayProperty=nameWithType>,, и<xref:System.Linq.Enumerable.Single%2A?displayProperty=nameWithType>выполняют операциинадпоследовательностьюи<xref:System.Linq.Enumerable.SingleOrDefault%2A?displayProperty=nameWithType> возвращают один результат. <xref:System.Linq.Enumerable.Min%2A?displayProperty=nameWithType> <xref:System.Linq.Enumerable.Max%2A?displayProperty=nameWithType> <xref:System.Linq.Enumerable.First%2A?displayProperty=nameWithType>   Некоторые перегрузки этих методов вызывают <xref:System.InvalidOperationException> исключение, если последовательность пуста, а другие перегрузки возвращают. `null` Метод также вызывает исключение, <xref:System.InvalidOperationException> если последовательность содержит более одного элемента. <xref:System.Linq.Enumerable.SingleOrDefault%2A?displayProperty=nameWithType>  
   
 > [!NOTE]
->  Большинство методов, которые выдают <xref:System.InvalidOperationException> исключения являются перегрузками. Убедитесь, что вы понимаете поведение выбираемой перегрузки.  
+>  Большинство методов, которые вызывают <xref:System.InvalidOperationException> исключение, являются перегрузками. Убедитесь, что вы понимаете поведение выбранной перегрузки.  
   
- В следующей таблице перечислены сообщения об исключениях из <xref:System.InvalidOperationException> объектов исключений, вызванных вызовы некоторых <xref:System.Linq.Enumerable?displayProperty=nameWithType> методы.  
+ В следующей таблице перечислены сообщения об исключениях из <xref:System.InvalidOperationException> объектов исключений, создаваемых вызовами <xref:System.Linq.Enumerable?displayProperty=nameWithType> некоторых методов.  
   
 |Метод|Сообщение|  
 |------------|-------------|  
 |`Aggregate` <br /> `Average` <br /> `Last` <br /> `Max` <br /> `Min`|**Последовательность не содержит элементов**|  
-|`First`|**Последовательность не содержит соответствующий элемент**|  
+|`First`|**Sequence не содержит соответствующего элемента**|  
 |`Single` <br /> `SingleOrDefault`|**Последовательность содержит более одного соответствующего элемента**|  
   
- Как исключить или обработать исключение зависит от приложения предположения и конкретного метода, который вы вызываете.  
+ Способ исключения или обойти исключение зависит от допущений приложения и от конкретного метода, который вы вызываете.  
   
--   Когда вы намеренно вызовите один из этих методов без проверки для пустой последовательности, предполагается, что последовательность не пуста, и что пустая последовательностью не ожидается. В этом случае подходит перехват или повторное создание исключения.  
+-   При намеренном вызове одного из этих методов без проверки пустой последовательности предполагается, что последовательность не пуста и что пустая последовательность является непредвиденным событием. В этом случае подходит перехват или повторный вызов исключения.  
   
--   В случае непреднамеренного невыполнение проверяемый для пустой последовательности вы можете вызвать один из перегруженных версий <xref:System.Linq.Enumerable.Any%2A?displayProperty=nameWithType> перегрузки, чтобы определить, содержит ли последовательность какие-либо элементы.  
+-   Если ошибка проверки пустой последовательности была непреднамеренной, можно вызвать одну из <xref:System.Linq.Enumerable.Any%2A?displayProperty=nameWithType> перегрузок перегрузки, чтобы определить, содержит ли последовательность какие-либо элементы.  
   
     > [!TIP]
-    >  Вызов <xref:System.Linq.Enumerable.Any%60%601%28System.Collections.Generic.IEnumerable%7B%60%600%7D%2CSystem.Func%7B%60%600%2CSystem.Boolean%7D%29?displayProperty=nameWithType> метод перед созданием последовательности может повысить производительность, если данные для обработки может содержать большое количество элементов или если операция, создающая последовательность дорого.  
+    >  <xref:System.Linq.Enumerable.Any%60%601%28System.Collections.Generic.IEnumerable%7B%60%600%7D%2CSystem.Func%7B%60%600%2CSystem.Boolean%7D%29?displayProperty=nameWithType> Вызов метода до создания последовательности может повысить производительность, если обрабатываемые данные могут содержать большое количество элементов или операция, создающая последовательность, является дорогостоящей.  
   
--   Если вызван метод, такие как <xref:System.Linq.Enumerable.First%2A?displayProperty=nameWithType>, <xref:System.Linq.Enumerable.Last%2A?displayProperty=nameWithType>, или <xref:System.Linq.Enumerable.Single%2A?displayProperty=nameWithType>, можно заменить альтернативного метода, такие как <xref:System.Linq.Enumerable.FirstOrDefault%2A?displayProperty=nameWithType>, <xref:System.Linq.Enumerable.LastOrDefault%2A?displayProperty=nameWithType>, или <xref:System.Linq.Enumerable.SingleOrDefault%2A?displayProperty=nameWithType>, возвращает значение по умолчанию, а не членом последовательности.  
+-   Если вы вызвали метод <xref:System.Linq.Enumerable.First%2A?displayProperty=nameWithType>, <xref:System.Linq.Enumerable.Last%2A?displayProperty=nameWithType>например, или <xref:System.Linq.Enumerable.Single%2A?displayProperty=nameWithType>, <xref:System.Linq.Enumerable.FirstOrDefault%2A?displayProperty=nameWithType>можно заменить альтернативный метод, например, <xref:System.Linq.Enumerable.LastOrDefault%2A?displayProperty=nameWithType>или <xref:System.Linq.Enumerable.SingleOrDefault%2A?displayProperty=nameWithType>, который возвращает значение по умолчанию вместо элемента последовательности.  
   
- Примеры приведены дополнительные сведения.  
+ В примерах содержатся дополнительные сведения.  
   
- В следующем примере используется <xref:System.Linq.Enumerable.Average%2A?displayProperty=nameWithType> метод, чтобы подсчитывать среднее для последовательности, значения которых больше 4. Так как значения из исходного массива не должна превышать 4, значения не включаются в последовательности и вызывает метод <xref:System.InvalidOperationException> исключение.  
+ В следующем примере <xref:System.Linq.Enumerable.Average%2A?displayProperty=nameWithType> метод используется для вычисления среднего значения последовательности, значение которой больше 4. Поскольку значения из исходного массива не превышают 4, в последовательность не включаются значения, а метод создает <xref:System.InvalidOperationException> исключение.  
   
  [!code-csharp[System.InvalidOperationException#6](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.invalidoperationexception/cs/Enumerable1.cs#6)]
  [!code-vb[System.InvalidOperationException#6](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.invalidoperationexception/vb/Enumerable1.vb#6)]  
   
- Исключение, можно устранить путем вызова <xref:System.Linq.Enumerable.Any%2A> метод, чтобы определить, содержит ли последовательность какие-либо элементы, до вызова метода, который обрабатывает последовательности, как показано в следующем примере.  
+ Исключение можно устранить, вызвав <xref:System.Linq.Enumerable.Any%2A> метод, чтобы определить, содержит ли последовательность какие бы то ни было элементы перед вызовом метода, обрабатывающего последовательность, как показано в следующем примере.  
   
  [!code-csharp[System.InvalidOperationException#7](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.invalidoperationexception/cs/Enumerable2.cs#7)]
  [!code-vb[System.InvalidOperationException#7](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.invalidoperationexception/vb/Enumerable2.vb#7)]  
   
- <xref:System.Linq.Enumerable.First%2A?displayProperty=nameWithType> Метод возвращает первый элемент в последовательности или первый элемент в последовательности, удовлетворяющий указанному условию. Если последовательность пуста и не имеющая первым элементом, он выдает <xref:System.InvalidOperationException> исключение.  
+ <xref:System.Linq.Enumerable.First%2A?displayProperty=nameWithType> Метод возвращает первый элемент последовательности или первый элемент последовательности, удовлетворяющий заданному условию. Если последовательность пуста и поэтому не имеет первого элемента, то создается <xref:System.InvalidOperationException> исключение.  
   
- В следующем примере <xref:System.Linq.Enumerable.First%60%601%28System.Collections.Generic.IEnumerable%7B%60%600%7D%2CSystem.Func%7B%60%600%2CSystem.Boolean%7D%29?displayProperty=nameWithType> вызывает метод <xref:System.InvalidOperationException> исключения так, как dbQueryResults массив не содержит ни одного элемента больше 4.  
+ В следующем примере <xref:System.Linq.Enumerable.First%60%601%28System.Collections.Generic.IEnumerable%7B%60%600%7D%2CSystem.Func%7B%60%600%2CSystem.Boolean%7D%29?displayProperty=nameWithType> метод <xref:System.InvalidOperationException> создает исключение, так как массив дбкуериресултс не содержит элемент больше 4.  
   
  [!code-csharp[System.InvalidOperationException#8](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.invalidoperationexception/cs/Enumerable3.cs#8)]
  [!code-vb[System.InvalidOperationException#8](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.invalidoperationexception/vb/Enumerable3.vb#8)]  
   
- Можно вызвать <xref:System.Linq.Enumerable.FirstOrDefault%2A?displayProperty=nameWithType> вместо метода <xref:System.Linq.Enumerable.First%2A?displayProperty=nameWithType> для возвращения заданного значения или значение по умолчанию. Если метод не находит первый элемент в последовательности, возвращается значение по умолчанию для этого типа данных.  Значение по умолчанию — `null` для ссылочного типа, нуль для числовой тип данных, и <xref:System.DateTime.MinValue?displayProperty=nameWithType> для <xref:System.DateTime> типа.  
+ Вы можете вызвать <xref:System.Linq.Enumerable.FirstOrDefault%2A?displayProperty=nameWithType> метод <xref:System.Linq.Enumerable.First%2A?displayProperty=nameWithType> вместо того, чтобы возвращать указанное или значение по умолчанию. Если метод не находит первый элемент в последовательности, он возвращает значение по умолчанию для этого типа данных.  Значение по умолчанию `null` — для ссылочного типа, ноль для типа данных numeric и <xref:System.DateTime.MinValue?displayProperty=nameWithType> для <xref:System.DateTime> типа.  
   
 > [!NOTE]
->  Интерпретация значения, возвращенного <xref:System.Linq.Enumerable.FirstOrDefault%2A?displayProperty=nameWithType> метод часто усложняется тем фактом, что значение по умолчанию типа может быть допустимое значение в последовательности. В этом случае вы вызов <xref:System.Linq.Enumerable.Any%2A?displayProperty=nameWithType> метод, чтобы определить, имеет ли последовательность допустимых членов, перед вызовом <xref:System.Linq.Enumerable.First%2A?displayProperty=nameWithType> метод.  
+>  Анализ значения, возвращаемого <xref:System.Linq.Enumerable.FirstOrDefault%2A?displayProperty=nameWithType> методом, часто осложняется тем, что значение по умолчанию типа может быть допустимым значением в последовательности. В этом случае вы вызываете <xref:System.Linq.Enumerable.Any%2A?displayProperty=nameWithType> метод, чтобы определить, содержит ли последовательность допустимые члены перед <xref:System.Linq.Enumerable.First%2A?displayProperty=nameWithType> вызовом метода.  
   
- В следующем примере вызывается <xref:System.Linq.Enumerable.FirstOrDefault%60%601%28System.Collections.Generic.IEnumerable%7B%60%600%7D%2CSystem.Func%7B%60%600%2CSystem.Boolean%7D%29?displayProperty=nameWithType> метод, чтобы запретить <xref:System.InvalidOperationException> исключение, возникшее в предыдущем примере.  
+ В следующем примере вызывается <xref:System.Linq.Enumerable.FirstOrDefault%60%601%28System.Collections.Generic.IEnumerable%7B%60%600%7D%2CSystem.Func%7B%60%600%2CSystem.Boolean%7D%29?displayProperty=nameWithType> метод для предотвращения исключения <xref:System.InvalidOperationException> , вызываемого в предыдущем примере.  
   
  [!code-csharp[System.InvalidOperationException#9](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.invalidoperationexception/cs/Enumerable4.cs#9)]
  [!code-vb[System.InvalidOperationException#9](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.invalidoperationexception/vb/Enumerable4.vb#9)]  
   
 <a name="Single"></a>   
-### <a name="calling-enumerablesingle-or-enumerablesingleordefault-on-a-sequence-without-one-element"></a>Вызов Enumerable.Single или Enumerable.SingleOrDefault на последовательность без одного элемента  
- <xref:System.Linq.Enumerable.Single%2A?displayProperty=nameWithType> Метод возвращает единственный элемент последовательности или единственный элемент последовательности, который удовлетворяет заданному условию.    Если в последовательности нет элементов, или если имеется более одного элемента, метод вызывает <xref:System.InvalidOperationException> исключение.  
+### <a name="calling-enumerablesingle-or-enumerablesingleordefault-on-a-sequence-without-one-element"></a>Вызов Enumerable. Single или Enumerable. SingleOrDefault для последовательности без одного элемента  
+ <xref:System.Linq.Enumerable.Single%2A?displayProperty=nameWithType> Метод возвращает единственный элемент последовательности или единственный элемент последовательности, соответствующий заданному условию.    Если в последовательности нет элементов или имеется более одного элемента, метод создает <xref:System.InvalidOperationException> исключение.  
   
- Можно использовать <xref:System.Linq.Enumerable.SingleOrDefault%2A?displayProperty=nameWithType> метод вернет значение по умолчанию, а не вызывает исключение, если последовательность не содержит элементов. Тем не менее <xref:System.Linq.Enumerable.SingleOrDefault%2A?displayProperty=nameWithType> метод по-прежнему вызывает <xref:System.InvalidOperationException> исключение, если последовательность содержит более одного элемента.  
+ <xref:System.Linq.Enumerable.SingleOrDefault%2A?displayProperty=nameWithType> Метод можно использовать для возврата значения по умолчанию вместо создания исключения, если последовательность не содержит элементов. Однако метод все равно вызывает исключение, если последовательность содержит более одного элемента. <xref:System.InvalidOperationException> <xref:System.Linq.Enumerable.SingleOrDefault%2A?displayProperty=nameWithType>  
   
- В следующей таблице перечислены сообщения об исключениях из <xref:System.InvalidOperationException> объектов исключений, вызванных вызовы <xref:System.Linq.Enumerable.Single%2A?displayProperty=nameWithType> и <xref:System.Linq.Enumerable.SingleOrDefault%2A?displayProperty=nameWithType> методы.  
+ В следующей таблице перечислены сообщения об исключениях из <xref:System.InvalidOperationException> объектов исключений, создаваемых вызовами <xref:System.Linq.Enumerable.Single%2A?displayProperty=nameWithType> методов <xref:System.Linq.Enumerable.SingleOrDefault%2A?displayProperty=nameWithType> и.  
   
 |Метод|Сообщение|  
 |------------|-------------|  
-|`Single`|**Последовательность не содержит соответствующий элемент**|  
+|`Single`|**Sequence не содержит соответствующего элемента**|  
 |`Single` <br /> `SingleOrDefault`|**Последовательность содержит более одного соответствующего элемента**|  
   
- В следующем примере вызов <xref:System.Linq.Enumerable.Single%2A?displayProperty=nameWithType> вызывает метод <xref:System.InvalidOperationException> исключение поскольку последовательность не имеет элемент больше 4.  
+ В следующем примере вызов <xref:System.Linq.Enumerable.Single%2A?displayProperty=nameWithType> метода <xref:System.InvalidOperationException> вызывает исключение, так как последовательность не содержит элемент больше 4.  
   
  [!code-csharp[System.InvalidOperationException#10](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.invalidoperationexception/cs/Enumerable5.cs#10)]
  [!code-vb[System.InvalidOperationException#10](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.invalidoperationexception/vb/Enumerable5.vb#10)]  
   
- В следующем примере предпринимается во избежание <xref:System.InvalidOperationException> исключение, возникающее, когда последовательность пуста, вместо вызова <xref:System.Linq.Enumerable.SingleOrDefault%2A?displayProperty=nameWithType> метод. Тем не менее, поскольку эта последовательность возвращает несколько элементов, значение которого больше 2, он также создает исключение <xref:System.InvalidOperationException> исключение.  
+ В следующем примере предпринимается попытка предотвратить исключение, <xref:System.InvalidOperationException> возникающее, если последовательность пуста, вместо этого <xref:System.Linq.Enumerable.SingleOrDefault%2A?displayProperty=nameWithType> вызывается метод. Однако, поскольку эта последовательность возвращает несколько элементов, значение которых больше 2, оно также вызывает <xref:System.InvalidOperationException> исключение.  
   
  [!code-csharp[System.InvalidOperationException#11](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.invalidoperationexception/cs/Enumerable6.cs#11)]
  [!code-vb[System.InvalidOperationException#11](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.invalidoperationexception/vb/Enumerable6.vb#11)]  
   
- Вызов <xref:System.Linq.Enumerable.Single%2A?displayProperty=nameWithType> метод предполагает, что последовательности или последовательности, которая отвечает указанным критериям содержит только один элемент.  <xref:System.Linq.Enumerable.SingleOrDefault%2A?displayProperty=nameWithType> предполагается, что последовательность с помощью ноль или один результат, но не более. Если это предположение является намеренным со стороны пользователя, и эти условия не выполняются, повторное создание или перехват итоговый <xref:System.InvalidOperationException> подходит. В противном случае или если предполагается, что недопустимые условия будут происходить с некоторой частотой, можно использовать другой <xref:System.Linq.Enumerable> метод, такой как <xref:System.Linq.Enumerable.FirstOrDefault%2A> или <xref:System.Linq.Enumerable.Where%2A>.  
+ При вызове <xref:System.Linq.Enumerable.Single%2A?displayProperty=nameWithType> метода предполагается, что либо последовательность, либо последовательность, отвечающая указанным критериям, содержат только один элемент.  <xref:System.Linq.Enumerable.SingleOrDefault%2A?displayProperty=nameWithType>Предполагается, что последовательность имеет ноль или один результат, но больше нет. Если это предположение является предопределенной на вашей части и эти условия не выполняются, то подходящее исключение или перехват полученного результата <xref:System.InvalidOperationException> . В противном случае или, если предполагается, что при некоторой частоте возникнут недопустимые условия, <xref:System.Linq.Enumerable> следует рассмотреть возможность использования <xref:System.Linq.Enumerable.FirstOrDefault%2A> другого <xref:System.Linq.Enumerable.Where%2A>метода, например или.  
   
 <a name="Emit"></a>   
-### <a name="dynamic-cross-application-domain-field-access"></a>Доступ к полям динамического между доменами приложений  
- <xref:System.Reflection.Emit.OpCodes.Ldflda?displayProperty=nameWithType> Microsoft, выдает инструкции промежуточного языка (MSIL) <xref:System.InvalidOperationException> исключение, если объект, содержащий поле, адрес которого вы пытаетесь получить находится за пределами домена приложения, в котором выполняется код. Адрес поля может осуществляться только из домена приложения, в котором он находится.  
+### <a name="dynamic-cross-application-domain-field-access"></a>Динамическое обращение к полю домена между приложениями  
+ Инструкция MSIL выдает исключение, <xref:System.InvalidOperationException> если объект, содержащий поле, адрес которого вы пытаетесь извлечь, не находится в домене приложения, в котором выполняется код. <xref:System.Reflection.Emit.OpCodes.Ldflda?displayProperty=nameWithType> Доступ к адресу поля возможен только из домена приложения, в котором оно находится.  
   
 <a name="Throwing"></a>   
-## <a name="throwing-an-invalidoperationexception-exception"></a>Исключение InvalidOperationException  
- Необходимо вызвать исключение <xref:System.InvalidOperationException> только в том случае, если состояние объекта для какой-либо причине не поддерживает вызов конкретного метода. То есть вызов метода является допустимым в некоторых обстоятельствах или контекстов, но является недопустимым в других.  
+## <a name="throwing-an-invalidoperationexception-exception"></a>Создание исключения InvalidOperationException  
+ <xref:System.InvalidOperationException> Исключение следует вызывать только в том случае, если состояние объекта по какой-либо причине не поддерживает определенный вызов метода. Это значит, что вызов метода допустим в некоторых обстоятельствах или контекстах, но является недопустимым в других.  
   
- В случае сбоя вызова метода из-за недопустимых аргументов, затем <xref:System.ArgumentException> или одного из его производных классов <xref:System.ArgumentNullException> или <xref:System.ArgumentOutOfRangeException>, должны быть выданы.  
+ Если ошибка вызова метода вызвана недопустимыми аргументами, то <xref:System.ArgumentException> вместо этого следует вызывать исключение или один <xref:System.ArgumentNullException> из <xref:System.ArgumentOutOfRangeException>его производных классов.  
   
 <a name="Misc"></a>   
 ## <a name="miscellaneous-information"></a>Прочие сведения  
- <xref:System.InvalidOperationException> использует значением COR_E_INVALIDOPERATION HRESULT, которое имеет значение 0x80131509.  
+ <xref:System.InvalidOperationException>использует HRESULT COR_E_INVALIDOPERATION, имеющий значение 0x80131509.  
   
  Список начальных значений свойств для экземпляра <xref:System.InvalidOperationException>, см. в разделе <xref:System.InvalidOperationException.%23ctor%2A> конструкторы.  
   
@@ -357,7 +357,7 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот конструктор инициализирует <xref:System.Exception.Message%2A> свойства нового экземпляра системное сообщение с описанием ошибки, такие как «не может выполнить запрошенную операцию.» Это сообщение учитывает текущую культуру системы.  
+ Этот конструктор инициализирует <xref:System.Exception.Message%2A> свойство нового экземпляра, сопоставляя с ним системное сообщение, описывающее ошибку, например "не удается выполнить запрошенную операцию". Это сообщение учитывает текущую культуру системы.  
   
  В следующей таблице представлены исходные значения свойств экземпляра класса <xref:System.InvalidOperationException>.  
   
@@ -409,7 +409,7 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот конструктор инициализирует <xref:System.Exception.Message%2A?displayProperty=nameWithType> нового исключения, используя свойство `message` параметр. Содержимое `message` должно быть понятно пользователю. Код, вызывающий этот конструктор, должен обеспечить локализацию данной строки в соответствии с текущим языком и региональными параметрами системы.  
+ Этот конструктор инициализирует <xref:System.Exception.Message%2A?displayProperty=nameWithType> свойство нового исключения `message` с помощью параметра. Содержимое параметра `message` должно быть понятным пользователю. Код, вызывающий этот конструктор, должен обеспечить локализацию данной строки в соответствии с текущим языком и региональными параметрами системы.  
   
  В следующей таблице представлены исходные значения свойств экземпляра класса <xref:System.InvalidOperationException>.  
   
@@ -506,7 +506,7 @@
       </Parameters>
       <Docs>
         <param name="message">Сообщение об ошибке, указывающее причину создания исключения.</param>
-        <param name="innerException">Исключение, которое является причиной текущего исключения. Если параметр <paramref name="innerException" /> не является указателем null (<see langword="Nothing" /> в Visual Basic), то текущее исключение создается в блоке <see langword="catch" />, обрабатывающем внутреннее исключение.</param>
+        <param name="innerException">Исключение, которое вызвало текущее исключение. Если параметр <paramref name="innerException" /> не является указателем null (<see langword="Nothing" /> в Visual Basic), то текущее исключение создается в блоке <see langword="catch" />, обрабатывающем внутреннее исключение.</param>
         <summary>Инициализирует новый экземпляр класса <see cref="T:System.InvalidOperationException" /> указанным сообщением об ошибке и ссылкой на внутреннее исключение, вызвавшее данное исключение.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  

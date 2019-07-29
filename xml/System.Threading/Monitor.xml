@@ -1,5 +1,5 @@
 <Type Name="Monitor" FullName="System.Threading.Monitor">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="975f9fe84ae180121f8d3ba53f7a2ddc2eb3da28" /><Meta Name="ms.sourcegitcommit" Value="690605a2d62010b93e13edf329aafe2bdc57423a" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="07/11/2019" /><Meta Name="ms.locfileid" Value="67801591" /></Metadata><TypeSignature Language="C#" Value="public static class Monitor" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="5f67004b524b1dde95e7dc5e120aabea2beaccd5" /><Meta Name="ms.sourcegitcommit" Value="634678f7ccd2928c6b2cf792a301b079b63639af" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="07/26/2019" /><Meta Name="ms.locfileid" Value="68543696" /></Metadata><TypeSignature Language="C#" Value="public static class Monitor" />
   <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract sealed beforefieldinit Monitor extends System.Object" />
   <TypeSignature Language="DocId" Value="T:System.Threading.Monitor" />
   <TypeSignature Language="VB.NET" Value="Public Class Monitor" />
@@ -39,49 +39,49 @@
       <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- <xref:System.Threading.Monitor> Класс позволяет синхронизировать доступ к области кода путем установки и снятия блокировки определенного объекта путем вызова <xref:System.Threading.Monitor.Enter%2A?displayProperty=nameWithType>, <xref:System.Threading.Monitor.TryEnter%2A?displayProperty=nameWithType>, и <xref:System.Threading.Monitor.Exit%2A?displayProperty=nameWithType> методы. Объект блокировки предоставляют возможность ограничить доступ к блоку кода, обычно называется критической секции. Хотя поток владеет блокировкой для объекта, ни один поток может получить блокировку. Можно также использовать <xref:System.Threading.Monitor> класс, чтобы гарантировать, что ни один поток может получить доступ к части приложения код, выполняемый владельцем блокировки, пока другой поток не будет выполнять код, используя другой объект с блокировкой.  
+ Класс позволяет синхронизировать доступ к области кода, <xref:System.Threading.Monitor.Enter%2A?displayProperty=nameWithType>вызывая и освобождая блокировку конкретного объекта путем вызова методов, <xref:System.Threading.Monitor.TryEnter%2A?displayProperty=nameWithType>и <xref:System.Threading.Monitor.Exit%2A?displayProperty=nameWithType>. <xref:System.Threading.Monitor> Блокировки объектов предоставляют возможность ограничить доступ к блоку кода, обычно называемому критическим разделом. Пока поток владеет блокировкой объекта, другой поток не может получить эту блокировку. Можно также использовать <xref:System.Threading.Monitor> класс, чтобы запретить другим потокам доступ к разделу кода приложения, выполняемому владельцем блокировки, если только другой поток не выполняет код, используя другой заблокированный объект.  
   
  Содержание этой статьи  
   
- [Класс Monitor: Общие сведения о](#Overview)   
- [Объект блокировки](#Lock)   
- [Критический раздел](#CriticalSection)   
- [Ожидания, Pulse и PulseAll](#Pulse)   
+ [Класс Monitor: Обзор](#Overview)   
+ [Объект Lock](#Lock)   
+ [Критическая секция](#CriticalSection)   
+ [Pulse, PulseAll и Wait](#Pulse)   
  [Мониторы и дескрипторы ожидания](#WaitHandles)  
   
 <a name="Overview"></a>   
-## <a name="the-monitor-class-an-overview"></a>Класс Monitor: Общие сведения о  
- <xref:System.Threading.Monitor> обладает следующими функциями:  
+## <a name="the-monitor-class-an-overview"></a>Класс Monitor: Обзор  
+ <xref:System.Threading.Monitor>имеет следующие возможности.  
   
 -   Он связан с объектом по требованию.  
   
--   Отменяется, то есть могут вызываться непосредственно из любого контекста.  
+-   Он не связан. Это означает, что его можно вызывать непосредственно из любого контекста.  
   
--   Экземпляр <xref:System.Threading.Monitor> класс не может быть создан; методы <xref:System.Threading.Monitor> класса являются статическими. Каждый метод передается синхронизированный объект, который управляет доступом к критической секции.  
+-   Экземпляр <xref:System.Threading.Monitor> класса не может быть создан; методы <xref:System.Threading.Monitor> класса являются статическими. Каждому методу передается синхронизированный объект, который управляет доступом к критической секции.  
   
 > [!NOTE]
->  Используйте <xref:System.Threading.Monitor> класс для блокировки объектов, отличных от строк (то есть ссылочные типы, отличные от <xref:System.String>), не типы значений. Дополнительные сведения см. в разделе перегрузок <xref:System.Threading.Monitor.Enter%2A> метод и [объект блокировки](#Lock) разделе этой статьи.  
+>  Используйте класс для блокировки объектов, отличных от строк (то есть ссылочных типов, <xref:System.String>отличных от), а не типов значений. <xref:System.Threading.Monitor> Дополнительные сведения см. в разделе перегрузки <xref:System.Threading.Monitor.Enter%2A> метода и [объекта блокировки](#Lock) далее в этой статье.  
   
- В следующей таблице описаны действия, которые может быть занят потоков, которые обращаются к Синхронизируемые объекты:  
+ В следующей таблице описаны действия, которые могут выполняться потоками, обращающимися к синхронизированным объектам.  
   
 |Действие|Описание|  
 |------------|-----------------|  
-|<xref:System.Threading.Monitor.Enter%2A>, <xref:System.Threading.Monitor.TryEnter%2A>|Получает блокировку для объекта. Это действие также отмечает начало критической секции. Ни один поток может входить в критический раздел, если он выполняет инструкции в критической секции, используя другой объект с блокировкой.|  
-|<xref:System.Threading.Monitor.Wait%2A>|Освобождает блокировку объекта, чтобы разрешить другим потокам для блокировки и доступа к объекту. Вызывающий поток ожидает, пока другой поток обращается к объекту. Сигналы Pulse используются для уведомления об изменении состояния объекта, для потоков в состоянии ожидания.|  
-|<xref:System.Threading.Monitor.Pulse%2A> (сигнал), <xref:System.Threading.Monitor.PulseAll%2A>|Отправляет сигнал к одной или нескольким ожидающим потокам. Сигнал уведомляет ожидающий поток, изменения состояния объекта с блокировкой, и владелец блокировки готов для снятия блокировки. Ожидающий поток помещается в очередь готовности объекта таким образом, он может в конечном счете получить блокировку для объекта. Когда поток получает блокировку, его можно проверить новое состояние объекта см. в разделе, если был достигнут требуемое состояние.|  
-|<xref:System.Threading.Monitor.Exit%2A>|Освобождает блокировку объекта. Это действие также отмечает конец критической секции, защищенной объектом с блокировкой.|  
+|<xref:System.Threading.Monitor.Enter%2A>, <xref:System.Threading.Monitor.TryEnter%2A>|Получает блокировку для объекта. Это действие также помечает начало критического раздела. Ни один другой поток не может войти в критическую секцию, если он не будет выполнять инструкции в критическом разделе, используя другой заблокированный объект.|  
+|<xref:System.Threading.Monitor.Wait%2A>|Освобождает блокировку объекта, чтобы позволить другим потокам блокировать и получать доступ к объекту. Вызывающий поток ожидает, пока другой поток пообращается к объекту. Импульсные сигналы используются для уведомления ожидающих потоков об изменениях в состоянии объекта.|  
+|<xref:System.Threading.Monitor.Pulse%2A>(сигнал),<xref:System.Threading.Monitor.PulseAll%2A>|Отправляет сигнал одному или нескольким ожидающим потокам. Сигнал уведомляет ожидающий поток о том, что состояние заблокированного объекта изменилось, а владелец блокировки готов освободить блокировку. Ожидающий поток помещается в очередь готовности объекта, чтобы она могла в конечном итоге получить блокировку для объекта. После блокировки потока он может проверить новое состояние объекта, чтобы узнать, было ли достигнуто требуемое состояние.|  
+|<xref:System.Threading.Monitor.Exit%2A>|Освобождает блокировку объекта. Это действие также помечает конец критической секции, защищенной заблокированным объектом.|  
   
- Начиная с версии [!INCLUDE[net_v40_long](~/includes/net-v40-long-md.md)], существует два набора из перегрузок для <xref:System.Threading.Monitor.Enter%2A> и <xref:System.Threading.Monitor.TryEnter%2A> методы. Имеет один набор перегрузок `ref` (в C#) или `ByRef` (в Visual Basic) <xref:System.Boolean> параметр, который автоматически устанавливается как `true` Если блокировки, даже если возникает исключение при получении блокировки. Используйте эти перегрузки, если крайне важно для снятия блокировки во всех случаях, даже в том случае, если ресурсы, которые защита блокировки может оказаться в несогласованном состоянии.  
+ Начиная с [!INCLUDE[net_v40_long](~/includes/net-v40-long-md.md)], существует два набора перегрузок <xref:System.Threading.Monitor.Enter%2A> для методов и <xref:System.Threading.Monitor.TryEnter%2A> . Один набор `ref` перегрузок имеет параметр (in C#) или `ByRef` (в Visual Basic) <xref:System.Boolean> , который атомарно устанавливается в `true` значение, если блокировка получена, даже если при получении блокировки возникает исключение. Используйте эти перегрузки, если важно снять блокировку во всех случаях, даже если ресурсы, защищающие блокировку, могут находиться в нестабильном состоянии.  
   
 <a name="Lock"></a>   
-## <a name="the-lock-object"></a>Объект блокировки  
- Класс Monitor состоит из `static` (в C#) или `Shared` (в Visual Basic) методы, которые работают на объект, который управляет доступом к критической секции.  Для каждого синхронизированного объекта сохраняется следующие сведения:  
+## <a name="the-lock-object"></a>Объект Lock  
+ Класс Monitor состоит из `static` методов (in C#) или `Shared` (в Visual Basic), которые работают с объектом, который управляет доступом к критическому разделу.  Для каждого синхронизированного объекта сохраняются следующие сведения.  
   
--   Ссылка на поток, удерживающий блокировку в настоящее время.  
+-   Ссылка на поток, который в настоящий момент удерживает блокировку.  
   
--   Ссылка на очередь готовности, в которой находятся потоки, готовые к получению блокировки.  
+-   Ссылка на очередь готовности, которая содержит потоки, готовые к получению блокировки.  
   
--   Ссылка на очередь ожидания, в которой находятся потоки, ожидающие получать уведомления об изменении состояния объекта с блокировкой.  
+-   Ссылка на очередь ожидания, которая содержит потоки, ожидающие уведомления об изменении состояния заблокированного объекта.  
   
  <xref:System.Threading.Monitor> блокирует объекты (то есть ссылочные типы), а не типы значений. Хотя можно передать тип значения в <xref:System.Threading.Monitor.Enter%2A> и <xref:System.Threading.Monitor.Exit%2A>, он упаковывается отдельно для каждого вызова. Поскольку при каждом вызове создается отдельный объект, <xref:System.Threading.Monitor.Enter%2A> никогда не выполняет блокировку, а код, который он предположительно защищает, на самом деле не синхронизируется. Кроме того, объект, переданный в <xref:System.Threading.Monitor.Exit%2A>, отличается от объекта, переданного в <xref:System.Threading.Monitor.Enter%2A>, поэтому <xref:System.Threading.Monitor> вызывает исключение <xref:System.Threading.SynchronizationLockException> с сообщением «Для не синхронизированного блока кода вызван метод синхронизации объектов».  
   
@@ -97,69 +97,69 @@
  [!code-csharp[Conceptual.Monitors#3](~/samples/snippets/csharp/VS_Snippets_CLR/conceptual.monitors/cs/badbox1.cs#3)]
  [!code-vb[Conceptual.Monitors#3](~/samples/snippets/visualbasic/VS_Snippets_CLR/conceptual.monitors/vb/badbox1.vb#3)]  
   
- При выборе объекта для синхронизации, вы должны блокировать только закрытые или внутренние объекты. Блокировки внешних объектов может привести к взаимоблокировок, так как несвязанный код может выбрать те же объекты блокировки для разных целей.  
+ При выборе объекта для синхронизации следует блокировать только закрытые или внутренние объекты. Блокировка внешних объектов может привести к взаимоблокировкам, так как несвязанный код может выбирать те же объекты для блокировки в различных целях.  
   
- Обратите внимание, что вы можете синхронизировать объекта в нескольких доменах приложений, если объект, используемый для блокировки является производным от <xref:System.MarshalByRefObject>.  
+ Обратите внимание, что можно выполнить синхронизацию для объекта в нескольких доменах приложений, если объект, используемый для <xref:System.MarshalByRefObject>блокировки, является производным от.  
   
 <a name="CriticalSection"></a>   
-## <a name="the-critical-section"></a>Критический раздел  
- Используйте <xref:System.Threading.Monitor.Enter%2A> и <xref:System.Threading.Monitor.Exit%2A> методов, чтобы пометить начало и конец критической секции.  
+## <a name="the-critical-section"></a>Критическая секция  
+ Используйте методы <xref:System.Threading.Monitor.Exit%2A> и для обозначения начала и конца критической секции. <xref:System.Threading.Monitor.Enter%2A>  
   
 > [!NOTE]
->  Функциональные возможности, предоставляемые <xref:System.Threading.Monitor.Enter%2A> и <xref:System.Threading.Monitor.Exit%2A> методы будут идентичны данным, предоставляемые [блокировки](~/docs/csharp/language-reference/keywords/lock-statement.md) инструкции на языке C# и [SyncLock](~/docs/visual-basic/language-reference/statements/synclock-statement.md) инструкции в Visual Basic, за исключением случаев, языковые конструкции wrap <xref:System.Threading.Monitor.Enter%28System.Object%2CSystem.Boolean%40%29?displayProperty=nameWithType> перегрузку метода и <xref:System.Threading.Monitor.Exit%2A?displayProperty=nameWithType> метод в `try`...`finally` блок, чтобы высвободить монитор.  
+>  Функциональные возможности, предоставляемые <xref:System.Threading.Monitor.Enter%2A> <xref:System.Threading.Monitor.Exit%2A> методами и, идентичны функциям, предоставляемым оператором C# [Lock](~/docs/csharp/language-reference/keywords/lock-statement.md) в и оператором [SyncLock](~/docs/visual-basic/language-reference/statements/synclock-statement.md) в Visual Basic, за исключением того, что языковые конструкции заключают <xref:System.Threading.Monitor.Enter%28System.Object%2CSystem.Boolean%40%29?displayProperty=nameWithType>перегрузка метода и <xref:System.Threading.Monitor.Exit%2A?displayProperty=nameWithType> `try`метод в...`finally` , чтобы убедиться, что монитор освобожден.  
   
- Если критический раздел представляет собой набор смежных инструкции, то блокировка, введенная оператором <xref:System.Threading.Monitor.Enter%2A> метод гарантирует, что только один поток может выполнять вложенный код с заблокированного объекта. В этом случае мы рекомендуем поместить этот код в `try` блокировку и вызвать <xref:System.Threading.Monitor.Exit%2A> метод в `finally` блока. Это гарантирует снятие блокировки даже при возникновении исключения. В следующем фрагменте кода показана схема работы.  
+ Если критическая секция является набором смежных инструкций, то блокировка, полученная <xref:System.Threading.Monitor.Enter%2A> методом, гарантирует, что только один поток может выполнить вложенный код с заблокированным объектом. В этом случае рекомендуется поместить этот код в `try` блок и поместить вызов <xref:System.Threading.Monitor.Exit%2A> метода в `finally` блок. Это гарантирует снятие блокировки даже при возникновении исключения. Этот шаблон показан в следующем фрагменте кода.  
   
  [!code-csharp[System.Threading.Monitor.Class#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.threading.monitor.class/cs/Pattern2.cs#2)]
  [!code-vb[System.Threading.Monitor.Class#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.threading.monitor.class/vb/Pattern2.vb#2)]  
   
- Это средство обычно используется для синхронизации доступа к статический метод или метод экземпляра класса.  
+ Это средство обычно используется для синхронизации доступа к статическому методу или экземпляру класса.  
   
- Если критический раздел охватывает весь метод, средство блокировки можно сделать, поместив <xref:System.Runtime.CompilerServices.MethodImplAttribute?displayProperty=nameWithType> на метод, с указанием <xref:System.Runtime.CompilerServices.MethodImplOptions.Synchronized> значение в конструкторе класса <xref:System.Runtime.CompilerServices.MethodImplAttribute?displayProperty=nameWithType>. При использовании этого атрибута <xref:System.Threading.Monitor.Enter%2A> и <xref:System.Threading.Monitor.Exit%2A> вызовы методов не требуются. В следующем фрагменте кода показан этот шаблон:  
+ Если критическая секция охватывает весь метод, механизм блокировки можно достичь, поместив в <xref:System.Runtime.CompilerServices.MethodImplAttribute?displayProperty=nameWithType> метод и <xref:System.Runtime.CompilerServices.MethodImplOptions.Synchronized> указав <xref:System.Runtime.CompilerServices.MethodImplAttribute?displayProperty=nameWithType>значение в конструкторе. При использовании этого атрибута <xref:System.Threading.Monitor.Enter%2A> вызовы методов и <xref:System.Threading.Monitor.Exit%2A> не требуются. Этот шаблон показан в следующем фрагменте кода:  
   
  [!code-csharp[System.Threading.Monitor.Class#3](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.threading.monitor.class/cs/Pattern2.cs#3)]
  [!code-vb[System.Threading.Monitor.Class#3](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.threading.monitor.class/vb/Pattern2.vb#3)]  
   
- Обратите внимание на то, что данный атрибут приводит текущий поток удерживает блокировку до выполнения метода; Если блокировка может быть освобождена раньше, использовать <xref:System.Threading.Monitor> класса C# [блокировки](~/docs/csharp/language-reference/keywords/lock-statement.md) инструкции или Visual Basic [SyncLock](~/docs/visual-basic/language-reference/statements/synclock-statement.md) оператора в методе вместо атрибута.  
+ Обратите внимание, что атрибут заставляет текущий поток удерживать блокировку до тех пор, пока метод не вернет значение. Если блокировку можно освободить <xref:System.Threading.Monitor> раньше, используйте класс, C# оператор [блокировки](~/docs/csharp/language-reference/keywords/lock-statement.md) или оператор Visual Basic [SyncLock](~/docs/visual-basic/language-reference/statements/synclock-statement.md) внутри метода вместо атрибута.  
   
- Хотя для <xref:System.Threading.Monitor.Enter%2A> и <xref:System.Threading.Monitor.Exit%2A> инструкций, блокировать и освободить объект заданного пересекать члена или границы класса или оба, это не рекомендуется.  
+ Хотя для <xref:System.Threading.Monitor.Enter%2A> операторов и <xref:System.Threading.Monitor.Exit%2A> , которые блокируют и освобождают данный объект, можно использовать перекрестные элементы или границы класса или и то, и другое, такой подход не рекомендуется.  
   
 <a name="Pulse"></a>   
-## <a name="pulse-pulseall-and-wait"></a>Ожидания, Pulse и PulseAll  
- Как только поток владеет блокировкой и он перешел критический раздел, который защищает блокировки, оно может вызвать <xref:System.Threading.Monitor.Wait%2A?displayProperty=nameWithType>, <xref:System.Threading.Monitor.Pulse%2A?displayProperty=nameWithType>, и <xref:System.Threading.Monitor.PulseAll%2A?displayProperty=nameWithType> методы.  
+## <a name="pulse-pulseall-and-wait"></a>Pulse, PulseAll и Wait  
+ После того как поток владеет блокировкой и вошел в критический раздел, который защищается блокировкой, он может вызывать <xref:System.Threading.Monitor.Wait%2A?displayProperty=nameWithType>методы <xref:System.Threading.Monitor.Pulse%2A?displayProperty=nameWithType>, и <xref:System.Threading.Monitor.PulseAll%2A?displayProperty=nameWithType> .  
   
- Когда поток, содержащий вызовы блокировки <xref:System.Threading.Monitor.Wait%2A>, блокировка снимается, и поток добавляется в очередь ожидания синхронизированный объект. Первый поток в очередь готовности, если таковые имеются, получает блокировку и войдет в критический раздел. Поток перемещается из очереди ожидания в очередь готовности при либо <xref:System.Threading.Monitor.Pulse%2A?displayProperty=nameWithType> (для перемещения, поток должен быть в голове очереди ожидания) или <xref:System.Threading.Monitor.PulseAll%2A?displayProperty=nameWithType> метод вызывается на поток, удерживающий блокировку. <xref:System.Threading.Monitor.Wait%2A> Возвращает метод, если вызывающий поток снова получает блокировку.  
+ Когда поток, содержащий вызовы <xref:System.Threading.Monitor.Wait%2A>блокировки, снимается и поток добавляется в очередь ожидания синхронизированного объекта. Первый поток в очереди готовности, если таковой имеется, получает блокировку и вводит критическую секцию. Поток перемещается из очереди ожидания в очередь готовности, если перемещаемый <xref:System.Threading.Monitor.Pulse%2A?displayProperty=nameWithType> объект (поток должен находиться в заголовке очереди ожидания) <xref:System.Threading.Monitor.PulseAll%2A?displayProperty=nameWithType> или метод вызывается потоком, который владеет блокировкой. <xref:System.Threading.Monitor.Wait%2A> Метод возвращает, когда вызывающий поток снова получает блокировку.  
   
- Когда поток, содержащий вызовы блокировки <xref:System.Threading.Monitor.Pulse%2A>, поток в голове очереди ожидания перемещается в очередь готовности. Вызов <xref:System.Threading.Monitor.PulseAll%2A> метод перемещает все потоки из очереди ожидания в очередь готовности.  
+ При вызове потока, содержащего вызовы <xref:System.Threading.Monitor.Pulse%2A>блокировки, поток в заголовке очереди ожидания перемещается в очередь готовности. Вызов <xref:System.Threading.Monitor.PulseAll%2A> метода перемещает все потоки из очереди ожидания в очередь готовности.  
   
 <a name="WaitHandles"></a>   
 ## <a name="monitors-and-wait-handles"></a>Мониторы и дескрипторы ожидания  
- Важно отметить различия между использованием <xref:System.Threading.Monitor> класс и <xref:System.Threading.WaitHandle> объектов.  
+ Важно отметить различие между использованием <xref:System.Threading.Monitor> класса и <xref:System.Threading.WaitHandle> объектов.  
   
--   <xref:System.Threading.Monitor> Класс полностью управляемые и полностью переносимые и может оказаться эффективнее с точки зрения требований к ресурсам операционной системы.  
+-   <xref:System.Threading.Monitor> Класс является полностью управляемым, полным переносимым и может быть более эффективным с точки зрения требований к ресурсам операционной системы.  
   
 -   Объекты <xref:System.Threading.WaitHandle> представляют объекты ожидания операционной системы, удобны для синхронизации между управляемым и неуправляемым кодом и предоставляют некоторые расширенные функции операционной системы, например возможность ожидания сразу нескольких объектов.  
   
    
   
 ## Examples  
- В следующем примере используется <xref:System.Threading.Monitor> класс для синхронизации доступа к один экземпляр генератора случайных чисел, представленный <xref:System.Random> класса. В примере создается десять задач, каждая из которых выполняется асинхронно в потоке пула потоков. Каждая задача создает 10 000 случайных чисел, вычисляет их среднее значение и обновляет две переменные на уровне процедуры, поддержки, общее количество случайных чисел и их сумму. После выполнения всех задач, эти два значения затем используются для вычисления общей среднее значение.  
+ В следующем примере <xref:System.Threading.Monitor> класс используется для синхронизации доступа к одному экземпляру генератора случайных чисел, представленного <xref:System.Random> классом. В примере создается десять задач, каждый из которых асинхронно выполняется в потоке пула потоков. Каждая задача создает 10 000 случайных чисел, вычисляет их среднее значение и обновляет две переменные уровня процедуры, которые сохраняют общую сумму количества созданных случайных чисел и их сумму. После выполнения всех задач эти два значения затем используются для вычисления общего значения.  
   
  [!code-csharp[System.Threading.Monitor.Class#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.threading.monitor.class/cs/example1.cs#1)]
  [!code-vb[System.Threading.Monitor.Class#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.threading.monitor.class/vb/example1.vb#1)]  
   
- Они могут получать доступ из любой задачи, выполняемой в потоке пула потоков, доступ к переменным `total` и `n` также должна быть синхронизирована. <xref:System.Threading.Interlocked.Add%2A?displayProperty=nameWithType> Метод используется для этой цели.  
+ Так как доступ к ним можно получить из любой задачи, выполняемой в потоке пула потоков, `total` доступ `n` к переменным и также должен быть синхронизирован. Для этой цели используется метод.<xref:System.Threading.Interlocked.Add%2A?displayProperty=nameWithType>  
   
- В следующем примере показано совместное использование <xref:System.Threading.Monitor> класс (реализуется с помощью `lock` или `SyncLock` языковой конструкции), <xref:System.Threading.Interlocked> класса и <xref:System.Threading.AutoResetEvent> класса. Он определяет два класса `internal` (в C#) или `Friend` (в Visual Basic), `SyncResource` и `UnSyncResource`, которые соответственно предоставляют синхронизированный и несинхронизированный доступ к ресурсу. Чтобы обеспечить демонстрацию в примере различия между синхронизированным и несинхронизированным доступом (что может случиться, если каждый вызов метода завершается быстро), метод включает случайную задержку: для потоков, свойство <xref:System.Threading.Thread.ManagedThreadId%2A?displayProperty=nameWithType> которых имеет четное значение, метод вызывает <xref:System.Threading.Thread.Sleep%2A?displayProperty=nameWithType> для введения задержки в 2 000 миллисекунд. Обратите внимание, что поскольку класс `SyncResource` не является общим, ни один клиентский код не выполняет блокировку в синхронизированном ресурсе; внутренний класс сам выполняет блокировку. Это предотвращает блокировка общедоступного объекта вредоносным кодом.  
+ В следующем примере показано <xref:System.Threading.Monitor> комбинированное использование класса (реализованного `lock` с помощью <xref:System.Threading.AutoResetEvent> конструкции языка `SyncLock` или), <xref:System.Threading.Interlocked> класса и класса. Он определяет два класса `internal` (в C#) или `Friend` (в Visual Basic), `SyncResource` и `UnSyncResource`, которые соответственно предоставляют синхронизированный и несинхронизированный доступ к ресурсу. Чтобы обеспечить демонстрацию в примере различия между синхронизированным и несинхронизированным доступом (что может случиться, если каждый вызов метода завершается быстро), метод включает случайную задержку: для потоков, свойство <xref:System.Threading.Thread.ManagedThreadId%2A?displayProperty=nameWithType> которых имеет четное значение, метод вызывает <xref:System.Threading.Thread.Sleep%2A?displayProperty=nameWithType> для введения задержки в 2 000 миллисекунд. Обратите внимание, что поскольку класс `SyncResource` не является общим, ни один клиентский код не выполняет блокировку в синхронизированном ресурсе; внутренний класс сам выполняет блокировку. Это предотвращает блокировка общедоступного объекта вредоносным кодом.  
   
  [!code-csharp[Conceptual.Monitors#1](~/samples/snippets/csharp/VS_Snippets_CLR/conceptual.monitors/cs/source.cs#1)]
  [!code-vb[Conceptual.Monitors#1](~/samples/snippets/visualbasic/VS_Snippets_CLR/conceptual.monitors/vb/source.vb#1)]  
   
- В примере определяется переменная `numOps`, задающая число потоков, которые будут пытаться получить доступ к ресурсу. Поток приложения вызывает метод <xref:System.Threading.ThreadPool.QueueUserWorkItem%28System.Threading.WaitCallback%29?displayProperty=nameWithType> для синхронизированного и несинхронизированного доступа по пять раз. Метод <xref:System.Threading.ThreadPool.QueueUserWorkItem%28System.Threading.WaitCallback%29?displayProperty=nameWithType> имеет единственный параметр, делегат, который не принимает никаких параметров и не возвращает значений. Для синхронизированного доступа он вызывает метод `SyncUpdateResource`; для несинхронизированного доступа он вызывает метод `UnSyncUpdateResource`. После каждого ряда вызовов метода поток приложения вызывает [AutoResetEvent.WaitOne](xref:System.Threading.WaitHandle.WaitOne*) метода, так что он блокируется до <xref:System.Threading.AutoResetEvent> экземпляр переводится в сигнальное состояние.  
+ В примере определяется переменная `numOps`, задающая число потоков, которые будут пытаться получить доступ к ресурсу. Поток приложения вызывает метод <xref:System.Threading.ThreadPool.QueueUserWorkItem%28System.Threading.WaitCallback%29?displayProperty=nameWithType> для синхронизированного и несинхронизированного доступа по пять раз. Метод <xref:System.Threading.ThreadPool.QueueUserWorkItem%28System.Threading.WaitCallback%29?displayProperty=nameWithType> имеет единственный параметр, делегат, который не принимает никаких параметров и не возвращает значений. Для синхронизированного доступа он вызывает метод `SyncUpdateResource`; для несинхронизированного доступа он вызывает метод `UnSyncUpdateResource`. После каждого набора вызовов метода поток приложения вызывает метод [AutoResetEvent. WaitOne](xref:System.Threading.WaitHandle.WaitOne*) , чтобы он блокировался до получения сигнала от <xref:System.Threading.AutoResetEvent> экземпляра.  
   
- Каждый вызов метода `SyncUpdateResource` вызывает внутренний метод `SyncResource.Access`, а затем вызывает метод <xref:System.Threading.Interlocked.Decrement%2A?displayProperty=nameWithType> для уменьшения счетчика `numOps`. <xref:System.Threading.Interlocked.Decrement%2A?displayProperty=nameWithType> Метод используется для уменьшения счетчика, так как в противном случае нельзя быть уверенным, что второй поток будет обращаться к значению, прежде чем первый поток уменьшенное значение хранилось в переменной. Когда последний синхронизированный рабочий поток уменьшит счетчик до нуля, указывающее, что все синхронизированные потоки завершили доступ к ресурсу, `SyncUpdateResource` вызовы методов <xref:System.Threading.EventWaitHandle.Set%2A?displayProperty=nameWithType> метод, который сигнализирует основному потоку продолжить выполнение.  
+ Каждый вызов метода `SyncUpdateResource` вызывает внутренний метод `SyncResource.Access`, а затем вызывает метод <xref:System.Threading.Interlocked.Decrement%2A?displayProperty=nameWithType> для уменьшения счетчика `numOps`. <xref:System.Threading.Interlocked.Decrement%2A?displayProperty=nameWithType> Метод используется для уменьшения значения счетчика, так как в противном случае невозможно убедиться, что второй поток будет обращаться к значению до того, как значение декремента первого потока было сохранено в переменной. Когда последний синхронизированный рабочий поток уменьшает счетчик до нуля, указывая, что все синхронизированные потоки завершили доступ к ресурсу, `SyncUpdateResource` метод <xref:System.Threading.EventWaitHandle.Set%2A?displayProperty=nameWithType> вызывает метод, который сигнализирует основному потоку продолжить. InstancePersistenceCommand.  
   
- Каждый вызов метода `UnSyncUpdateResource` вызывает внутренний метод `UnSyncResource.Access`, а затем вызывает метод <xref:System.Threading.Interlocked.Decrement%2A?displayProperty=nameWithType> для уменьшения счетчика `numOps`. Опять же <xref:System.Threading.Interlocked.Decrement%2A?displayProperty=nameWithType> метод используется для уменьшения счетчика, чтобы второй поток не обращаться к значение перед уменьшенное значение первого потока был назначен переменной. Когда последний синхронизированный рабочий поток уменьшит счетчик до нуля, указывающее, что больше нет синхронизированных потоков требуется доступ к ресурсу, `UnSyncUpdateResource` вызовы методов <xref:System.Threading.EventWaitHandle.Set%2A?displayProperty=nameWithType> метод, который сигнализирует основному потоку продолжить выполнение .  
+ Каждый вызов метода `UnSyncUpdateResource` вызывает внутренний метод `UnSyncResource.Access`, а затем вызывает метод <xref:System.Threading.Interlocked.Decrement%2A?displayProperty=nameWithType> для уменьшения счетчика `numOps`. Опять же, <xref:System.Threading.Interlocked.Decrement%2A?displayProperty=nameWithType> метод используется для уменьшения значения счетчика, чтобы второй поток не получил доступа к значению до того, как переменной будет присвоено уменьшенное значение первого потока. Когда последний несинхронизированный рабочий поток уменьшает значение счетчика до нуля, указывая, что больше несинхронизированных потоков не требуется обращаться к ресурсу, `UnSyncUpdateResource` метод <xref:System.Threading.EventWaitHandle.Set%2A?displayProperty=nameWithType> вызывает метод, который сигнализирует основному потоку продолжить выполнение. .  
   
  Как показывает результат этого примера, синхронизированный доступ обеспечивает, что вызывающий поток выходит из защищенного ресурса до того, как другой поток получит доступ к этому ресурсу; каждый поток ожидает своего предшественника. С другой стороны, без блокировки метод `UnSyncResource.Access` вызывается в том порядке, в котором потоки получают к нему доступ.  
   
@@ -227,13 +227,13 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Используйте `Enter` получения <xref:System.Threading.Monitor> на объект, переданный в качестве параметра. Если другой поток выполнил `Enter` в объекте, но еще не выполнен соответствующий <xref:System.Threading.Monitor.Exit%2A>, текущий поток будет заблокирован, пока другой поток освобождает объект. Допустимо для одного потока для вызова `Enter` более одного раза без их блокировки, однако одинаковое число `Exit` должно быть вызвано прежде, чем другие потоки, ожидающие объекта будут разблокированы.  
+ Используйте `Enter` , чтобы <xref:System.Threading.Monitor> получить объект для объекта, переданного в качестве параметра. Если другой поток выполнил `Enter` в объекте объект, но еще не выполнил соответствующий <xref:System.Threading.Monitor.Exit%2A>параметр, текущий поток будет заблокирован до тех пор, пока другой поток не освободит объект. Допустимо, чтобы один и тот же поток вызывал `Enter` больше одного раза без блокировки. Тем не менее, необходимо вызвать равное `Exit` число вызовов, прежде чем другие потоки, ожидающие объекта, будут разблокированы.  
   
- Используйте <xref:System.Threading.Monitor> блокировка объектов (то есть ссылочные типы), не типы значений. При передаче переменной типа значения к `Enter`, она трактуется как объект. Если передать ту же переменную, чтобы `Enter` снова, она трактуется как отдельный объект, и поток не блокируется. В данном случае код, `Monitor` является защищается не защищена. Кроме того, при передаче переменной `Exit`, создается другой, отдельный объект. Так как объект, переданный `Exit` отличается от объекта, переданного `Enter`, `Monitor` вызывает <xref:System.Threading.SynchronizationLockException>. Дополнительные сведения см. раздел общих понятий [мониторы](xref:System.Threading.Monitor).  
+ Используйте <xref:System.Threading.Monitor> для блокировки объектов (то есть ссылочных типов), а не типов значений. При передаче переменной типа значения в `Enter`она упаковывается как объект. Если вы `Enter` снова передаете одну и ту же переменную, она упаковывается как отдельный объект, а поток не блокируется. В этом случае код, который `Monitor` предполагается защищать, не защищен. Более того, при передаче переменной в `Exit`можно создать другой отдельный объект. Поскольку объект, переданный `Exit` в, отличается от объекта, переданного `Monitor` в <xref:System.Threading.SynchronizationLockException> `Enter`, вызывает исключение. Дополнительные сведения см. в разделе « [мониторы](xref:System.Threading.Monitor)».  
   
- <xref:System.Threading.Thread.Interrupt%2A> можно прервать потоков, ожидающих входа в `Monitor` объекта. Объект <xref:System.Threading.ThreadInterruptedException> будет создано.  
+ <xref:System.Threading.Thread.Interrupt%2A>может прерывать потоки, ожидающие ввода `Monitor` объекта. <xref:System.Threading.ThreadInterruptedException> Будет выдано исключение.  
   
- Использование языка C# `try`...`finally` блок (`Try`...`Finally` в Visual Basic), чтобы убедитесь, что выпуск монитор, или использовать в C# `lock` инструкции (`SyncLock` в Visual Basic), который заключает в оболочку <xref:System.Threading.Monitor.Enter%2A> и <xref:System.Threading.Monitor.Exit%2A> методы в `try`...`finally` блок.  
+ C# Использовать...`try``finally` блок (`Try`...`Finally` в Visual Basic) убедитесь, что вы выпустите монитор, или используйте C# `lock` оператор (`SyncLock` оператор в <xref:System.Threading.Monitor.Enter%2A> Visual Basic), который `try`создает оболочку для методов <xref:System.Threading.Monitor.Exit%2A> и в...`finally` блок.  
   
    
   
@@ -302,18 +302,18 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Используйте `Enter` получения <xref:System.Threading.Monitor> на объект, переданный в качестве `obj` параметра. Если другой поток выполнил `Enter` в объекте, но еще не выполнен соответствующий <xref:System.Threading.Monitor.Exit%2A>, текущий поток будет заблокирован, пока другой поток освобождает объект. Допустимо для одного потока для вызова `Enter` более одного раза без их блокировки, однако одинаковое число `Exit` должно быть вызвано прежде, чем другие потоки, ожидающие объекта будут разблокированы.  
+ Используйте `Enter` , чтобы <xref:System.Threading.Monitor> получить объект для объекта, переданного `obj` в качестве параметра. Если другой поток выполнил `Enter` в объекте объект, но еще не выполнил соответствующий <xref:System.Threading.Monitor.Exit%2A>параметр, текущий поток будет заблокирован до тех пор, пока другой поток не освободит объект. Допустимо, чтобы один и тот же поток вызывал `Enter` больше одного раза без блокировки. Тем не менее, необходимо вызвать равное `Exit` число вызовов, прежде чем другие потоки, ожидающие объекта, будут разблокированы.  
   
- Если не была выполнена блокировка, так как возникло исключение, переменная, указанная для `lockTaken` параметр `false` после завершения этого метода. Это позволяет программе определить, во всех случаях необходимость для снятия блокировки. Если этот метод возвращает без создания исключения, переменная, указанная для `lockTaken` параметр всегда будет `true`, и нет необходимости, чтобы проверить его.  
+ Если блокировка не была выполнена из-за возникновения исключения, переменная, указанная для `lockTaken` параметра, находится `false` после завершения этого метода. Это позволяет программе определить во всех случаях, требуется ли снять блокировку. Если этот метод возвращает исключение без создания исключения, то переменная, указанная `lockTaken` для параметра, `true`всегда имеет значение, и нет необходимости тестировать ее.  
   
- Используйте <xref:System.Threading.Monitor> блокировка объектов (то есть ссылочные типы), не типы значений. При передаче переменной типа значения к `Enter`, она трактуется как объект. Если передать ту же переменную, чтобы `Enter` снова, она трактуется как отдельный объект, и поток не блокируется. В данном случае код, `Monitor` является защищается не защищена. Кроме того, при передаче переменной `Exit`, создается другой отдельный объект. Так как объект, переданный `Exit` отличается от объекта, переданного `Enter`, `Monitor` вызывает <xref:System.Threading.SynchronizationLockException>. Дополнительные сведения см. раздел общих понятий [мониторы](xref:System.Threading.Monitor).  
+ Используйте <xref:System.Threading.Monitor> для блокировки объектов (то есть ссылочных типов), а не типов значений. При передаче переменной типа значения в `Enter`она упаковывается как объект. Если вы `Enter` снова передаете одну и ту же переменную, она упаковывается как отдельный объект, а поток не блокируется. В этом случае код, который `Monitor` предполагается защищать, не защищен. Кроме того, при передаче переменной в `Exit`создается другой отдельный объект. Поскольку объект, переданный `Exit` в, отличается от объекта, переданного `Monitor` в <xref:System.Threading.SynchronizationLockException> `Enter`, вызывает исключение. Дополнительные сведения см. в разделе « [мониторы](xref:System.Threading.Monitor)».  
   
- <xref:System.Threading.Thread.Interrupt%2A> можно прервать потоков, ожидающих входа в `Monitor` объекта. Объект <xref:System.Threading.ThreadInterruptedException> будет создано.  
+ <xref:System.Threading.Thread.Interrupt%2A>может прерывать потоки, ожидающие ввода `Monitor` объекта. <xref:System.Threading.ThreadInterruptedException> Будет выдано исключение.  
   
    
   
 ## Examples  
- В следующем коде показано типичное использование <xref:System.Threading.Monitor.Enter%28System.Object%2CSystem.Boolean%40%29> перегрузки метода. Эта перегрузка всегда устанавливает значение переменной, которая передается `ref` параметра (`ByRef` в Visual Basic) `lockTaken`, даже если метод создает исключение, поэтому значение переменной является надежным способом для проверки блокировки должен быть выпущен.  
+ В следующем коде показан базовый шаблон для использования <xref:System.Threading.Monitor.Enter%28System.Object%2CSystem.Boolean%40%29> перегрузки метода. Эта перегрузка всегда задает значение переменной, которая передается `ref` в параметр (`ByRef` в Visual Basic) `lockTaken`, даже если метод создает исключение, поэтому значение переменной является надежным способом проверки того, должна ли блокировка быть освободил.  
   
  [!code-csharp[System.Threading.Monitor.Enter#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.threading.monitor.enter/cs/example.cs#2)]
  [!code-vb[System.Threading.Monitor.Enter#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.threading.monitor.enter/vb/example.vb#2)]  
@@ -372,9 +372,9 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Вызывающий поток должен быть владельцем блокировки на `obj` параметра. Если вызывающий поток владеет блокировкой для указанного объекта, а одинаковое число `Exit` и <xref:System.Threading.Monitor.Enter%2A> вызывает для объекта, то блокировка снимается. Если вызывающий поток не вызван `Exit` столько раз `Enter`, блокировка не снимается.  
+ Вызывающий поток должен владеть блокировкой `obj` параметра. Если вызывающий поток владеет блокировкой на указанном объекте и произошел равное число `Exit` вызовов и <xref:System.Threading.Monitor.Enter%2A> для объекта, блокировка снимается. Если вызывающий поток не вызывал `Exit` столько `Enter`раз, сколько указано, блокировка не освобождается.  
   
- Если другие потоки находятся в очереди готовности для объекта, блокировка снимается, один из потоков блокировку. Если другие потоки находятся в очереди ожидания получения блокировки, они не перемещаются автоматически в очередь готовности, когда владелец блокировки вызывает `Exit`. Чтобы переместить один или несколько ожидающих потоков в очередь готовности, вызовите <xref:System.Threading.Monitor.Pulse%2A> или <xref:System.Threading.Monitor.PulseAll%2A> перед вызовом `Exit`.  
+ Если блокировка освобождается и другие потоки находятся в очереди готовности для объекта, один из потоков получает блокировку. Если другие потоки находятся в очереди ожидания, ожидающей получения блокировки, они не перемещаются автоматически в очередь готовности, когда владелец вызовов `Exit`блокировки. Чтобы переместить один или несколько ожидающих потоков в очередь готовности, <xref:System.Threading.Monitor.Pulse%2A> вызовите или <xref:System.Threading.Monitor.PulseAll%2A> перед `Exit`вызовом.  
   
    
   
@@ -438,9 +438,9 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот метод работает только для блокировки, полученные с помощью методов класса <xref:System.Threading.Monitor> класса или с помощью C# `lock` инструкции или Visual Basic `SyncLock` инструкцию, которая реализуются с помощью <xref:System.Threading.Monitor>.  
+ Этот метод работает только для блокировок, полученных с <xref:System.Threading.Monitor> помощью методов класса или с C# `lock` помощью инструкции или оператора Visual Basic `SyncLock` , которые реализуются с <xref:System.Threading.Monitor>помощью.  
   
- Используйте этот метод, с помощью средств диагностики, такие как <xref:System.Diagnostics.Debug.Assert%2A> метод и <xref:System.Diagnostics.Contracts.Contract> класс, для отладки проблем с блокировкой, включающие <xref:System.Threading.Monitor> класса.  
+ Используйте этот метод с инструментами диагностики, такими как <xref:System.Diagnostics.Debug.Assert%2A> метод <xref:System.Diagnostics.Contracts.Contract> и класс, для отладки проблем <xref:System.Threading.Monitor> блокировки, в которых участвует класс.  
   
  ]]></format>
         </remarks>
@@ -470,7 +470,7 @@
       </ReturnValue>
       <Docs>
         <summary>Возвращает значение, указывающее, сколько раз возникало состязание при попытке установить блокировку монитора.</summary>
-        <value>Сколько раз возникал был конкуренции, при попытке установить блокировку монитора.</value>
+        <value>Количество конфликтов при попытке снятия блокировки монитора.</value>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -519,18 +519,18 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Только текущий владелец блокировки может подать сигнал объекта ожидания с помощью `Pulse`.  
+ Только текущий владелец блокировки может передать сигнал ожидающему объекту с помощью `Pulse`.  
   
- Поток, который в данный момент принадлежит блокировка указанного объекта вызывает этот метод для указания следующий поток в списке для блокировки. При получении импульса, ожидающий поток перемещается в очередь готовности. Когда поток, вызвавший метод `Pulse` освобождает блокировку, следующий поток в очереди готовности (который не обязательно является потоком, был импульс) получает блокировку.  
+ Поток, который в настоящее время владеет блокировкой указанного объекта, вызывает этот метод, чтобы передать следующий поток в строке для блокировки. При получении пульса ожидающий поток перемещается в очередь готовности. Когда вызывающий `Pulse` поток освобождает блокировку, следующий поток в очереди готовности (который не обязательно является потоком, который был импульсным) получает блокировку.  
   
 > [!IMPORTANT]
->  <xref:System.Threading.Monitor> Класс не сохраняет состояние, указывающее, что <xref:System.Threading.Monitor.Pulse%2A> был вызван метод. Таким образом при вызове метода <xref:System.Threading.Monitor.Pulse%2A> при отсутствии ожидающих потоков, следующий поток, который вызывает <xref:System.Threading.Monitor.Wait%2A> блоки так, как если <xref:System.Threading.Monitor.Pulse%2A> никогда не был вызван. Если при использовании двух потоков <xref:System.Threading.Monitor.Pulse%2A> и <xref:System.Threading.Monitor.Wait%2A> для взаимодействия, это может привести к взаимоблокировке. Сравните это с поведением <xref:System.Threading.AutoResetEvent> класса: Если сигнал <xref:System.Threading.AutoResetEvent> путем вызова его <xref:System.Threading.EventWaitHandle.Set%2A> метод и нет потоков в состоянии ожидания <xref:System.Threading.AutoResetEvent> остается в сигнальном состоянии, пока поток не вызовет <xref:System.Threading.WaitHandle.WaitOne%2A>, <xref:System.Threading.WaitHandle.WaitAny%2A>, или <xref:System.Threading.WaitHandle.WaitAll%2A>. <xref:System.Threading.AutoResetEvent> Освобождает этот поток и возвращается в состояние без сигнала.  
+>  Класс не поддерживает состояние, указывающее на <xref:System.Threading.Monitor.Pulse%2A> вызов метода. <xref:System.Threading.Monitor> Таким образом, при вызове <xref:System.Threading.Monitor.Pulse%2A> , когда потоки не ожидают ожидания, следующий поток, вызывающий <xref:System.Threading.Monitor.Wait%2A> блоки <xref:System.Threading.Monitor.Pulse%2A> , как будто никогда не вызывался. Если два потока используют <xref:System.Threading.Monitor.Pulse%2A> и <xref:System.Threading.Monitor.Wait%2A> для взаимодействия, это может привести к взаимоблокировке. Сравните это с поведением <xref:System.Threading.AutoResetEvent> класса: Если вы сообщаете <xref:System.Threading.AutoResetEvent> о <xref:System.Threading.EventWaitHandle.Set%2A> вызове метода и <xref:System.Threading.AutoResetEvent> нет потоков, ожидающих, состояние остается в сигнальном состоянии до тех пор, пока поток <xref:System.Threading.WaitHandle.WaitOne%2A>не вызовет <xref:System.Threading.WaitHandle.WaitAll%2A>, <xref:System.Threading.WaitHandle.WaitAny%2A>или. <xref:System.Threading.AutoResetEvent> Выводит поток и возвращается в несигнальное состояние.  
   
- Обратите внимание, что синхронизированный объект имеет несколько ссылок, в том числе ссылку на поток, удерживающий блокировку, ссылку на очередь готовности, который содержит потоки, готовые к получению блокировки, и ссылку на очередь ожидания, в настоящее время которой содержит потоки, ожидающие уведомления об изменении состояния объекта.  
+ Обратите внимание, что синхронизированный объект содержит несколько ссылок, включая ссылку на поток, который в настоящее время владеет блокировкой, ссылку на очередь готовности, которая содержит потоки, готовые к получению блокировки, и ссылку на очередь ожидания, которая содержит потоки, ожидающие уведомления об изменении состояния объекта.  
   
- `Pulse`, <xref:System.Threading.Monitor.PulseAll%2A>, И <xref:System.Threading.Monitor.Wait%2A> методы должны быть вызваны из синхронизированного блока кода.  
+ Методы `Pulse`, <xref:System.Threading.Monitor.PulseAll%2A> и<xref:System.Threading.Monitor.Wait%2A> должны вызываться из синхронизированного блока кода.  
   
- Чтобы информировать несколько потоков, используйте <xref:System.Threading.Monitor.PulseAll%2A> метод.  
+ Чтобы сообщить о нескольких потоках, <xref:System.Threading.Monitor.PulseAll%2A> используйте метод.  
   
  ]]></format>
         </remarks>
@@ -586,15 +586,15 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Поток, который в данный момент принадлежит блокировка указанного объекта вызывает этот метод для указания всех потоков, ожидающих получения блокировки на объект. После отправки сигнала ожидающим потокам, перемещаются в очередь готовности. Когда поток, вызвавший метод `PulseAll` освобождает блокировку, следующий поток в очереди готовности получает блокировку.  
+ Поток, которому в настоящее время принадлежит блокировка указанного объекта, вызывает этот метод, чтобы сообщить всем потокам, ожидающим получения блокировки объекта. После отправки сигнала ожидающие потоки перемещаются в очередь готовности. Когда поток, вызвавший вызов `PulseAll` , освобождает блокировку, следующий поток в очереди готовности получает блокировку.  
   
- Обратите внимание, что синхронизированный объект имеет несколько ссылок, в том числе ссылку на поток, удерживающий блокировку, ссылку на очередь готовности, который содержит потоки, готовые к получению блокировки, и ссылку на очередь ожидания, в настоящее время которой содержит потоки, ожидающие уведомления об изменении состояния объекта.  
+ Обратите внимание, что синхронизированный объект содержит несколько ссылок, включая ссылку на поток, который в настоящее время владеет блокировкой, ссылку на очередь готовности, которая содержит потоки, готовые к получению блокировки, и ссылку на очередь ожидания, которая содержит потоки, ожидающие уведомления об изменении состояния объекта.  
   
- <xref:System.Threading.Monitor.Pulse%2A>, `PulseAll`, И <xref:System.Threading.Monitor.Wait%2A> методы должны быть вызваны из синхронизированного блока кода.  
+ Методы <xref:System.Threading.Monitor.Pulse%2A>, `PulseAll` и<xref:System.Threading.Monitor.Wait%2A> должны вызываться из синхронизированного блока кода.  
   
- В примечаниях к описанию <xref:System.Threading.Monitor.Pulse%2A> метод объяснить, что произойдет, если <xref:System.Threading.Monitor.Pulse%2A> вызывается при отсутствии ожидающих потоков.  
+ Примечания для <xref:System.Threading.Monitor.Pulse%2A> метода объясняют, что происходит, если <xref:System.Threading.Monitor.Pulse%2A> вызывается, когда потоки не ожидают ожидания.  
   
- Для обозначения одного потока, используйте `Pulse` метод.  
+ Чтобы передать сигнал одному потоку, используйте `Pulse` метод.  
   
  ]]></format>
         </remarks>
@@ -657,14 +657,14 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Если в случае успешного выполнения этот метод получает монопольную блокировку на `obj` параметра. Этот метод немедленно, возвращает ли доступна блокировка.  
+ В случае успешного выполнения этот метод получает монопольную блокировку на `obj` параметр. Этот метод немедленно возвращает значение, независимо от того, доступна ли блокировка.  
   
- Этот метод аналогичен методу <xref:System.Threading.Monitor.Enter%2A>, но он никогда не блокирует текущий поток. Если поток не может войти без блокировки, метод возвращает `false,`.  
+ Этот метод аналогичен <xref:System.Threading.Monitor.Enter%2A>, но он никогда не блокирует текущий поток. Если поток не может выполнить вход без блокировки, метод возвращает `false,`значение.  
   
 > [!NOTE]
->  Используйте <xref:System.Threading.Monitor> блокировка объектов (то есть ссылочные типы), не типы значений. Дополнительные сведения см. в разделе <xref:System.Threading.Monitor> статьи.  
+>  Используйте <xref:System.Threading.Monitor> для блокировки объектов (то есть ссылочных типов), а не типов значений. Дополнительные сведения см. в <xref:System.Threading.Monitor> статье.  
   
- Чтобы убедиться, что поток не войдет в критический раздел, необходимо изучить возвращаемое значение метода и выполнения кода в критический раздел, только в том случае, если его возвращаемое значение `true`. В следующем фрагменте кода показан шаблон, используемый для вызова этого метода. Обратите внимание, что следует вызывать <xref:System.Threading.Monitor.Exit%2A> в `finally` блок, чтобы убедиться, что вызывающий поток освобождает блокировку критической секции, при возникновении исключения.  
+ Чтобы убедиться, что поток не входит в критическую секцию, следует изучить возвращаемое значение метода и выполнить код в критическом разделе, только если его возвращаемое значение `true`равно. В следующем фрагменте кода показан шаблон, используемый для вызова этого метода. Обратите внимание, что <xref:System.Threading.Monitor.Exit%2A> необходимо вызвать `finally` в блоке, чтобы вызывающий поток снимет блокировку в критическом разделе, если возникает исключение.  
   
  [!code-csharp[System.Threading.Monitor.TryEnter#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/System.Threading.Monitor.TryEnter/cs/pattern1.cs#1)]
  [!code-vb[System.Threading.Monitor.TryEnter#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/System.Threading.Monitor.TryEnter/vb/pattern1.vb#1)]  
@@ -733,16 +733,16 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Если в случае успешного выполнения этот метод получает монопольную блокировку на `obj` параметра. Этот метод немедленно, возвращает ли доступна блокировка.  
+ В случае успешного выполнения этот метод получает монопольную блокировку на `obj` параметр. Этот метод немедленно возвращает значение, независимо от того, доступна ли блокировка.  
   
- Если не была выполнена блокировка, так как возникло исключение, переменная, указанная для `lockTaken` параметр `false` после завершения этого метода. Это позволяет программе определить, во всех случаях необходимость для снятия блокировки.  
+ Если блокировка не была выполнена из-за возникновения исключения, переменная, указанная для `lockTaken` параметра, находится `false` после завершения этого метода. Это позволяет программе определить во всех случаях, требуется ли снять блокировку.  
   
- Этот метод аналогичен методу <xref:System.Threading.Monitor.Enter%28System.Object%2CSystem.Boolean%40%29>, но он никогда не блокирует текущий поток. Если поток не может войти без блокировки, `lockTaken` аргумент имеет значение `false` при возвращении метода.  
+ Этот метод аналогичен <xref:System.Threading.Monitor.Enter%28System.Object%2CSystem.Boolean%40%29>, но он никогда не блокирует текущий поток. Если поток не может выполнить вход без блокировки, `lockTaken` аргумент устанавливается в `false` значение, когда метод возвращает значение.  
   
 > [!NOTE]
->  Используйте <xref:System.Threading.Monitor> блокировка объектов (то есть ссылочные типы), не типы значений. Дополнительные сведения см. в разделе <xref:System.Threading.Monitor> статьи.  
+>  Используйте <xref:System.Threading.Monitor> для блокировки объектов (то есть ссылочных типов), а не типов значений. Дополнительные сведения см. в <xref:System.Threading.Monitor> статье.  
   
- Чтобы убедиться, что поток не войдет в критический раздел, необходимо проверить значение `lockTaken` и выполнять код в критический раздел, только в том случае, если его значение равно `true`. В следующем фрагменте кода показан шаблон, используемый для вызова этого метода. Обратите внимание, что следует вызывать <xref:System.Threading.Monitor.Exit%2A> в `finally` блок, чтобы убедиться, что вызывающий поток освобождает блокировку критической секции, при возникновении исключения.  
+ Чтобы убедиться, что поток не входит в критическую секцию, следует проверить значение `lockTaken` и выполнить код в критическом разделе, только если его значение равно. `true` В следующем фрагменте кода показан шаблон, используемый для вызова этого метода. Обратите внимание, что <xref:System.Threading.Monitor.Exit%2A> необходимо вызвать `finally` в блоке, чтобы вызывающий поток снимет блокировку в критическом разделе, если возникает исключение.  
   
  [!code-csharp[System.Threading.Monitor.TryEnter#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/System.Threading.Monitor.TryEnter/cs/pattern1.cs#2)]
  [!code-vb[System.Threading.Monitor.TryEnter#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/System.Threading.Monitor.TryEnter/vb/pattern1.vb#2)]  
@@ -750,7 +750,7 @@
    
   
 ## Examples  
- В следующем коде показано типичное использование <xref:System.Threading.Monitor.TryEnter%28System.Object%2CSystem.Boolean%40%29> перегрузки метода. Эта перегрузка всегда устанавливает значение переменной, которая передается `ref` параметра (`ByRef` в Visual Basic) `lockTaken`, даже если метод создает исключение, поэтому значение переменной является надежным способом для проверки блокировки должен быть выпущен.  
+ В следующем коде показан базовый шаблон для использования <xref:System.Threading.Monitor.TryEnter%28System.Object%2CSystem.Boolean%40%29> перегрузки метода. Эта перегрузка всегда задает значение переменной, которая передается `ref` в параметр (`ByRef` в Visual Basic) `lockTaken`, даже если метод создает исключение, поэтому значение переменной является надежным способом проверки того, должна ли блокировка быть освободил.  
   
  [!code-csharp[System.Threading.Monitor.Enter#3](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.threading.monitor.enter/cs/example.cs#3)]
  [!code-vb[System.Threading.Monitor.Enter#3](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.threading.monitor.enter/vb/example.vb#3)]  
@@ -809,12 +809,12 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Если `millisecondsTimeout` равняется <xref:System.Threading.Timeout.Infinite>, этот метод эквивалентен <xref:System.Threading.Monitor.Enter%2A>. Если `millisecondsTimeout` равен 0, этот метод эквивалентен <xref:System.Threading.Monitor.TryEnter%2A>.  
+ Если параметр равен <xref:System.Threading.Timeout.Infinite> ,<xref:System.Threading.Monitor.Enter%2A>этот метод эквивалентен. `millisecondsTimeout` Если `millisecondsTimeout` равно 0, этот метод <xref:System.Threading.Monitor.TryEnter%2A>эквивалентен.  
   
 > [!NOTE]
->  Используйте <xref:System.Threading.Monitor> блокировка объектов (то есть ссылочные типы), не типы значений. Дополнительные сведения см. в разделе <xref:System.Threading.Monitor> статьи.  
+>  Используйте <xref:System.Threading.Monitor> для блокировки объектов (то есть ссылочных типов), а не типов значений. Дополнительные сведения см. в <xref:System.Threading.Monitor> статье.  
   
- Чтобы убедиться, что поток не войдет в критический раздел, необходимо изучить возвращаемое значение метода и выполнения кода в критический раздел, только в том случае, если его возвращаемое значение `true`. В следующем фрагменте кода показан шаблон, используемый для вызова этого метода. Обратите внимание, что следует вызывать <xref:System.Threading.Monitor.Exit%2A> в `finally` блок, чтобы убедиться, что вызывающий поток освобождает блокировку критической секции, при возникновении исключения.  
+ Чтобы убедиться, что поток не входит в критическую секцию, следует изучить возвращаемое значение метода и выполнить код в критическом разделе, только если его возвращаемое значение `true`равно. В следующем фрагменте кода показан шаблон, используемый для вызова этого метода. Обратите внимание, что <xref:System.Threading.Monitor.Exit%2A> необходимо вызвать `finally` в блоке, чтобы вызывающий поток снимет блокировку в критическом разделе, если возникает исключение.  
   
  [!code-csharp[System.Threading.Monitor.TryEnter#3](~/samples/snippets/csharp/VS_Snippets_CLR_System/System.Threading.Monitor.TryEnter/cs/pattern1.cs#3)]
  [!code-vb[System.Threading.Monitor.TryEnter#3](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/System.Threading.Monitor.TryEnter/vb/pattern1.vb#3)]  
@@ -870,12 +870,12 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Если значение `timeout` преобразуется в миллисекунды равно -1, этот метод эквивалентен <xref:System.Threading.Monitor.Enter%2A>. Если значение `timeout` равен 0, этот метод эквивалентен <xref:System.Threading.Monitor.TryEnter%2A>.  
+ Если значение `timeout` параметра, преобразованное в миллисекунды, равно-1, этот метод <xref:System.Threading.Monitor.Enter%2A>эквивалентен. Если значение `timeout` равно 0, этот метод <xref:System.Threading.Monitor.TryEnter%2A>эквивалентен.  
   
 > [!NOTE]
->  Используйте <xref:System.Threading.Monitor> блокировка объектов (то есть ссылочные типы), не типы значений. Дополнительные сведения см. в разделе <xref:System.Threading.Monitor> разделе, посвященном классу.  
+>  Используйте <xref:System.Threading.Monitor> для блокировки объектов (то есть ссылочных типов), а не типов значений. Дополнительные сведения см. в <xref:System.Threading.Monitor> разделе о классе.  
   
- Чтобы убедиться, что поток не войдет в критический раздел, необходимо изучить возвращаемое значение метода и выполнения кода в критический раздел, только в том случае, если его возвращаемое значение `true`. В следующем фрагменте кода показан шаблон, используемый для вызова этого метода. Обратите внимание, что следует вызывать <xref:System.Threading.Monitor.Exit%2A> в `finally` блок, чтобы убедиться, что вызывающий поток освобождает блокировку критической секции, при возникновении исключения.  
+ Чтобы убедиться, что поток не входит в критическую секцию, следует изучить возвращаемое значение метода и выполнить код в критическом разделе, только если его возвращаемое значение `true`равно. В следующем фрагменте кода показан шаблон, используемый для вызова этого метода. Обратите внимание, что <xref:System.Threading.Monitor.Exit%2A> необходимо вызвать `finally` в блоке, чтобы вызывающий поток снимет блокировку в критическом разделе, если возникает исключение.  
   
  [!code-csharp[System.Threading.Monitor.TryEnter#5](~/samples/snippets/csharp/VS_Snippets_CLR_System/System.Threading.Monitor.TryEnter/cs/pattern1.cs#5)]
  [!code-vb[System.Threading.Monitor.TryEnter#5](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/System.Threading.Monitor.TryEnter/vb/pattern1.vb#5)]  
@@ -938,14 +938,14 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Если `millisecondsTimeout` равняется <xref:System.Threading.Timeout.Infinite>, этот метод эквивалентен <xref:System.Threading.Monitor.Enter%28System.Object%29>. Если `millisecondsTimeout` равен 0, этот метод эквивалентен <xref:System.Threading.Monitor.TryEnter%28System.Object%29>.  
+ Если параметр равен <xref:System.Threading.Timeout.Infinite> ,<xref:System.Threading.Monitor.Enter%28System.Object%29>этот метод эквивалентен. `millisecondsTimeout` Если `millisecondsTimeout` равно 0, этот метод <xref:System.Threading.Monitor.TryEnter%28System.Object%29>эквивалентен.  
   
- Если не была выполнена блокировка, так как возникло исключение, переменная, указанная для `lockTaken` параметр `false` после завершения этого метода. Это позволяет программе определить, во всех случаях необходимость для снятия блокировки.  
+ Если блокировка не была выполнена из-за возникновения исключения, переменная, указанная для `lockTaken` параметра, находится `false` после завершения этого метода. Это позволяет программе определить во всех случаях, требуется ли снять блокировку.  
   
 > [!NOTE]
->  Используйте <xref:System.Threading.Monitor> блокировка объектов (то есть ссылочные типы), не типы значений. Дополнительные сведения см. в разделе <xref:System.Threading.Monitor> разделе, посвященном классу.  
+>  Используйте <xref:System.Threading.Monitor> для блокировки объектов (то есть ссылочных типов), а не типов значений. Дополнительные сведения см. в <xref:System.Threading.Monitor> разделе о классе.  
   
- Чтобы убедиться, что поток не войдет в критический раздел, необходимо проверить значение `lockTaken` и выполнять код в критический раздел, только в том случае, если его значение равно `true`. В следующем фрагменте кода показан шаблон, используемый для вызова этого метода. Обратите внимание, что следует вызывать <xref:System.Threading.Monitor.Exit%2A> в `finally` блок, чтобы убедиться, что вызывающий поток освобождает блокировку критической секции, при возникновении исключения.  
+ Чтобы убедиться, что поток не входит в критическую секцию, следует проверить значение `lockTaken` и выполнить код в критическом разделе, только если его значение равно. `true` В следующем фрагменте кода показан шаблон, используемый для вызова этого метода. Обратите внимание, что <xref:System.Threading.Monitor.Exit%2A> необходимо вызвать `finally` в блоке, чтобы вызывающий поток снимет блокировку в критическом разделе, если возникает исключение.  
   
  [!code-csharp[System.Threading.Monitor.TryEnter#4](~/samples/snippets/csharp/VS_Snippets_CLR_System/System.Threading.Monitor.TryEnter/cs/pattern1.cs#4)]
  [!code-vb[System.Threading.Monitor.TryEnter#4](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/System.Threading.Monitor.TryEnter/vb/pattern1.vb#4)]  
@@ -953,7 +953,7 @@
    
   
 ## Examples  
- В следующем коде показано типичное использование <xref:System.Threading.Monitor.TryEnter%28System.Object%2CSystem.Boolean%40%29> перегрузки метода. Эта перегрузка всегда устанавливает значение переменной, которая передается `ref` параметра (`ByRef` в Visual Basic) `lockTaken`, даже если метод создает исключение, поэтому значение переменной является надежным способом для проверки блокировки должен быть выпущен.  
+ В следующем коде показан базовый шаблон для использования <xref:System.Threading.Monitor.TryEnter%28System.Object%2CSystem.Boolean%40%29> перегрузки метода. Эта перегрузка всегда задает значение переменной, которая передается `ref` в параметр (`ByRef` в Visual Basic) `lockTaken`, даже если метод создает исключение, поэтому значение переменной является надежным способом проверки того, должна ли блокировка быть освободил.  
   
  [!code-csharp[System.Threading.Monitor.Enter#4](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.threading.monitor.enter/cs/example.cs#4)]
  [!code-vb[System.Threading.Monitor.Enter#4](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.threading.monitor.enter/vb/example.vb#4)]  
@@ -1012,14 +1012,14 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Если значение `timeout` преобразуется в миллисекунды равно -1, этот метод эквивалентен <xref:System.Threading.Monitor.Enter%28System.Object%29>. Если значение `timeout` равен 0, этот метод эквивалентен <xref:System.Threading.Monitor.TryEnter%28System.Object%29>.  
+ Если значение `timeout` параметра, преобразованное в миллисекунды, равно-1, этот метод <xref:System.Threading.Monitor.Enter%28System.Object%29>эквивалентен. Если значение `timeout` равно 0, этот метод <xref:System.Threading.Monitor.TryEnter%28System.Object%29>эквивалентен.  
   
- Если не была выполнена блокировка, так как возникло исключение, переменная, указанная для `lockTaken` параметр `false` после завершения этого метода. Это позволяет программе определить, во всех случаях необходимость для снятия блокировки.  
+ Если блокировка не была выполнена из-за возникновения исключения, переменная, указанная для `lockTaken` параметра, находится `false` после завершения этого метода. Это позволяет программе определить во всех случаях, требуется ли снять блокировку.  
   
 > [!NOTE]
->  Используйте <xref:System.Threading.Monitor> блокировка объектов (то есть ссылочные типы), не типы значений. Дополнительные сведения см. в разделе <xref:System.Threading.Monitor> разделе, посвященном классу.  
+>  Используйте <xref:System.Threading.Monitor> для блокировки объектов (то есть ссылочных типов), а не типов значений. Дополнительные сведения см. в <xref:System.Threading.Monitor> разделе о классе.  
   
- Чтобы убедиться, что поток не войдет в критический раздел, необходимо проверить значение `lockTaken` и выполнять код в критический раздел, только в том случае, если его значение равно `true`. В следующем фрагменте кода показан шаблон, используемый для вызова этого метода. Обратите внимание, что следует вызывать <xref:System.Threading.Monitor.Exit%2A> в `finally` блок, чтобы убедиться, что вызывающий поток освобождает блокировку критической секции, при возникновении исключения.  
+ Чтобы убедиться, что поток не входит в критическую секцию, следует проверить значение `lockTaken` и выполнить код в критическом разделе, только если его значение равно. `true` В следующем фрагменте кода показан шаблон, используемый для вызова этого метода. Обратите внимание, что <xref:System.Threading.Monitor.Exit%2A> необходимо вызвать `finally` в блоке, чтобы вызывающий поток снимет блокировку в критическом разделе, если возникает исключение.  
   
  [!code-csharp[System.Threading.Monitor.TryEnter#6](~/samples/snippets/csharp/VS_Snippets_CLR_System/System.Threading.Monitor.TryEnter/cs/pattern1.cs#6)]
  [!code-vb[System.Threading.Monitor.TryEnter#6](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/System.Threading.Monitor.TryEnter/vb/pattern1.vb#6)]  
@@ -1090,19 +1090,19 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Поток, который в данный момент принадлежит блокировка указанного объекта вызывает этот метод, чтобы освободить объект доступа к ней другим потоком. Вызывающий поток блокируется, ожидая получения блокировки. Этот метод вызывается, когда вызывающий объект должен ожидать изменения состояния, которые произойдут в результате операций другого потока.  
+ Поток, который в настоящее время владеет блокировкой указанного объекта, вызывает этот метод, чтобы освободить объект, чтобы другой поток мог получить к нему доступ. Вызывающий объект блокируется при ожидании повторного получения блокировки. Этот метод вызывается, когда вызывающему объекту требуется подождать изменения состояния, которое будет происходить в результате операций другого потока.  
   
- Если поток вызывает `Wait`, он освобождает блокировку объекта и переходит в очередь ожидания объекта. Следующий поток в очередь готовности объекта (если таковой имеется), получает блокировку и эксклюзивное использование объекта. Все потоки, которые вызывают `Wait` остаются в очереди ожидания, пока не получат сигнала от <xref:System.Threading.Monitor.Pulse%2A> или <xref:System.Threading.Monitor.PulseAll%2A>, посланного владельцем блокировки. Если `Pulse` отправляется, затрагивается только поток в голове очереди ожидания. Если `PulseAll` отправляется, затрагиваются все потоки, которые ожидают объект. При получении сигнала, оставьте в очередь ожидания один или несколько потоков и введите очередь готовности. Поток в очередь готовности разрешается получения блокировки.  
+ Когда поток вызывает `Wait`, он освобождает блокировку объекта и переходит в очередь ожидания объекта. Следующий поток в очереди готовности объекта (если таковой имеется) получает блокировку и эксклюзивное использование объекта. Все потоки, вызывающие вызовы `Wait` , остаются в очереди ожидания до получения сигнала от <xref:System.Threading.Monitor.Pulse%2A> или <xref:System.Threading.Monitor.PulseAll%2A>, отправленного владельцем блокировки. Если `Pulse` отправляется, затрагивается только поток в заголовке очереди ожидания. Если `PulseAll` отправляется, затрагиваются все потоки, ожидающие объекта. При получении сигнала один или несколько потоков покидают очередь ожидания и наведите очередь готовности. Потоку в очереди готовности разрешено повторное получение блокировки.  
   
- Этот метод возвращает, если вызывающий поток снова получает блокировку объекта. Обратите внимание, что этот метод неограниченно блокируется, если владелец блокировки не вызывает `Pulse` или `PulseAll`.  
+ Этот метод возвращает значение, если вызывающий поток повторно запрашивает блокировку объекта. Обратите внимание, что этот метод блокируется на неопределенное время, если `Pulse` владелец `PulseAll`блокировки не вызывает или.  
   
- Вызывающий поток выполняет `Wait` один раз, независимо от того, сколько раз <xref:System.Threading.Monitor.Enter%2A> был вызван для указанного объекта. По существу `Wait` метод сохраняет количество раз, вызывающий инструкцию `Enter` в объекте и вызывает `Exit` столько раз, сколько нужно, чтобы полностью освободить объект с блокировкой. Вызывающий объект затем блокируется, ожидая получения объекта. Если вызывающий поток заново получает блокировку, система вызывает `Enter` столько раз, сколько необходимо для восстановления сохраненного `Enter` числа. Вызов `Wait` снимает блокировку указанного объекта; если вызывающий объект является владельцем блокировки на другие объекты, они не освобождаются.  
+ Вызывающий объект выполняется `Wait` один раз, независимо от числа вызовов <xref:System.Threading.Monitor.Enter%2A> , вызванных для указанного объекта. По `Wait` сути, метод сохраняет количество вызовов вызывающего `Enter` объекта в объекте и вызывает `Exit` столько раз, сколько необходимо для полного освобождения заблокированного объекта. Затем вызывающий объект блокируется при ожидании повторного получения объекта. Когда вызывающий объект повторно получает блокировку, система вызывает `Enter` столько раз, сколько необходимо для восстановления сохраненного `Enter` количества для вызывающего. Вызов `Wait` освобождает блокировку только для указанного объекта; если вызывающий объект является владельцем блокировок для других объектов, эти блокировки не освобождаются.  
   
- Обратите внимание, что синхронизированный объект имеет несколько ссылок, в том числе ссылку на поток, удерживающий блокировку, ссылку на очередь готовности, который содержит потоки, готовые к получению блокировки, и ссылку на очередь ожидания, в настоящее время которой содержит потоки, ожидающие уведомления об изменении состояния объекта.  
+ Обратите внимание, что синхронизированный объект содержит несколько ссылок, включая ссылку на поток, который в настоящее время владеет блокировкой, ссылку на очередь готовности, которая содержит потоки, готовые к получению блокировки, и ссылку на очередь ожидания, которая содержит потоки, ожидающие уведомления об изменении состояния объекта.  
   
- <xref:System.Threading.Monitor.Pulse%2A>, <xref:System.Threading.Monitor.PulseAll%2A>, И `Wait` методы должны быть вызваны из синхронизированного блока кода.  
+ Методы <xref:System.Threading.Monitor.Pulse%2A>, <xref:System.Threading.Monitor.PulseAll%2A> и`Wait` должны вызываться из синхронизированного блока кода.  
   
- В примечаниях к описанию <xref:System.Threading.Monitor.Pulse%2A> метод объяснить, что произойдет, если <xref:System.Threading.Monitor.Pulse%2A> вызывается при отсутствии ожидающих потоков.  
+ Примечания для <xref:System.Threading.Monitor.Pulse%2A> метода объясняют, что происходит, если <xref:System.Threading.Monitor.Pulse%2A> вызывается, когда потоки не ожидают ожидания.  
   
  ]]></format>
         </remarks>
@@ -1162,25 +1162,25 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот метод не возвращает до получения монопольной блокировки на `obj` параметра.  
+ Этот метод не возвращает значение `obj` до тех пор, пока он не получит монопольную блокировку на параметр.  
   
- Поток, который в данный момент принадлежит блокировка указанного объекта вызывает этот метод, чтобы освободить объект доступа к ней другим потоком. Вызывающий поток блокируется, ожидая получения блокировки. Этот метод вызывается, когда вызывающий объект должен ожидать изменения состояния, которые произойдут в результате операций другого потока.  
+ Поток, который в настоящее время владеет блокировкой указанного объекта, вызывает этот метод, чтобы освободить объект, чтобы другой поток мог получить к нему доступ. Вызывающий объект блокируется при ожидании повторного получения блокировки. Этот метод вызывается, когда вызывающему объекту требуется подождать изменения состояния, которое будет происходить в результате операций другого потока.  
   
- Время ожидания гарантирует, что текущий поток не блокируется неограниченно, если другой поток освобождает блокировку без предварительного вызова функции <xref:System.Threading.Monitor.Pulse%2A> или <xref:System.Threading.Monitor.PulseAll%2A> метод. Он также перемещает поток в очередь готовности, минуя другие потоки предшествует ей в очереди ожидания, таким образом, чтобы быстрее получения блокировки. Поток можно проверить возвращаемое значение <xref:System.Threading.Monitor.Wait%2A> метод для определения того, получена ли его блокировки до истечения времени ожидания. Поток можно оценить условия, которые привело к введите ожидания, и если необходимости вызова <xref:System.Threading.Monitor.Wait%2A> метод снова.  
+ Время ожидания гарантирует, что текущий поток не блокируется в течение неограниченного времени, если другой поток освобождает блокировку без предварительного <xref:System.Threading.Monitor.Pulse%2A> вызова <xref:System.Threading.Monitor.PulseAll%2A> метода или. Он также перемещает поток в очередь готовности, обходя другие потоки перед ним в очереди ожидания, чтобы он мог повторно получить блокировку. Поток может проверить возвращаемое значение <xref:System.Threading.Monitor.Wait%2A> метода, чтобы определить, был ли он получен повторно до истечения времени ожидания. Поток может оценить условия, вызвавшие его, чтобы войти в ожидание, и при необходимости снова <xref:System.Threading.Monitor.Wait%2A> вызвать метод.  
   
- Если поток вызывает `Wait`, он освобождает блокировку объекта и переходит в очередь ожидания объекта. Следующий поток в очередь готовности объекта (если таковой имеется), получает блокировку и эксклюзивное использование объекта. Поток, вызвавший `Wait` вызывающий поток, удерживающий блокировку остается в очереди ожидания либо до <xref:System.Threading.Monitor.PulseAll%2A>, или он является следующим в очереди, и вызывающий поток, удерживающий блокировку <xref:System.Threading.Monitor.Pulse%2A>. Тем не менее если `millisecondsTimeout` истечет раньше, чем другой поток вызывает этот объект <xref:System.Threading.Monitor.Pulse%2A> или <xref:System.Threading.Monitor.PulseAll%2A> метод, исходный поток перемещается в очередь готовности, чтобы снова получить блокировку.  
-  
-> [!NOTE]
->  Если <xref:System.Threading.Timeout.Infinite> указывается для `millisecondsTimeout` параметра, этот метод неограниченно блокируется, если владелец блокировки вызывает <xref:System.Threading.Monitor.Pulse%2A> или <xref:System.Threading.Monitor.PulseAll%2A>. Если `millisecondsTimeout` равно нулю, поток, вызывающий `Wait` снимает блокировку и затем немедленно постановки в очередь готовности, чтобы снова получить блокировку.  
-  
- Вызывающий поток выполняет `Wait` один раз, независимо от того, сколько раз <xref:System.Threading.Monitor.Enter%2A> был вызван для указанного объекта. По существу `Wait` метод сохраняет количество раз, вызывающий инструкцию <xref:System.Threading.Monitor.Enter%2A> в объекте и вызывает <xref:System.Threading.Monitor.Exit%2A> столько раз, сколько нужно, чтобы полностью освободить объект с блокировкой. Вызывающий объект затем блокируется, ожидая получения объекта. Если вызывающий поток заново получает блокировку, система вызывает <xref:System.Threading.Monitor.Enter%2A> столько раз, сколько необходимо для восстановления сохраненного <xref:System.Threading.Monitor.Enter%2A> числа. Вызов `Wait` снимает блокировку указанного объекта; если вызывающий объект является владельцем блокировки на другие объекты, они не освобождаются.  
+ Когда поток вызывает `Wait`, он освобождает блокировку объекта и переходит в очередь ожидания объекта. Следующий поток в очереди готовности объекта (если таковой имеется) получает блокировку и эксклюзивное использование объекта. Поток, который вызывается `Wait` , остается в очереди ожидания до тех пор, пока не будет <xref:System.Threading.Monitor.PulseAll%2A>вызван поток, который владеет вызовом блокировки, или он является следующей в очереди и потоком, который <xref:System.Threading.Monitor.Pulse%2A>содержит вызовы блокировки. Однако, если `millisecondsTimeout` происходит <xref:System.Threading.Monitor.Pulse%2A> до того, как другой поток вызовет метод или <xref:System.Threading.Monitor.PulseAll%2A> , исходный поток перемещается в очередь готовности для восстановления блокировки.  
   
 > [!NOTE]
->  Синхронизированный объект имеет несколько ссылок, в том числе ссылку на поток, удерживающий блокировку, ссылку на очередь готовности, который содержит потоки, готовые к получению блокировки, и ссылку на очередь ожидания, который содержит в настоящее время потоки, ожидающие получать уведомления об изменении состояния объекта.  
+>  Если <xref:System.Threading.Timeout.Infinite> <xref:System.Threading.Monitor.Pulse%2A> для параметра указано значение, этот метод блокируется неопределенно долго, если владелец блокировки не вызывает или <xref:System.Threading.Monitor.PulseAll%2A>. `millisecondsTimeout` Если `millisecondsTimeout` равно 0, то поток, вызывающий `Wait` освобождение блокировки, затем сразу переходит в очередь готовности, чтобы восстановить блокировку.  
   
- <xref:System.Threading.Monitor.Pulse%2A>, <xref:System.Threading.Monitor.PulseAll%2A>, И `Wait` методы должны быть вызваны из синхронизированного блока кода.  
+ Вызывающий объект выполняется `Wait` один раз, независимо от числа вызовов <xref:System.Threading.Monitor.Enter%2A> , вызванных для указанного объекта. По `Wait` сути, метод сохраняет количество вызовов вызывающего <xref:System.Threading.Monitor.Enter%2A> объекта в объекте и вызывает <xref:System.Threading.Monitor.Exit%2A> столько раз, сколько необходимо для полного освобождения заблокированного объекта. Затем вызывающий объект блокируется при ожидании повторного получения объекта. Когда вызывающий объект повторно получает блокировку, система вызывает <xref:System.Threading.Monitor.Enter%2A> столько раз, сколько необходимо для восстановления сохраненного <xref:System.Threading.Monitor.Enter%2A> количества для вызывающего. Вызов `Wait` освобождает блокировку только для указанного объекта; если вызывающий объект является владельцем блокировок для других объектов, эти блокировки не освобождаются.  
   
- В примечаниях к описанию <xref:System.Threading.Monitor.Pulse%2A> метод объяснить, что произойдет, если <xref:System.Threading.Monitor.Pulse%2A> вызывается при отсутствии ожидающих потоков.  
+> [!NOTE]
+>  Синхронизированный объект содержит несколько ссылок, включая ссылку на поток, который в настоящее время владеет блокировкой, ссылку на очередь готовности, которая содержит потоки, готовые к получению блокировки, и ссылку на очередь ожидания, которая содержит потоки, ожидающие уведомления об изменении состояния объекта.  
+  
+ Методы <xref:System.Threading.Monitor.Pulse%2A>, <xref:System.Threading.Monitor.PulseAll%2A> и`Wait` должны вызываться из синхронизированного блока кода.  
+  
+ Примечания для <xref:System.Threading.Monitor.Pulse%2A> метода объясняют, что происходит, если <xref:System.Threading.Monitor.Pulse%2A> вызывается, когда потоки не ожидают ожидания.  
   
  ]]></format>
         </remarks>
@@ -1241,25 +1241,25 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот метод не возвращает до получения монопольной блокировки на `obj` параметра.  
+ Этот метод не возвращает значение `obj` до тех пор, пока он не получит монопольную блокировку на параметр.  
   
- Поток, который в данный момент принадлежит блокировка указанного объекта вызывает этот метод, чтобы освободить объект доступа к ней другим потоком. Вызывающий поток блокируется, ожидая получения блокировки. Этот метод вызывается, когда вызывающий объект должен ожидать изменения состояния, которые произойдут в результате операций другого потока.  
+ Поток, который в настоящее время владеет блокировкой указанного объекта, вызывает этот метод, чтобы освободить объект, чтобы другой поток мог получить к нему доступ. Вызывающий объект блокируется при ожидании повторного получения блокировки. Этот метод вызывается, когда вызывающему объекту требуется подождать изменения состояния, которое будет происходить в результате операций другого потока.  
   
- Время ожидания гарантирует, что текущий поток не блокируется неограниченно, если другой поток освобождает блокировку без предварительного вызова функции <xref:System.Threading.Monitor.Pulse%2A> или <xref:System.Threading.Monitor.PulseAll%2A> метод. Он также перемещает поток в очередь готовности, минуя другие потоки предшествует ей в очереди ожидания, таким образом, чтобы быстрее получения блокировки. Поток можно проверить возвращаемое значение <xref:System.Threading.Monitor.Wait%2A> метод для определения того, получена ли его блокировки до истечения времени ожидания. Поток можно оценить условия, которые привело к введите ожидания, и если необходимости вызова <xref:System.Threading.Monitor.Wait%2A> метод снова.  
+ Время ожидания гарантирует, что текущий поток не блокируется в течение неограниченного времени, если другой поток освобождает блокировку без предварительного <xref:System.Threading.Monitor.Pulse%2A> вызова <xref:System.Threading.Monitor.PulseAll%2A> метода или. Он также перемещает поток в очередь готовности, обходя другие потоки перед ним в очереди ожидания, чтобы он мог повторно получить блокировку. Поток может проверить возвращаемое значение <xref:System.Threading.Monitor.Wait%2A> метода, чтобы определить, был ли он получен повторно до истечения времени ожидания. Поток может оценить условия, вызвавшие его, чтобы войти в ожидание, и при необходимости снова <xref:System.Threading.Monitor.Wait%2A> вызвать метод.  
   
- Если поток вызывает `Wait`, он освобождает блокировку объекта и переходит в очередь ожидания объекта. Следующий поток в очередь готовности объекта (если таковой имеется), получает блокировку и эксклюзивное использование объекта. Поток, вызвавший `Wait` вызывающий поток, удерживающий блокировку остается в очереди ожидания либо до <xref:System.Threading.Monitor.PulseAll%2A>, или он является следующим в очереди, и вызывающий поток, удерживающий блокировку <xref:System.Threading.Monitor.Pulse%2A>. Тем не менее если `timeout` истечет раньше, чем другой поток вызывает этот объект <xref:System.Threading.Monitor.Pulse%2A> или <xref:System.Threading.Monitor.PulseAll%2A> метод, исходный поток перемещается в очередь готовности, чтобы снова получить блокировку.  
-  
-> [!NOTE]
->  Если <xref:System.TimeSpan> представляющий-1 миллисекунду для указан `timeout` параметра, этот метод неограниченно блокируется, если владелец блокировки вызывает <xref:System.Threading.Monitor.Pulse%2A> или <xref:System.Threading.Monitor.PulseAll%2A>. Если `timeout` равно 0, поток, вызывающий `Wait` снимает блокировку и затем немедленно постановки в очередь готовности, чтобы снова получить блокировку.  
-  
- Вызывающий поток выполняет `Wait` один раз, независимо от того, сколько раз <xref:System.Threading.Monitor.Enter%2A> был вызван для указанного объекта. По существу `Wait` метод сохраняет количество раз, вызывающий инструкцию <xref:System.Threading.Monitor.Enter%2A> в объекте и вызывает <xref:System.Threading.Monitor.Exit%2A> столько раз, сколько нужно, чтобы полностью освободить объект с блокировкой. Вызывающий объект затем блокируется, ожидая получения объекта. Если вызывающий поток заново получает блокировку, система вызывает <xref:System.Threading.Monitor.Enter%2A> столько раз, сколько необходимо для восстановления сохраненного <xref:System.Threading.Monitor.Enter%2A> числа. Вызов `Wait` снимает блокировку указанного объекта; если вызывающий объект является владельцем блокировки на другие объекты, они не освобождаются.  
+ Когда поток вызывает `Wait`, он освобождает блокировку объекта и переходит в очередь ожидания объекта. Следующий поток в очереди готовности объекта (если таковой имеется) получает блокировку и эксклюзивное использование объекта. Поток, который вызывается `Wait` , остается в очереди ожидания до тех пор, пока не будет <xref:System.Threading.Monitor.PulseAll%2A>вызван поток, который владеет вызовом блокировки, или он является следующей в очереди и потоком, который <xref:System.Threading.Monitor.Pulse%2A>содержит вызовы блокировки. Однако, если `timeout` происходит <xref:System.Threading.Monitor.Pulse%2A> до того, как другой поток вызовет метод или <xref:System.Threading.Monitor.PulseAll%2A> , исходный поток перемещается в очередь готовности для восстановления блокировки.  
   
 > [!NOTE]
->  Синхронизированный объект имеет несколько ссылок, в том числе ссылку на поток, удерживающий блокировку, ссылку на очередь готовности, который содержит потоки, готовые к получению блокировки, и ссылку на очередь ожидания, который содержит в настоящее время потоки, ожидающие получать уведомления об изменении состояния объекта.  
+>  Если <xref:System.TimeSpan> <xref:System.Threading.Monitor.Pulse%2A> для параметра указано значение-1 миллисекунда, этот метод блокируется неопределенно долго, если владелец блокировки не вызывает или <xref:System.Threading.Monitor.PulseAll%2A>. `timeout` Если `timeout` значение равно 0 миллисекундам, то поток, `Wait` вызывающий освобождение блокировки, затем сразу переходит в очередь готовности, чтобы восстановить блокировку.  
   
- <xref:System.Threading.Monitor.Pulse%2A>, <xref:System.Threading.Monitor.PulseAll%2A>, И `Wait` методы должны быть вызваны из синхронизированного блока кода.  
+ Вызывающий объект выполняется `Wait` один раз, независимо от числа вызовов <xref:System.Threading.Monitor.Enter%2A> , вызванных для указанного объекта. По `Wait` сути, метод сохраняет количество вызовов вызывающего <xref:System.Threading.Monitor.Enter%2A> объекта в объекте и вызывает <xref:System.Threading.Monitor.Exit%2A> столько раз, сколько необходимо для полного освобождения заблокированного объекта. Затем вызывающий объект блокируется при ожидании повторного получения объекта. Когда вызывающий объект повторно получает блокировку, система вызывает <xref:System.Threading.Monitor.Enter%2A> столько раз, сколько необходимо для восстановления сохраненного <xref:System.Threading.Monitor.Enter%2A> количества для вызывающего. Вызов `Wait` освобождает блокировку только для указанного объекта; если вызывающий объект является владельцем блокировок для других объектов, эти блокировки не освобождаются.  
   
- В примечаниях к описанию <xref:System.Threading.Monitor.Pulse%2A> метод объяснить, что произойдет, если <xref:System.Threading.Monitor.Pulse%2A> вызывается при отсутствии ожидающих потоков.  
+> [!NOTE]
+>  Синхронизированный объект содержит несколько ссылок, включая ссылку на поток, который в настоящее время владеет блокировкой, ссылку на очередь готовности, которая содержит потоки, готовые к получению блокировки, и ссылку на очередь ожидания, которая содержит потоки, ожидающие уведомления об изменении состояния объекта.  
+  
+ Методы <xref:System.Threading.Monitor.Pulse%2A>, <xref:System.Threading.Monitor.PulseAll%2A> и`Wait` должны вызываться из синхронизированного блока кода.  
+  
+ Примечания для <xref:System.Threading.Monitor.Pulse%2A> метода объясняют, что происходит, если <xref:System.Threading.Monitor.Pulse%2A> вызывается, когда потоки не ожидают ожидания.  
   
  ]]></format>
         </remarks>
@@ -1320,32 +1320,32 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот метод не возвращает до получения монопольной блокировки на `obj` параметра.  
+ Этот метод не возвращает значение `obj` до тех пор, пока он не получит монопольную блокировку на параметр.  
   
- Поток, который в данный момент принадлежит блокировка указанного объекта вызывает этот метод, чтобы освободить объект доступа к ней другим потоком. Вызывающий поток блокируется, ожидая получения блокировки. Этот метод вызывается, когда вызывающий объект должен ожидать изменения состояния, которые произойдут в результате операций другого потока.  
+ Поток, который в настоящее время владеет блокировкой указанного объекта, вызывает этот метод, чтобы освободить объект, чтобы другой поток мог получить к нему доступ. Вызывающий объект блокируется при ожидании повторного получения блокировки. Этот метод вызывается, когда вызывающему объекту требуется подождать изменения состояния, которое будет происходить в результате операций другого потока.  
   
- Время ожидания гарантирует, что текущий поток не блокируется неограниченно, если другой поток освобождает блокировку без предварительного вызова функции <xref:System.Threading.Monitor.Pulse%2A> или <xref:System.Threading.Monitor.PulseAll%2A> метод. Он также перемещает поток в очередь готовности, минуя другие потоки предшествует ей в очереди ожидания, таким образом, чтобы быстрее получения блокировки. Поток можно проверить возвращаемое значение <xref:System.Threading.Monitor.Wait%2A> метод для определения того, получена ли его блокировки до истечения времени ожидания. Поток можно оценить условия, которые привело к введите ожидания, и если необходимости вызова <xref:System.Threading.Monitor.Wait%2A> метод снова.  
+ Время ожидания гарантирует, что текущий поток не блокируется в течение неограниченного времени, если другой поток освобождает блокировку без предварительного <xref:System.Threading.Monitor.Pulse%2A> вызова <xref:System.Threading.Monitor.PulseAll%2A> метода или. Он также перемещает поток в очередь готовности, обходя другие потоки перед ним в очереди ожидания, чтобы он мог повторно получить блокировку. Поток может проверить возвращаемое значение <xref:System.Threading.Monitor.Wait%2A> метода, чтобы определить, был ли он получен повторно до истечения времени ожидания. Поток может оценить условия, вызвавшие его, чтобы войти в ожидание, и при необходимости снова <xref:System.Threading.Monitor.Wait%2A> вызвать метод.  
   
- Если поток вызывает `Wait`, он освобождает блокировку и входит в очередь ожидания. На этом этапе следующий поток в очереди готовности (если таковой имеется) может контролировать блокировки. Поток, вызвавший `Wait` вызывающий поток, удерживающий блокировку остается в очереди ожидания либо до <xref:System.Threading.Monitor.PulseAll%2A>, или он является следующим в очереди, и вызывающий поток, удерживающий блокировку <xref:System.Threading.Monitor.Pulse%2A>. Тем не менее если `millisecondsTimeout` истечет раньше, чем другой поток вызывает этот объект <xref:System.Threading.Monitor.Pulse%2A> или <xref:System.Threading.Monitor.PulseAll%2A> метод, исходный поток перемещается в очередь готовности, чтобы снова получить блокировку.  
-  
-> [!NOTE]
->  Если <xref:System.Threading.Timeout.Infinite> указывается для `millisecondsTimeout` параметра, этот метод неограниченно блокируется, если владелец блокировки вызывает <xref:System.Threading.Monitor.Pulse%2A> или <xref:System.Threading.Monitor.PulseAll%2A>. Если `millisecondsTimeout` равно нулю, поток, вызывающий `Wait` снимает блокировку и затем немедленно постановки в очередь готовности, чтобы снова получить блокировку.  
-  
- Вызывающий поток выполняет `Wait` один раз, независимо от того, сколько раз <xref:System.Threading.Monitor.Enter%2A> был вызван для указанного объекта. По существу `Wait` метод сохраняет количество раз, вызывающий инструкцию <xref:System.Threading.Monitor.Enter%2A> в объекте и вызывает <xref:System.Threading.Monitor.Exit%2A> столько раз, сколько нужно, чтобы полностью освободить объект с блокировкой. Вызывающий объект затем блокируется, ожидая получения объекта. Если вызывающий поток заново получает блокировку, система вызывает <xref:System.Threading.Monitor.Enter%2A> столько раз, сколько необходимо для восстановления сохраненного <xref:System.Threading.Monitor.Enter%2A> числа. Вызов `Wait` снимает блокировку указанного объекта; если вызывающий объект является владельцем блокировки на другие объекты, они не освобождаются.  
+ Когда поток вызывает `Wait`, он освобождает блокировку и переходит в очередь ожидания. На этом этапе следующий поток в очереди готовности (если таковой имеется) может контролировать блокировку. Поток, который вызывается `Wait` , остается в очереди ожидания до тех пор, пока не будет <xref:System.Threading.Monitor.PulseAll%2A>вызван поток, который владеет вызовом блокировки, или он является следующей в очереди и потоком, который <xref:System.Threading.Monitor.Pulse%2A>содержит вызовы блокировки. Однако, если `millisecondsTimeout` происходит <xref:System.Threading.Monitor.Pulse%2A> до того, как другой поток вызовет метод или <xref:System.Threading.Monitor.PulseAll%2A> , исходный поток перемещается в очередь готовности для восстановления блокировки.  
   
 > [!NOTE]
->  Синхронизированный объект имеет несколько ссылок, в том числе ссылку на поток, удерживающий блокировку, ссылку на очередь готовности, который содержит потоки, готовые к получению блокировки, и ссылку на очередь ожидания, который содержит в настоящее время потоки, ожидающие получать уведомления об изменении состояния объекта.  
+>  Если <xref:System.Threading.Timeout.Infinite> <xref:System.Threading.Monitor.Pulse%2A> для параметра указано значение, этот метод блокируется неопределенно долго, если владелец блокировки не вызывает или <xref:System.Threading.Monitor.PulseAll%2A>. `millisecondsTimeout` Если `millisecondsTimeout` равно 0, то поток, вызывающий `Wait` освобождение блокировки, затем сразу переходит в очередь готовности, чтобы восстановить блокировку.  
   
- <xref:System.Threading.Monitor.Pulse%2A>, <xref:System.Threading.Monitor.PulseAll%2A>, И `Wait` методы должны быть вызваны из синхронизированного блока кода.  
+ Вызывающий объект выполняется `Wait` один раз, независимо от числа вызовов <xref:System.Threading.Monitor.Enter%2A> , вызванных для указанного объекта. По `Wait` сути, метод сохраняет количество вызовов вызывающего <xref:System.Threading.Monitor.Enter%2A> объекта в объекте и вызывает <xref:System.Threading.Monitor.Exit%2A> столько раз, сколько необходимо для полного освобождения заблокированного объекта. Затем вызывающий объект блокируется при ожидании повторного получения объекта. Когда вызывающий объект повторно получает блокировку, система вызывает <xref:System.Threading.Monitor.Enter%2A> столько раз, сколько необходимо для восстановления сохраненного <xref:System.Threading.Monitor.Enter%2A> количества для вызывающего. Вызов `Wait` освобождает блокировку только для указанного объекта; если вызывающий объект является владельцем блокировок для других объектов, эти блокировки не освобождаются.  
   
- В примечаниях к описанию <xref:System.Threading.Monitor.Pulse%2A> метод объяснить, что произойдет, если <xref:System.Threading.Monitor.Pulse%2A> вызывается при отсутствии ожидающих потоков.  
+> [!NOTE]
+>  Синхронизированный объект содержит несколько ссылок, включая ссылку на поток, который в настоящее время владеет блокировкой, ссылку на очередь готовности, которая содержит потоки, готовые к получению блокировки, и ссылку на очередь ожидания, которая содержит потоки, ожидающие уведомления об изменении состояния объекта.  
+  
+ Методы <xref:System.Threading.Monitor.Pulse%2A>, <xref:System.Threading.Monitor.PulseAll%2A> и`Wait` должны вызываться из синхронизированного блока кода.  
+  
+ Примечания для <xref:System.Threading.Monitor.Pulse%2A> метода объясняют, что происходит, если <xref:System.Threading.Monitor.Pulse%2A> вызывается, когда потоки не ожидают ожидания.  
   
 ## <a name="notes-on-exiting-the-context"></a>Примечания о выходе из контекста  
- `exitContext` Параметр действует только <xref:System.Threading.Monitor.Wait%2A> метод вызывается из внутри управляемого контекста не по умолчанию. Это может произойти, если ваш поток находится внутри вызова к экземпляру класса, производного от <xref:System.ContextBoundObject>. Даже если в настоящее время выполняется метод в классе, который не является производным от <xref:System.ContextBoundObject>, например <xref:System.String>, может быть в контексте не по умолчанию если <xref:System.ContextBoundObject> стеке в текущем домене приложения.  
+ Параметр не действует, <xref:System.Threading.Monitor.Wait%2A> если метод не вызывается из управляемого контекста, не используемого по умолчанию.`exitContext` Это может произойти, если поток находится внутри вызова экземпляра класса, производного от <xref:System.ContextBoundObject>. Даже если в данный момент выполняется метод для класса, который не является производным от <xref:System.ContextBoundObject>, например <xref:System.String>, вы можете находиться в нестандартном контексте, если <xref:System.ContextBoundObject> в вашем стеке в текущем домене приложения есть.  
   
- Когда ваш код выполняется в контексте не по умолчанию, указав `true` для `exitContext` вызывающий поток выйти из управляемого контекста не по умолчанию (то есть для перехода в контекст по умолчанию) перед выполнением <xref:System.Threading.Monitor.Wait%2A> метод. Возвращается к исходному контексту не по умолчанию после вызова <xref:System.Threading.Monitor.Wait%2A> завершения метода.  
+ Если код выполняется в контексте, не установленном по умолчанию `true` , `exitContext` то при указании значения для потока будет завершен нестандартный управляемый контекст (то есть переход к <xref:System.Threading.Monitor.Wait%2A> контексту по умолчанию) перед выполнением метода. После завершения вызова <xref:System.Threading.Monitor.Wait%2A> метода он возвращается к исходному контексту, не заданному по умолчанию.  
   
- Это может быть полезно, если класс контекстно привязанные имеет <xref:System.Runtime.Remoting.Contexts.SynchronizationAttribute> применен атрибут. В этом случае все вызовы к членам класса автоматически синхронизируются и области синхронизации находится в теле код для класса. Если в стеке вызовов элемента вызывается <xref:System.Threading.Monitor.Wait%2A> метода с указанием `true` для `exitContext`, поток выходит из области синхронизации, позволяя потоку, который блокируется во время вызова любого члена объекта для продолжения. Когда <xref:System.Threading.Monitor.Wait%2A> метод возвращает поток, которой был сделан вызов должен ожидать повторный ввод области синхронизации.  
+ Это может быть полезно, если к контекстно-привязанному <xref:System.Runtime.Remoting.Contexts.SynchronizationAttribute> классу применен атрибут. В этом случае все вызовы членов класса автоматически синхронизируются, а домен синхронизации — весь текст кода для класса. Если код в стеке вызовов члена вызывает <xref:System.Threading.Monitor.Wait%2A> метод и указывает `true` для `exitContext`, поток завершает домен синхронизации, позволяя потоку, который блокируется на вызов любого члена объекта, продолжать работу. <xref:System.Threading.Monitor.Wait%2A> Когда метод возвращает значение, поток, который выполнил вызов, должен дождаться повторного входа в домен синхронизации.  
   
  ]]></format>
         </remarks>
@@ -1401,32 +1401,32 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот метод не возвращает до получения монопольной блокировки на `obj` параметра.  
+ Этот метод не возвращает значение `obj` до тех пор, пока он не получит монопольную блокировку на параметр.  
   
- Поток, который в данный момент принадлежит блокировка указанного объекта вызывает этот метод, чтобы освободить объект доступа к ней другим потоком. Вызывающий поток блокируется, ожидая получения блокировки. Этот метод вызывается, когда вызывающий объект должен ожидать изменения состояния, которые произойдут в результате операций другого потока.  
+ Поток, который в настоящее время владеет блокировкой указанного объекта, вызывает этот метод, чтобы освободить объект, чтобы другой поток мог получить к нему доступ. Вызывающий объект блокируется при ожидании повторного получения блокировки. Этот метод вызывается, когда вызывающему объекту требуется подождать изменения состояния, которое будет происходить в результате операций другого потока.  
   
- Время ожидания гарантирует, что текущий поток не блокируется неограниченно, если другой поток освобождает блокировку без предварительного вызова функции <xref:System.Threading.Monitor.Pulse%2A> или <xref:System.Threading.Monitor.PulseAll%2A> метод. Он также перемещает поток в очередь готовности, минуя другие потоки предшествует ей в очереди ожидания, таким образом, чтобы быстрее получения блокировки. Поток можно проверить возвращаемое значение <xref:System.Threading.Monitor.Wait%2A> метод для определения того, получена ли его блокировки до истечения времени ожидания. Поток можно оценить условия, которые привело к введите ожидания, и если необходимости вызова <xref:System.Threading.Monitor.Wait%2A> метод снова.  
+ Время ожидания гарантирует, что текущий поток не блокируется в течение неограниченного времени, если другой поток освобождает блокировку без предварительного <xref:System.Threading.Monitor.Pulse%2A> вызова <xref:System.Threading.Monitor.PulseAll%2A> метода или. Он также перемещает поток в очередь готовности, обходя другие потоки перед ним в очереди ожидания, чтобы он мог повторно получить блокировку. Поток может проверить возвращаемое значение <xref:System.Threading.Monitor.Wait%2A> метода, чтобы определить, был ли он получен повторно до истечения времени ожидания. Поток может оценить условия, вызвавшие его, чтобы войти в ожидание, и при необходимости снова <xref:System.Threading.Monitor.Wait%2A> вызвать метод.  
   
- Если поток вызывает `Wait`, он освобождает блокировку и входит в очередь ожидания. На этом этапе следующий поток в очереди готовности (если таковой имеется) может контролировать блокировки. Поток, вызвавший `Wait` вызывающий поток, удерживающий блокировку остается в очереди ожидания либо до <xref:System.Threading.Monitor.PulseAll%2A>, или он является следующим в очереди, и вызывающий поток, удерживающий блокировку <xref:System.Threading.Monitor.Pulse%2A>. Тем не менее если `timeout` пройдет, прежде чем другой поток вызывает этот объект <xref:System.Threading.Monitor.Pulse%2A> или <xref:System.Threading.Monitor.PulseAll%2A> метод, исходный поток перемещается в очередь готовности, чтобы снова получить блокировку.  
-  
-> [!NOTE]
->  Если <xref:System.TimeSpan> представляющий-1 миллисекунду для указан `timeout` параметра, этот метод неограниченно блокируется, если владелец блокировки вызывает <xref:System.Threading.Monitor.Pulse%2A> или <xref:System.Threading.Monitor.PulseAll%2A>. Если `timeout` равно 0, поток, вызывающий `Wait` снимает блокировку и затем немедленно постановки в очередь готовности, чтобы снова получить блокировку.  
-  
- Вызывающий поток выполняет `Wait` один раз, независимо от того, сколько раз <xref:System.Threading.Monitor.Enter%2A> был вызван для указанного объекта. По существу `Wait` метод сохраняет количество раз, вызывающий инструкцию <xref:System.Threading.Monitor.Enter%2A> в объекте и вызывает <xref:System.Threading.Monitor.Exit%2A> столько раз, сколько нужно, чтобы полностью освободить объект с блокировкой. Вызывающий объект затем блокируется, ожидая получения объекта. Если вызывающий поток заново получает блокировку, система вызывает <xref:System.Threading.Monitor.Enter%2A> столько раз, сколько необходимо для восстановления сохраненного <xref:System.Threading.Monitor.Enter%2A> числа. Вызов `Wait` снимает блокировку указанного объекта; если вызывающий объект является владельцем блокировки на другие объекты, они не освобождаются.  
+ Когда поток вызывает `Wait`, он освобождает блокировку и переходит в очередь ожидания. На этом этапе следующий поток в очереди готовности (если таковой имеется) может контролировать блокировку. Поток, который вызывается `Wait` , остается в очереди ожидания до тех пор, пока не будет <xref:System.Threading.Monitor.PulseAll%2A>вызван поток, который владеет вызовом блокировки, или он является следующей в очереди и потоком, который <xref:System.Threading.Monitor.Pulse%2A>содержит вызовы блокировки. Однако если `timeout` миллисекунды пройдут до того, как другой поток вызовет <xref:System.Threading.Monitor.Pulse%2A> этот <xref:System.Threading.Monitor.PulseAll%2A> метод или, исходный поток перемещается в очередь готовности для восстановления блокировки.  
   
 > [!NOTE]
->  Синхронизированный объект имеет несколько ссылок, в том числе ссылку на поток, удерживающий блокировку, ссылку на очередь готовности, который содержит потоки, готовые к получению блокировки, и ссылку на очередь ожидания, который содержит в настоящее время потоки, ожидающие получать уведомления об изменении состояния объекта.  
+>  Если <xref:System.TimeSpan> <xref:System.Threading.Monitor.Pulse%2A> для параметра указано значение-1 миллисекунда, этот метод блокируется неопределенно долго, если владелец блокировки не вызывает или <xref:System.Threading.Monitor.PulseAll%2A>. `timeout` Если `timeout` значение равно 0 миллисекундам, то поток, `Wait` вызывающий освобождение блокировки, затем сразу переходит в очередь готовности, чтобы восстановить блокировку.  
   
- <xref:System.Threading.Monitor.Pulse%2A>, <xref:System.Threading.Monitor.PulseAll%2A>, И `Wait` методы должны быть вызваны из синхронизированного блока кода.  
+ Вызывающий объект выполняется `Wait` один раз, независимо от числа вызовов <xref:System.Threading.Monitor.Enter%2A> , вызванных для указанного объекта. По `Wait` сути, метод сохраняет количество вызовов вызывающего <xref:System.Threading.Monitor.Enter%2A> объекта в объекте и вызывает <xref:System.Threading.Monitor.Exit%2A> столько раз, сколько необходимо для полного освобождения заблокированного объекта. Затем вызывающий объект блокируется при ожидании повторного получения объекта. Когда вызывающий объект повторно получает блокировку, система вызывает <xref:System.Threading.Monitor.Enter%2A> столько раз, сколько необходимо для восстановления сохраненного <xref:System.Threading.Monitor.Enter%2A> количества для вызывающего. Вызов `Wait` освобождает блокировку только для указанного объекта; если вызывающий объект является владельцем блокировок для других объектов, эти блокировки не освобождаются.  
   
- В примечаниях к описанию <xref:System.Threading.Monitor.Pulse%2A> метод объяснить, что произойдет, если <xref:System.Threading.Monitor.Pulse%2A> вызывается при отсутствии ожидающих потоков.  
+> [!NOTE]
+>  Синхронизированный объект содержит несколько ссылок, включая ссылку на поток, который в настоящее время владеет блокировкой, ссылку на очередь готовности, которая содержит потоки, готовые к получению блокировки, и ссылку на очередь ожидания, которая содержит потоки, ожидающие уведомления об изменении состояния объекта.  
+  
+ Методы <xref:System.Threading.Monitor.Pulse%2A>, <xref:System.Threading.Monitor.PulseAll%2A> и`Wait` должны вызываться из синхронизированного блока кода.  
+  
+ Примечания для <xref:System.Threading.Monitor.Pulse%2A> метода объясняют, что происходит, если <xref:System.Threading.Monitor.Pulse%2A> вызывается, когда потоки не ожидают ожидания.  
   
 ## <a name="notes-on-exiting-the-context"></a>Примечания о выходе из контекста  
- `exitContext` Параметр действует только <xref:System.Threading.Monitor.Wait%2A> метод вызывается из внутри управляемого контекста не по умолчанию. Это может произойти, если ваш поток находится внутри вызова к экземпляру класса, производного от <xref:System.ContextBoundObject>. Даже если в настоящее время выполняется метод в классе, который не является производным от <xref:System.ContextBoundObject>, например <xref:System.String>, может быть в контексте не по умолчанию если <xref:System.ContextBoundObject> стеке в текущем домене приложения.  
+ Параметр не действует, <xref:System.Threading.Monitor.Wait%2A> если метод не вызывается из управляемого контекста, не используемого по умолчанию.`exitContext` Это может произойти, если поток находится внутри вызова экземпляра класса, производного от <xref:System.ContextBoundObject>. Даже если в данный момент выполняется метод для класса, который не является производным от <xref:System.ContextBoundObject>, например <xref:System.String>, вы можете находиться в нестандартном контексте, если <xref:System.ContextBoundObject> в вашем стеке в текущем домене приложения есть.  
   
- Когда ваш код выполняется в контексте не по умолчанию, указав `true` для `exitContext` вызывающий поток выйти из управляемого контекста не по умолчанию (то есть для перехода в контекст по умолчанию) перед выполнением <xref:System.Threading.Monitor.Wait%2A> метод. Возвращается к исходному контексту не по умолчанию после вызова <xref:System.Threading.Monitor.Wait%2A> завершения метода.  
+ Если код выполняется в контексте, не установленном по умолчанию `true` , `exitContext` то при указании значения для потока будет завершен нестандартный управляемый контекст (то есть переход к <xref:System.Threading.Monitor.Wait%2A> контексту по умолчанию) перед выполнением метода. После завершения вызова <xref:System.Threading.Monitor.Wait%2A> метода он возвращается к исходному контексту, не заданному по умолчанию.  
   
- Это может быть полезно, если класс контекстно привязанные имеет <xref:System.Runtime.Remoting.Contexts.SynchronizationAttribute> применен атрибут. В этом случае все вызовы к членам класса автоматически синхронизируются и области синхронизации находится в теле код для класса. Если в стеке вызовов элемента вызывается <xref:System.Threading.Monitor.Wait%2A> метода с указанием `true` для `exitContext`, поток выходит из области синхронизации, позволяя потоку, который блокируется во время вызова любого члена объекта для продолжения. Когда <xref:System.Threading.Monitor.Wait%2A> метод возвращает поток, которой был сделан вызов должен ожидать повторный ввод области синхронизации.  
+ Это может быть полезно, если к контекстно-привязанному <xref:System.Runtime.Remoting.Contexts.SynchronizationAttribute> классу применен атрибут. В этом случае все вызовы членов класса автоматически синхронизируются, а домен синхронизации — весь текст кода для класса. Если код в стеке вызовов члена вызывает <xref:System.Threading.Monitor.Wait%2A> метод и указывает `true` для `exitContext`, поток завершает домен синхронизации, позволяя потоку, который блокируется на вызов любого члена объекта, продолжать работу. <xref:System.Threading.Monitor.Wait%2A> Когда метод возвращает значение, поток, который выполнил вызов, должен дождаться повторного входа в домен синхронизации.  
   
  ]]></format>
         </remarks>

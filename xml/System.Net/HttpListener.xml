@@ -35,37 +35,37 @@
       <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- С помощью <xref:System.Net.HttpListener> класса, можно создать простой прослушиватель протокола HTTP, который отвечает на HTTP-запросы. Прослушиватель активен в течение времени существования <xref:System.Net.HttpListener> объекта и выполняется в приложении с помощью его разрешения.
+ С помощью <xref:System.Net.HttpListener> класса можно создать простой прослушиватель протокола HTTP, отвечающий на HTTP-запросы. Прослушиватель активен в течение всего времени существования <xref:System.Net.HttpListener> объекта и выполняется в приложении с его разрешениями.
    
- Для использования <xref:System.Net.HttpListener>, создайте новый экземпляр класса с использованием <xref:System.Net.HttpListener> конструктор и используйте <xref:System.Net.HttpListener.Prefixes%2A> свойство для получения доступа к коллекции, содержащий строки, которые указывают, какой универсальный код ресурса (URI) префиксы <xref:System.Net.HttpListener>должен обрабатывать.
+ Чтобы использовать <xref:System.Net.HttpListener>, создайте новый экземпляр класса <xref:System.Net.HttpListener> с помощью конструктора и используйте <xref:System.Net.HttpListener.Prefixes%2A> свойство, чтобы получить доступ к коллекции, содержащей строки, указывающие, какой универсальный код ресурса (URI) добавляет префикс <xref:System.Net.HttpListener>должен обрабатываться.
   
- Строка префикса URI представляет собой схему (http или https), узел, дополнительного порта и дополнительный путь. Например, строку завершения префикса *http://www.contoso.com:8080/customerData/*. Префиксы должны заканчиваться косой чертой («/»). <xref:System.Net.HttpListener> Объекта с префиксом, наиболее точно соответствующий запрашиваемому URL-АДРЕСУ ответа на запрос. Несколько <xref:System.Net.HttpListener> объектов не удается добавить тот же префикс; <xref:System.ComponentModel.Win32Exception> исключение вызывается в том случае, если <xref:System.Net.HttpListener> добавляет префикс, который уже используется.
+ Строка префикса URI состоит из схемы (HTTP или HTTPS), узла, дополнительного порта и необязательного пути. Пример полной строки префикса: *http://www.contoso.com:8080/customerData/*. Префиксы должны оканчиваться косой чертой ("/"). <xref:System.Net.HttpListener> Объект с префиксом, который наиболее близко соответствует запрошенному URI, отвечает на запрос. Несколько <xref:System.Net.HttpListener> объектов не могут добавить один и тот же <xref:System.ComponentModel.Win32Exception> префикс; <xref:System.Net.HttpListener> исключение создается, если добавляет префикс, который уже используется.
   
- Если указан порт, элемент узла может быть заменен с "\*" Указывает, что <xref:System.Net.HttpListener> принимает запросы, отправленные в порт, если запрошенный URI не соответствует любой другой префикс. Например, чтобы получать все запросы отправляются к порту 8080, когда запрошенный URI не обрабатывается каким-либо <xref:System.Net.HttpListener>, используется префикс *http://\*: 8080 /*. Аналогичным образом чтобы указать, что <xref:System.Net.HttpListener> принимает все запросы, отправляемые на порт, замените элемент узла символ «+». Например, *https://+:8080*. "\*" И «+» символы могут быть представлены в префиксах, содержащих пути.
+ Если указан порт, элемент Host можно заменить на "\*", чтобы указать <xref:System.Net.HttpListener> , что принимает запросы, отправляемые на порт, если запрашиваемый URI не совпадает ни с каким другим префиксом. Например, чтобы получить все запросы, отправленные на порт 8080, если запрашиваемый URI не обрабатывается <xref:System.Net.HttpListener>ни одним из них, то префиксом будет *http://\*: 8080/*. Аналогично, чтобы указать, <xref:System.Net.HttpListener> что компонент принимает все запросы, отправляемые в порт, замените элемент Host символом "+". Например, *https://+:8080*. Символы "\*" и "+" могут присутствовать в префиксах, включающих пути.
   
- Начиная с .NET Core 2.0 или .NET Framework 4.6 в Windows 10, дочерние домены с подстановочными знаками поддерживаются в URI-префиксов, которые управляются <xref:System.Net.HttpListener> объекта. Чтобы указать дочерний домен с подстановочными знаками, используйте "\*" символ как часть имени узла в префикс URI. Например *http://\*.foo.com/*. Это передается в качестве аргумента для <xref:System.Net.HttpListenerPrefixCollection.Add%2A> метод. Это работает, начиная с .NET Core 2.0 или .NET Framework 4.6 в Windows 10; в более ранних версий, это приводит к возникновению ошибки <xref:System.Net.HttpListenerException>.
+ Начиная с .NET Core 2,0 или .NET Framework 4,6 в Windows 10, поддомены с подстановочными знаками поддерживаются в префиксах URI, <xref:System.Net.HttpListener> управляемых объектом. Чтобы указать поддомен с подстановочными знаками, используйте\*символ "" как часть имени узла в префиксе URI. Например, *\*http://. foo.com/*. Передайте его в качестве аргумента <xref:System.Net.HttpListenerPrefixCollection.Add%2A> в метод. Это работает начиная с .NET Core 2,0 или .NET Framework 4,6 в Windows 10; в более ранних версиях это создает <xref:System.Net.HttpListenerException>.
 
  > [!WARNING]
- > Поставить (*http://\*: 8080 /* и *http://+:8080*) следует **не** использоваться. Это может создать уязвимость и поставить ваше приложение под угрозу. Сюда относятся и строгие, и нестрогие подстановочные знаки. Вместо этого используйте имена узлов в явном виде. Привязки с подстановочными знаками на уровне дочерних доменов (например `*.mysub.com`) не создают таких угроз безопасности, если вы полностью контролируете родительский домен (в отличие от варианта `*.com`, создающего уязвимость). Дополнительные сведения см. в документе [rfc7230, раздел 5.4](https://tools.ietf.org/html/rfc7230#section-5.4).
+ > **Не** следует использовать подстановочные привязки верхнего уровня (*http://\*: 8080/* и *http://+:8080*). Это может создать уязвимость и поставить ваше приложение под угрозу. Сюда относятся и строгие, и нестрогие подстановочные знаки. Вместо этого используйте имена узлов в явном виде. Привязки с подстановочными знаками на уровне дочерних доменов (например `*.mysub.com`) не создают таких угроз безопасности, если вы полностью контролируете родительский домен (в отличие от варианта `*.com`, создающего уязвимость). Дополнительные сведения см. в документе [rfc7230, раздел 5.4](https://tools.ietf.org/html/rfc7230#section-5.4).
   
- Чтобы начать прослушивать запросы от клиентов, добавьте префиксы URI для коллекции и вызвать <xref:System.Net.HttpListener.Start%2A> метод. <xref:System.Net.HttpListener> включает в себя как синхронные, так и асинхронную модели обработки клиентских запросов. Запросы и ответы на них связанные осуществляется с помощью <xref:System.Net.HttpListenerContext> объект, возвращаемый <xref:System.Net.HttpListener.GetContext%2A> метода или его асинхронной аналоги, <xref:System.Net.HttpListener.BeginGetContext%2A> и <xref:System.Net.HttpListener.EndGetContext%2A> методы.
+ Чтобы начать прослушивание запросов от клиентов, добавьте префиксы URI в коллекцию и вызовите <xref:System.Net.HttpListener.Start%2A> метод. <xref:System.Net.HttpListener>предлагает как синхронные, так и асинхронные модели для обработки клиентских запросов. Доступ к запросам и связанным с ними <xref:System.Net.HttpListenerContext> ответам осуществляется с <xref:System.Net.HttpListener.GetContext%2A> помощью объекта, возвращаемого методом, или <xref:System.Net.HttpListener.BeginGetContext%2A> его <xref:System.Net.HttpListener.EndGetContext%2A> асинхронными аналогами, методами и.
   
- Синхронная модель подходит в том случае, если приложения должны блокировать во время ожидания для запроса клиента, и если вы хотите обрабатывать только один запрос единовременно. С помощью синхронной модели, вызовите <xref:System.Net.HttpListener.GetContext%2A> метод, который ожидает клиента для отправки запроса. Этот метод возвращает <xref:System.Net.HttpListenerContext> объект для обработки, когда один происходит.
+ Синхронная модель подходит, если приложение должно блокироваться при ожидании запроса клиента и если требуется обработать только один запрос за раз. Используя синхронную модель, вызовите <xref:System.Net.HttpListener.GetContext%2A> метод, который ожидает отправки клиентом запроса. Метод возвращает <xref:System.Net.HttpListenerContext> объект для обработки, когда происходит событие.
   
- В более сложных асинхронной модели приложение не блокируется во время ожидания запросов и каждый запрос обрабатывается в своем собственном потоке выполнения. Используйте <xref:System.Net.HttpListener.BeginGetContext%2A> метод, чтобы указать метод, определяемый приложением, позволяющий вызывать для каждого входящего запроса. В этом методе, вызывать <xref:System.Net.HttpListener.EndGetContext%2A> метод, чтобы получить запрос, обрабатывать их и реагировать.
+ В более сложной асинхронной модели приложение не блокируется при ожидании запросов, и каждый запрос обрабатывается в собственном потоке выполнения. <xref:System.Net.HttpListener.BeginGetContext%2A> Используйте метод, чтобы указать определяемый приложением метод, вызываемый для каждого входящего запроса. В этом методе вызовите <xref:System.Net.HttpListener.EndGetContext%2A> метод, чтобы получить запрос, обработать его и ответить.
   
- В любой модели входящих запросов осуществляется с помощью <xref:System.Net.HttpListenerContext.Request%2A?displayProperty=nameWithType> на них свойства, представленного <xref:System.Net.HttpListenerRequest> объектов. Аналогичным образом, ответы осуществляется с помощью <xref:System.Net.HttpListenerContext.Response%2A?displayProperty=nameWithType> на них свойства, представленного <xref:System.Net.HttpListenerResponse> объектов. Эти объекты используют некоторые функциональные возможности с <xref:System.Net.HttpWebRequest> и <xref:System.Net.HttpWebResponse> объекты, но последний объектов не может использоваться в сочетании с <xref:System.Net.HttpListener> так, как они реализуют поведение клиента, а не сервера.
+ В любой из этих моделей доступ к входящим запросам <xref:System.Net.HttpListenerContext.Request%2A?displayProperty=nameWithType> осуществляется с помощью свойства и <xref:System.Net.HttpListenerRequest> представляются объектами. Аналогично, доступ к ответам <xref:System.Net.HttpListenerContext.Response%2A?displayProperty=nameWithType> осуществляется с помощью свойства и <xref:System.Net.HttpListenerResponse> представляются объектами. Эти объекты совместно используют некоторые функциональные возможности <xref:System.Net.HttpWebRequest> с <xref:System.Net.HttpWebResponse> объектами и, но последние объекты не могут использоваться совместно с <xref:System.Net.HttpListener> , поскольку они реализуют клиент, а не сервер, поведение.
   
- <xref:System.Net.HttpListener> Можно потребовать проверку подлинности клиента. Можно указать определенную схему для проверки подлинности, или можно указать делегат, который определяет схему, которая используется. Необходимо использовать некоторую форму проверки подлинности для получения сведений об идентификации клиента. Дополнительные сведения см. в разделе <xref:System.Net.HttpListenerContext.User%2A>, <xref:System.Net.HttpListener.AuthenticationSchemes%2A>, и <xref:System.Net.HttpListener.AuthenticationSchemeSelectorDelegate%2A> свойства.
-  
-> [!NOTE]
-> Если вы создаете <xref:System.Net.HttpListener> по протоколу https, необходимо выбрать сертификат сервера для этого прослушивателя. В противном случае <xref:System.Net.HttpWebRequest> подзапрос этого <xref:System.Net.HttpListener> завершится с неожиданный запрос закрытия соединения.
+ <xref:System.Net.HttpListener> Может требоваться проверка подлинности клиента. Можно указать определенную схему, которая будет использоваться для проверки подлинности, или указать делегат, определяющий используемую схему. Для получения сведений об удостоверении клиента необходимо иметь некоторую форму проверки подлинности. Дополнительные сведения см. в <xref:System.Net.HttpListenerContext.User%2A>разделе Свойства, <xref:System.Net.HttpListener.AuthenticationSchemes%2A>и <xref:System.Net.HttpListener.AuthenticationSchemeSelectorDelegate%2A> .
   
 > [!NOTE]
-> Сертификаты сервера и другие параметры прослушивателя можно настроить с помощью сетевой оболочки (netsh.exe). См. в разделе [сетевой оболочки (Netsh)](/windows-server/networking/technologies/netsh/netsh) для получения дополнительных сведений. Исполняемый файл поставляются с Windows Server 2008 и Windows Vista.
+> При создании <xref:System.Net.HttpListener> с помощью HTTPS необходимо выбрать сертификат сервера для этого прослушивателя. В противном случае <xref:System.Net.HttpListener> запросбудетзавершатьсяснепредвиденнымзакрытиемсоединения.<xref:System.Net.HttpWebRequest>
   
 > [!NOTE]
-> При указании нескольких схем проверки подлинности для <xref:System.Net.HttpListener>, прослушиватель требует клиентов в следующем порядке: `Negotiate`, `NTLM`, `Digest`, а затем `Basic`.
+> Можно настроить сертификаты сервера и другие параметры прослушивателя с помощью сетевой оболочки (Netsh. exe). Дополнительные сведения см. в разделе [Сетевая оболочка (Netsh)](/windows-server/networking/technologies/netsh/netsh) . Исполняемый файл начал доставляться с Windows Server 2008 и Windows Vista.
+  
+> [!NOTE]
+> Если для <xref:System.Net.HttpListener>задано несколько схем проверки подлинности, прослушиватель выполнит запрос клиентов в следующем `Negotiate`порядке: `Digest` `Basic`, `NTLM`, и.
   
    
   
@@ -77,7 +77,7 @@
   
  ]]></format>
     </remarks>
-    <related type="Article" href="https://msdn.microsoft.com/library/8bf0b428-5a21-4299-8d6e-bf8251fd978a">Изменения в аутентификации NTLM для HTTPWebRequest в версии 3.5 с пакетом обновления 1</related>
+    <related type="Article" href="https://msdn.microsoft.com/library/8bf0b428-5a21-4299-8d6e-bf8251fd978a">Изменения проверки подлинности NTLM для HTTPWebRequest в версии 3,5 SP1</related>
   </Docs>
   <Members>
     <Member MemberName=".ctor">
@@ -110,20 +110,20 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Прежде чем использовать экземпляр, возвращаемый этим конструктором, необходимо вызвать его <xref:System.Net.HttpListener.Start%2A> метод.  
+ Перед использованием экземпляра, возвращаемого этим конструктором, необходимо вызвать его <xref:System.Net.HttpListener.Start%2A> метод.  
   
    
   
 ## Examples  
- В следующем примере кода показано использование <xref:System.Net.HttpListener> конструктор для создания нового <xref:System.Net.HttpListener> объекта. Полный пример см. в разделе <xref:System.Net.HttpListener> разделе, посвященном классу.  
+ В следующем примере кода демонстрируется использование <xref:System.Net.HttpListener> конструктора для создания нового <xref:System.Net.HttpListener> объекта. Полный пример см. в <xref:System.Net.HttpListener> разделе о классе.  
   
  [!code-csharp[Net_listener_Basic#9](~/samples/snippets/csharp/VS_Snippets_Remoting/Net_Listener_Basic/CS/test.cs#9)]  
  [!code-vb[Net_Listener_Basic#9](~/samples/snippets/visualbasic/VS_Snippets_Remoting/Net_Listener_Basic/VB/test.vb#9)]  
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.PlatformNotSupportedException">Этот класс не может использоваться в текущей операционной системе. Для использования экземпляров этого класса требуется Windows Server 2003 или Windows XP SP2.</exception>
-        <block subset="none" type="usage"><para>Примечание. Данный член генерирует сведения трассировки, если в приложении включена трассировка сети. Дополнительные сведения см. в разделе [сетевая трассировка в .NET Framework](~/docs/framework/network-programming/network-tracing.md).</para></block>
+        <exception cref="T:System.PlatformNotSupportedException">Этот класс не может использоваться в этой операционной системе. Для использования экземпляров этого класса требуется операционная система Windows Server 2003 или Windows XP с пакетом обновления 2.</exception>
+        <block subset="none" type="usage"><para>Примечание. Данный член генерирует сведения трассировки, если в приложении включена трассировка сети. Дополнительные сведения см. [в разделе Сетевая трассировка в .NET Framework](~/docs/framework/network-programming/network-tracing.md).</para></block>
       </Docs>
     </Member>
     <Member MemberName="Abort">
@@ -160,9 +160,9 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот метод освобождает все ресурсы, удерживаемые этим прослушивателем. Не удалось завершить ожидающие запросы:  
+ Этот метод уничтожает все ресурсы, удерживаемые этим прослушивателем. Все ожидающие запросы не могут быть завершены.  
   
- После вызова этого метода, вы получите <xref:System.ObjectDisposedException> при попытке использовать этот <xref:System.Net.HttpListener>.  
+ После вызова этого метода вы получите исключение <xref:System.ObjectDisposedException> , если попытаться использовать его. <xref:System.Net.HttpListener>  
   
    
   
@@ -174,7 +174,7 @@
   
  ]]></format>
         </remarks>
-        <block subset="none" type="usage"><para>Данный член генерирует сведения трассировки, если в приложении включена трассировка сети. Дополнительные сведения см. в разделе [сетевая трассировка в .NET Framework](~/docs/framework/network-programming/network-tracing.md).</para></block>
+        <block subset="none" type="usage"><para>Данный член генерирует сведения трассировки, если в приложении включена трассировка сети. Дополнительные сведения см. [в разделе Сетевая трассировка в .NET Framework](~/docs/framework/network-programming/network-tracing.md).</para></block>
       </Docs>
     </Member>
     <Member MemberName="AuthenticationSchemes">
@@ -210,25 +210,25 @@
         <ReturnType>System.Net.AuthenticationSchemes</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Возвращает или задает схему, используемую для аутентификации клиентов.</summary>
-        <value>Битовая комбинация значений перечисления <see cref="T:System.Net.AuthenticationSchemes" />, которая указывает, как клиенты должны проходить аутентификацию. Значение по умолчанию — <see cref="F:System.Net.AuthenticationSchemes.Anonymous" />.</value>
+        <summary>Возвращает или задает схему, используемую для проверки подлинности клиентов.</summary>
+        <value>Битовая комбинация значений перечисления <see cref="T:System.Net.AuthenticationSchemes" />, которая указывает, как клиенты должны проходить проверку подлинности. Значение по умолчанию — <see cref="F:System.Net.AuthenticationSchemes.Anonymous" />.</value>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- <xref:System.Net.HttpListener> Использует указанную схему для проверки подлинности всех входящих запросов. <xref:System.Net.HttpListener.GetContext%2A> И <xref:System.Net.HttpListener.EndGetContext%2A> методы возвращают входящего клиентского запроса только в том случае, если <xref:System.Net.HttpListener> успешно проверяет подлинность запроса.  
+ <xref:System.Net.HttpListener> Использует указанную схему для проверки подлинности всех входящих запросов. Методы <xref:System.Net.HttpListener.GetContext%2A> <xref:System.Net.HttpListener> и <xref:System.Net.HttpListener.EndGetContext%2A> возвращают входящий запрос клиента только в случае успешной проверки подлинности запроса.  
   
- Можно запросить удостоверение успешно прошедшего проверку подлинности клиента с помощью <xref:System.Net.HttpListenerContext.User%2A?displayProperty=nameWithType> свойство.  
+ Вы можете запросить удостоверение успешно прошедшего проверку подлинности клиента с помощью <xref:System.Net.HttpListenerContext.User%2A?displayProperty=nameWithType> свойства.  
   
- Если вы хотите, чтобы <xref:System.Net.HttpListener> объект для использования в различных механизмов проверки подлинности на основе характеристик запросов, он получает (например, запроса <xref:System.Net.HttpListenerRequest.Url%2A> или <xref:System.Net.HttpListenerRequest.UserHostName%2A> свойства), необходимо реализовать метод, который выбирает Схема проверки подлинности. Инструкции о том, как это сделать, см. в разделе <xref:System.Net.HttpListener.AuthenticationSchemeSelectorDelegate%2A> документации свойства.  
+ Если требуется <xref:System.Net.HttpListener> , чтобы объект использовал разные механизмы проверки подлинности на основе характеристик получаемых им запросов (например, свойства <xref:System.Net.HttpListenerRequest.Url%2A> запроса или <xref:System.Net.HttpListenerRequest.UserHostName%2A> ), необходимо реализовать метод, который выбирает Схема проверки подлинности. Инструкции о том, как это сделать, см. <xref:System.Net.HttpListener.AuthenticationSchemeSelectorDelegate%2A> в документации по свойству.  
   
 > [!NOTE]
->  Чтобы установить это свойство, чтобы включить хэш-кода, NTLM или Negotiate, необходимо <xref:System.Security.Permissions.SecurityPermission>, <xref:System.Security.Permissions.SecurityPermissionFlag.ControlPrincipal>.  
+>  Чтобы установить это свойство для включения дайджеста, NTLM или Negotiate, требуется <xref:System.Security.Permissions.SecurityPermission>, <xref:System.Security.Permissions.SecurityPermissionFlag.ControlPrincipal>.  
   
    
   
 ## Examples  
- В следующем примере кода показано использование <xref:System.Net.HttpListener.AuthenticationSchemes%2A> свойство, чтобы указать схему проверки подлинности.  
+ В следующем примере кода показано использование <xref:System.Net.HttpListener.AuthenticationSchemes%2A> свойства для указания схемы проверки подлинности.  
   
  [!code-csharp[Net_listener_Basic#14](~/samples/snippets/csharp/VS_Snippets_Remoting/Net_Listener_Basic/CS/test.cs#14)]  
  [!code-vb[Net_Listener_Basic#14](~/samples/snippets/visualbasic/VS_Snippets_Remoting/Net_Listener_Basic/VB/test.vb#14)]  
@@ -266,32 +266,32 @@
         <ReturnType>System.Net.AuthenticationSchemeSelector</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Возвращает или задает делегат, вызываемый для определения протокола, который будет использоваться для аутентификации клиентов.</summary>
-        <value>Делегат <see cref="T:System.Net.AuthenticationSchemeSelector" />, который вызывает метод, используемый для выбора протокола аутентификации. Значение по умолчанию — <see langword="null" />.</value>
+        <summary>Возвращает или задает делегата, вызываемого для определения протокола, который будет использоваться для проверки подлинности клиентов.</summary>
+        <value>Делегат <see cref="T:System.Net.AuthenticationSchemeSelector" />, который вызывает метод, используемый для выбора протокола проверки подлинности. Значение по умолчанию — <see langword="null" />.</value>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
   
 > [!NOTE]
->  Если требуется, чтобы один и тот же протокол проверки подлинности для всех запросов, обрабатываемых конкретного экземпляра <xref:System.Net.HttpListener>, необходимо задать это свойство. Чтобы указать протокол, используемый для всех запросов клиентов, используйте <xref:System.Net.HttpListener.AuthenticationSchemes%2A> свойство.  
+>  Если необходимо, чтобы один и тот же протокол проверки подлинности использовался для всех запросов <xref:System.Net.HttpListener>, обрабатываемых определенным экземпляром, не нужно задавать это свойство. Чтобы указать протокол, используемый для всех клиентских запросов, используйте <xref:System.Net.HttpListener.AuthenticationSchemes%2A> свойство.  
   
- Если клиент не указал сведения для проверки подлинности в заголовках, <xref:System.Net.HttpListener> вызывает указанный делегат для каждого не прошедших проверку подлинности входящего запроса определить, какой протокол использовать для проверки подлинности клиента. <xref:System.Net.HttpListener.GetContext%2A> И <xref:System.Net.HttpListener.EndGetContext%2A> методы возвращают входящих только если запрос <xref:System.Net.HttpListener> успешно прошел проверку подлинности запроса. Если запрос не может пройти проверку подлинности, <xref:System.Net.HttpListener> автоматически отправляет обратно ответ 401. Вы можете получить удостоверение успешно прошедшего проверку подлинности клиента с помощью <xref:System.Web.HttpRequest.LogonUserIdentity%2A?displayProperty=nameWithType> свойство.  
+ Если клиент не указал данные проверки подлинности в своих заголовках <xref:System.Net.HttpListener> , метод вызывает указанный делегат для каждого входящего запроса, не прошедшего проверку подлинности, чтобы определить, какой протокол будет использоваться для проверки подлинности клиента. Методы <xref:System.Net.HttpListener.GetContext%2A> <xref:System.Net.HttpListener> и <xref:System.Net.HttpListener.EndGetContext%2A> возвращают входящий запрос только в случае успешной проверки подлинности запроса. Если запрос не может пройти проверку подлинности <xref:System.Net.HttpListener> , автоматически отправляет ответ 401. Удостоверение успешно прошедшего проверку подлинности клиента можно получить с <xref:System.Web.HttpRequest.LogonUserIdentity%2A?displayProperty=nameWithType> помощью свойства.  
   
- Возможность делегировать Выбор протокола проверки подлинности к методу относящиеся к приложению полезно, если требуется экземпляр <xref:System.Net.HttpListener> для использования различных протоколов проверки подлинности в зависимости от характеристик получит (для запросов Например, запрос <xref:System.Net.HttpListenerRequest.Url%2A> или <xref:System.Net.HttpListenerRequest.UserHostAddress%2A> свойство).  
+ Возможность делегирования выбора протокола проверки подлинности в метод для конкретного приложения полезна, если требуется, <xref:System.Net.HttpListener> чтобы экземпляр использовал разные протоколы проверки подлинности в зависимости от характеристик получаемых запросов (для Пример: свойство запроса <xref:System.Net.HttpListenerRequest.Url%2A> или. <xref:System.Net.HttpListenerRequest.UserHostAddress%2A>  
   
 > [!NOTE]
->  Чтобы установить это свойство, чтобы включить хэш-кода, NTLM или Negotiate, необходимо <xref:System.Security.Permissions.SecurityPermission>, <xref:System.Security.Permissions.SecurityPermissionFlag.ControlPrincipal>.  
+>  Чтобы установить это свойство для включения дайджеста, NTLM или Negotiate, требуется <xref:System.Security.Permissions.SecurityPermission>, <xref:System.Security.Permissions.SecurityPermissionFlag.ControlPrincipal>.  
   
    
   
 ## Examples  
- В следующем примере кода задает значение этого свойства.  
+ В следующем примере кода задается значение этого свойства.  
   
  [!code-csharp[NclListener#2](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLListener/CS/sample.cs#2)]
  [!code-vb[NclListener#2](~/samples/snippets/visualbasic/VS_Snippets_Remoting/NCLListener/vb/sample.vb#2)]  
   
- В следующем примере кода предоставляет реализацию метода, вызванного <xref:System.Net.AuthenticationSchemeSelector> делегировать.  
+ В следующем примере кода показана реализация метода, <xref:System.Net.AuthenticationSchemeSelector> вызываемого делегатом.  
   
  [!code-csharp[NclListener#1](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLListener/CS/sample.cs#1)]
  [!code-vb[NclListener#1](~/samples/snippets/visualbasic/VS_Snippets_Remoting/NCLListener/vb/sample.vb#1)]  
@@ -333,7 +333,7 @@
         <Parameter Name="state" Type="System.Object" />
       </Parameters>
       <Docs>
-        <param name="callback">Делегат <see cref="T:System.AsyncCallback" />, ссылающийся на метод, который следует вызвать при наличии клиентского запроса.</param>
+        <param name="callback">Делегат <see cref="T:System.AsyncCallback" />, указывающий на метод, который следует вызвать при наличии клиентского запроса.</param>
         <param name="state">Пользовательский объект, содержащий сведения об операции. Этот объект передается делегату <paramref name="callback" /> после завершения операции.</param>
         <summary>Начинает асинхронное получение входящего запроса.</summary>
         <returns>Объект <see cref="T:System.IAsyncResult" />, представляющий состояние асинхронной операции.</returns>
@@ -341,18 +341,18 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- <xref:System.Net.HttpListener.BeginGetContext%2A> Метод начинает асинхронный вызов (без блокировки) для получения входящих клиентских запросов. Перед вызовом этого метода, необходимо вызвать <xref:System.Net.HttpListener.Start%2A> метод и добавьте по крайней мере один префикс универсальный код ресурса (URI) для прослушивания путем добавления строки URI для <xref:System.Net.HttpListenerPrefixCollection> возвращаемые <xref:System.Net.HttpListener.Prefixes%2A> свойство.  
+ <xref:System.Net.HttpListener.BeginGetContext%2A> Метод начинает асинхронный (не блокирующий) вызов для получения входящих клиентских запросов. Перед вызовом этого метода необходимо вызвать <xref:System.Net.HttpListener.Start%2A> метод и добавить по крайней мере один префикс универсального идентификатора ресурса (URI) для прослушивания путем добавления строк URI в объект, <xref:System.Net.HttpListenerPrefixCollection> возвращаемый <xref:System.Net.HttpListener.Prefixes%2A> свойством.  
   
- Завершите асинхронную операцию путем вызова <xref:System.Net.HttpListener.EndGetContext%2A> метод. Как правило, вызывается метод `callback` делегировать.  
+ Асинхронная операция должна быть завершена путем вызова <xref:System.Net.HttpListener.EndGetContext%2A> метода. Как правило, метод вызывается `callback` делегатом.  
   
- Этот метод блокируется до завершения операции. Чтобы получить входящего запроса и блок до завершения операции, вызовите <xref:System.Net.HttpListener.GetContext%2A> метод.  
+ Этот метод не блокируется при завершении операции. Чтобы получить входящий запрос и заблокировать его до завершения операции, вызовите <xref:System.Net.HttpListener.GetContext%2A> метод.  
   
- Подробные сведения об использовании модели асинхронного программирования см. в разделе [асинхронный вызов синхронных методов](~/docs/standard/asynchronous-programming-patterns/calling-synchronous-methods-asynchronously.md)  
+ Подробные сведения об использовании асинхронной модели программирования см. в разделе [асинхронное вызов синхронных методов](~/docs/standard/asynchronous-programming-patterns/calling-synchronous-methods-asynchronously.md)  
   
    
   
 ## Examples  
- В следующем примере кода показано использование <xref:System.Net.HttpListener.BeginGetContext%2A> метод, чтобы определить метод обратного вызова, который будет обрабатывать входящие клиентские запросы.  
+ В следующем примере кода показано использование <xref:System.Net.HttpListener.BeginGetContext%2A> метода для указания метода обратного вызова, который будет обрабатывать входящие клиентские запросы.  
   
  [!code-csharp[Net_Listener_Basic#12](~/samples/snippets/csharp/VS_Snippets_Remoting/Net_Listener_Basic/CS/test.cs#12)]  
  [!code-vb[Net_Listener_Basic#12](~/samples/snippets/visualbasic/VS_Snippets_Remoting/Net_Listener_Basic/VB/test.vb#12)]  
@@ -364,10 +364,10 @@
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.Net.HttpListenerException">Не удалось выполнить вызов функции Win32. Проверьте свойство исключения <see cref="P:System.Net.HttpListenerException.ErrorCode" />, чтобы определить причину исключения.</exception>
-        <exception cref="T:System.InvalidOperationException">Этот объект не был запущен или остановлен.</exception>
-        <exception cref="T:System.ObjectDisposedException">Этот объект был закрыт.</exception>
-        <block subset="none" type="usage"><para>Данный член генерирует сведения трассировки, если в приложении включена трассировка сети. Дополнительные сведения см. в разделе [сетевая трассировка в .NET Framework](~/docs/framework/network-programming/network-tracing.md).</para></block>
+        <exception cref="T:System.Net.HttpListenerException">Вызов функции Win32 завершился с ошибкой. Проверьте свойство исключения <see cref="P:System.Net.HttpListenerException.ErrorCode" />, чтобы определить причину исключения.</exception>
+        <exception cref="T:System.InvalidOperationException">Этот объект не был запущен или в настоящее время остановлен.</exception>
+        <exception cref="T:System.ObjectDisposedException">Данный объект закрыт.</exception>
+        <block subset="none" type="usage"><para>Данный член генерирует сведения трассировки, если в приложении включена трассировка сети. Дополнительные сведения см. [в разделе Сетевая трассировка в .NET Framework](~/docs/framework/network-programming/network-tracing.md).</para></block>
       </Docs>
     </Member>
     <Member MemberName="Close">
@@ -404,20 +404,20 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- После вызова этого метода, больше не используется <xref:System.Net.HttpListener> объекта. Чтобы временно приостановить <xref:System.Net.HttpListener> , используйте <xref:System.Net.HttpListener.Stop%2A> метод.  
+ После вызова этого метода вы больше не сможете использовать <xref:System.Net.HttpListener> объект. Чтобы временно приостановить <xref:System.Net.HttpListener> работу объекта, <xref:System.Net.HttpListener.Stop%2A> используйте метод.  
   
- Этот метод завершает раскрывающихся списков <xref:System.Net.HttpListener> объекта без обработки запросов в очереди. Не удалось завершить ожидающие запросы:  
+ Этот метод завершает работу <xref:System.Net.HttpListener> объекта без обработки запросов в очереди. Все ожидающие запросы не могут быть завершены.  
   
 ## Examples  
 
-В следующем примере кода показан вызов `Close` метод:
+В следующем примере кода демонстрируется вызов `Close` метода:
   
 [!code-csharp[Net_Listener_Basic#12](~/samples/snippets/csharp/VS_Snippets_Remoting/Net_Listener_Basic/CS/test.cs#12)]  
 [!code-vb[Net_Listener_Basic#12](~/samples/snippets/visualbasic/VS_Snippets_Remoting/Net_Listener_Basic/VB/test.vb#12)]  
   
  ]]></format>
         </remarks>
-        <block subset="none" type="usage"><para>Данный член генерирует сведения трассировки, если в приложении включена трассировка сети. Дополнительные сведения см. в разделе [сетевая трассировка в .NET Framework](~/docs/framework/network-programming/network-tracing.md).</para></block>
+        <block subset="none" type="usage"><para>Данный член генерирует сведения трассировки, если в приложении включена трассировка сети. Дополнительные сведения см. [в разделе Сетевая трассировка в .NET Framework](~/docs/framework/network-programming/network-tracing.md).</para></block>
       </Docs>
     </Member>
     <Member MemberName="DefaultServiceNames">
@@ -448,39 +448,39 @@
         <ReturnType>System.Security.Authentication.ExtendedProtection.ServiceNameCollection</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Получает список имен поставщиков услуг (SPN) по умолчанию в соответствии с зарегистрированными префиксами.</summary>
+        <summary>Получает список имен поставщиков услуг (SPN) по умолчанию, определенный зарегистрированными префиксами.</summary>
         <value>Объект <see cref="T:System.Security.Authentication.ExtendedProtection.ServiceNameCollection" />, содержащий список SPN.</value>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- <xref:System.Net.HttpListener.DefaultServiceNames%2A> Свойство используется со встроенной проверкой подлинности Windows для обеспечения расширенной защиты. Список SPN инициализируется из <xref:System.Net.HttpListener.Prefixes%2A> свойства в случае, если доступ к и очищается при добавлении новых префиксов <xref:System.Net.HttpListener.Prefixes%2A> свойство.  
+ <xref:System.Net.HttpListener.DefaultServiceNames%2A> Свойство используется со встроенной проверкой подлинности Windows для обеспечения расширенной защиты. Список имен участников-служб инициализируется из <xref:System.Net.HttpListener.Prefixes%2A> свойства при доступе и очистке при добавлении новых префиксов <xref:System.Net.HttpListener.Prefixes%2A> к свойству.  
   
- <xref:System.Net.HttpListener.DefaultServiceNames%2A> Свойство используется в том случае, если приложение не задает <xref:System.Security.Authentication.ExtendedProtection.ExtendedProtectionPolicy.CustomServiceNames%2A> свойства на его расширенную политику защиты.  
+ Свойство <xref:System.Net.HttpListener.DefaultServiceNames%2A> используется, если приложение не <xref:System.Security.Authentication.ExtendedProtection.ExtendedProtectionPolicy.CustomServiceNames%2A> устанавливает свойство для своей политики расширенной защиты.  
   
- <xref:System.Security.Authentication.ExtendedProtection.ServiceNameCollection> , Полученного с помощью <xref:System.Net.HttpListener.DefaultServiceNames%2A> свойство построена на основе <xref:System.Net.HttpListener.Prefixes%2A> свойство согласно следующим правилам:  
+ Объект <xref:System.Security.Authentication.ExtendedProtection.ServiceNameCollection> , полученный <xref:System.Net.HttpListener.DefaultServiceNames%2A> со <xref:System.Net.HttpListener.Prefixes%2A> свойством, строится на основе свойства в соответствии со следующими правилами.  
   
-1.  Если имя узла «+», «*», или литерал IPv4 или IPv6 (эквивалентно "\*" но ограничивается в определенном локальном интерфейсе), добавляются следующие SPN:  
+1.  Если имя узла — "+", "*", или литерал IPv4 или IPv6 (эквивалентен "\*", но ограничен конкретным локальным интерфейсом), добавляется следующее имя участника-службы:  
   
- `"HTTP/"` а также полное доменное имя компьютера.  
+ `"HTTP/"`а также полное доменное имя компьютера.  
   
-1.  Если имя узла содержит не точки (не домены или поддомены), будет предпринята попытка разрешить полное доменное имя, с помощью DNS (же поведение, используемое <xref:System.Net.HttpWebRequest>). Если полное доменное имя может быть разрешено, добавляются следующие SPN:  
+1.  Если имя узла не содержит точек (домены или поддомены), предпринимается попытка разрешить полное доменное имя с помощью DNS (то же поведение, которое используется <xref:System.Net.HttpWebRequest>). Если полное доменное имя можно разрешить, добавляются следующие имена участников-служб:  
   
- `"HTTP/"` Кроме того, имя узла (короткое имя).  
+ `"HTTP/"`а также имя узла (короткое имя).  
   
- `"HTTP/"` а также полное доменное имя для имени узла.  
+ `"HTTP/"`а также полное доменное имя узла.  
   
-1.  Если имя узла содержит не точки (не домены или поддомены) и полное доменное имя не может быть разрешена, добавляется следующий SPN:  
+1.  Если имя узла содержит не точки (домены или поддомены) и полное доменное имя не удается разрешить, добавляется следующее имя участника-службы:  
   
- `"HTTP/"` Кроме того, имя узла.  
+ `"HTTP/"`и имя узла.  
   
-1.  Если имя узла содержит точки (домены или поддомены), добавляется следующий SPN:  
+1.  Если имя узла содержит точки (домены или поддомены), добавляется следующее имя участника-службы:  
   
- `"HTTP/"` Кроме того, имя узла.  
+ `"HTTP/"`и имя узла.  
   
- <xref:System.Net.HttpListener.DefaultServiceNames%2A> Свойство может использоваться приложением, чтобы просмотреть список SPN по умолчанию, которые будут использоваться для проверки подлинности, если пользовательский список не предоставляется. Если требуются другие имена участников-служб, приложение можно добавить с помощью одного из <xref:System.Security.Authentication.ExtendedProtection.ServiceNameCollection.Merge%2A> методы.  
+ <xref:System.Net.HttpListener.DefaultServiceNames%2A> Свойство может использоваться приложением для просмотра списка имен участников-служб по умолчанию, которые будут использоваться для проверки подлинности, если пользовательский список не указан. Если требуются другие имена участников-служб, приложение может добавить их с помощью одного <xref:System.Security.Authentication.ExtendedProtection.ServiceNameCollection.Merge%2A> из методов.  
   
- Не является безопасным при использовании расширенной защиты для принятия решений согласно политике, основанных на запрошенного URL-адреса, поскольку это может быть перехвачены. Вместо этого приложения следует полагаться на <xref:System.Net.HttpListenerRequest.LocalEndPoint%2A> или <xref:System.Net.HttpListenerRequest.RemoteEndPoint%2A> свойства для принятия таких решений политики.  
+ Использование расширенной защиты для принятия решений по политике на основе запрошенного URL-адреса является ненадежным, так как это можно сделать подмену. Вместо этого приложения должны использовать свойства <xref:System.Net.HttpListenerRequest.LocalEndPoint%2A> или <xref:System.Net.HttpListenerRequest.RemoteEndPoint%2A> для принятия таких решений о политике.  
   
  ]]></format>
         </remarks>
@@ -530,11 +530,11 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- <xref:System.Net.HttpListener.EndGetContext%2A> Вызывается метод, обычно в методе обратного вызова, определяемые приложением, ни делегатом, чтобы получить <xref:System.Net.HttpListenerContext> , содержащий первый клиентский запрос и его связанного ответа. Этот метод завершает операцию запущены ранее путем вызова <xref:System.Net.HttpListener.BeginGetContext%2A> метод. Если операция не завершена, этот метод блокируется до завершения удаления.  
+ Метод вызывается, как правило, в определяемом приложением методе обратного вызова, который вызывается делегатом <xref:System.Net.HttpListenerContext> для получения объекта, содержащего входящий клиентский запрос и связанный с ним ответ. <xref:System.Net.HttpListener.EndGetContext%2A> Этот метод завершает операцию, ранее запущенную с помощью вызова <xref:System.Net.HttpListener.BeginGetContext%2A> метода. Если операция не завершена, этот метод блокируется до тех пор, пока он не завершится.  
   
- Поскольку вызов <xref:System.Net.HttpListener.EndGetContext%2A> метод требует <xref:System.Net.HttpListener> объекта, этот объект обычно передается в метод обратного вызова, используя состояние объекта, переданного в <xref:System.Net.HttpListener.BeginGetContext%2A> метод. Этот объект состояния можно получить с помощью <xref:System.IAsyncResult.AsyncState%2A> свойство `asyncResult` объекта.  
+ Поскольку для вызова <xref:System.Net.HttpListener.EndGetContext%2A> метода <xref:System.Net.HttpListener> требуется объект, этот объект обычно передается в метод обратного вызова с помощью объекта <xref:System.Net.HttpListener.BeginGetContext%2A> состояния, переданного в метод. Этот объект состояния можно получить с помощью <xref:System.IAsyncResult.AsyncState%2A> свойства `asyncResult` объекта.  
   
- Подробные сведения об использовании модели асинхронного программирования см. в разделе [асинхронный вызов синхронных методов](~/docs/standard/asynchronous-programming-patterns/calling-synchronous-methods-asynchronously.md)  
+ Подробные сведения об использовании асинхронной модели программирования см. в разделе [асинхронное вызов синхронных методов](~/docs/standard/asynchronous-programming-patterns/calling-synchronous-methods-asynchronously.md)  
   
    
   
@@ -546,12 +546,12 @@
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.ArgumentException"><paramref name="asyncResult" /> не был получен путем вызова <see cref="M:System.Net.HttpListener.BeginGetContext(System.AsyncCallback,System.Object)" /> метод.</exception>
-        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="asyncResult" /> имеет значение <see langword="null" />.</exception>
-        <exception cref="T:System.Net.HttpListenerException">Не удалось выполнить вызов функции Win32. Проверьте свойство исключения <see cref="P:System.Net.HttpListenerException.ErrorCode" />, чтобы определить причину исключения.</exception>
-        <exception cref="T:System.InvalidOperationException"><see cref="M:System.Net.HttpListener.EndGetContext(System.IAsyncResult)" /> Метод уже был вызван для указанного <paramref name="asyncResult" /> объекта.</exception>
-        <exception cref="T:System.ObjectDisposedException">Этот объект был закрыт.</exception>
-        <block subset="none" type="usage"><para>Данный член генерирует сведения трассировки, если в приложении включена трассировка сети. Дополнительные сведения см. в разделе [сетевая трассировка в .NET Framework](~/docs/framework/network-programming/network-tracing.md).</para></block>
+        <exception cref="T:System.ArgumentException">Значение параметра <paramref name="asyncResult" /> не получено вызовом метода <see cref="M:System.Net.HttpListener.BeginGetContext(System.AsyncCallback,System.Object)" />.</exception>
+        <exception cref="T:System.ArgumentNullException"><paramref name="asyncResult" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.Net.HttpListenerException">Вызов функции Win32 завершился с ошибкой. Проверьте свойство исключения <see cref="P:System.Net.HttpListenerException.ErrorCode" />, чтобы определить причину исключения.</exception>
+        <exception cref="T:System.InvalidOperationException">Метод <see cref="M:System.Net.HttpListener.EndGetContext(System.IAsyncResult)" /> уже был вызван для указанного объекта <paramref name="asyncResult" />.</exception>
+        <exception cref="T:System.ObjectDisposedException">Данный объект закрыт.</exception>
+        <block subset="none" type="usage"><para>Данный член генерирует сведения трассировки, если в приложении включена трассировка сети. Дополнительные сведения см. [в разделе Сетевая трассировка в .NET Framework](~/docs/framework/network-programming/network-tracing.md).</para></block>
       </Docs>
     </Member>
     <Member MemberName="ExtendedProtectionPolicy">
@@ -596,17 +596,17 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- <xref:System.Net.HttpListener.ExtendedProtectionPolicy%2A> Свойство используется со встроенной проверкой подлинности Windows для обеспечения расширенной защиты. <xref:System.Net.HttpListener.ExtendedProtectionPolicy%2A> Свойство позволяет задать конфигурацию политики расширенной защиты для всего <xref:System.Net.HttpListener> сеанса. <xref:System.Net.HttpListener.ExtendedProtectionSelectorDelegate%2A> Свойство позволяет задать конфигурацию политики расширенной защиты для каждого отдельного запроса.  
+ <xref:System.Net.HttpListener.ExtendedProtectionPolicy%2A> Свойство используется со встроенной проверкой подлинности Windows для обеспечения расширенной защиты. Свойство позволяет настроить политику расширенной защиты для всего <xref:System.Net.HttpListener> сеанса. <xref:System.Net.HttpListener.ExtendedProtectionPolicy%2A> <xref:System.Net.HttpListener.ExtendedProtectionSelectorDelegate%2A> Свойство позволяет настроить политику расширенной защиты для каждого отдельного запроса.  
   
- <xref:System.Security.Authentication.ExtendedProtection.ExtendedProtectionPolicy.CustomChannelBinding%2A> Свойство должно быть `null`. <xref:System.Net.HttpListener> Экземпляр получает канал привязки токена (CBT) непосредственно из собственного сеанса TLS, если таковой имеется.  
+ Свойство <xref:System.Security.Authentication.ExtendedProtection.ExtendedProtectionPolicy.CustomChannelBinding%2A> должно иметь значение `null`. <xref:System.Net.HttpListener> Экземпляр получает маркер привязки канала (CBT) непосредственно из своего собственного сеанса TLS, если таковой имеется.  
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.ArgumentException">Попытка установить <see cref="P:System.Net.HttpListener.ExtendedProtectionPolicy" /> свойство, но <see cref="P:System.Security.Authentication.ExtendedProtection.ExtendedProtectionPolicy.CustomChannelBinding" /> свойство не было <see langword="null" />.</exception>
-        <exception cref="T:System.ArgumentNullException">Попытка установить <see cref="P:System.Net.HttpListener.ExtendedProtectionPolicy" /> свойства <see langword="null" />.</exception>
-        <exception cref="T:System.InvalidOperationException">Попытка установить <see cref="P:System.Net.HttpListener.ExtendedProtectionPolicy" /> свойства после <see cref="M:System.Net.HttpListener.Start" /> уже был вызван метод.</exception>
-        <exception cref="T:System.ObjectDisposedException">Этот объект был закрыт.</exception>
-        <exception cref="T:System.PlatformNotSupportedException"><see cref="P:System.Security.Authentication.ExtendedProtection.ExtendedProtectionPolicy.PolicyEnforcement" /> Было установлено на <see cref="F:System.Security.Authentication.ExtendedProtection.PolicyEnforcement.Always" /> на платформу, которая не поддерживает расширенную защиту.</exception>
+        <exception cref="T:System.ArgumentException">Предпринята попытка установить свойство <see cref="P:System.Net.HttpListener.ExtendedProtectionPolicy" />, но свойство <see cref="P:System.Security.Authentication.ExtendedProtection.ExtendedProtectionPolicy.CustomChannelBinding" /> не имело значение <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentNullException">Предпринята попытка задать свойству <see cref="P:System.Net.HttpListener.ExtendedProtectionPolicy" /> значение <see langword="null" />.</exception>
+        <exception cref="T:System.InvalidOperationException">Предпринята попытка установить свойство <see cref="P:System.Net.HttpListener.ExtendedProtectionPolicy" /> после вызова метода <see cref="M:System.Net.HttpListener.Start" />.</exception>
+        <exception cref="T:System.ObjectDisposedException">Данный объект закрыт.</exception>
+        <exception cref="T:System.PlatformNotSupportedException">Свойству <see cref="P:System.Security.Authentication.ExtendedProtection.ExtendedProtectionPolicy.PolicyEnforcement" /> было присвоено значение <see cref="F:System.Security.Authentication.ExtendedProtection.PolicyEnforcement.Always" /> на платформе, не поддерживающей расширенную защиту.</exception>
         <altmember cref="P:System.Net.HttpListener.DefaultServiceNames" />
         <altmember cref="P:System.Net.HttpListener.ExtendedProtectionSelectorDelegate" />
         <altmember cref="T:System.Net.HttpListener.ExtendedProtectionSelector" />
@@ -654,21 +654,21 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- <xref:System.Net.HttpListener.ExtendedProtectionPolicy%2A> Свойство используется со встроенной проверкой подлинности Windows для обеспечения расширенной защиты. <xref:System.Net.HttpListener.ExtendedProtectionPolicy%2A> Свойство позволяет задать конфигурацию политики расширенной защиты для всего <xref:System.Net.HttpListener> сеанса. <xref:System.Net.HttpListener.ExtendedProtectionSelectorDelegate%2A> Свойство позволяет настраивать политику расширенной защиты для отдельного запроса.  
+ <xref:System.Net.HttpListener.ExtendedProtectionPolicy%2A> Свойство используется со встроенной проверкой подлинности Windows для обеспечения расширенной защиты. Свойство позволяет настроить политику расширенной защиты для всего <xref:System.Net.HttpListener> сеанса. <xref:System.Net.HttpListener.ExtendedProtectionPolicy%2A> <xref:System.Net.HttpListener.ExtendedProtectionSelectorDelegate%2A> Свойство позволяет настроить расширенную политику защиты для отдельного запроса.  
   
- <xref:System.Security.Authentication.ExtendedProtection.ExtendedProtectionPolicy.CustomChannelBinding%2A> Свойство должно быть `null`. <xref:System.Net.HttpListener> Экземпляр получает канал привязки токена (CBT) непосредственно из собственного сеанса TLS, если таковой имеется.  
+ Свойство <xref:System.Security.Authentication.ExtendedProtection.ExtendedProtectionPolicy.CustomChannelBinding%2A> должно иметь значение `null`. <xref:System.Net.HttpListener> Экземпляр получает маркер привязки канала (CBT) непосредственно из своего собственного сеанса TLS, если таковой имеется.  
   
- Для каждого запроса, делегат может выбрать параметры, <xref:System.Net.HttpListener> экземпляр будет использовать для обеспечения расширенной защиты.  
+ Для каждого запроса делегат может выбрать параметры, которые <xref:System.Net.HttpListener> экземпляр будет использовать для обеспечения расширенной защиты.  
   
- Если делегат возвращает `null` для этого свойства представляет <xref:System.Security.Authentication.ExtendedProtection.ExtendedProtectionPolicy> которой <xref:System.Security.Authentication.ExtendedProtection.ExtendedProtectionPolicy.PolicyEnforcement%2A> свойство значение <xref:System.Security.Authentication.ExtendedProtection.PolicyEnforcement.Never>.  
+ Если делегат возвращает `null` для этого свойства, это <xref:System.Security.Authentication.ExtendedProtection.ExtendedProtectionPolicy> представляет <xref:System.Security.Authentication.ExtendedProtection.ExtendedProtectionPolicy.PolicyEnforcement%2A> свойство, для <xref:System.Security.Authentication.ExtendedProtection.PolicyEnforcement.Never>которого задано значение.  
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.ArgumentException">Попытка установить <see cref="P:System.Net.HttpListener.ExtendedProtectionSelectorDelegate" /> свойство, но <see cref="P:System.Security.Authentication.ExtendedProtection.ExtendedProtectionPolicy.CustomChannelBinding" /> свойство должно быть <see langword="null" />.</exception>
-        <exception cref="T:System.ArgumentNullException">Попытка установить <see cref="P:System.Net.HttpListener.ExtendedProtectionSelectorDelegate" /> свойства <see langword="null" />.</exception>
-        <exception cref="T:System.InvalidOperationException">Попытка установить <see cref="P:System.Net.HttpListener.ExtendedProtectionSelectorDelegate" /> свойства после <see cref="M:System.Net.HttpListener.Start" /> уже был вызван метод.</exception>
-        <exception cref="T:System.ObjectDisposedException">Этот объект был закрыт.</exception>
-        <exception cref="T:System.PlatformNotSupportedException">Попытка установить <see cref="P:System.Net.HttpListener.ExtendedProtectionSelectorDelegate" /> свойство на платформу, которая не поддерживает расширенную защиту.</exception>
+        <exception cref="T:System.ArgumentException">Предпринята попытка установить свойство <see cref="P:System.Net.HttpListener.ExtendedProtectionSelectorDelegate" />, но свойство <see cref="P:System.Security.Authentication.ExtendedProtection.ExtendedProtectionPolicy.CustomChannelBinding" /> должно иметь значение <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentNullException">Предпринята попытка задать свойству <see cref="P:System.Net.HttpListener.ExtendedProtectionSelectorDelegate" /> значение <see langword="null" />.</exception>
+        <exception cref="T:System.InvalidOperationException">Предпринята попытка установить свойство <see cref="P:System.Net.HttpListener.ExtendedProtectionSelectorDelegate" /> после вызова метода <see cref="M:System.Net.HttpListener.Start" />.</exception>
+        <exception cref="T:System.ObjectDisposedException">Данный объект закрыт.</exception>
+        <exception cref="T:System.PlatformNotSupportedException">Предпринята попытка задать свойство  <see cref="P:System.Net.HttpListener.ExtendedProtectionSelectorDelegate" /> на платформе, не поддерживающей расширенную защиту.</exception>
         <altmember cref="P:System.Net.HttpListener.DefaultServiceNames" />
         <altmember cref="P:System.Net.HttpListener.ExtendedProtectionPolicy" />
         <altmember cref="T:System.Net.HttpListener.ExtendedProtectionSelector" />
@@ -706,15 +706,15 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>Ожидает входящий запрос и выполняет возврат при его получении.</summary>
+        <summary>Ожидает входящий запрос и выполняет возврат при получении такого запроса.</summary>
         <returns>Объект <see cref="T:System.Net.HttpListenerContext" />, представляющий клиентский запрос.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Перед вызовом этого метода, необходимо вызвать <xref:System.Net.HttpListener.Start%2A> метод и добавьте по крайней мере один префикс URI для прослушивания путем добавления строки URI для <xref:System.Net.HttpListenerPrefixCollection> возвращаемые <xref:System.Net.HttpListener.Prefixes%2A> свойство. Подробное описание префиксов, см. в разделе <xref:System.Net.HttpListener> Общие сведения о классе.  
+ Перед вызовом этого метода необходимо вызвать <xref:System.Net.HttpListener.Start%2A> метод и добавить по крайней мере один префикс URI для прослушивания путем добавления строк URI в объект, <xref:System.Net.HttpListenerPrefixCollection> возвращаемый <xref:System.Net.HttpListener.Prefixes%2A> свойством. Подробное описание префиксов см. в <xref:System.Net.HttpListener> разделе Общие сведения о классе.  
   
- Этот метод блокируется во время ожидания для входящего запроса. Входящие запросы обрабатывались асинхронно (в отдельных потоках), чтобы не блокировать приложения, используйте <xref:System.Net.HttpListener.BeginGetContext%2A> метод.  
+ Этот метод блокируется при ожидании входящего запроса. Если требуется, чтобы входящие запросы обрабатывались асинхронно (в отдельных потоках), чтобы приложение не блокировало работу, <xref:System.Net.HttpListener.BeginGetContext%2A> используйте метод.  
   
    
   
@@ -726,13 +726,13 @@
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.Net.HttpListenerException">Не удалось выполнить вызов функции Win32. Проверьте свойство исключения <see cref="P:System.Net.HttpListenerException.ErrorCode" />, чтобы определить причину исключения.</exception>
-        <exception cref="T:System.InvalidOperationException">Этот объект не был запущен или остановлен.  
+        <exception cref="T:System.Net.HttpListenerException">Вызов функции Win32 завершился с ошибкой. Проверьте свойство исключения <see cref="P:System.Net.HttpListenerException.ErrorCode" />, чтобы определить причину исключения.</exception>
+        <exception cref="T:System.InvalidOperationException">Этот объект не был запущен или в настоящее время остановлен.  
   
--или- 
-<see cref="T:System.Net.HttpListener" /> Имеет префиксы универсальный код ресурса (URI), чтобы реагировать на них.</exception>
-        <exception cref="T:System.ObjectDisposedException">Этот объект был закрыт.</exception>
-        <block subset="none" type="usage"><para>Данный член генерирует сведения трассировки, если в приложении включена трассировка сети. Дополнительные сведения см. в разделе [сетевая трассировка в .NET Framework](~/docs/framework/network-programming/network-tracing.md).</para></block>
+- или - 
+Прослушиватель <see cref="T:System.Net.HttpListener" /> не имеет префиксов URI для ответа.</exception>
+        <exception cref="T:System.ObjectDisposedException">Данный объект закрыт.</exception>
+        <block subset="none" type="usage"><para>Данный член генерирует сведения трассировки, если в приложении включена трассировка сети. Дополнительные сведения см. [в разделе Сетевая трассировка в .NET Framework](~/docs/framework/network-programming/network-tracing.md).</para></block>
       </Docs>
     </Member>
     <Member MemberName="GetContextAsync">
@@ -763,15 +763,15 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>Ожидает входящий запрос как асинхронную операцию.</summary>
-        <returns>Объект задачи, представляющий асинхронную операцию. Свойство <see cref="P:System.Threading.Tasks.Task`1.Result" /> объекта задачи возвращает объект <see cref="T:System.Net.HttpListenerContext" />, представляющий запрос клиента.</returns>
+        <summary>Ожидает входящего запроса как асинхронной операции.</summary>
+        <returns>Объект задачи, представляющий асинхронную операцию. Свойство <see cref="P:System.Threading.Tasks.Task`1.Result" /> в объекте задачи возвращает объект <see cref="T:System.Net.HttpListenerContext" />, представляющий запрос клиента.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Эта операция не будет блокировать. Возвращенный <xref:System.Threading.Tasks.Task%601> объекта будет выполнена при получении входящего запроса.  
+ Эта операция не будет блокироваться. Возвращенный <xref:System.Threading.Tasks.Task%601> объект будет выполнен после получения входящего запроса.  
   
- Перед вызовом этого метода, необходимо вызвать <xref:System.Net.HttpListener.Start%2A> метод и добавьте по крайней мере один префикс URI для прослушивания путем добавления строки URI для <xref:System.Net.HttpListenerPrefixCollection> возвращаемые <xref:System.Net.HttpListener.Prefixes%2A> свойство. Подробное описание префиксов, см. в разделе <xref:System.Net.HttpListener> Общие сведения о классе.  
+ Перед вызовом этого метода необходимо вызвать <xref:System.Net.HttpListener.Start%2A> метод и добавить по крайней мере один префикс URI для прослушивания путем добавления строк URI в объект, <xref:System.Net.HttpListenerPrefixCollection> возвращаемый <xref:System.Net.HttpListener.Prefixes%2A> свойством. Подробное описание префиксов см. в <xref:System.Net.HttpListener> разделе Общие сведения о классе.  
   
  ]]></format>
         </remarks>
@@ -811,13 +811,13 @@
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Возвращает или задает значение <see cref="T:System.Boolean" />, которое определяет, получает ли приложение исключения, которые возникают при отправке прослушивателем <see cref="T:System.Net.HttpListener" /> ответа клиенту.</summary>
-        <value><see langword="true" /> Если этот <see cref="T:System.Net.HttpListener" /> не должен возвращать исключения, возникающие при отправке ответа клиенту; в противном случае <see langword="false" />. Значение по умолчанию — <see langword="false" />.</value>
+        <summary>Возвращает или задает значение <see cref="T:System.Boolean" />, которое определяет, получает ли приложения исключения, которые возникают при отправке прослушивателем <see cref="T:System.Net.HttpListener" /> ответа клиенту.</summary>
+        <value><see langword="true" />значение, если не <see langword="false" /> должновозвращатьисключения,происходящиеприотправкеответаклиенту;впротивномслучае—.<see cref="T:System.Net.HttpListener" /> Значение по умолчанию — <see langword="false" />.</value>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Присвойте этому свойству значение `true` приложения не требуется, чтобы каждый клиент успешно отправляется ответ.  
+ Задайте для этого свойства `true` значение, если приложению не требуется, чтобы ответ был успешно отправлен каждому клиенту.  
   
    
   
@@ -861,17 +861,17 @@
       </ReturnValue>
       <Docs>
         <summary>Возвращает значение, показывающее, был ли запущен прослушиватель <see cref="T:System.Net.HttpListener" />.</summary>
-        <value>Значение <see langword="true" />, если прослушиватель <see cref="T:System.Net.HttpListener" /> был запущен; в противном случае — значение <see langword="false" />.</value>
+        <value>Значение <see langword="true" />, если прослушиватель <see cref="T:System.Net.HttpListener" /> был запущен; в противном случае — <see langword="false" />.</value>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Чтобы запустить <xref:System.Net.HttpListener>, вызовите <xref:System.Net.HttpListener.Start%2A> метод.  
+ Чтобы запустить <xref:System.Net.HttpListener>, <xref:System.Net.HttpListener.Start%2A> вызовите метод.  
   
    
   
 ## Examples  
- В следующем примере кода демонстрируется использование этого свойства для определения состояние прослушивания экземпляра.  
+ В следующем примере кода показано использование этого свойства для определения состояния прослушивания экземпляра.  
   
  [!code-csharp[Net_Listener_Basic#1](~/samples/snippets/csharp/VS_Snippets_Remoting/Net_Listener_Basic/CS/test.cs#1)]  
  [!code-vb[Net_Listener_Basic#1](~/samples/snippets/visualbasic/VS_Snippets_Remoting/Net_Listener_Basic/VB/test.vb#1)]  
@@ -914,12 +914,12 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот класс доступен только на компьютерах под управлением операционных систем Windows XP SP2 или Windows Server 2003.  
+ Этот класс доступен только на компьютерах под управлением операционных систем Windows XP с пакетом обновления 2 (SP2) или Windows Server 2003.  
   
    
   
 ## Examples  
- В следующем примере кода демонстрируется использование <xref:System.Net.HttpListener.IsSupported%2A> свойство для обнаружения ли <xref:System.Net.HttpListener> объект может использоваться с текущей операционной системы.  
+ В следующем примере кода показано использование <xref:System.Net.HttpListener.IsSupported%2A> свойства для определения <xref:System.Net.HttpListener> возможности использования объекта в текущей операционной системе.  
   
  [!code-csharp[Net_Listener_Basic#2](~/samples/snippets/csharp/VS_Snippets_Remoting/Net_Listener_Basic/CS/test.cs#2)]  
  [!code-vb[Net_Listener_Basic#2](~/samples/snippets/visualbasic/VS_Snippets_Remoting/Net_Listener_Basic/VB/test.vb#2)]  
@@ -957,17 +957,17 @@
       </ReturnValue>
       <Docs>
         <summary>Возвращает префиксы URI, обрабатываемые этим объектом <see cref="T:System.Net.HttpListener" />.</summary>
-        <value>Коллекция <see cref="T:System.Net.HttpListenerPrefixCollection" />, содержащая префиксы URI, которые может обрабатывать этот объект <see cref="T:System.Net.HttpListener" />.</value>
+        <value>Коллекция <see cref="T:System.Net.HttpListenerPrefixCollection" />, в которой содержатся префиксы URI, которые может обрабатывать этот объект <see cref="T:System.Net.HttpListener" />.</value>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Префиксы указаны в канонической форме. Подробное описание префиксов, см. в разделе <xref:System.Net.HttpListener> Общие сведения о классе.  
+ Префиксы представлены в канонической форме. Подробное описание префиксов см. в <xref:System.Net.HttpListener> разделе Общие сведения о классе.  
   
    
   
 ## Examples  
- В следующем примере кода показано использование <xref:System.Net.HttpListener.Prefixes%2A> свойство для получения и печать префиксы URI, которые обрабатываются.  
+ В следующем примере кода показано использование <xref:System.Net.HttpListener.Prefixes%2A> свойства для получения и печати обрабатываемых префиксов URI.  
   
  [!code-csharp[Net_Listener_Basic#1](~/samples/snippets/csharp/VS_Snippets_Remoting/Net_Listener_Basic/CS/test.cs#1)]  
  [!code-vb[Net_Listener_Basic#1](~/samples/snippets/visualbasic/VS_Snippets_Remoting/Net_Listener_Basic/VB/test.vb#1)]  
@@ -1016,14 +1016,14 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Серверы используют области для разделения защищенных ресурсов; Каждая секция может иметь свою собственную схему и базу данных проверки подлинности. Области используются только для обычной проверки подлинности и дайджест-проверки подлинности. После успешного прохождения клиентом проверки подлинности ее результаты действительны для всех ресурсов в данной области. Подробное описание областей, см. в разделе RFC 2617 по [ https://www.ietf.org/ ](https://www.ietf.org/).  
+ Серверы используют сферы для секционирования защищенных ресурсов. Каждая секция может иметь собственную схему проверки подлинности и (или) базу данных авторизации. Области используются только для обычной проверки подлинности и дайджест-проверки подлинности. После успешного прохождения клиентом проверки подлинности ее результаты действительны для всех ресурсов в данной области. Подробное описание сфер см. в RFC 2617 по адресу [https://www.ietf.org/](https://www.ietf.org/).  
   
- Экземпляр <xref:System.Net.HttpListener> имеет только один связанный сферы.  
+ <xref:System.Net.HttpListener> У экземпляра есть только одна связанная область.  
   
    
   
 ## Examples  
- В следующем примере кода демонстрируется параметр <xref:System.Net.HttpListener.Realm%2A> свойство.  
+ В следующем примере кода показано задание <xref:System.Net.HttpListener.Realm%2A> свойства.  
   
  [!code-csharp[Net_Listener_Basic#10](~/samples/snippets/csharp/VS_Snippets_Remoting/Net_Listener_Basic/CS/test.cs#10)]  
  [!code-vb[Net_Listener_Basic#10](~/samples/snippets/visualbasic/VS_Snippets_Remoting/Net_Listener_Basic/VB/test.vb#10)]  
@@ -1067,26 +1067,26 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот метод должен вызываться перед вызовом метода <xref:System.Net.HttpListener.GetContext%2A> или <xref:System.Net.HttpListener.BeginGetContext%2A> метод.  
+ Этот метод должен вызываться перед вызовом <xref:System.Net.HttpListener.GetContext%2A> метода или. <xref:System.Net.HttpListener.BeginGetContext%2A>  
   
- После запуска <xref:System.Net.HttpListener> объекта, можно использовать <xref:System.Net.HttpListener.Stop%2A> метод для ее остановки.  
+ После запуска <xref:System.Net.HttpListener> объекта можно <xref:System.Net.HttpListener.Stop%2A> использовать метод, чтобы его отключить.  
   
 > [!NOTE]
->  Если этот экземпляр прослушивателя использует протокол https, необходимо установить и выбрать сертификат сервера. В противном случае <xref:System.Net.HttpWebRequest> подзапрос этого <xref:System.Net.HttpListener> завершится с неожиданный запрос закрытия соединения. Сертификаты сервера и другие параметры прослушивателя можно настроить с помощью HttpCfg.exe. См. в разделе [ http://msdn.microsoft.com/library/default.asp?url=/library/http/http/httpcfg_exe.asp ](https://msdn.microsoft.com/library/default.asp?url=/library/http/http/httpcfg_exe.asp) для получения дополнительных сведений.  
+>  Если этот экземпляр прослушивателя использует протокол HTTPS, необходимо установить и выбрать сертификат сервера. В противном случае <xref:System.Net.HttpListener> запросбудетзавершатьсяснепредвиденнымзакрытиемсоединения.<xref:System.Net.HttpWebRequest> Сертификаты сервера и другие параметры прослушивателя можно настроить с помощью HttpCfg. exe. Дополнительные [http://msdn.microsoft.com/library/default.asp?url=/library/http/http/httpcfg_exe.asp](https://msdn.microsoft.com/library/default.asp?url=/library/http/http/httpcfg_exe.asp) сведения см. в разделе.  
   
    
   
 ## Examples  
- В следующем примере кода показано использование <xref:System.Net.HttpListener.Start%2A> метод, чтобы начать обработку входящих запросов.  
+ В следующем примере кода показано использование <xref:System.Net.HttpListener.Start%2A> метода для начала обработки входящих запросов.  
   
  [!code-csharp[Net_Listener_Basic#12](~/samples/snippets/csharp/VS_Snippets_Remoting/Net_Listener_Basic/CS/test.cs#12)]  
  [!code-vb[Net_Listener_Basic#12](~/samples/snippets/visualbasic/VS_Snippets_Remoting/Net_Listener_Basic/VB/test.vb#12)]  
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.Net.HttpListenerException">Не удалось выполнить вызов функции Win32. Проверьте свойство исключения <see cref="P:System.Net.HttpListenerException.ErrorCode" />, чтобы определить причину исключения.</exception>
-        <exception cref="T:System.ObjectDisposedException">Этот объект был закрыт.</exception>
-        <block subset="none" type="usage"><para>Данный член генерирует сведения трассировки, если в приложении включена трассировка сети. Дополнительные сведения см. в разделе [сетевая трассировка в .NET Framework](~/docs/framework/network-programming/network-tracing.md).</para></block>
+        <exception cref="T:System.Net.HttpListenerException">Вызов функции Win32 завершился с ошибкой. Проверьте свойство исключения <see cref="P:System.Net.HttpListenerException.ErrorCode" />, чтобы определить причину исключения.</exception>
+        <exception cref="T:System.ObjectDisposedException">Данный объект закрыт.</exception>
+        <block subset="none" type="usage"><para>Данный член генерирует сведения трассировки, если в приложении включена трассировка сети. Дополнительные сведения см. [в разделе Сетевая трассировка в .NET Framework](~/docs/framework/network-programming/network-tracing.md).</para></block>
       </Docs>
     </Member>
     <Member MemberName="Stop">
@@ -1123,15 +1123,15 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Если этот экземпляр уже остановлена, вызов этого метода не оказывает влияния.  
+ Если этот экземпляр уже остановлен, вызов этого метода не оказывает никакого влияния.  
   
- После остановки <xref:System.Net.HttpListener> объекта, можно использовать <xref:System.Net.HttpListener.Start%2A> метод перезапустить ее.  
+ После остановки <xref:System.Net.HttpListener> объекта можно <xref:System.Net.HttpListener.Start%2A> использовать метод для его перезапуска.  
   
    
   
 ## Examples  
  
-В следующем примере кода показано использование <xref:System.Net.HttpListener.Stop%2A> метод для остановки обработки входящих запросов.  
+В следующем примере кода показано использование <xref:System.Net.HttpListener.Stop%2A> метода для отмены обработки входящих запросов.  
  
 [!code-csharp[Net_Listener_Basic#2](~/samples/snippets/csharp/VS_Snippets_Remoting/Net_Listener_Basic/CS/test.cs#2)]  
 [!code-vb[Net_Listener_Basic#2](~/samples/snippets/visualbasic/VS_Snippets_Remoting/Net_Listener_Basic/VB/test.vb#2)]  
@@ -1139,7 +1139,7 @@
  ]]></format>
         </remarks>
         <exception cref="T:System.ObjectDisposedException">Объект закрыт.</exception>
-        <block subset="none" type="usage"><para>Данный член генерирует сведения трассировки, если в приложении включена трассировка сети. Дополнительные сведения см. в разделе [сетевая трассировка в .NET Framework](~/docs/framework/network-programming/network-tracing.md).</para></block>
+        <block subset="none" type="usage"><para>Данный член генерирует сведения трассировки, если в приложении включена трассировка сети. Дополнительные сведения см. [в разделе Сетевая трассировка в .NET Framework](~/docs/framework/network-programming/network-tracing.md).</para></block>
       </Docs>
     </Member>
     <Member MemberName="System.IDisposable.Dispose">
@@ -1178,12 +1178,12 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>Освобождает ресурсы, удерживаемые этим объектом <see cref="T:System.Net.HttpListener" />.</summary>
+        <summary>Освобождает ресурсы, используемые этим объектом <see cref="T:System.Net.HttpListener" />.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Приложения должны использовать <xref:System.Net.HttpListener.Close%2A> метод вместо вызова данного метода.  
+ Приложения должны использовать <xref:System.Net.HttpListener.Close%2A> метод вместо вызова этого метода.  
   
  ]]></format>
         </remarks>
@@ -1227,7 +1227,7 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Диспетчер времени ожидания определяет ограничения времени ожидания соединения для данного <xref:System.Net.HttpListener> экземпляра.  
+ Диспетчер времени ожидания определяет ограничения времени ожидания подключения для данного <xref:System.Net.HttpListener> экземпляра.  
   
  ]]></format>
         </remarks>
@@ -1269,18 +1269,18 @@
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Возвращает или задает значение <see cref="T:System.Boolean" />, которое определяет, должны ли дополнительные запросы, использующие то же TCP-подключение, проходить аутентификацию при использовании протокола NTLM.</summary>
-        <value>Значение <see langword="true" />, если сведения об идентификации <see cref="T:System.Security.Principal.IIdentity" /> первого запроса будут использоваться для последующих запросов по тому же подключению; в противном случае — значение <see langword="false" />. Значение по умолчанию — <see langword="false" />.</value>
+        <summary>Возвращает или задает значение <see cref="T:System.Boolean" />, которое управляет, должны ли дополнительные запросы, использующие TCP-подключение, проходить проверку подлинности при использовании протокола NTLM.</summary>
+        <value>Значение <see langword="true" />, если сведения об идентификации <see cref="T:System.Security.Principal.IIdentity" /> первого запроса будут использоваться для последующих запросов на том же подключении, в противном случае — <see langword="false" />. Значение по умолчанию — <see langword="false" />.</value>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Если присвоить этому свойству `true` и первый запрос через определенное подключение TCP проходит проверку подлинности с помощью NTLM, последующие запросы через одно и то же подключение TCP обрабатываются с использованием сведения для проверки подлинности (<xref:System.Security.Principal.IIdentity>) начального запрос.  
+ Если для `true` этого свойства задано значение и первый запрос по конкретному TCP-соединению проходит проверку подлинности с помощью NTLM, последующие запросы по этому же TCP-соединению<xref:System.Security.Principal.IIdentity>обрабатываются с использованием сведений о проверке подлинности () начального значения получения.  
   
- Это свойство не имеет значения, если NTLM не является протоколом проверки подлинности. При указании в качестве протокола проверки подлинности Negotiate, это свойство действует только в том случае, если является фактически применяемый протокол, используемый для проверки подлинности NTLM.  
+ Это свойство не имеет значения, если NTLM не является протоколом проверки подлинности. Если в качестве протокола проверки подлинности указано Negotiate, это свойство действует, только если NTLM — это фактический протокол, используемый для проверки подлинности.  
   
 > [!NOTE]
->  Значение этого свойства `true` повышается производительность, поскольку <xref:System.Net.HttpListener> не не отправлять дополнительные проверки подлинности NTLM, есть риск безопасности не требовать от всех запросов, чтобы предоставить сведения для проверки подлинности. Необходимо определить, стоит ли снижать безопасность с целью увеличения производительности.  
+>  При задании этого свойства `true` для повышения производительности, <xref:System.Net.HttpListener> поскольку не отправляет дополнительные проблемы проверки подлинности NTLM, существует угроза безопасности, при которой не требуется, чтобы все запросы на предоставление сведений о проверке подлинности. Необходимо определить, стоит ли снижать безопасность с целью увеличения производительности.  
   
    
   

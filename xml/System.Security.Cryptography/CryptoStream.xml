@@ -42,17 +42,17 @@
       <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Среда CLR использует поточно ориентированный подход для шифрования. Основа такого подхода является <xref:System.Security.Cryptography.CryptoStream>. Любые криптографические объекты, реализующие <xref:System.Security.Cryptography.CryptoStream> могут быть соединены вместе с любыми объектами, реализующими <xref:System.IO.Stream>, поэтому потоковые выходные данные от одного объекта может подаваться на вход другого объекта. Промежуточный результат (выходные данные из первого объекта) не должны храниться отдельно.  
+ Среда CLR использует модель, ориентированную на поток, для шифрования. Основой этой конструкции является <xref:System.Security.Cryptography.CryptoStream>. Любые криптографические объекты, <xref:System.Security.Cryptography.CryptoStream> реализующие, могут быть объединены в цепочку <xref:System.IO.Stream>с любыми объектами, которые реализуют, поэтому потоковый выход из одного объекта может быть передан во входные данные другого объекта. Промежуточный результат (выходные данные первого объекта) не должен храниться отдельно.  
   
 > [!IMPORTANT]
->  Этот тип реализует <xref:System.IDisposable> интерфейс. Когда вы закончите, используя тип, следует освободить его прямо или косвенно путем вызова его <xref:System.Security.Cryptography.CryptoStream.Clear%2A> метод, который в свою очередь, вызывает его <xref:System.IDisposable> реализации. Чтобы удалить тип напрямую, вызовите его <xref:System.Security.Cryptography.CryptoStream.Clear%2A> метод в `try` / `catch` блока. Чтобы избавиться от его косвенно, используйте языковой конструкции, такие как `using` (в C#) или `Using` (в Visual Basic). Дополнительные сведения см. в разделе «С помощью объекта, реализует IDisposable» <xref:System.IDisposable> разделу интерфейса.  
+>  Этот тип реализует интерфейс <xref:System.IDisposable>. После завершения использования типа его следует удалить прямо или косвенно, вызвав его <xref:System.Security.Cryptography.CryptoStream.Clear%2A> метод, который, в свою очередь, вызывает его <xref:System.IDisposable> реализацию. Чтобы сделать это прямо, вызовите его метод <xref:System.Security.Cryptography.CryptoStream.Clear%2A> в блоке `try`/`catch`. Чтобы сделать это косвенно, используйте языковые конструкции, такие как `using` (в C#) или `Using` (в Visual Basic). Дополнительные сведения см. в разделе "Использование объекта, реализующего IDisposable" в статье об интерфейсе <xref:System.IDisposable>.  
   
- Следует всегда явным образом закрывать вашей <xref:System.Security.Cryptography.CryptoStream> объект после завершения с помощью его путем вызова <xref:System.Security.Cryptography.CryptoStream.Clear%2A> метод.  Это сохраняет базовый поток и указывает, что все оставшиеся блоки данных, чтобы быть обработанным <xref:System.Security.Cryptography.CryptoStream> объекта.  Тем не менее при возникновении исключения, перед вызовом метода <xref:System.IO.Stream.Close%2A> метод, <xref:System.Security.Cryptography.CryptoStream> объект не может быть закрыт.  Чтобы убедиться, что <xref:System.IO.Stream.Close%2A> всегда вызывается метод, поместите свой призыв к <xref:System.Security.Cryptography.CryptoStream.Clear%2A> метода в `finally` блока `try` / `catch` инструкции.  
+ Всегда следует явно закрывать <xref:System.Security.Cryptography.CryptoStream> объект после того, как вы завершите его использование, <xref:System.Security.Cryptography.CryptoStream.Clear%2A> вызвав метод.  Это приводит к очистке базового потока и вызовет обработку <xref:System.Security.Cryptography.CryptoStream> всех оставшихся блоков данных объектом.  Однако если исключение возникает до вызова <xref:System.IO.Stream.Close%2A> метода <xref:System.Security.Cryptography.CryptoStream> , объект может быть не закрыт.  Чтобы гарантировать, что <xref:System.IO.Stream.Close%2A> метод всегда вызывается, поместите вызов `catch` `finally` <xref:System.Security.Cryptography.CryptoStream.Clear%2A> метода `try` / в блок инструкции.  
   
    
   
 ## Examples  
- Следующий пример демонстрирует, как использовать <xref:System.Security.Cryptography.CryptoStream> зашифровать строку. Этот метод использует <xref:System.Security.Cryptography.RijndaelManaged> с заданным <xref:System.Security.Cryptography.SymmetricAlgorithm.Key%2A> и вектором инициализации (<xref:System.Security.Cryptography.SymmetricAlgorithm.IV%2A>).  
+ В следующем примере показано, <xref:System.Security.Cryptography.CryptoStream> как использовать для шифрования строки. Этот метод использует <xref:System.Security.Cryptography.RijndaelManaged> класс с заданным <xref:System.Security.Cryptography.SymmetricAlgorithm.Key%2A> и вектором инициализации<xref:System.Security.Cryptography.SymmetricAlgorithm.IV%2A>().  
   
  [!code-csharp[Cryptography.Rijndael.Create.File#1](~/samples/snippets/csharp/VS_Snippets_CLR/cryptography.rijndael.create.file/cs/fileexample.cs#1)]
  [!code-vb[Cryptography.Rijndael.Create.File#1](~/samples/snippets/visualbasic/VS_Snippets_CLR/cryptography.rijndael.create.file/vb/fileexample.vb#1)]  
@@ -96,12 +96,12 @@
         <param name="stream">Поток для выполнения криптографического преобразования.</param>
         <param name="transform">Криптографическое преобразование, применяемое к потоку.</param>
         <param name="mode">Одно из значений перечисления <see cref="T:System.Security.Cryptography.CryptoStreamMode" />.</param>
-        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Security.Cryptography.CryptoStream" />, используя целевой поток данных, преобразования и режим потока.</summary>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Security.Cryptography.CryptoStream" /> с использованием целевого потока данных, преобразования и режима потока.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Любой объект, который является производным от <xref:System.IO.Stream> могут быть переданы в `stream` параметра. Любой объект, реализующий <xref:System.Security.Cryptography.ICryptoTransform> (такие как <xref:System.Security.Cryptography.HashAlgorithm>) могут быть переданы в `transform` параметра.  
+ Любой объект, производный от <xref:System.IO.Stream> , может быть передан `stream` в параметр. Любой объект, реализующий <xref:System.Security.Cryptography.ICryptoTransform> (например, <xref:System.Security.Cryptography.HashAlgorithm>), `transform` можно передать в параметр.  
   
  ]]></format>
         </remarks>
@@ -142,7 +142,7 @@
         <param name="leaveOpen"><see langword="true" />, чтобы не закрывать базовый поток при ликвидации объекта <see cref="T:System.Security.Cryptography.CryptoStream" />, в противном случае — <see langword="false" />.</param>
         <summary>Инициализирует новый экземпляр класса <see cref="T:System.Security.Cryptography.CryptoStream" />.</summary>
         <remarks>To be added.</remarks>
-        <exception cref="T:System.ArgumentException"><paramref name="mode" /> недопустим.</exception>
+        <exception cref="T:System.ArgumentException">Значение параметра <paramref name="mode" /> недопустимо.</exception>
       </Docs>
     </Member>
     <Member MemberName="BeginRead">
@@ -255,7 +255,7 @@
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Возвращает значение, определяющее, доступен ли текущий поток <see cref="T:System.Security.Cryptography.CryptoStream" /> для чтения.</summary>
+        <summary>Получает значение, определяющее, доступен ли текущий поток <see cref="T:System.Security.Cryptography.CryptoStream" /> для чтения.</summary>
         <value>Значение <see langword="true" />, если текущий поток доступен для чтения; в противном случае — значение <see langword="false" />.</value>
         <remarks>To be added.</remarks>
         <related type="Article" href="~/docs/standard/security/cryptographic-services.md">службы шифрования</related>
@@ -291,13 +291,13 @@
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Возвращает значение, указывающее, возможен ли поиск в текущем потоке <see cref="T:System.Security.Cryptography.CryptoStream" />.</summary>
+        <summary>Получает значение, указывающее, возможен ли поиск в текущем потоке <see cref="T:System.Security.Cryptography.CryptoStream" />.</summary>
         <value>Всегда <see langword="false" />.</value>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Поиск не включен в <xref:System.Security.Cryptography.CryptoStream>, поэтому этот метод всегда возвращает `false`.  
+ Поиск не включен в <xref:System.Security.Cryptography.CryptoStream>, поэтому этот метод всегда возвращает `false`значение.  
   
  ]]></format>
         </remarks>
@@ -334,7 +334,7 @@
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Возвращает значение, определяющее, доступен ли текущий поток <see cref="T:System.Security.Cryptography.CryptoStream" /> для записи.</summary>
+        <summary>Получает значение, определяющее, доступен ли текущий поток <see cref="T:System.Security.Cryptography.CryptoStream" /> для записи.</summary>
         <value>Значение <see langword="true" />, если текущий поток доступен для записи; в противном случае — значение <see langword="false" />.</value>
         <remarks>To be added.</remarks>
         <related type="Article" href="~/docs/standard/security/cryptographic-services.md">службы шифрования</related>
@@ -375,9 +375,9 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот метод создает оболочку для вызова этого типа <xref:System.IDisposable.Dispose%2A?displayProperty=nameWithType> реализации.  
+ Этот метод служит оболочкой для вызова <xref:System.IDisposable.Dispose%2A?displayProperty=nameWithType> реализации типа.  
   
- Вызов `Dispose` позволяет ресурсы, используемые <xref:System.Security.Cryptography.CryptoStream> перераспределить для других целей. Дополнительные сведения о `Dispose`, см. в разделе [очистки неуправляемых ресурсов](~/docs/standard/garbage-collection/unmanaged.md)  
+ Вызов `Dispose` позволяет перераспределить ресурсы, используемые <xref:System.Security.Cryptography.CryptoStream> в, для других целей. Дополнительные сведения о `Dispose`см. в разделе [Очистка неуправляемых ресурсов](~/docs/standard/garbage-collection/unmanaged.md) .  
   
  ]]></format>
         </remarks>
@@ -444,22 +444,22 @@
         <Parameter Name="disposing" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="disposing">Значение <see langword="true" /> позволяет освободить как управляемые, так и неуправляемые ресурсы; значение <see langword="false" /> освобождает только неуправляемые ресурсы.</param>
+        <param name="disposing">Значение <see langword="true" /> позволяет освободить управляемые и неуправляемые ресурсы; значение <see langword="false" /> позволяет освободить только неуправляемые ресурсы.</param>
         <summary>Освобождает неуправляемые ресурсы, используемые объектом <see cref="T:System.Security.Cryptography.CryptoStream" />, а при необходимости освобождает также управляемые ресурсы.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот метод вызывается открытым `Dispose()` метод и `Finalize` метод. `Dispose()` вызывает защищенный `Dispose(Boolean)` метод с параметром disposing, имеющим `true`. `Finalize` вызывает `Dispose` с disposing равным `false`.  
+ Этот метод вызывается открытым `Dispose()` методом `Finalize` и методом. `Dispose()`вызывает защищенный `Dispose(Boolean)` метод с параметром disposing, `true`имеющим значение. `Finalize``false`вызывает метод `Dispose` с параметром disposing, равным.  
   
  Если параметр `disposing` имеет значение `true`, то данный метод освобождает все ресурсы, занятые любыми управляемыми объектами, на которые ссылается этот объект <xref:System.Security.Cryptography.CryptoStream>. Этот метод вызывает метод `Dispose()` каждого объекта, на который есть ссылка.  
   
  ]]></format>
         </remarks>
         <block subset="none" type="overrides"><para>Метод 
-            <see langword="Dispose" /> может вызываться несколько раз другими объектами. При переопределении метода <see langword="Dispose(Boolean)" />нужно избегать ссылок на объекты, которые были уничтожены предыдущими вызовами <see langword="Dispose" />. Дополнительные сведения о том, как реализовать <see langword="Dispose(Boolean)" />, см. в разделе [реализация метода Dispose](~/docs/standard/garbage-collection/implementing-dispose.md).  
+            <see langword="Dispose" /> может вызываться несколько раз другими объектами. При переопределении <see langword="Dispose(Boolean)" />следует избегать ссылок на объекты, которые были удалены ранее при предыдущем <see langword="Dispose" />вызове метода. Дополнительные сведения о реализации <see langword="Dispose(Boolean)" />см. в разделе [Реализация метода Dispose](~/docs/standard/garbage-collection/implementing-dispose.md).  
   
-Дополнительные сведения о <see langword="Dispose" /> и <see langword="Finalize" />, см. в разделе [очистки неуправляемых ресурсов](~/docs/standard/garbage-collection/unmanaged.md).</para></block>
+Дополнительные сведения о <see langword="Dispose" /> и <see langword="Finalize" />см. в разделе Очистка неуправляемых [ресурсов](~/docs/standard/garbage-collection/unmanaged.md).</para></block>
         <related type="Article" href="~/docs/standard/security/cryptographic-services.md">службы шифрования</related>
       </Docs>
     </Member>
@@ -618,10 +618,10 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Сброс потока его основной кодировщик не очищается только явным образом при вызове <xref:System.Security.Cryptography.CryptoStream.Flush%2A> или <xref:System.IO.Stream.Close%2A>. Установка <xref:System.IO.StreamWriter.AutoFlush%2A> для `true` означает, что данные будут сброшены из буфера в поток, но состояние кодировщика не сбрасывается. Это позволяет кодировщику сохранить свое состояние (частичные символы), чтобы правильно выполнить кодировку следующего блока символов. Этот сценарий влияет на UTF8 и UTF7, в которых определенные символы кодируются только после того как кодировщик получает смежные символ или символы.  
+ При сбросе потока его базовый кодировщик не очищается, пока не будет <xref:System.Security.Cryptography.CryptoStream.Flush%2A> явно <xref:System.IO.Stream.Close%2A>вызван метод или. Значение <xref:System.IO.StreamWriter.AutoFlush%2A> указывает, что данные будут сброшены из буфера в поток, но состояние кодировщика не будет сбрасываться. `true` Это позволяет кодировщику оставаться в состоянии (частичные символы), чтобы он мог правильно кодировать следующий блок символов. Этот сценарий влияет на UTF8 и UTF7, где определенные символы могут быть закодированы только после того, как кодировщик получит смежный символ или символы.  
   
 > [!NOTE]
->  Следует вызвать либо <xref:System.IO.Stream.Close%2A> метод или <xref:System.Security.Cryptography.CryptoStream.FlushFinalBlock%2A> метод для выполнения очистки буфера.  
+>  Для завершения очистки буфера следует <xref:System.IO.Stream.Close%2A> вызвать метод <xref:System.Security.Cryptography.CryptoStream.FlushFinalBlock%2A> или метод.  
   
  ]]></format>
         </remarks>
@@ -665,9 +665,9 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Необходимо в начале при вызове <xref:System.Security.Cryptography.CryptoStream.FlushAsync%2A> с `await` (C#) или `Await` оператора (Visual Basic) для приостановки выполнения метода до завершения задачи. Дополнительные сведения см. в разделе [Асинхронное программирование с использованием ключевых слов async и await](https://msdn.microsoft.com/library/db854f91-ccef-4035-ae4d-0911fde808c7).  
+ Необходимо <xref:System.Security.Cryptography.CryptoStream.FlushAsync%2A> предварять вызов `await` с помощью оператора (C#) или `Await` (Visual Basic), чтобы приостановить выполнение метода до завершения задачи. Дополнительные сведения см. в разделе [Асинхронное программирование с использованием ключевых слов async и await](https://msdn.microsoft.com/library/db854f91-ccef-4035-ae4d-0911fde808c7).  
   
- Если операция отменена до ее завершения, возвращаемая задача содержит <xref:System.Threading.Tasks.TaskStatus.Canceled> значение <xref:System.Threading.Tasks.Task.Status%2A> свойства.  
+ Если операция отменяется до ее завершения, возвращаемая задача содержит <xref:System.Threading.Tasks.TaskStatus.Canceled> значение <xref:System.Threading.Tasks.Task.Status%2A> для свойства.  
   
  ]]></format>
         </remarks>
@@ -710,14 +710,14 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Вызов <xref:System.IO.Stream.Close%2A> вызовет метод <xref:System.Security.Cryptography.CryptoStream.FlushFinalBlock%2A>. Если вы не вызываете <xref:System.IO.Stream.Close%2A>, вызовите <xref:System.Security.Cryptography.CryptoStream.FlushFinalBlock%2A> для выполнения очистки буфера. Вызовите <xref:System.Security.Cryptography.CryptoStream.FlushFinalBlock%2A> только при завершении всех действий потока.  
+ При вызове <xref:System.Security.Cryptography.CryptoStream.FlushFinalBlock%2A>метода будет вызван метод. <xref:System.IO.Stream.Close%2A> Если не вызвать <xref:System.IO.Stream.Close%2A>, вызовите <xref:System.Security.Cryptography.CryptoStream.FlushFinalBlock%2A> , чтобы завершить очистку буфера. Вызывайте <xref:System.Security.Cryptography.CryptoStream.FlushFinalBlock%2A> только после завершения всех действий потока.  
   
  ]]></format>
         </remarks>
         <exception cref="T:System.Security.Cryptography.CryptographicException">Ключ поврежден, что может привести к неправильному заполнению потока.</exception>
         <exception cref="T:System.NotSupportedException">Текущий поток недоступен для записи.  
   
--или- 
+- или - 
 Последний блок уже преобразован.</exception>
         <related type="Article" href="~/docs/standard/security/cryptographic-services.md">службы шифрования</related>
       </Docs>
@@ -750,13 +750,13 @@
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Возвращает значение, указывающее, записан ли последний буферный блок в базовый поток.</summary>
+        <summary>Получает значение, указывающее, записан ли последний буферный блок в базовый поток.</summary>
         <value>Значение <see langword="true" />, если последний блок передан. В противном случае — значение <see langword="false" />.</value>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Это свойство имеет значение `true` при <xref:System.Security.Cryptography.CryptoStream.FlushFinalBlock%2A> вызывается метод.  
+ Это свойство задается `true` <xref:System.Security.Cryptography.CryptoStream.FlushFinalBlock%2A> при вызове метода.  
   
  ]]></format>
         </remarks>
@@ -798,7 +798,7 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Это свойство существует только для поддержки наследования от <xref:System.IO.Stream>и не может использоваться.  
+ Это свойство служит только для поддержки наследования от класса <xref:System.IO.Stream> и не может применяться на практике.  
   
  ]]></format>
         </remarks>
@@ -836,13 +836,13 @@
         <ReturnType>System.Int64</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Возвращает или задает позицию в текущем потоке.</summary>
+        <summary>Получает или задает позицию в текущем потоке.</summary>
         <value>Данное свойство не поддерживается.</value>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Это свойство существует только для поддержки наследования от <xref:System.IO.Stream>и не может использоваться.  
+ Это свойство служит только для поддержки наследования от класса <xref:System.IO.Stream> и не может применяться на практике.  
   
  ]]></format>
         </remarks>
@@ -896,12 +896,12 @@
         <summary>Считывает последовательность байтов из текущего потока и перемещает позицию внутри потока на число считанных байтов.</summary>
         <returns>Общее количество байтов, считанных в буфер. Это число может быть меньше количества запрошенных байтов, если нужное число байтов в настоящее время недоступно, а также равняться нулю, если был достигнут конец потока.</returns>
         <remarks>To be added.</remarks>
-        <exception cref="T:System.NotSupportedException"><see cref="T:System.Security.Cryptography.CryptoStreamMode" /> Связанный с текущим <see cref="T:System.Security.Cryptography.CryptoStream" /> объекта не соответствует базовому потоку.  Например, это исключение возникает при использовании <see cref="F:System.Security.Cryptography.CryptoStreamMode.Read" /> с базовым потоком, доступным только для записи.</exception>
+        <exception cref="T:System.NotSupportedException">Режим <see cref="T:System.Security.Cryptography.CryptoStreamMode" />, связанный с текущим объектом <see cref="T:System.Security.Cryptography.CryptoStream" /> не соответствует базовому потоку.  Например, это исключение возникает при использовании режима <see cref="F:System.Security.Cryptography.CryptoStreamMode.Read" /> с потоком, доступным только для записи.</exception>
         <exception cref="T:System.ArgumentOutOfRangeException">Значение параметра <paramref name="offset" /> меньше нуля.  
   
--или- 
+- или - 
 Значение параметра <paramref name="count" /> меньше нуля.</exception>
-        <exception cref="T:System.ArgumentException">Сумма <paramref name="count" /> и <paramref name="offset" /> длиннее, чем длина буфера.</exception>
+        <exception cref="T:System.ArgumentException">Сумма параметров <paramref name="count" /> и <paramref name="offset" /> превышает длину буфера.</exception>
         <related type="Article" href="~/docs/standard/security/cryptographic-services.md">службы шифрования</related>
       </Docs>
     </Member>
@@ -948,15 +948,15 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Необходимо в начале при вызове <xref:System.Security.Cryptography.CryptoStream.ReadAsync%2A> с `await` (C#) или `Await` оператора (Visual Basic) для приостановки выполнения метода до завершения задачи. Дополнительные сведения см. в разделе [Асинхронное программирование с использованием ключевых слов async и await](https://msdn.microsoft.com/library/db854f91-ccef-4035-ae4d-0911fde808c7).  
+ Необходимо <xref:System.Security.Cryptography.CryptoStream.ReadAsync%2A> предварять вызов `await` с помощью оператора (C#) или `Await` (Visual Basic), чтобы приостановить выполнение метода до завершения задачи. Дополнительные сведения см. в разделе [Асинхронное программирование с использованием ключевых слов async и await](https://msdn.microsoft.com/library/db854f91-ccef-4035-ae4d-0911fde808c7).  
   
- Если операция отменена до ее завершения, возвращаемая задача содержит <xref:System.Threading.Tasks.TaskStatus.Canceled> значение <xref:System.Threading.Tasks.Task.Status%2A> свойства.  
+ Если операция отменяется до ее завершения, возвращаемая задача содержит <xref:System.Threading.Tasks.TaskStatus.Canceled> значение <xref:System.Threading.Tasks.Task.Status%2A> для свойства.  
   
  ]]></format>
         </remarks>
         <exception cref="T:System.ArgumentNullException">Свойство <paramref name="buffer" /> имеет значение <see langword="null" />.</exception>
         <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="offset" /> или <paramref name="count" /> является отрицательным значением.</exception>
-        <exception cref="T:System.ArgumentException">Сумма <paramref name="offset" /> и <paramref name="count" /> больше, чем длина буфера.</exception>
+        <exception cref="T:System.ArgumentException">Сумма значений параметров <paramref name="offset" /> и <paramref name="count" /> больше длины буфера.</exception>
         <exception cref="T:System.NotSupportedException">Поток не поддерживает чтение.</exception>
         <exception cref="T:System.ObjectDisposedException">Поток был удален.</exception>
         <exception cref="T:System.InvalidOperationException">Поток в настоящее время используется предыдущей операцией чтения.</exception>
@@ -1035,7 +1035,7 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот метод предназначен только для поддержки наследования от <xref:System.IO.Stream>и не может использоваться.  
+ Этот метод существует только для поддержки наследования <xref:System.IO.Stream>от и не может использоваться.  
   
  ]]></format>
         </remarks>
@@ -1082,11 +1082,11 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Это свойство существует только для поддержки наследования от <xref:System.IO.Stream>и не может использоваться.  
+ Это свойство служит только для поддержки наследования от класса <xref:System.IO.Stream> и не может применяться на практике.  
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.NotSupportedException">Это свойство существует только для поддержки наследования от <see cref="T:System.IO.Stream" />и не может использоваться.</exception>
+        <exception cref="T:System.NotSupportedException">Это свойство служит только для поддержки наследования от класса <see cref="T:System.IO.Stream" /> и не может применяться на практике.</exception>
         <related type="Article" href="~/docs/standard/security/cryptographic-services.md">службы шифрования</related>
       </Docs>
     </Member>
@@ -1165,12 +1165,12 @@
         <param name="count">Количество байтов, которое необходимо записать в текущий поток.</param>
         <summary>Записывает последовательность байтов в текущий <see cref="T:System.Security.Cryptography.CryptoStream" /> и перемещает текущую позицию внутри потока на число записанных байтов.</summary>
         <remarks>To be added.</remarks>
-        <exception cref="T:System.NotSupportedException"><see cref="T:System.Security.Cryptography.CryptoStreamMode" /> Связанный с текущим <see cref="T:System.Security.Cryptography.CryptoStream" /> объекта не соответствует базовому потоку.  Например, это исключение возникает при использовании <see cref="F:System.Security.Cryptography.CryptoStreamMode.Write" /> с базовым потоком, доступен только для чтения.</exception>
+        <exception cref="T:System.NotSupportedException">Режим <see cref="T:System.Security.Cryptography.CryptoStreamMode" />, связанный с текущим объектом <see cref="T:System.Security.Cryptography.CryptoStream" /> не соответствует базовому потоку.  Например, это исключение возникает при использовании <see cref="F:System.Security.Cryptography.CryptoStreamMode.Write" /> с базовым потоком, доступным только для чтения.</exception>
         <exception cref="T:System.ArgumentOutOfRangeException">Значение параметра <paramref name="offset" /> меньше нуля.  
   
--или- 
+- или - 
 Значение параметра <paramref name="count" /> меньше нуля.</exception>
-        <exception cref="T:System.ArgumentException">Сумма <paramref name="count" /> и <paramref name="offset" /> длиннее, чем длина буфера.</exception>
+        <exception cref="T:System.ArgumentException">Сумма параметров <paramref name="count" /> и <paramref name="offset" /> превышает длину буфера.</exception>
         <related type="Article" href="~/docs/standard/security/cryptographic-services.md">службы шифрования</related>
       </Docs>
     </Member>
@@ -1217,9 +1217,9 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Необходимо в начале при вызове <xref:System.Security.Cryptography.CryptoStream.WriteAsync%2A> с `await` (C#) или `Await` оператора (Visual Basic) для приостановки выполнения метода до завершения задачи. Дополнительные сведения см. в разделе [Асинхронное программирование с использованием ключевых слов async и await](https://msdn.microsoft.com/library/db854f91-ccef-4035-ae4d-0911fde808c7).  
+ Необходимо <xref:System.Security.Cryptography.CryptoStream.WriteAsync%2A> предварять вызов `await` с помощью оператора (C#) или `Await` (Visual Basic), чтобы приостановить выполнение метода до завершения задачи. Дополнительные сведения см. в разделе [Асинхронное программирование с использованием ключевых слов async и await](https://msdn.microsoft.com/library/db854f91-ccef-4035-ae4d-0911fde808c7).  
   
- Если операция отменена до ее завершения, возвращаемая задача содержит <xref:System.Threading.Tasks.TaskStatus.Canceled> значение <xref:System.Threading.Tasks.Task.Status%2A> свойства.  
+ Если операция отменяется до ее завершения, возвращаемая задача содержит <xref:System.Threading.Tasks.TaskStatus.Canceled> значение <xref:System.Threading.Tasks.Task.Status%2A> для свойства.  
   
  ]]></format>
         </remarks>
