@@ -35,25 +35,25 @@
       <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- <xref:System.Transactions> Инфраструктура обеспечивает как явная модель программирования на основе <xref:System.Transactions.Transaction> класса, а также в неявного программирования модели с помощью <xref:System.Transactions.TransactionScope> класса, в котором транзакции автоматически управляются инфраструктурой.  
+ Инфраструктура предоставляет явную модель программирования на основе <xref:System.Transactions.Transaction> класса, а также <xref:System.Transactions.TransactionScope> неявную модель программирования, использующую класс, в которой транзакции автоматически управляются инфраструктурой. <xref:System.Transactions>  
   
 > [!IMPORTANT]
->  Мы рекомендуем создать неявных транзакций с использованием <xref:System.Transactions.TransactionScope> класса, таким образом, чтобы контекста внешней транзакции автоматически осуществляется автоматически. Также следует использовать <xref:System.Transactions.TransactionScope> и <xref:System.Transactions.DependentTransaction> для приложений, которые требуется использовать ту же транзакцию в нескольких вызовах функций или нескольких вызовах потоков. Дополнительные сведения об этой модели см. в разделе [реализации неявных транзакций с помощью области транзакций](~/docs/framework/data/transactions/implementing-an-implicit-transaction-using-transaction-scope.md) раздела. Дополнительные сведения о создании транзакционного приложения см. в разделе [записи транзакционного приложения](~/docs/framework/data/transactions/writing-a-transactional-application.md).  
+>  Рекомендуется создавать неявные транзакции с помощью <xref:System.Transactions.TransactionScope> класса, чтобы внешний контекст транзакции был автоматически управляемым. Также следует использовать <xref:System.Transactions.TransactionScope> класс и <xref:System.Transactions.DependentTransaction> для приложений, требующих использования одной и той же транзакции для нескольких вызовов функций или нескольких вызовов потоков. Дополнительные сведения об этой модели см. в разделе [Реализация неявной транзакции с использованием области транзакции](~/docs/framework/data/transactions/implementing-an-implicit-transaction-using-transaction-scope.md) . Дополнительные сведения о написании транзакционного приложения см. в разделе [написание транзакционного](~/docs/framework/data/transactions/writing-a-transactional-application.md)приложения.  
   
- При создании экземпляра <xref:System.Transactions.TransactionScope> по `new` инструкции, диспетчер транзакций определяет, какой транзакции следует участвовать. После определения область всегда участвует в этой транзакции. Решение принимается на основе двух факторов: значения параметра `TransactionScopeOption` в конструкторе и наличия внешней транзакции.  Внешняя транзакция имеет, когда ваш код выполняется в транзакции. Ссылку на внешнюю транзакцию можно получить, вызвав статическое свойство <xref:System.Transactions.Transaction.Current%2A?displayProperty=nameWithType> класса <xref:System.Transactions.Transaction>. Дополнительные сведения об использовании этого параметра см. в разделе «Управление потоком транзакций» из [реализации неявных транзакций с помощью области транзакций](~/docs/framework/data/transactions/implementing-an-implicit-transaction-using-transaction-scope.md) раздела.  
+ При создании экземпляра <xref:System.Transactions.TransactionScope> с `new` помощью инструкции диспетчер транзакций определяет, в какой транзакции следует участвовать. После определения область всегда участвует в этой транзакции. Решение принимается на основе двух факторов: значения параметра `TransactionScopeOption` в конструкторе и наличия внешней транзакции.  Внешняя транзакция — это транзакция, в которой выполняется код. Ссылку на внешнюю транзакцию можно получить, вызвав статическое свойство <xref:System.Transactions.Transaction.Current%2A?displayProperty=nameWithType> класса <xref:System.Transactions.Transaction>. Дополнительные сведения об использовании этого параметра см. в разделе "Управление потоками транзакций" статьи [Реализация неявной транзакции с использованием области действия транзакции](~/docs/framework/data/transactions/implementing-an-implicit-transaction-using-transaction-scope.md) .  
   
- Если исключение не возникает в области транзакции (то есть между инициализации <xref:System.Transactions.TransactionScope> объекта и вызовом его <xref:System.Transactions.TransactionScope.Dispose%2A> метод), затем транзакции, в которой участвует область разрешается продолжить. Если в области транзакции при возникновении исключения, быть откат транзакции, в которой он участвует.  
+ Если исключение не возникает в области транзакции (т. е. между инициализацией <xref:System.Transactions.TransactionScope> объекта и вызовом его <xref:System.Transactions.TransactionScope.Dispose%2A> метода), то транзакция, в которой участвует область, может быть продолжена. Если в области транзакции возникает исключение, то будет выполнен откат транзакции, в которой она участвует.  
   
- Когда приложение завершает всю работу необходимо выполнить в транзакции, следует вызывать <xref:System.Transactions.TransactionScope.Complete%2A> метод только один раз, чтобы информировать диспетчер транзакций, что вполне допустимо зафиксировать транзакцию. Если вызвать этот метод, транзакция прерывается.  
+ Когда приложение завершает всю работу, которую он хочет выполнить в транзакции, следует вызывать <xref:System.Transactions.TransactionScope.Complete%2A> метод только один раз, чтобы сообщить диспетчеру транзакций, что он приемлем для фиксации транзакции. Если не вызвать этот метод, транзакция прерывается.  
   
- Вызов <xref:System.Transactions.TransactionScope.Dispose%2A> метод Отмечает конец области транзакции. Исключения, возникающие после вызова данного метода, могут не воздействовать на транзакцию.  
+ Вызов <xref:System.Transactions.TransactionScope.Dispose%2A> метода отмечает конец области транзакции. Исключения, возникающие после вызова данного метода, могут не воздействовать на транзакцию.  
   
- Если изменить значение <xref:System.Transactions.Transaction.Current%2A> внутри области, исключение возникает, когда <xref:System.Transactions.TransactionScope.Dispose%2A> вызывается. Тем не менее в конце области, восстанавливается предыдущее значение. Кроме того, при вызове метода <xref:System.Transactions.TransactionScope.Dispose%2A> на <xref:System.Transactions.Transaction.Current%2A> внутри области транзакции, создавший транзакцию, транзакция будет прервана в конце области.  
+ При изменении значения <xref:System.Transactions.Transaction.Current%2A> внутри области вызывается исключение при <xref:System.Transactions.TransactionScope.Dispose%2A> вызове метода. Однако в конце области восстанавливается предыдущее значение. Кроме того, при вызове <xref:System.Transactions.TransactionScope.Dispose%2A> функции <xref:System.Transactions.Transaction.Current%2A> в пределах области транзакции, создавшей транзакцию, транзакция прерывается в конце области.  
   
    
   
 ## Examples  
- Следующий пример демонстрирует, как использовать <xref:System.Transactions.TransactionScope> класс для определения блока кода, чтобы участвовать в транзакции.  
+ В следующем примере показано, как использовать <xref:System.Transactions.TransactionScope> класс для определения блока кода для участия в транзакции.  
   
  [!code-csharp[TransactionScope#1](~/samples/snippets/csharp/VS_Snippets_Remoting/TransactionScope/cs/ScopeWithSQL.cs#1)]
  [!code-vb[TransactionScope#1](~/samples/snippets/visualbasic/VS_Snippets_Remoting/TransactionScope/vb/ScopeWithSQL.vb#1)]  
@@ -61,7 +61,7 @@
  ]]></format>
     </remarks>
     <threadsafe>Данный тип потокобезопасен.</threadsafe>
-    <related type="Article" href="https://docs.microsoft.com/previous-versions/dotnet/netframework-3.0/ms172152(v=vs.85)">Реализация неявной транзакции с использованием области транзакции</related>
+    <related type="Article" href="https://docs.microsoft.com/previous-versions/dotnet/netframework-3.0/ms172152(v=vs.85)">Реализация неявной транзакции с использованием области транзакций</related>
   </Docs>
   <Members>
     <MemberGroup MemberName=".ctor">
@@ -104,11 +104,11 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот конструктор создает новую область транзакций с параметром области транзакции равным <xref:System.Transactions.TransactionScopeOption.Required>. Это означает, что транзакция запрашивается новой областью и внешняя транзакция используется в том случае, если он уже существует. В противном случае она создает новую транзакцию до ввода области.  
+ Этот конструктор создает новую область транзакций с параметром области транзакции, равным <xref:System.Transactions.TransactionScopeOption.Required>. Это означает, что транзакция является обязательной для новой области, а внешняя транзакция используется, если она уже существует. В противном случае до ввода области создается новая транзакция.  
   
  ]]></format>
         </remarks>
-        <related type="Article" href="https://docs.microsoft.com/previous-versions/dotnet/netframework-3.0/ms172152(v=vs.85)">Реализация неявной транзакции с использованием области транзакции</related>
+        <related type="Article" href="https://docs.microsoft.com/previous-versions/dotnet/netframework-3.0/ms172152(v=vs.85)">Реализация неявной транзакции с использованием области транзакций</related>
       </Docs>
     </Member>
     <Member MemberName=".ctor">
@@ -145,11 +145,11 @@
         <Parameter Name="transaction" Type="System.Transactions.Transaction" Index="0" FrameworkAlternate="xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
-        <param name="transactionToUse">Транзакция, в качестве внешней транзакции, таким образом, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</param>
-        <param name="transaction">Транзакция, в качестве внешней транзакции, таким образом, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</param>
-        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> класса и определяет указанную транзакцию как внешнюю транзакцию, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</summary>
+        <param name="transactionToUse">Транзакция, которая должна быть определена как внешняя транзакция, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</param>
+        <param name="transaction">Транзакция, которая должна быть определена как внешняя транзакция, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> и определяет указанную транзакцию как внешнюю транзакцию, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</summary>
         <remarks>To be added.</remarks>
-        <related type="Article" href="https://docs.microsoft.com/previous-versions/dotnet/netframework-3.0/ms172152(v=vs.85)">Реализация неявной транзакции с использованием области транзакции</related>
+        <related type="Article" href="https://docs.microsoft.com/previous-versions/dotnet/netframework-3.0/ms172152(v=vs.85)">Реализация неявной транзакции с использованием области транзакций</related>
       </Docs>
     </Member>
     <Member MemberName=".ctor">
@@ -180,10 +180,10 @@
         <Parameter Name="asyncFlowOption" Type="System.Transactions.TransactionScopeAsyncFlowOption" Index="1" FrameworkAlternate="netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netstandard-2.0;netstandard-2.1;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
-        <param name="transactionToUse">Транзакция, в качестве внешней транзакции, таким образом, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</param>
-        <param name="asyncFlowOption">Экземпляр <see cref="T:System.Transactions.TransactionScopeAsyncFlowOption" /> перечисление, описывающее ли внешняя транзакция, связанная с областью транзакции будет проходить через продолжения потока при использовании задачи или async/await асинхронных шаблонов программирования .NET.</param>
+        <param name="transactionToUse">Транзакция, которая должна быть определена как внешняя транзакция, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</param>
+        <param name="asyncFlowOption">Экземпляр перечисления <see cref="T:System.Transactions.TransactionScopeAsyncFlowOption" />, описывающий, будет ли внешняя транзакция, связанная с областью транзакции, проходить через продолжения потока при использовании объекта Task или асинхронных шаблонов программирования .NET с операторами async и await.</param>
         <summary>[Поддерживается в .NET Framework 4.5.1 и более поздних версиях.] 
-Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> класса и определяет указанную транзакцию как внешнюю транзакцию, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</summary>
+Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> и определяет указанную транзакцию как внешнюю транзакцию, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -221,9 +221,9 @@
         <Parameter Name="asyncFlow" Type="System.Transactions.TransactionScopeAsyncFlowOption" Index="0" FrameworkAlternate="xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
-        <param name="asyncFlowOption">Экземпляр <see cref="T:System.Transactions.TransactionScopeAsyncFlowOption" /> перечисление, описывающее ли внешняя транзакция, связанная с областью транзакции будет проходить через продолжения потока при использовании задачи или async/await асинхронных шаблонов программирования .NET.</param>
-        <param name="asyncFlow">Экземпляр <see cref="T:System.Transactions.TransactionScopeAsyncFlowOption" /> перечисление, описывающее ли внешняя транзакция, связанная с областью транзакции будет проходить через продолжения потока при использовании задачи или async/await асинхронных шаблонов программирования .NET.</param>
-        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> класса с заданным асинхронным параметром потока.</summary>
+        <param name="asyncFlowOption">Экземпляр перечисления <see cref="T:System.Transactions.TransactionScopeAsyncFlowOption" />, описывающий, будет ли внешняя транзакция, связанная с областью транзакции, проходить через продолжения потока при использовании объекта Task или асинхронных шаблонов программирования .NET с операторами async и await.</param>
+        <param name="asyncFlow">Экземпляр перечисления <see cref="T:System.Transactions.TransactionScopeAsyncFlowOption" />, описывающий, будет ли внешняя транзакция, связанная с областью транзакции, проходить через продолжения потока при использовании объекта Task или асинхронных шаблонов программирования .NET с операторами async и await.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> с заданным асинхронным параметром потока.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -262,11 +262,11 @@
         <Parameter Name="option" Type="System.Transactions.TransactionScopeOption" Index="0" FrameworkAlternate="xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
-        <param name="scopeOption">Экземпляр <see cref="T:System.Transactions.TransactionScopeOption" /> перечисление, описывающее требования к транзакции, связанные с данной областью транзакции.</param>
-        <param name="option">Экземпляр <see cref="T:System.Transactions.TransactionScopeOption" /> перечисление, описывающее требования к транзакции, связанные с данной областью транзакции.</param>
-        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> класс с указанным требованиям.</summary>
+        <param name="scopeOption">Экземпляр перечисления <see cref="T:System.Transactions.TransactionScopeOption" />, описывающий требования к транзакции, связанные с данной областью транзакции.</param>
+        <param name="option">Экземпляр перечисления <see cref="T:System.Transactions.TransactionScopeOption" />, описывающий требования к транзакции, связанные с данной областью транзакции.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> с указанными требованиями.</summary>
         <remarks>To be added.</remarks>
-        <related type="Article" href="https://docs.microsoft.com/previous-versions/dotnet/netframework-3.0/ms172152(v=vs.85)">Реализация неявной транзакции с использованием области транзакции</related>
+        <related type="Article" href="https://docs.microsoft.com/previous-versions/dotnet/netframework-3.0/ms172152(v=vs.85)">Реализация неявной транзакции с использованием области транзакций</related>
       </Docs>
     </Member>
     <Member MemberName=".ctor">
@@ -298,11 +298,11 @@
         <Parameter Name="asyncFlowOption" Type="System.Transactions.TransactionScopeAsyncFlowOption" Index="2" FrameworkAlternate="netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netstandard-2.0;netstandard-2.1;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
-        <param name="transactionToUse">Транзакция, в качестве внешней транзакции, таким образом, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</param>
-        <param name="scopeTimeout"><see cref="T:System.TimeSpan" /> После чего область транзакции, время ожидания и прерывает транзакцию.</param>
-        <param name="asyncFlowOption">Экземпляр <see cref="T:System.Transactions.TransactionScopeAsyncFlowOption" /> перечисление, описывающее ли внешняя транзакция, связанная с областью транзакции будет проходить через продолжения потока при использовании задачи или async/await асинхронных шаблонов программирования .NET.</param>
+        <param name="transactionToUse">Транзакция, которая должна быть определена как внешняя транзакция, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</param>
+        <param name="scopeTimeout">Интервал времени <see cref="T:System.TimeSpan" />, по истечении которого время ожидания области транзакции завершается, и область транзакции прерывает транзакцию.</param>
+        <param name="asyncFlowOption">Экземпляр перечисления <see cref="T:System.Transactions.TransactionScopeAsyncFlowOption" />, описывающий, будет ли внешняя транзакция, связанная с областью транзакции, проходить через продолжения потока при использовании объекта Task или асинхронных шаблонов программирования .NET с операторами async и await.</param>
         <summary>[Поддерживается в .NET Framework 4.5.1 и более поздних версиях.] 
-Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> класса с заданным временем ожидания и определяет указанную транзакцию как внешнюю транзакцию, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</summary>
+Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> с заданным значением тайм-аута и определяет указанную транзакцию как внешнюю транзакцию, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -342,19 +342,19 @@
         <Parameter Name="options" Type="System.Transactions.TransactionOptions" Index="1" FrameworkAlternate="xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
-        <param name="scopeOption">Экземпляр <see cref="T:System.Transactions.TransactionScopeOption" /> перечисление, описывающее требования к транзакции, связанные с данной областью транзакции.</param>
-        <param name="transactionOptions">Объект <see cref="T:System.Transactions.TransactionOptions" /> структура, описывающая параметры транзакции, если создается новая транзакция. Если используется существующей транзакции, значение времени ожидания в этот параметр применяется к области транзакции. Если это время истекает до удаления области, транзакция прерывается.</param>
-        <param name="options">Объект <see cref="T:System.Transactions.TransactionOptions" /> структура, описывающая параметры транзакции, если создается новая транзакция. Если используется существующей транзакции, значение времени ожидания в этот параметр применяется к области транзакции. Если это время истекает до удаления области, транзакция прерывается.</param>
-        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> класс с указанным требованиям.</summary>
+        <param name="scopeOption">Экземпляр перечисления <see cref="T:System.Transactions.TransactionScopeOption" />, описывающий требования к транзакции, связанные с данной областью транзакции.</param>
+        <param name="transactionOptions">Структура <see cref="T:System.Transactions.TransactionOptions" />, описывающая параметры транзакции, которые должны использоваться в случае создания новой транзакции. Если используется существующая транзакция, значение тайм-аута в данном параметре применяется для области транзакции. Если этот тайм-аут истекает до удаления области, транзакция прерывается.</param>
+        <param name="options">Структура <see cref="T:System.Transactions.TransactionOptions" />, описывающая параметры транзакции, которые должны использоваться в случае создания новой транзакции. Если используется существующая транзакция, значение тайм-аута в данном параметре применяется для области транзакции. Если этот тайм-аут истекает до удаления области, транзакция прерывается.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> с указанными требованиями.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- При использовании `transactionOptions` параметр для указания <xref:System.Transactions.IsolationLevel>и область создает транзакцию позже, новую транзакцию связан с указанным уровнем изоляции. Если уровень изоляции передается вместе с транзакцией, транзакция должна иметь такой же уровень изоляции, или создается исключение.  
+ Если вы используете `transactionOptions` параметр для <xref:System.Transactions.IsolationLevel>указания, а область создает транзакцию позже, Новая транзакция связывается с указанным уровнем изоляции. Если уровень изоляции передается вместе с транзакцией, то транзакция должна иметь идентичный уровень изоляции или исключение.  
   
  ]]></format>
         </remarks>
-        <related type="Article" href="https://docs.microsoft.com/previous-versions/dotnet/netframework-3.0/ms172152(v=vs.85)">Реализация неявной транзакции с использованием области транзакции</related>
+        <related type="Article" href="https://docs.microsoft.com/previous-versions/dotnet/netframework-3.0/ms172152(v=vs.85)">Реализация неявной транзакции с использованием области транзакций</related>
       </Docs>
     </Member>
     <Member MemberName=".ctor">
@@ -385,11 +385,11 @@
         <Parameter Name="asyncFlowOption" Type="System.Transactions.TransactionScopeAsyncFlowOption" Index="2" FrameworkAlternate="netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netstandard-2.0;netstandard-2.1;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
-        <param name="scopeOption">Экземпляр <see cref="T:System.Transactions.TransactionScopeOption" /> перечисление, описывающее требования к транзакции, связанные с данной областью транзакции.</param>
-        <param name="transactionOptions">Объект <see cref="T:System.Transactions.TransactionOptions" /> структура, описывающая параметры транзакции, если создается новая транзакция. Если используется существующей транзакции, значение времени ожидания в этот параметр применяется к области транзакции. Если это время истекает до удаления области, транзакция прерывается.</param>
-        <param name="asyncFlowOption">Экземпляр <see cref="T:System.Transactions.TransactionScopeAsyncFlowOption" /> перечисление, описывающее ли внешняя транзакция, связанная с областью транзакции будет проходить через продолжения потока при использовании задачи или async/await асинхронных шаблонов программирования .NET.</param>
+        <param name="scopeOption">Экземпляр перечисления <see cref="T:System.Transactions.TransactionScopeOption" />, описывающий требования к транзакции, связанные с данной областью транзакции.</param>
+        <param name="transactionOptions">Структура <see cref="T:System.Transactions.TransactionOptions" />, описывающая параметры транзакции, которые должны использоваться в случае создания новой транзакции. Если используется существующая транзакция, значение тайм-аута в данном параметре применяется для области транзакции. Если этот тайм-аут истекает до удаления области, транзакция прерывается.</param>
+        <param name="asyncFlowOption">Экземпляр перечисления <see cref="T:System.Transactions.TransactionScopeAsyncFlowOption" />, описывающий, будет ли внешняя транзакция, связанная с областью транзакции, проходить через продолжения потока при использовании объекта Task или асинхронных шаблонов программирования .NET с операторами async и await.</param>
         <summary>[Поддерживается в .NET Framework 4.5.1 и более поздних версиях.] 
-Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> класса с заданными требованиями и асинхронным параметром потока.</summary>
+Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> с заданными требованиями и асинхронным параметром потока.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -429,13 +429,13 @@
         <Parameter Name="timeout" Type="System.TimeSpan" Index="1" FrameworkAlternate="xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
-        <param name="transactionToUse">Транзакция, в качестве внешней транзакции, таким образом, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</param>
-        <param name="transaction">Транзакция, в качестве внешней транзакции, таким образом, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</param>
-        <param name="scopeTimeout"><see cref="T:System.TimeSpan" /> После чего область транзакции, время ожидания и прерывает транзакцию.</param>
-        <param name="timeout"><see cref="T:System.TimeSpan" /> После чего область транзакции, время ожидания и прерывает транзакцию.</param>
-        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> класса с заданным временем ожидания и определяет указанную транзакцию как внешнюю транзакцию, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</summary>
+        <param name="transactionToUse">Транзакция, которая должна быть определена как внешняя транзакция, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</param>
+        <param name="transaction">Транзакция, которая должна быть определена как внешняя транзакция, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</param>
+        <param name="scopeTimeout">Интервал времени <see cref="T:System.TimeSpan" />, по истечении которого время ожидания области транзакции завершается, и область транзакции прерывает транзакцию.</param>
+        <param name="timeout">Интервал времени <see cref="T:System.TimeSpan" />, по истечении которого время ожидания области транзакции завершается, и область транзакции прерывает транзакцию.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> с заданным значением тайм-аута и определяет указанную транзакцию как внешнюю транзакцию, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</summary>
         <remarks>To be added.</remarks>
-        <related type="Article" href="https://docs.microsoft.com/previous-versions/dotnet/netframework-3.0/ms172152(v=vs.85)">Реализация неявной транзакции с использованием области транзакции</related>
+        <related type="Article" href="https://docs.microsoft.com/previous-versions/dotnet/netframework-3.0/ms172152(v=vs.85)">Реализация неявной транзакции с использованием области транзакций</related>
       </Docs>
     </Member>
     <Member MemberName=".ctor">
@@ -475,13 +475,13 @@
         <Parameter Name="timeout" Type="System.TimeSpan" Index="1" FrameworkAlternate="xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
-        <param name="scopeOption">Экземпляр <see cref="T:System.Transactions.TransactionScopeOption" /> перечисление, описывающее требования к транзакции, связанные с данной областью транзакции.</param>
-        <param name="option">Экземпляр <see cref="T:System.Transactions.TransactionScopeOption" /> перечисление, описывающее требования к транзакции, связанные с данной областью транзакции.</param>
-        <param name="scopeTimeout"><see cref="T:System.TimeSpan" /> После чего область транзакции, время ожидания и прерывает транзакцию.</param>
-        <param name="timeout"><see cref="T:System.TimeSpan" /> После чего область транзакции, время ожидания и прерывает транзакцию.</param>
-        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> с указанным значением времени ожидания и требования.</summary>
+        <param name="scopeOption">Экземпляр перечисления <see cref="T:System.Transactions.TransactionScopeOption" />, описывающий требования к транзакции, связанные с данной областью транзакции.</param>
+        <param name="option">Экземпляр перечисления <see cref="T:System.Transactions.TransactionScopeOption" />, описывающий требования к транзакции, связанные с данной областью транзакции.</param>
+        <param name="scopeTimeout">Интервал времени <see cref="T:System.TimeSpan" />, по истечении которого время ожидания области транзакции завершается, и область транзакции прерывает транзакцию.</param>
+        <param name="timeout">Интервал времени <see cref="T:System.TimeSpan" />, по истечении которого время ожидания области транзакции завершается, и область транзакции прерывает транзакцию.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> с указанными значением тайм-аута и требованиями.</summary>
         <remarks>To be added.</remarks>
-        <related type="Article" href="https://docs.microsoft.com/previous-versions/dotnet/netframework-3.0/ms172152(v=vs.85)">Реализация неявной транзакции с использованием области транзакции</related>
+        <related type="Article" href="https://docs.microsoft.com/previous-versions/dotnet/netframework-3.0/ms172152(v=vs.85)">Реализация неявной транзакции с использованием области транзакций</related>
       </Docs>
     </Member>
     <Member MemberName=".ctor">
@@ -520,11 +520,11 @@
         <Parameter Name="asyncFlow" Type="System.Transactions.TransactionScopeAsyncFlowOption" Index="1" FrameworkAlternate="xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
-        <param name="scopeOption">Экземпляр <see cref="T:System.Transactions.TransactionScopeOption" /> перечисление, описывающее требования к транзакции, связанные с данной областью транзакции.</param>
-        <param name="option">Экземпляр <see cref="T:System.Transactions.TransactionScopeOption" /> перечисление, описывающее требования к транзакции, связанные с данной областью транзакции.</param>
-        <param name="asyncFlowOption">Экземпляр <see cref="T:System.Transactions.TransactionScopeAsyncFlowOption" /> перечисление, описывающее ли внешняя транзакция, связанная с областью транзакции будет проходить через продолжения потока при использовании задачи или async/await асинхронных шаблонов программирования .NET.</param>
-        <param name="asyncFlow">Экземпляр <see cref="T:System.Transactions.TransactionScopeAsyncFlowOption" /> перечисление, описывающее ли внешняя транзакция, связанная с областью транзакции будет проходить через продолжения потока при использовании задачи или async/await асинхронных шаблонов программирования .NET.</param>
-        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> класса с заданными требованиями и асинхронным параметром потока.</summary>
+        <param name="scopeOption">Экземпляр перечисления <see cref="T:System.Transactions.TransactionScopeOption" />, описывающий требования к транзакции, связанные с данной областью транзакции.</param>
+        <param name="option">Экземпляр перечисления <see cref="T:System.Transactions.TransactionScopeOption" />, описывающий требования к транзакции, связанные с данной областью транзакции.</param>
+        <param name="asyncFlowOption">Экземпляр перечисления <see cref="T:System.Transactions.TransactionScopeAsyncFlowOption" />, описывающий, будет ли внешняя транзакция, связанная с областью транзакции, проходить через продолжения потока при использовании объекта Task или асинхронных шаблонов программирования .NET с операторами async и await.</param>
+        <param name="asyncFlow">Экземпляр перечисления <see cref="T:System.Transactions.TransactionScopeAsyncFlowOption" />, описывающий, будет ли внешняя транзакция, связанная с областью транзакции, проходить через продолжения потока при использовании объекта Task или асинхронных шаблонов программирования .NET с операторами async и await.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> с заданными требованиями и асинхронным параметром потока.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -566,24 +566,24 @@
         <Parameter Name="opt" Type="System.Transactions.EnterpriseServicesInteropOption" Index="2" FrameworkAlternate="xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
-        <param name="scopeOption">Экземпляр <see cref="T:System.Transactions.TransactionScopeOption" /> перечисление, описывающее требования к транзакции, связанные с данной областью транзакции.</param>
-        <param name="transactionOptions">Объект <see cref="T:System.Transactions.TransactionOptions" /> структура, описывающая параметры транзакции, если создается новая транзакция. Если используется существующей транзакции, значение времени ожидания в этот параметр применяется к области транзакции. Если это время истекает до удаления области, транзакция прерывается.</param>
-        <param name="options">Объект <see cref="T:System.Transactions.TransactionOptions" /> структура, описывающая параметры транзакции, если создается новая транзакция. Если используется существующей транзакции, значение времени ожидания в этот параметр применяется к области транзакции. Если это время истекает до удаления области, транзакция прерывается.</param>
-        <param name="interopOption">Экземпляр <see cref="T:System.Transactions.EnterpriseServicesInteropOption" /> перечисления, описывающий взаимодействие связанной транзакции с транзакциями COM +.</param>
-        <param name="opt">Экземпляр <see cref="T:System.Transactions.EnterpriseServicesInteropOption" /> перечисления, описывающий взаимодействие связанной транзакции с транзакциями COM +.</param>
-        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> класса с заданной областью и требованиями к взаимодействию с COM + и параметрами транзакции.</summary>
+        <param name="scopeOption">Экземпляр перечисления <see cref="T:System.Transactions.TransactionScopeOption" />, описывающий требования к транзакции, связанные с данной областью транзакции.</param>
+        <param name="transactionOptions">Структура <see cref="T:System.Transactions.TransactionOptions" />, описывающая параметры транзакции, которые должны использоваться в случае создания новой транзакции. Если используется существующая транзакция, значение тайм-аута в данном параметре применяется для области транзакции. Если этот тайм-аут истекает до удаления области, транзакция прерывается.</param>
+        <param name="options">Структура <see cref="T:System.Transactions.TransactionOptions" />, описывающая параметры транзакции, которые должны использоваться в случае создания новой транзакции. Если используется существующая транзакция, значение тайм-аута в данном параметре применяется для области транзакции. Если этот тайм-аут истекает до удаления области, транзакция прерывается.</param>
+        <param name="interopOption">Экземпляр перечисления <see cref="T:System.Transactions.EnterpriseServicesInteropOption" />, описывающий взаимодействие связанной транзакции с транзакциями COM+.</param>
+        <param name="opt">Экземпляр перечисления <see cref="T:System.Transactions.EnterpriseServicesInteropOption" />, описывающий взаимодействие связанной транзакции с транзакциями COM+.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> с заданными областью, требованиями к взаимодействию с COM+ и параметрами транзакции.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
 
-При использовании `transactionOptions` параметр для указания <xref:System.Transactions.IsolationLevel>и область создает транзакцию позже, новую транзакцию связан с указанным уровнем изоляции. Если уровень изоляции передается вместе с транзакцией, транзакция должна иметь такой же уровень изоляции, или создается исключение.
+Если вы используете `transactionOptions` параметр для <xref:System.Transactions.IsolationLevel>указания, а область создает транзакцию позже, Новая транзакция связывается с указанным уровнем изоляции. Если уровень изоляции передается вместе с транзакцией, то транзакция должна иметь идентичный уровень изоляции или исключение.
   
-**Примечание** этот метод использует <xref:System.Security.Permissions.SecurityAction.LinkDemand> для предотвращения его вызова из ненадежного кода; тем не менее, требуется только непосредственно вызывающего должны обладать `FullTrust` набор разрешений.
+**Примечание** . Этот метод использует <xref:System.Security.Permissions.SecurityAction.LinkDemand> , чтобы предотвратить вызов из ненадежного кода, но только непосредственный вызывающий объект должен `FullTrust` обладать набором разрешений.
   
  ]]></format>
         </remarks>
-        <related type="Article" href="https://docs.microsoft.com/previous-versions/dotnet/netframework-3.0/ms172152(v=vs.85)">Реализация неявной транзакции с использованием области транзакции</related>
+        <related type="Article" href="https://docs.microsoft.com/previous-versions/dotnet/netframework-3.0/ms172152(v=vs.85)">Реализация неявной транзакции с использованием области транзакций</related>
       </Docs>
     </Member>
     <Member MemberName=".ctor">
@@ -624,23 +624,23 @@
         <Parameter Name="opt" Type="System.Transactions.EnterpriseServicesInteropOption" Index="2" FrameworkAlternate="xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
-        <param name="transactionToUse">Транзакция, в качестве внешней транзакции, таким образом, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</param>
-        <param name="transaction">Транзакция, в качестве внешней транзакции, таким образом, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</param>
-        <param name="scopeTimeout"><see cref="T:System.TimeSpan" /> После чего область транзакции, время ожидания и прерывает транзакцию.</param>
-        <param name="timeout"><see cref="T:System.TimeSpan" /> После чего область транзакции, время ожидания и прерывает транзакцию.</param>
-        <param name="interopOption">Экземпляр <see cref="T:System.Transactions.EnterpriseServicesInteropOption" /> перечисления, описывающий взаимодействие связанной транзакции с транзакциями COM +.</param>
-        <param name="opt">Экземпляр <see cref="T:System.Transactions.EnterpriseServicesInteropOption" /> перечисления, описывающий взаимодействие связанной транзакции с транзакциями COM +.</param>
-        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> с указанным значением времени ожидания и, требованиями к взаимодействию COM + и определяет указанную транзакцию как внешнюю транзакцию, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию .</summary>
+        <param name="transactionToUse">Транзакция, которая должна быть определена как внешняя транзакция, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</param>
+        <param name="transaction">Транзакция, которая должна быть определена как внешняя транзакция, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</param>
+        <param name="scopeTimeout">Интервал времени <see cref="T:System.TimeSpan" />, по истечении которого время ожидания области транзакции завершается, и область транзакции прерывает транзакцию.</param>
+        <param name="timeout">Интервал времени <see cref="T:System.TimeSpan" />, по истечении которого время ожидания области транзакции завершается, и область транзакции прерывает транзакцию.</param>
+        <param name="interopOption">Экземпляр перечисления <see cref="T:System.Transactions.EnterpriseServicesInteropOption" />, описывающий взаимодействие связанной транзакции с транзакциями COM+.</param>
+        <param name="opt">Экземпляр перечисления <see cref="T:System.Transactions.EnterpriseServicesInteropOption" />, описывающий взаимодействие связанной транзакции с транзакциями COM+.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> с заданными значением тайм-аута и требованиями к взаимодействию с COM+ и определяет указанную транзакцию как внешнюю транзакцию, чтобы транзакционные операции, выполняемые в области, использовали эту транзакцию.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
 
-**Примечание** этот метод использует <xref:System.Security.Permissions.SecurityAction.LinkDemand> для предотвращения его вызова из ненадежного кода; тем не менее, требуется только непосредственно вызывающего должны обладать `FullTrust` набор разрешений.
+**Примечание** . Этот метод использует <xref:System.Security.Permissions.SecurityAction.LinkDemand> , чтобы предотвратить вызов из ненадежного кода, но только непосредственный вызывающий объект должен `FullTrust` обладать набором разрешений.
   
  ]]></format>
         </remarks>
-        <related type="Article" href="https://docs.microsoft.com/previous-versions/dotnet/netframework-3.0/ms172152(v=vs.85)">Реализация неявной транзакции с использованием области транзакции</related>
+        <related type="Article" href="https://docs.microsoft.com/previous-versions/dotnet/netframework-3.0/ms172152(v=vs.85)">Реализация неявной транзакции с использованием области транзакций</related>
       </Docs>
     </Member>
     <Member MemberName=".ctor">
@@ -681,13 +681,13 @@
         <Parameter Name="asyncFlow" Type="System.Transactions.TransactionScopeAsyncFlowOption" Index="2" FrameworkAlternate="xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
-        <param name="scopeOption">Экземпляр <see cref="T:System.Transactions.TransactionScopeOption" /> перечисление, описывающее требования к транзакции, связанные с данной областью транзакции.</param>
-        <param name="option">Экземпляр <see cref="T:System.Transactions.TransactionScopeOption" /> перечисление, описывающее требования к транзакции, связанные с данной областью транзакции.</param>
-        <param name="scopeTimeout"><see cref="T:System.TimeSpan" /> После чего область транзакции, время ожидания и прерывает транзакцию.</param>
-        <param name="timeout"><see cref="T:System.TimeSpan" /> После чего область транзакции, время ожидания и прерывает транзакцию.</param>
-        <param name="asyncFlowOption">Экземпляр <see cref="T:System.Transactions.TransactionScopeAsyncFlowOption" /> перечисление, описывающее ли внешняя транзакция, связанная с областью транзакции будет проходить через продолжения потока при использовании задачи или async/await асинхронных шаблонов программирования .NET.</param>
-        <param name="asyncFlow">Экземпляр <see cref="T:System.Transactions.TransactionScopeAsyncFlowOption" /> перечисление, описывающее ли внешняя транзакция, связанная с областью транзакции будет проходить через продолжения потока при использовании задачи или async/await асинхронных шаблонов программирования .NET.</param>
-        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> класс с указанным значением времени ожидания, требованиями и асинхронным параметром потока.</summary>
+        <param name="scopeOption">Экземпляр перечисления <see cref="T:System.Transactions.TransactionScopeOption" />, описывающий требования к транзакции, связанные с данной областью транзакции.</param>
+        <param name="option">Экземпляр перечисления <see cref="T:System.Transactions.TransactionScopeOption" />, описывающий требования к транзакции, связанные с данной областью транзакции.</param>
+        <param name="scopeTimeout">Интервал времени <see cref="T:System.TimeSpan" />, по истечении которого время ожидания области транзакции завершается, и область транзакции прерывает транзакцию.</param>
+        <param name="timeout">Интервал времени <see cref="T:System.TimeSpan" />, по истечении которого время ожидания области транзакции завершается, и область транзакции прерывает транзакцию.</param>
+        <param name="asyncFlowOption">Экземпляр перечисления <see cref="T:System.Transactions.TransactionScopeAsyncFlowOption" />, описывающий, будет ли внешняя транзакция, связанная с областью транзакции, проходить через продолжения потока при использовании объекта Task или асинхронных шаблонов программирования .NET с операторами async и await.</param>
+        <param name="asyncFlow">Экземпляр перечисления <see cref="T:System.Transactions.TransactionScopeAsyncFlowOption" />, описывающий, будет ли внешняя транзакция, связанная с областью транзакции, проходить через продолжения потока при использовании объекта Task или асинхронных шаблонов программирования .NET с операторами async и await.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Transactions.TransactionScope" /> с заданным значением времени ожидания, требованиями и асинхронным параметром потока.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -720,31 +720,31 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>Указывает, что все операции в области завершены успешно.</summary>
+        <summary>Указывает, что все операции в области успешно завершены.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- После успешного завершения всех операций в области, следует вызывать этот метод только один раз, чтобы информировать диспетчер транзакций согласованное состояние из всех ресурсов, что транзакция может быть зафиксирована. Это очень хорошей практикой поместить вызов в последнем операторе в `using` блока.  
+ Если вы удовлетворены тем, что все операции в области завершены успешно, следует вызывать этот метод только один раз, чтобы сообщить диспетчеру транзакций о том, что состояние для всех ресурсов согласовано и транзакция может быть зафиксирована. Очень целесообразно поставить вызов в качестве последней инструкции в `using` блоке.  
   
- Дополнительные сведения об использовании этого метода см. в разделе [реализации неявных транзакций с помощью области транзакций](~/docs/framework/data/transactions/implementing-an-implicit-transaction-using-transaction-scope.md) раздела.  
+ Дополнительные сведения об использовании этого метода см. в разделе [Реализация неявной транзакции с использованием области транзакции](~/docs/framework/data/transactions/implementing-an-implicit-transaction-using-transaction-scope.md) .  
   
- Если этот метод не вызывается, транзакция прерывается, поскольку диспетчер транзакций интерпретирует это как сбой системы или исключения, возникшие в пределах области транзакции. Тем не менее следует также отметить, что вызов этого метода не гарантирует фиксации транзакции. Это просто способ информирования диспетчера транзакций о состоянии. После вызова этого метода, больше не доступны через внешнюю транзакцию <xref:System.Transactions.Transaction.Current%2A> свойство и попытке сделать это возникнет исключение.  
+ Если не вызвать этот метод, транзакция прерывается, так как диспетчер транзакций интерпретирует это как сбой системы или исключения, вызываемые в области транзакции. Однако следует также отметить, что вызов этого метода не гарантирует фиксации транзакции. Это просто способ информирования диспетчера транзакций о состоянии. После вызова этого метода вы больше не сможете получить доступ к внешней транзакции через <xref:System.Transactions.Transaction.Current%2A> свойство, и попытка сделать это приведет к возникновению исключения.  
   
- Фактическая работа по фиксации между диспетчером ресурсов происходит в `End Using` инструкции Если <xref:System.Transactions.TransactionScope> создать объект транзакции. Если транзакция создана не этим объектом, фиксация происходит при каждом вызове метода <xref:System.Transactions.CommittableTransaction.Commit%2A> владельцем объекта <xref:System.Transactions.CommittableTransaction>. После этого диспетчер транзакций вызывает диспетчеры ресурсов и сообщает им, чтобы фиксацию или откат в зависимости от того, этот метод был вызван для <xref:System.Transactions.TransactionScope> объекта.  
+ Фактическая работа фиксации между диспетчером ресурсов происходит в `End Using` инструкции, <xref:System.Transactions.TransactionScope> если объект создал транзакцию. Если транзакция создана не этим объектом, фиксация происходит при каждом вызове метода <xref:System.Transactions.CommittableTransaction.Commit%2A> владельцем объекта <xref:System.Transactions.CommittableTransaction>. На этом этапе диспетчер транзакций вызывает диспетчеры ресурсов и уведомляет их о фиксации или откате в зависимости от того, был ли вызван этот метод для <xref:System.Transactions.TransactionScope> объекта.  
   
    
   
 ## Examples  
- Следующий пример демонстрирует, как использовать <xref:System.Transactions.TransactionScope> класс для определения блока кода, чтобы участвовать в транзакции.  
+ В следующем примере показано, как использовать <xref:System.Transactions.TransactionScope> класс для определения блока кода для участия в транзакции.  
   
  [!code-csharp[TransactionScope#1](~/samples/snippets/csharp/VS_Snippets_Remoting/TransactionScope/cs/ScopeWithSQL.cs#1)]
  [!code-vb[TransactionScope#1](~/samples/snippets/visualbasic/VS_Snippets_Remoting/TransactionScope/vb/ScopeWithSQL.vb#1)]  
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.InvalidOperationException">Этот метод уже был вызван один раз.</exception>
-        <related type="Article" href="https://docs.microsoft.com/previous-versions/dotnet/netframework-3.0/ms172152(v=vs.85)">Реализация неявной транзакции с использованием области транзакции</related>
+        <exception cref="T:System.InvalidOperationException">Этот метод уже единожды вызван.</exception>
+        <related type="Article" href="https://docs.microsoft.com/previous-versions/dotnet/netframework-3.0/ms172152(v=vs.85)">Реализация неявной транзакции с использованием области транзакций</related>
       </Docs>
     </Member>
     <Member MemberName="Dispose">
@@ -784,25 +784,25 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Вызов этого метода отмечает конец области транзакции. Если <xref:System.Transactions.TransactionScope> создать объект транзакции и <xref:System.Transactions.TransactionScope.Complete%2A> был вызван для области, <xref:System.Transactions.TransactionScope> объект пытается зафиксировать транзакцию, при вызове этого метода. В этом случае этот метод блокируется до первого этапа обработки транзакций завершена. Первый этап завершается после все диспетчеры ресурсов и зачисления в транзакции проголосовали по результат транзакции и <xref:System.Transactions.TransactionManager> принял решение зафиксировать или прервать транзакцию. Второй этап обработки всегда выполняется асинхронно. Таким образом нет никакой гарантии, что данные только зафиксированные в рамках данной транзакции будут сразу становятся доступными после без использования для просмотра этих данных другой транзакцией.  
+ Вызов этого метода отмечает конец области транзакции. Если объект создал транзакцию и <xref:System.Transactions.TransactionScope.Complete%2A> был вызван <xref:System.Transactions.TransactionScope> в области, объект пытается зафиксировать транзакцию при вызове этого метода. <xref:System.Transactions.TransactionScope> В этом случае этот метод блокируется до завершения первого этапа обработки транзакции. Первый этап завершается после того, как все диспетчеры ресурсов и прикрепления в транзакции проголосовавших на результат транзакции, <xref:System.Transactions.TransactionManager> а надежно принимает решение о фиксации или прерывании транзакции. Второй этап обработки всегда является асинхронным. Поэтому нет никакой гарантии, что данные, только что зафиксированные в заданной транзакции, будут немедленно доступны после того, как не использовать другую транзакцию для просмотра этих данных.  
   
- Использование C# `using` построении гарантирует, что этот метод вызывается, даже при возникновении исключения. Исключения, возникающие после вызова данного метода, могут не воздействовать на транзакцию. Этот метод также восстанавливает внешняя транзакция его исходное состояние. Объект <xref:System.Transactions.TransactionAbortedException> создается, если транзакция не фактического выполнения.  
+ C# Использование`using` конструкции гарантирует, что этот метод вызывается даже при возникновении исключения. Исключения, возникающие после вызова данного метода, могут не воздействовать на транзакцию. Этот метод также восстанавливает внешнюю транзакцию в исходное состояние. <xref:System.Transactions.TransactionAbortedException> Исключение создается, если транзакция фактически не фиксируется.  
   
- Так как этот метод блокируется до первого этапа обработки транзакций завершения, следует быть очень осторожным при использовании этого метода в приложении Windows Form (WinForm) или взаимоблокировка может произойти. Если вызвать этот метод в одно событие управления WinForm (например, нажатие кнопки) и использовать синхронные <xref:System.Windows.Forms.Control.Invoke%2A> метод управления для выполнения некоторых задач пользовательского интерфейса (например, изменения цветов) во время обработки транзакции, произойдет взаимоблокировка. Это обусловлено <xref:System.Windows.Forms.Control.Invoke%2A> метод является синхронным и блокирует рабочий поток, пока не завершит свою работу в потоке пользовательского интерфейса. Однако в нашем случае в потоке пользовательского интерфейса также ждет, пока рабочий поток зафиксировать транзакцию. Результатом является, что ни одна не сможет продолжить работу, и область бесконечно ожидает завершения фиксирования. Следует использовать <xref:System.Windows.Forms.Control.BeginInvoke%2A> вместо <xref:System.Windows.Forms.Control.Invoke%2A> везде, где это возможно, поскольку он является асинхронным и, таким образом менее подвержен взаимоблокировкам.  
+ Поскольку этот метод блокируется до завершения первого этапа обработки транзакции, следует быть предельно осторожным при использовании этого метода в приложении Windows Form (WinForm) или в случае взаимоблокировки. При вызове этого метода внутри одного события элемента управления WinForm (например, при нажатии кнопки) и использовании синхронного <xref:System.Windows.Forms.Control.Invoke%2A> метода для направления элемента управления на выполнение некоторых задач пользовательского интерфейса (например, изменение цветов) в процессе обработки транзакции, произойдет взаимоблокировка. Это вызвано тем <xref:System.Windows.Forms.Control.Invoke%2A> , что метод является синхронным и блокирует рабочий поток до тех пор, пока поток пользовательского интерфейса не завершит свое задание. Однако в нашем сценарии поток пользовательского интерфейса также ожидает, пока рабочий поток зафиксирует транзакцию. В результате ни один из них не может быть продолжен, а область ожидает завершения фиксации на неопределенное время. Следует использовать <xref:System.Windows.Forms.Control.BeginInvoke%2A> , <xref:System.Windows.Forms.Control.Invoke%2A> а не везде, где это возможно, поскольку это асинхронное и, таким образом, менее подвержено взаимоблокировке.  
   
- Дополнительные сведения об использовании этого метода см. в разделе [реализации неявных транзакций с помощью области транзакций](~/docs/framework/data/transactions/implementing-an-implicit-transaction-using-transaction-scope.md) раздела.  
+ Дополнительные сведения об использовании этого метода см. в разделе [Реализация неявной транзакции с использованием области транзакции](~/docs/framework/data/transactions/implementing-an-implicit-transaction-using-transaction-scope.md) .  
   
    
   
 ## Examples  
- Следующий пример демонстрирует, как использовать <xref:System.Transactions.TransactionScope> класс для определения блока кода, чтобы участвовать в транзакции.  
+ В следующем примере показано, как использовать <xref:System.Transactions.TransactionScope> класс для определения блока кода для участия в транзакции.  
   
  [!code-csharp[TransactionScope#1](~/samples/snippets/csharp/VS_Snippets_Remoting/TransactionScope/cs/ScopeWithSQL.cs#1)]
  [!code-vb[TransactionScope#1](~/samples/snippets/visualbasic/VS_Snippets_Remoting/TransactionScope/vb/ScopeWithSQL.vb#1)]  
   
  ]]></format>
         </remarks>
-        <related type="Article" href="https://docs.microsoft.com/previous-versions/dotnet/netframework-3.0/ms172152(v=vs.85)">Реализация неявной транзакции с использованием области транзакции</related>
+        <related type="Article" href="https://docs.microsoft.com/previous-versions/dotnet/netframework-3.0/ms172152(v=vs.85)">Реализация неявной транзакции с использованием области транзакций</related>
       </Docs>
     </Member>
   </Members>

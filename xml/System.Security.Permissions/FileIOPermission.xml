@@ -40,40 +40,40 @@
       <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Это разрешение различает следующие четыре типа доступа к файлам, предоставляемые <xref:System.Security.Permissions.FileIOPermissionAccess>:  
+ Это разрешение различает следующие четыре типа доступа к файлу ввода-вывода, <xref:System.Security.Permissions.FileIOPermissionAccess>предоставляемые:  
   
--   `Read`: Доступ для чтения к содержимому файла или доступ к информации о файле, такие как его длина или время последнего изменения.  
+-   `Read`: Доступ для чтения к содержимому файла или к сведениям о файле, например его длине или времени последнего изменения.  
   
--   `Write`: Доступ для записи содержимого файла или доступ к изменению сведений о файле, например его имя. Также позволяет выполнять удаление и перезапись.  
+-   `Write`: Доступ для записи к содержимому файла или к сведениям об изменении файла, например его имени. Также позволяет удалять и перезаписывать.  
   
--   `Append`: Возможность записи в конец файла только. Отсутствует доступ на чтение.  
+-   `Append`: Возможность записи только в конец файла. Нет возможности читать.  
   
--   `PathDiscovery`: Доступ к сведениям, включенным в путь. Это позволяет защитить конфиденциальную информацию в пути, такие как имя пользователя, а также сведения о структуре каталогов, выявленной в пути. Это значение не предоставляет доступа к файлам или папкам, содержащимся в пути.  
-  
-> [!NOTE]
->  Предоставляя <xref:System.Security.Permissions.FileIOPermissionAccess.Write> обращаться к сборке эквивалентна предоставлению его полного доверия. Если приложение не требуется писать в файловой системе, он не должен иметь <xref:System.Security.Permissions.FileIOPermissionAccess.Write> доступ.  
-  
- Все эти разрешения независимы, это означает, что права на одно не подразумевают прав на другой. Например `Write` не подразумевает разрешение на `Read` или `Append`. Если требуется несколько разрешений, они могут объединяться с помощью побитового или, как показано в следующем примере кода. Разрешения файла определяется в терминах канонических абсолютных путей; вызовы должны быть выполнены с помощью канонических путей к файлам.  
-  
- <xref:System.Security.Permissions.FileIOPermission> Описывает защищенные действия для файлов и папок. <xref:System.IO.File> Класс помогает обеспечить безопасный доступ к файлам и папкам. Проверка доступа безопасности выполняется при создании дескриптора для файла. Выполнение проверки во время создания, влияние на производительность проверки безопасности сводится к минимуму. Открытие файла происходит один раз, а чтение и запись может выполняться несколько раз. Если файл открыт, больше не выполняются проверки. Если объект передается в вызывающий объект без доверия, он потенциально может спровоцировать злоупотребления. К примеру дескрипторы файлов не должны храниться в общедоступных глобальных статических элементов, где код с меньшим числом разрешений доступа к ним.  
-  
- <xref:System.Security.Permissions.FileIOPermissionAccess> Задает действия, которые могут выполняться для файла или папки. Кроме того эти действия могут сочетаться с помощью побитового или для формирования сложных экземпляров.  
-  
- Доступ к папке подразумевает доступ ко всем файлам, содержащихся в нем, а также доступ к файлам и папкам в ее вложенных папках. Например `Read` подразумевает доступ к C:\folder1\ `Read` доступ к C:\folder1\file1.txt C:\folder1\folder2\\, C:\folder1\folder2\file2.txt и т. д.  
+-   `PathDiscovery`: Доступ к сведениям в самом пути. Это помогает защитить конфиденциальные сведения в пути, например имена пользователей, а также сведения о структуре каталогов, которая отображается в пути. Это значение не предоставляет доступа к файлам и папкам, на которые указывает путь.  
   
 > [!NOTE]
->  В версиях .NET Framework, выпущенных до [!INCLUDE[net_v40_long](~/includes/net-v40-long-md.md)], можно использовать <xref:System.Security.CodeAccessPermission.Deny%2A?displayProperty=nameWithType> метод, чтобы предотвратить случайный доступ к системным ресурсам доверенным кодом. <xref:System.Security.CodeAccessPermission.Deny%2A> Теперь является устаревшим, и доступ к ресурсам теперь определяется только предоставленный набор разрешений для сборки. Чтобы ограничить доступ к файлам, необходимо запустить частично доверенного кода в изолированной среде и назначьте ей разрешения только на ресурсы, которые код может получить доступ. Сведения о выполнении приложения в "песочнице", см. в разделе [как: Выполнение не вполне безопасного кода в изолированной среде](~/docs/framework/misc/how-to-run-partially-trusted-code-in-a-sandbox.md).  
+>  Предоставление <xref:System.Security.Permissions.FileIOPermissionAccess.Write> доступа к сборке аналогично предоставлению полного доверия. Если приложение не должно выполнять запись в файловую систему, оно не должно иметь <xref:System.Security.Permissions.FileIOPermissionAccess.Write> доступа.  
+  
+ Все эти разрешения являются независимыми, то есть права на один из них не подразумевают прав на другой. Например, `Write` разрешение не подразумевает разрешение на `Read` или `Append`. Если требуется более одного разрешения, их можно объединить с помощью побитовой операции или, как показано в следующем примере кода. Разрешение на файл определяется в виде канонических абсолютных путей; вызовы всегда должны выполняться с использованием канонических путей к файлам.  
+  
+ <xref:System.Security.Permissions.FileIOPermission>описывает защищенные операции с файлами и папками. <xref:System.IO.File> Класс помогает обеспечить безопасный доступ к файлам и папкам. Проверка доступа к системе безопасности выполняется при создании маркера файла. Выполняя проверку во время создания, снижение производительности проверки безопасности сводится к минимуму. Открытие файла происходит один раз, а чтение и запись могут происходить несколько раз. После открытия файла дальнейшие проверки не выполняются. Если объект передается недоверенному вызывающему объекту, он может быть неиспользованным. Например, дескрипторы файлов не должны храниться в общедоступных глобальных статических шаблонах, где код с меньшими разрешениями может получить к ним доступ.  
+  
+ <xref:System.Security.Permissions.FileIOPermissionAccess>Указывает действия, которые могут быть выполнены с файлом или папкой. Кроме того, эти действия можно комбинировать с помощью побитового или для формирования сложных экземпляров.  
+  
+ Доступ к папке подразумевает доступ ко всем содержащимся в нем файлам, а также доступ ко всем файлам и папкам во вложенных папках. Например, `Read` доступ к C:\folder1\ подразумевает `Read` доступ к C:\folder1\file1.txt, C:\folder1\folder2\\, C:\folder1\folder2\file2.txt и т. д.  
+  
+> [!NOTE]
+>  В версиях .NET Framework до [!INCLUDE[net_v40_long](~/includes/net-v40-long-md.md)]можно <xref:System.Security.CodeAccessPermission.Deny%2A?displayProperty=nameWithType> использовать метод, чтобы предотвратить случайный доступ к системным ресурсам с помощью доверенного кода. <xref:System.Security.CodeAccessPermission.Deny%2A>теперь устарел, а доступ к ресурсам определяется исключительно предоставленным набором разрешений для сборки. Чтобы ограничить доступ к файлам, необходимо запустить частично доверенный код в песочнице и назначить ему разрешения только тем ресурсам, к которым разрешен доступ коду. Сведения о запуске приложения в песочнице см. в разделе [как Выполнение не вполне безопасного кода в изолированной среде](~/docs/framework/misc/how-to-run-partially-trusted-code-in-a-sandbox.md).  
   
    
   
 ## Examples  
- В следующих примерах кода, использующего <xref:System.Security.Permissions.FileIOPermission>. После следующих двух строк кода, объект `f` представляет собой разрешение на чтение всех файлов на клиенте локальных дисках компьютера. В примере кода затем требует полномочия, чтобы определить, имеет ли приложение разрешение на чтение файлов.  
+ В следующих примерах показан код, использующий <xref:System.Security.Permissions.FileIOPermission>. После следующих двух строк кода объект `f` представляет разрешение на чтение всех файлов на локальных дисках клиентского компьютера. Затем в примере кода запрашивается разрешение на определение наличия у приложения разрешения на чтение файлов.  
   
  [!code-cpp[Classic FileIOPermission Example#1](~/samples/snippets/cpp/VS_Snippets_CLR_Classic/classic FileIOPermission Example/CPP/source.cpp#1)]
  [!code-csharp[Classic FileIOPermission Example#1](~/samples/snippets/csharp/VS_Snippets_CLR_Classic/classic FileIOPermission Example/CS/source.cs#1)]
  [!code-vb[Classic FileIOPermission Example#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_Classic/classic FileIOPermission Example/VB/source.vb#1)]  
   
- После следующих двух строк кода, объект `f2` представляет право чтения C:\test_r и чтения и записи C:\example\out.txt. `Read` и `Write` представляющие разрешения файла или папки, как описано выше. После создания разрешения код требует разрешение, чтобы определить, имеет ли приложение право на чтение и запись в файл.  
+ После следующих двух строк кода объект `f2` представляет разрешения на чтение C:\test_r, а также чтение и запись в к:\ексампле\аут.ткст. `Read`и `Write` представляют разрешения на доступ к файлам и папкам, как описано выше. После создания разрешения код требует разрешения, чтобы определить, имеет ли приложение право на чтение и запись в файл.  
   
  [!code-cpp[Classic FileIOPermission Example#2](~/samples/snippets/cpp/VS_Snippets_CLR_Classic/classic FileIOPermission Example/CPP/source.cpp#2)]
  [!code-csharp[Classic FileIOPermission Example#2](~/samples/snippets/csharp/VS_Snippets_CLR_Classic/classic FileIOPermission Example/CS/source.cs#2)]
@@ -126,12 +126,12 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Создает либо полностью ограниченный (`None`) или `Unrestricted` доступ к файлам и каталогам.  
+ Создает либо полностью ограниченный`None`() `Unrestricted` , либо доступ к файлам и каталогам.  
   
    
   
 ## Examples  
- В следующем примере кода создается новый экземпляр класса <xref:System.Security.Permissions.FileIOPermission> класса полностью ограниченный доступ на чтение.  
+ В следующем примере кода создается новый экземпляр <xref:System.Security.Permissions.FileIOPermission> класса с полностью ограниченным доступом на чтение.  
   
  [!code-cpp[Classic FileIOPermission Example#1](~/samples/snippets/cpp/VS_Snippets_CLR_Classic/classic FileIOPermission Example/CPP/source.cpp#1)]
  [!code-csharp[Classic FileIOPermission Example#1](~/samples/snippets/csharp/VS_Snippets_CLR_Classic/classic FileIOPermission Example/CS/source.cs#1)]
@@ -180,12 +180,12 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Данный конструктор позволяет только один из <xref:System.Security.Permissions.FileIOPermissionAccess> значения для заданного файла или каталога. Используйте <xref:System.Security.Permissions.FileIOPermission.AddPathList%2A> метод для определения сложных разрешений.  
+ Этот конструктор позволяет указать только одно из <xref:System.Security.Permissions.FileIOPermissionAccess> значений для указанного файла или каталога. <xref:System.Security.Permissions.FileIOPermission.AddPathList%2A> Используйте метод для определения сложных разрешений.  
   
    
   
 ## Examples  
- В следующем примере кода показано использование <xref:System.Security.Permissions.FileIOPermission.%23ctor%28System.Security.Permissions.FileIOPermissionAccess%2CSystem.String%29?displayProperty=nameWithType> конструктор, чтобы создать новый экземпляр класса <xref:System.Security.Permissions.FileIOPermission> класс, который предоставляет полный доступ к файлу C:\test_r.  
+ В следующем примере кода показано использование <xref:System.Security.Permissions.FileIOPermission.%23ctor%28System.Security.Permissions.FileIOPermissionAccess%2CSystem.String%29?displayProperty=nameWithType> конструктора для создания нового экземпляра <xref:System.Security.Permissions.FileIOPermission> класса, который обеспечивает полный доступ к файлу C:\test_r.  
   
  [!code-cpp[Classic FileIOPermission Example#2](~/samples/snippets/cpp/VS_Snippets_CLR_Classic/classic FileIOPermission Example/CPP/source.cpp#2)]
  [!code-csharp[Classic FileIOPermission Example#2](~/samples/snippets/csharp/VS_Snippets_CLR_Classic/classic FileIOPermission Example/CS/source.cs#2)]
@@ -195,7 +195,7 @@
         </remarks>
         <exception cref="T:System.ArgumentException">Параметр <paramref name="access" /> не является допустимым значением для <see cref="T:System.Security.Permissions.FileIOPermissionAccess" />.  
   
--или- 
+- или - 
 Параметр <paramref name="path" /> не является допустимой строкой.  
   
 -или- 
@@ -240,13 +240,13 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот конструктор позволяет лишь одному <xref:System.Security.Permissions.FileIOPermissionAccess> значение быть указано для указанных файлов и каталогов. Используйте <xref:System.Security.Permissions.FileIOPermission.AddPathList%2A> метод для определения сложных разрешений.  
+ Этот конструктор позволяет указать только <xref:System.Security.Permissions.FileIOPermissionAccess> одно значение для указанных файлов и каталогов. <xref:System.Security.Permissions.FileIOPermission.AddPathList%2A> Используйте метод для определения сложных разрешений.  
   
  ]]></format>
         </remarks>
         <exception cref="T:System.ArgumentException">Параметр <paramref name="access" /> не является допустимым значением для <see cref="T:System.Security.Permissions.FileIOPermissionAccess" />.  
   
--или- 
+- или - 
 Запись в массиве <paramref name="pathList" /> не является допустимой строкой.</exception>
       </Docs>
     </Member>
@@ -297,21 +297,21 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот конструктор позволяет лишь одному <xref:System.Security.Permissions.FileIOPermissionAccess> значение для заданного файла или папки. Используйте <xref:System.Security.Permissions.FileIOPermission.AddPathList%2A> метод для определения сложных разрешений.  
+ Этот конструктор позволяет указать только <xref:System.Security.Permissions.FileIOPermissionAccess> одно значение для указанного файла или каталогов. <xref:System.Security.Permissions.FileIOPermission.AddPathList%2A> Используйте метод для определения сложных разрешений.  
   
- `control` Параметр указывает ли списка управления доступом, (ACL) для файла или каталога, заданного параметром `path` можно изменять и просматривать, или недоступна.  
+ Параметр указывает, `path` может ли быть изменен, просмотрен или недоступен список управления доступом (ACL) для файла или каталога, заданного параметром. `control`  
   
 > [!IMPORTANT]
->  Список управления доступом (ACL) описываются отдельные пользователи или группы, имеющие или не имеющие права на выполнение определенных действий на данный файл и его свойства.  Возможность изменить или просмотреть список управления Доступом — это важное разрешение и должен быть предоставлен с осторожностью.  
+>  Список управления доступом (ACL) описывает пользователей или группы, которые имеют или не имеют прав на определенные действия с заданным файлом и его свойствами.  Возможность изменения или просмотра списка ACL является важным разрешением, и ее следует предоставлять с осторожностью.  
   
  ]]></format>
         </remarks>
         <exception cref="T:System.ArgumentException">Параметр <paramref name="access" /> не является допустимым значением для <see cref="T:System.Security.Permissions.FileIOPermissionAccess" />.  
   
--или- 
+- или - 
 Параметр <paramref name="path" /> не является допустимой строкой.  
   
--или- 
+- или - 
 Параметр <paramref name="path" /> не указывает абсолютный путь к файлу или каталогу.</exception>
       </Docs>
     </Member>
@@ -362,18 +362,18 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот конструктор позволяет лишь одному <xref:System.Security.Permissions.FileIOPermissionAccess> значение быть указано для указанных файлов и каталогов. Используйте <xref:System.Security.Permissions.FileIOPermission.AddPathList%2A> метод для определения сложных разрешений.  
+ Этот конструктор позволяет указать только <xref:System.Security.Permissions.FileIOPermissionAccess> одно значение для указанных файлов и каталогов. <xref:System.Security.Permissions.FileIOPermission.AddPathList%2A> Используйте метод для определения сложных разрешений.  
   
- `control` Параметр указывает ли списка управления доступом, (ACL) для файла или каталога, заданного параметром `path` можно изменять и просматривать, или недоступна.  
+ Параметр указывает, `path` может ли быть изменен, просмотрен или недоступен список управления доступом (ACL) для файла или каталога, заданного параметром. `control`  
   
 > [!IMPORTANT]
->  Список управления доступом (ACL) описываются отдельные пользователи или группы, имеющие или не имеющие права на выполнение определенных действий на данный файл и его свойства.  Возможность изменить или просмотреть список управления Доступом — это важное разрешение и должен быть предоставлен с осторожностью.  
+>  Список управления доступом (ACL) описывает пользователей или группы, которые имеют или не имеют прав на определенные действия с заданным файлом и его свойствами.  Возможность изменения или просмотра списка ACL является важным разрешением, и ее следует предоставлять с осторожностью.  
   
  ]]></format>
         </remarks>
         <exception cref="T:System.ArgumentException">Параметр <paramref name="access" /> не является допустимым значением для <see cref="T:System.Security.Permissions.FileIOPermissionAccess" />.  
   
--или- 
+- или - 
 Запись в массиве <paramref name="pathList" /> не является допустимой строкой.</exception>
       </Docs>
     </Member>
@@ -428,12 +428,12 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот метод можно используйте для изменения файлов и каталогов доступа путем добавления к состоянию текущего разрешения.  
+ Используйте этот метод для изменения доступа к файлам и каталогам путем добавления к состоянию текущего разрешения.  
   
    
   
 ## Examples  
- В следующем примере кода показано использование <xref:System.Security.Permissions.FileIOPermission.AddPathList%28System.Security.Permissions.FileIOPermissionAccess%2CSystem.String%29?displayProperty=nameWithType> метод.  
+ В следующем примере кода показано использование <xref:System.Security.Permissions.FileIOPermission.AddPathList%28System.Security.Permissions.FileIOPermissionAccess%2CSystem.String%29?displayProperty=nameWithType> метода.  
   
  [!code-cpp[Classic FileIOPermission Example#2](~/samples/snippets/cpp/VS_Snippets_CLR_Classic/classic FileIOPermission Example/CPP/source.cpp#2)]
  [!code-csharp[Classic FileIOPermission Example#2](~/samples/snippets/csharp/VS_Snippets_CLR_Classic/classic FileIOPermission Example/CS/source.cs#2)]
@@ -446,7 +446,7 @@
 -или- 
 Параметр <paramref name="path" /> не является допустимой строкой.  
   
--или- 
+- или - 
 Параметр <paramref name="path" /> не указывает абсолютный путь к файлу или каталогу.</exception>
         <exception cref="T:System.ArgumentNullException">Параметр <paramref name="path" /> имеет значение <see langword="null" />.</exception>
         <exception cref="T:System.NotSupportedException">Параметр <paramref name="path" /> имеет недопустимый формат.</exception>
@@ -493,7 +493,7 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот метод можно используйте для изменения файлов и каталогов доступа путем добавления к состоянию текущего разрешения.  
+ Используйте этот метод для изменения доступа к файлам и каталогам путем добавления к состоянию текущего разрешения.  
   
  ]]></format>
         </remarks>
@@ -536,14 +536,14 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Это свойство Возвращает или задает разрешенный доступ ко всем файлам на локальных дисках компьютера и сети.  
+ Это свойство получает или задает разрешенный доступ ко всем файлам на локальном компьютере и сетевых дисках.  
   
- Отдельного <xref:System.Security.Permissions.FileIOPermissionAccess> значение могут быть проверены с помощью побитовой операции и.  
+ Отдельное <xref:System.Security.Permissions.FileIOPermissionAccess> значение можно проверить с помощью побитовой операции и.  
   
    
   
 ## Examples  
- В следующем примере кода показано использование <xref:System.Security.Permissions.FileIOPermission.AllFiles%2A> свойство.  
+ В следующем примере кода показано использование <xref:System.Security.Permissions.FileIOPermission.AllFiles%2A> свойства.  
   
  [!code-cpp[Classic FileIOPermission Example#3](~/samples/snippets/cpp/VS_Snippets_CLR_Classic/classic FileIOPermission Example/CPP/source.cpp#3)]
  [!code-csharp[Classic FileIOPermission Example#3](~/samples/snippets/csharp/VS_Snippets_CLR_Classic/classic FileIOPermission Example/CS/source.cs#3)]
@@ -584,14 +584,14 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Локальные файлы, файлы, содержащиеся на локальном компьютере. Все файлы, которые недоступны через сетевые диски, локальные файлы.  
+ Локальные файлы — это файлы, содержащиеся на локальном компьютере. Все файлы, к которым нет доступа через сетевой диск, являются локальными файлами.  
   
- Отдельного <xref:System.Security.Permissions.FileIOPermissionAccess> значение могут быть проверены с помощью побитовой операции и.  
+ Отдельное <xref:System.Security.Permissions.FileIOPermissionAccess> значение можно проверить с помощью побитовой операции и.  
   
    
   
 ## Examples  
- В следующем примере кода показано использование <xref:System.Security.Permissions.FileIOPermission.AllLocalFiles%2A> свойство.  
+ В следующем примере кода показано использование <xref:System.Security.Permissions.FileIOPermission.AllLocalFiles%2A> свойства.  
   
  [!code-cpp[Classic FileIOPermission Example#1](~/samples/snippets/cpp/VS_Snippets_CLR_Classic/classic FileIOPermission Example/CPP/source.cpp#1)]
  [!code-csharp[Classic FileIOPermission Example#1](~/samples/snippets/csharp/VS_Snippets_CLR_Classic/classic FileIOPermission Example/CS/source.cs#1)]
@@ -633,7 +633,7 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Копия разрешения предоставляет те же права доступа к ресурсам, что и само разрешение.  
+ Копия разрешения представляет тот же доступ к ресурсам, что и исходное разрешение.  
   
  ]]></format>
         </remarks>
@@ -686,7 +686,7 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Дополнительные сведения см. в разделе <xref:System.Object.Equals%2A>.  
+ Для получения дополнительной информации см. <xref:System.Object.Equals%2A>.  
   
  ]]></format>
         </remarks>
@@ -771,7 +771,7 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Хэш-код для двух экземпляров и то же разрешение, может отличаться, поэтому хэш-код не следует использовать для сравнения двух <xref:System.Security.Permissions.FileIOPermission> объектов.  
+ Хэш-код для двух экземпляров одного и того же разрешения может отличаться, поэтому хэш-код не следует использовать для сравнения двух <xref:System.Security.Permissions.FileIOPermission> объектов.  
   
  ]]></format>
         </remarks>
@@ -817,15 +817,15 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Используйте этот метод для получения состояния текущего разрешения. Чтобы получить оба состояния `Read` и `Write` доступа, требуются два вызова этого метода.  
+ Используйте этот метод, чтобы получить состояние текущего разрешения. Чтобы получить состояние `Read` и `Write` доступа, требуются два вызова этого метода.  
   
 > [!NOTE]
->  `access` Ограничен значения <xref:System.Security.Permissions.FileIOPermissionAccess>, которые представляют отдельные типы доступа к файлам. Эти значения являются <xref:System.Security.Permissions.FileIOPermissionAccess.Read>, <xref:System.Security.Permissions.FileIOPermissionAccess.Write>, <xref:System.Security.Permissions.FileIOPermissionAccess.Append>, и <xref:System.Security.Permissions.FileIOPermissionAccess.PathDiscovery>. Применимые значения `access` не включают <xref:System.Security.Permissions.FileIOPermissionAccess.NoAccess> и <xref:System.Security.Permissions.FileIOPermissionAccess.AllAccess>, которые не представляют отдельные типы доступа к файлам.  
+>  `access` Параметр ограничен<xref:System.Security.Permissions.FileIOPermissionAccess>значениями, представляющими отдельные типы доступа к файлам. Эти значения: <xref:System.Security.Permissions.FileIOPermissionAccess.Read>, <xref:System.Security.Permissions.FileIOPermissionAccess.Write>, <xref:System.Security.Permissions.FileIOPermissionAccess.Append>и. <xref:System.Security.Permissions.FileIOPermissionAccess.PathDiscovery> Допустимые значения `access` не включают <xref:System.Security.Permissions.FileIOPermissionAccess.NoAccess> и <xref:System.Security.Permissions.FileIOPermissionAccess.AllAccess>, которые не представляют отдельные типы доступа к файлам.  
   
    
   
 ## Examples  
- В следующем примере кода показано использование <xref:System.Security.Permissions.FileIOPermission.GetPathList%2A> метод. Этот пример является частью большего примера для <xref:System.Security.Permissions.FileIOPermission> класса.  
+ В следующем примере кода показано использование <xref:System.Security.Permissions.FileIOPermission.GetPathList%2A> метода. Этот пример является частью большого примера, <xref:System.Security.Permissions.FileIOPermission> приведенного для класса.  
   
  [!code-cpp[System.Security.Permissions.FileIOPermission#7](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Permissions.FileIOPermission/CPP/fileiopermission.cpp#7)]
  [!code-csharp[System.Security.Permissions.FileIOPermission#7](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Permissions.FileIOPermission/CS/fileiopermission.cs#7)]
@@ -835,7 +835,7 @@
         </remarks>
         <exception cref="T:System.ArgumentException"><paramref name="access" /> не является допустимым значением <see cref="T:System.Security.Permissions.FileIOPermissionAccess" />.  
   
--или- 
+- или - 
  <paramref name="access" /> имеет значение <see cref="F:System.Security.Permissions.FileIOPermissionAccess.AllAccess" />, которое представляет несколько типов доступа к файлам, или <see cref="F:System.Security.Permissions.FileIOPermissionAccess.NoAccess" />, которое не представляет ни один тип доступа к файлам.</exception>
       </Docs>
     </Member>
@@ -874,7 +874,7 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Пересечение двух разрешений является разрешение, которое описывает набор операций, которые они описывают общие. Только тот запрос, который передает оба исходных разрешения передаст пересечения.  
+ Пересечением двух разрешений является разрешение, описывающее набор операций, которые они описывают как общие. Только запрос, передающий оба исходных разрешения, будет передавать пересечение.  
   
  ]]></format>
         </remarks>
@@ -916,7 +916,7 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Текущее разрешение является подмножеством указанного разрешения, если текущее разрешение задает набор операций, содержащихся в заданном разрешении. Например, разрешение, представляющее доступ на чтение к C:\example.txt является подмножеством разрешение, представляющее доступ для чтения на диске C:\\. Если этот метод возвращает `true`, текущее разрешение представляет уровень доступа к защищенному ресурсу, чем указанное разрешение.  
+ Текущее разрешение является подмножеством указанного разрешения, если текущее разрешение указывает набор операций, содержащихся в указанном разрешении. Например, разрешение, представляющее доступ на чтение к К:\ексампле.ткст, является подмножеством разрешения, представляющего доступ на чтение к\\C:. Если этот метод возвращает `true`значение, текущее разрешение не предоставляет больше доступа к защищенному ресурсу, чем указанное разрешение.  
   
  ]]></format>
         </remarks>
@@ -958,7 +958,7 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Неограниченное разрешение предоставляет доступ ко всем ресурсам, защищенным с помощью разрешений.  
+ Неограниченное разрешение представляет доступ ко всем ресурсам, защищенным разрешением.  
   
  ]]></format>
         </remarks>
@@ -1010,13 +1010,13 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Предыдущее состояние текущего разрешения для заданного типа доступа будет перезаписан. Следующий код задает доступ к C:\temp на <xref:System.Security.Permissions.FileIOPermissionAccess.Read>.  
+ Предыдущее состояние текущего разрешения для указанного типа доступа перезаписывается. Следующий код задает для доступа к C:\temp <xref:System.Security.Permissions.FileIOPermissionAccess.Read>значение.  
   
  [!code-cpp[System.Security.Permissions.FileIOPermission#12](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Permissions.FileIOPermission/CPP/remarks.cpp#12)]
  [!code-csharp[System.Security.Permissions.FileIOPermission#12](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Permissions.FileIOPermission/CS/remarks.cs#12)]
  [!code-vb[System.Security.Permissions.FileIOPermission#12](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Permissions.FileIOPermission/VB/remarks.vb#12)]  
   
- Такой доступ, не быть перезаписан в следующем примере кода, так как типы доступа не совпадают.  
+ Этот доступ не будет перезаписан следующим кодом, так как типы доступа не совпадают.  
   
  [!code-cpp[System.Security.Permissions.FileIOPermission#13](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Permissions.FileIOPermission/CPP/remarks.cpp#13)]
  [!code-csharp[System.Security.Permissions.FileIOPermission#13](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Permissions.FileIOPermission/CS/remarks.cs#13)]
@@ -1025,7 +1025,7 @@
    
   
 ## Examples  
- В следующем примере кода показано использование <xref:System.Security.Permissions.FileIOPermission.SetPathList%28System.Security.Permissions.FileIOPermissionAccess%2CSystem.String%29?displayProperty=nameWithType> метод.  
+ В следующем примере кода показано использование <xref:System.Security.Permissions.FileIOPermission.SetPathList%28System.Security.Permissions.FileIOPermissionAccess%2CSystem.String%29?displayProperty=nameWithType> метода.  
   
  [!code-cpp[System.Security.Permissions.FileIOPermission#7](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Permissions.FileIOPermission/CPP/fileiopermission.cpp#7)]
  [!code-csharp[System.Security.Permissions.FileIOPermission#7](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Permissions.FileIOPermission/CS/fileiopermission.cs#7)]
@@ -1035,7 +1035,7 @@
         </remarks>
         <exception cref="T:System.ArgumentException">Параметр <paramref name="access" /> не является допустимым значением для <see cref="T:System.Security.Permissions.FileIOPermissionAccess" />.  
   
--или- 
+- или - 
 Параметр <paramref name="path" /> не является допустимой строкой.  
   
 -или- 
@@ -1078,9 +1078,9 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Предыдущее состояние текущего разрешения для заданного типа доступа будет перезаписан. Следующий код задает доступ к C:\temp на <xref:System.Security.Permissions.FileIOPermissionAccess.Read>.  
+ Предыдущее состояние текущего разрешения для указанного типа доступа перезаписывается. Следующий код задает для доступа к C:\temp <xref:System.Security.Permissions.FileIOPermissionAccess.Read>значение.  
   
- Такой доступ, не быть перезаписан в следующем примере кода, так как типы доступа не совпадают.  
+ Этот доступ не будет перезаписан следующим кодом, так как типы доступа не совпадают.  
   
  [!code-cpp[System.Security.Permissions.FileIOPermission#15](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Permissions.FileIOPermission/CPP/remarks.cpp#15)]
  [!code-csharp[System.Security.Permissions.FileIOPermission#15](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Permissions.FileIOPermission/CS/remarks.cs#15)]
@@ -1090,7 +1090,7 @@
         </remarks>
         <exception cref="T:System.ArgumentException">Параметр <paramref name="access" /> не является допустимым значением для <see cref="T:System.Security.Permissions.FileIOPermissionAccess" />.  
   
--или- 
+- или - 
 Запись в параметре <paramref name="pathList" /> не является допустимой строкой.</exception>
       </Docs>
     </Member>
@@ -1160,7 +1160,7 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Результат вызова <xref:System.Security.Permissions.FileIOPermission.Union%2A> является разрешение, представляющее все действия, представленные текущего и заданного разрешений. Любой запрос, передающий любое разрешение, передает их объединение.  
+ Результатом вызова <xref:System.Security.Permissions.FileIOPermission.Union%2A> является разрешение, представляющее все операции, представленные как текущим разрешением, так и указанным разрешением. Любое требование, которое передает любое разрешение, передает свое объединение.  
   
  ]]></format>
         </remarks>
