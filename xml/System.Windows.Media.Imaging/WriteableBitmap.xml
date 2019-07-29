@@ -15,39 +15,39 @@
   </Base>
   <Interfaces />
   <Docs>
-    <summary>Предоставляет <see cref="T:System.Windows.Media.Imaging.BitmapSource" /> , можно записать и обновлять.</summary>
+    <summary>Предоставляет объект <see cref="T:System.Windows.Media.Imaging.BitmapSource" />, в который можно осуществить запись и обновить.</summary>
     <remarks>
       <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Используйте <xref:System.Windows.Media.Imaging.WriteableBitmap> класса для обновления и визуализировать точечный рисунок на каждого кадра. Это полезно для создания алгоритма содержимое, такое как образ фрактал и для визуализации данных, например музыкального визуализатора.  
+ <xref:System.Windows.Media.Imaging.WriteableBitmap> Используйте класс для обновления и отрисовки растрового изображения на основе каждого фрейма. Это полезно для создания алгоритмного содержимого, такого как изображение фрактала, и для визуализации данных, например, визуализатора музыки.  
   
- <xref:System.Windows.Media.Imaging.WriteableBitmap> Класс использует два буфера. *Задний буфер* выделяется в системной памяти и накапливает содержимое, которое не открыто. *Передний буфер* выделяется в системной памяти и содержимым, которое отображается в текущий момент. Система отрисовки копирует передний буфер видеопамятью для отображения.  
+ <xref:System.Windows.Media.Imaging.WriteableBitmap> Класс использует два буфера. *Задний буфер* выделяется в системной памяти и накапливает содержимое, которое в настоящее время не отображается. *Передний буфер* выделяется в системной памяти и содержит текущее отображаемое содержимое. Система отрисовки копирует передний буфер в видеопамять для отображения.  
   
- Эти буферы используются двумя потоками. *Потока пользовательского интерфейса (UI)* создает пользовательский Интерфейс, но не отображает его на экране. Поток пользовательского интерфейса отвечает на ввод данных пользователем, таймеры и другие события. Приложение может иметь несколько потоков пользовательского интерфейса. *Поток отрисовки* составляет и отрисовывает изменения из потока пользовательского интерфейса. Есть только один поток отрисовки каждого приложения.  
+ Эти буферы используются двумя потоками. *Поток пользовательского интерфейса* создает пользовательский интерфейс, но не представляет его на экране. Поток пользовательского интерфейса реагирует на пользовательский ввод, таймеры и другие события. Приложение может иметь несколько потоков пользовательского интерфейса. *Поток отрисовки* формирует и визуализирует изменения из потока пользовательского интерфейса. Существует только один поток отрисовки для каждого приложения.  
   
- В потоке пользовательского интерфейса записывает содержимое на задний буфер. Поток отрисовки считывает содержимое из передний буфер и копирует его в видеопамяти. Изменения на задний буфер, отслеживаются с помощью измененных прямоугольных областей.  
+ Поток пользовательского интерфейса записывает содержимое в задний буфер. Поток отрисовки считывает содержимое из переднего буфера и копирует его в видеопамять. Изменения в обратном буфере отправляются с измененными прямоугольными областями.  
   
- Вызовите один из <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%2A> перегрузки для обновления и автоматически отображать содержимое в заднем буфере.  
+ Вызовите одну из <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%2A> перегрузок, чтобы автоматически обновлять и отображать содержимое в обратном буфере.  
   
- Для большего контроля над обновлениями и для многопоточного доступа на задний буфер используйте следующий рабочий процесс.  
+ Для более высокого контроля над обновлениями и многопоточного доступа к буферу заднего буфера используйте следующий рабочий процесс.  
   
-1.  Вызовите <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> метод для резервирования задний буфер для обновлений.  
+1.  Вызовите <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> метод, чтобы зарезервировать задний буфер для обновлений.  
   
-2.  Получить указатель на задний буфер, обратившись к <xref:System.Windows.Media.Imaging.WriteableBitmap.BackBuffer%2A> свойство.  
+2.  Получите указатель на задний буфер, обратившись <xref:System.Windows.Media.Imaging.WriteableBitmap.BackBuffer%2A> к свойству.  
   
-3.  Сохранить изменения на задний буфер. Другие потоки могут записывать изменения буфера, когда на задний план <xref:System.Windows.Media.Imaging.WriteableBitmap> заблокирован.  
+3.  Запись изменений в задний буфер. Другие потоки могут записывать изменения в задний буфер при <xref:System.Windows.Media.Imaging.WriteableBitmap> блокировке.  
   
-4.  Вызовите <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A> метод, чтобы указать на проблемные области, которые были изменены.  
+4.  Вызовите <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A> метод, чтобы указать изменившиеся области.  
   
-5.  Вызовите <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> метод для освобождения задний буфер и допускает презентации на экран.  
+5.  Вызовите <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> метод, чтобы освободить задний буфер и разрешить показ презентации на экране.  
   
- Когда обновления отправляются в поток отрисовки, поток отрисовки копирует измененные прямоугольники из заднего буфера в передний буфер. Система отрисовки управляет этого обмена, чтобы избежать задержек и таких артефактов, таких как «разрыв».  
+ Когда обновления отправляются в поток отрисовки, поток отрисовки копирует измененные прямоугольники из заднего буфера в передний. Система отрисовки управляет этим обменом во избежание взаимоблокировок и перерисовки артефактов, таких как "уничтожение".  
   
    
   
 ## Examples  
- В следующем примере показано, как <xref:System.Windows.Media.Imaging.WriteableBitmap> может использоваться в качестве источника <xref:System.Windows.Controls.Image> для рисования точек, когда указатель мыши перемещается.  
+ В следующем примере показано, <xref:System.Windows.Media.Imaging.WriteableBitmap> как можно использовать в качестве источника <xref:System.Windows.Controls.Image> для рисования пикселей при перемещении мыши.  
   
  [!code-csharp[WriteableBitmap2#WriteableBitmapFullPage](~/samples/snippets/csharp/VS_Snippets_Wpf/WriteableBitmap2/CS/Program.cs#writeablebitmapfullpage)]  
   
@@ -87,19 +87,19 @@
         <Parameter Name="source" Type="System.Windows.Media.Imaging.BitmapSource" />
       </Parameters>
       <Docs>
-        <param name="source"><see cref="T:System.Windows.Media.Imaging.BitmapSource" /> Для использования при инициализации.</param>
-        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" /> класса с помощью заданного <see cref="T:System.Windows.Media.Imaging.BitmapSource" />.</summary>
+        <param name="source">Объект <see cref="T:System.Windows.Media.Imaging.BitmapSource" />, используемый для инициализации.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" /> с использованием заданного типа <see cref="T:System.Windows.Media.Imaging.BitmapSource" />.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- <xref:System.Windows.Media.Imaging.WriteableBitmap.%23ctor%28System.Int32%2CSystem.Int32%2CSystem.Double%2CSystem.Double%2CSystem.Windows.Media.PixelFormat%2CSystem.Windows.Media.Imaging.BitmapPalette%29> Конструктор является предпочтительным по сравнению с использованием этого конструктора.  
+ Конструктор <xref:System.Windows.Media.Imaging.WriteableBitmap.%23ctor%28System.Int32%2CSystem.Int32%2CSystem.Double%2CSystem.Double%2CSystem.Windows.Media.PixelFormat%2CSystem.Windows.Media.Imaging.BitmapPalette%29> предпочтительнее, чем использовать этот конструктор.  
   
- Если `source` не использует собственный формат растрового изображения, формат преобразований для каждого обновления фрейма, что снижает производительность.  
+ Если `source` не использует формат точечного рисунка, поддерживаемый изначально, преобразования формата применяются для каждого обновления кадра, что снижает производительность.  
   
  ]]></format>
         </remarks>
-        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
       </Docs>
     </Member>
     <Member MemberName=".ctor">
@@ -128,22 +128,22 @@
         <Parameter Name="palette" Type="System.Windows.Media.Imaging.BitmapPalette" />
       </Parameters>
       <Docs>
-        <param name="pixelWidth">Нужную ширину растрового изображения.</param>
+        <param name="pixelWidth">Требуемая ширина растрового изображения.</param>
         <param name="pixelHeight">Требуемая высота растрового изображения.</param>
-        <param name="dpiX">Горизонтальное [!INCLUDE[TLA#tla_dpi](~/includes/tlasharptla-dpi-md.md)] растрового изображения.</param>
-        <param name="dpiY">Полоса вертикальной прокрутки [!INCLUDE[TLA#tla_dpi](~/includes/tlasharptla-dpi-md.md)] растрового изображения.</param>
-        <param name="pixelFormat"><see cref="T:System.Windows.Media.PixelFormat" /> Растрового изображения.</param>
-        <param name="palette"><see cref="T:System.Windows.Media.Imaging.BitmapPalette" /> Растрового изображения.</param>
-        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" /> с заданными параметрами.</summary>
+        <param name="dpiX">Разрешение растрового изображения по горизонтали в [!INCLUDE[TLA#tla_dpi](~/includes/tlasharptla-dpi-md.md)].</param>
+        <param name="dpiY">Разрешение растрового изображения по вертикали в [!INCLUDE[TLA#tla_dpi](~/includes/tlasharptla-dpi-md.md)].</param>
+        <param name="pixelFormat">Формат <see cref="T:System.Windows.Media.PixelFormat" /> растрового изображения.</param>
+        <param name="palette">Формат <see cref="T:System.Windows.Media.Imaging.BitmapPalette" /> растрового изображения.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" /> заданными параметрами.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Предпочтительные значения `pixelFormat` являются <xref:System.Windows.Media.PixelFormats.Bgr32%2A> и <xref:System.Windows.Media.PixelFormats.Pbgra32%2A>. Эти форматы, изначально поддерживаются и не требуют преобразования формата. Другие `pixelFormat` значения требуют преобразования для каждого обновления фрейма, что снижает производительность.  
+ Предпочтительные значения для `pixelFormat` — <xref:System.Windows.Media.PixelFormats.Bgr32%2A> и <xref:System.Windows.Media.PixelFormats.Pbgra32%2A>. Эти форматы изначально поддерживаются и не нуждаются в преобразовании формата. Для `pixelFormat` других значений требуется преобразование формата для каждого обновления кадра, что снижает производительность.  
   
  ]]></format>
         </remarks>
-        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
       </Docs>
     </Member>
     <Member MemberName="AddDirtyRect">
@@ -171,30 +171,30 @@
         <Parameter Name="dirtyRect" Type="System.Windows.Int32Rect" />
       </Parameters>
       <Docs>
-        <param name="dirtyRect"><see cref="T:System.Windows.Int32Rect" /> Представляющий измененную область. Измерения — в пикселях.</param>
-        <summary>Указывает область точечного рисунка, который изменен.</summary>
+        <param name="dirtyRect">Объект <see cref="T:System.Windows.Int32Rect" />, представляющий измененную область. Измерения в пикселях.</param>
+        <summary>Указывает измененную область растрового изображения.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Вызовите <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A> методу, чтобы показать изменения кода задний буфер.  
+ Вызовите <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A> метод, чтобы указать изменения, внесенные кодом в задний буфер.  
   
- При вызове этого метода несколько раз, измененные области накапливаются в достаточно, но не обязательно минимальным, представление. Для повышения эффективности только области, которые помечены как "грязный" гарантированно будут копироваться в передний буфер. Тем не менее любая часть точечного рисунка могут быть скопированы вперед, поэтому необходимо убедиться, что весь задний буфер всегда является допустимой.  
+ При многократном вызове этого метода измененные области суммируются в достаточном, но не обязательно минимальном представлении. Для повышения эффективности только те области, которые помечены как "грязные", гарантированно копируются в передний буфер. Тем не менее любая часть точечного рисунка может быть скопирована вперед, поэтому необходимо убедиться, что весь задний буфер всегда действителен.  
   
- Вызовите <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A> метод только между вызовами <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> и <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> методы, как описано в разделе <xref:System.Windows.Media.Imaging.WriteableBitmap> класса "Примечания".  
+ Вызывайте <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> <xref:System.Windows.Media.Imaging.WriteableBitmap> метод только между вызовами методов и, как описано в комментариях к классу. <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A>  
   
    
   
 ## Examples  
- В следующем примере кода показано, как задать область фона буфера, изменить с помощью <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A> метод.  
+ В следующем примере кода показано, как задать область заднего буфера, измененную с помощью <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A> метода.  
   
  [!code-csharp[WriteableBitmap2#2](~/samples/snippets/csharp/VS_Snippets_Wpf/WriteableBitmap2/CS/Program.cs#2)]  
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.InvalidOperationException">Растровое изображение не был заблокирован вызовом <see cref="M:System.Windows.Media.Imaging.WriteableBitmap.Lock" /> или <see cref="M:System.Windows.Media.Imaging.WriteableBitmap.TryLock(System.Windows.Duration)" /> методы.</exception>
-        <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="dirtyRect" /> выходит за пределы границы <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.</exception>
-        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <exception cref="T:System.InvalidOperationException">Растровое изображение не было заблокировано вызовом метода <see cref="M:System.Windows.Media.Imaging.WriteableBitmap.Lock" /> или <see cref="M:System.Windows.Media.Imaging.WriteableBitmap.TryLock(System.Windows.Duration)" />.</exception>
+        <exception cref="T:System.ArgumentOutOfRangeException">Параметр <paramref name="dirtyRect" /> выходит за пределы растрового изображения <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.</exception>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
       </Docs>
     </Member>
     <Member MemberName="BackBuffer">
@@ -223,19 +223,19 @@
       </ReturnValue>
       <Docs>
         <summary>Возвращает указатель на задний буфер.</summary>
-        <value><see cref="T:System.IntPtr" /> , Указывающего на базовый адрес заднего буфера.</value>
+        <value>Объект <see cref="T:System.IntPtr" />, который указывает на базовый адрес заднего буфера.</value>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Задний буфер содержит содержимое растрового изображения в формате пикселей по запросу пользователя.  
+ Задний буфер содержит содержимое растрового изображения в формате пикселей, запрошенном пользователем.  
   
- Обновить задний буфер только между вызовами <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> и <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> методы. Если не следовать блокирования и разблокирования рабочего процесса, описанного в <xref:System.Windows.Media.Imaging.WriteableBitmap> класс "Примечания", неопределенных поведений, например разрыв, может произойти.  
+ Обновление заднего буфера только между вызовами <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> методов и. <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> Если вы не подписаны на рабочий процесс блокировки или разблокировки, <xref:System.Windows.Media.Imaging.WriteableBitmap> описанный в комментариях к классу, может произойти неопределенное поведение, например разрыв.  
   
  Адрес заднего буфера не изменяется.  
   
 ## <a name="thread-safety"></a>Потокобезопасность  
- Вы можете передать <xref:System.Windows.Media.Imaging.WriteableBitmap.BackBuffer%2A> указатель на внешние компоненты и другие потоки для обработки, но в этом случае, необходимо предоставить вам координации собственных потоков. В частности, необходимо убедитесь, что в потоке пользовательского интерфейса указывает измененные области путем вызова <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A> метод и что в потоке пользовательского интерфейса разблокирует буфер путем вызова <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> метод.  
+ Можно передать <xref:System.Windows.Media.Imaging.WriteableBitmap.BackBuffer%2A> указатель на внешние компоненты и другие потоки для обработки, но в этом случае необходимо предоставить собственную координацию потоков. В частности, необходимо убедиться, что поток пользовательского интерфейса указывает измененные области путем вызова <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A> метода, а поток пользовательского интерфейса разблокирует буфер путем <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> вызова метода.  
   
  ]]></format>
         </remarks>
@@ -258,8 +258,8 @@
         <ReturnType>System.Int32</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Получает значение, указывающее число байтов в одной строке данных о пикселях.</summary>
-        <value>Целое число, представляющее число байтов в одной строке данных о пикселях.</value>
+        <summary>Возвращает значение, указывающее количество байтов в одной строке данных о пикселях.</summary>
+        <value>Целое число, указывающее количество байтов в одной строке данных о пикселях.</value>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -287,9 +287,9 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот метод используется для создания изменяемой копии замороженный <xref:System.Windows.Freezable> объектов (или любой <xref:System.Windows.Freezable> объекта). Для удобства этот метод переопределяет наследуемую версию с помощью строго типизированной реализации.  
+ Этот метод используется для создания изменяемых копий замороженных <xref:System.Windows.Freezable> объектов (или любого <xref:System.Windows.Freezable> объекта). Для удобства этот метод затеняет унаследованную версию с реализацией со строгой типизацией.  
   
- Дополнительные сведения см. в разделе <xref:System.Windows.Freezable.Clone%2A?displayProperty=nameWithType>.  
+ Для получения дополнительной информации см. <xref:System.Windows.Freezable.Clone%2A?displayProperty=nameWithType>.  
   
  ]]></format>
         </remarks>
@@ -352,9 +352,9 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот метод используется для создания изменяемой копии замороженный <xref:System.Windows.Freezable> объектов (или любой <xref:System.Windows.Freezable> объекта). Для удобства этот метод переопределяет наследуемую версию с помощью строго типизированной реализации.  
+ Этот метод используется для создания изменяемых копий замороженных <xref:System.Windows.Freezable> объектов (или любого <xref:System.Windows.Freezable> объекта). Для удобства этот метод затеняет унаследованную версию с реализацией со строгой типизацией.  
   
- Дополнительные сведения см. в разделе <xref:System.Windows.Freezable.CloneCurrentValue%2A?displayProperty=nameWithType>.  
+ Для получения дополнительной информации см. <xref:System.Windows.Freezable.CloneCurrentValue%2A?displayProperty=nameWithType>.  
   
  ]]></format>
         </remarks>
@@ -539,16 +539,16 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> Метод увеличивает количество блокировок. При <xref:System.Windows.Media.Imaging.WriteableBitmap> будет заблокирована, система отрисовки не отправляет обновления до <xref:System.Windows.Media.Imaging.WriteableBitmap> полностью разблокировано путем вызова <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> метод.  
+ <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> Метод увеличивает число блокировок. Если блокировка заблокирована, система отрисовки не отправляет обновления, <xref:System.Windows.Media.Imaging.WriteableBitmap> пока не будет полностью разблокирована вызовами <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> метода. <xref:System.Windows.Media.Imaging.WriteableBitmap>  
   
- Можно использовать <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> метод для поддержки реализации несколькими потоками. В этих сценариях в потоке пользовательского интерфейса блокирует растровое изображение и открывает задний буфер для других потоков. После завершения рабочего потока кадр потока пользовательского интерфейса добавляет измененные прямоугольники и разблокирует буфер.  
+ Для поддержки многопоточных <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> реализаций можно использовать метод. В этих сценариях поток пользовательского интерфейса блокирует точечный рисунок и предоставляет обратный буфер другим потокам. Когда рабочий поток завершает кадр, поток пользовательского интерфейса добавляет измененные прямоугольники и разблокирует буфер.  
   
- В потоке пользовательского интерфейса можно заблокировать, если поток отрисовки получает блокировку на задний буфер, чтобы скопировать ее в передний буфер. Если задержка из этого блока слишком много времени, используйте <xref:System.Windows.Media.Imaging.WriteableBitmap.TryLock%2A> метод для ожидания в течение некоторого времени и затем разблокировать поток пользовательского интерфейса для выполнения других задач при заблокированном задний буфер.  
+ Поток пользовательского интерфейса может блокироваться, когда поток отрисовки получает блокировку заднего буфера, чтобы скопировать его вперед в передний буфер. Если задержка из этого блока слишком велика, используйте <xref:System.Windows.Media.Imaging.WriteableBitmap.TryLock%2A> метод для ожидания в течение короткого времени, а затем разблокируйте поток пользовательского интерфейса для выполнения других задач в то время, когда задний буфер заблокирован.  
   
    
   
 ## Examples  
- В следующем примере кода показано, как зарезервировать задний буфер с помощью <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> метод.  
+ В следующем примере кода показано, как зарезервировать задний буфер с <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> помощью метода.  
   
  [!code-csharp[WriteableBitmap2#2](~/samples/snippets/csharp/VS_Snippets_Wpf/WriteableBitmap2/CS/Program.cs#2)]  
   
@@ -583,19 +583,19 @@
         <Parameter Name="timeout" Type="System.Windows.Duration" />
       </Parameters>
       <Docs>
-        <param name="timeout">Объект <see cref="T:System.Windows.Duration" /> , представляющий продолжительность времени ожидания. Немедленно возвращает значение 0. Значение <see cref="P:System.Windows.Duration.Forever" /> блокирования на неопределенное время.</param>
+        <param name="timeout">Значение <see cref="T:System.Windows.Duration" />, которое представляет собой длительность периода ожидания. Значение 0 возвращается сразу же. Значение свойства <see cref="P:System.Windows.Duration.Forever" /> выполняет блокировку на неопределенный промежуток времени.</param>
         <summary>Пытается заблокировать растровое изображение, ожидая не больше указанного периода времени.</summary>
-        <returns><see langword="true" /> Если блокировка получена; в противном случае <see langword="false" />.</returns>
+        <returns>Значение <see langword="true" />, если блокировка выполнена; в противном случае — значение <see langword="false" />.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- При получении блокировки, поведение <xref:System.Windows.Media.Imaging.WriteableBitmap.TryLock%2A> метод совпадает со значением <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> метод.  
+ При получении блокировки поведение <xref:System.Windows.Media.Imaging.WriteableBitmap.TryLock%2A> метода <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> совпадает с методом.  
   
  ]]></format>
         </remarks>
         <exception cref="T:System.ArgumentOutOfRangeException">Параметру <paramref name="timeout" /> задается значение <see cref="P:System.Windows.Duration.Automatic" />.</exception>
-        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
         <altmember cref="M:System.Windows.Media.Imaging.WriteableBitmap.Lock" />
         <altmember cref="M:System.Windows.Media.Imaging.WriteableBitmap.Unlock" />
       </Docs>
@@ -628,19 +628,19 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> Метод уменьшает счетчик блокировок. Когда количество блокировок достигает 0, запрашиваемый прохода отрисовки, если <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A> был вызван метод.  
+ <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> Метод уменьшает число блокировок. Если счетчик блокировок достигнет значения 0, то при вызове <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A> метода будет запрошен проход визуализации.  
   
    
   
 ## Examples  
- В следующем примере кода показано, как освободить задний буфер с помощью <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> метод.  
+ В следующем примере кода показано, как освободить задний буфер с помощью <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> метода.  
   
  [!code-csharp[WriteableBitmap2#2](~/samples/snippets/csharp/VS_Snippets_Wpf/WriteableBitmap2/CS/Program.cs#2)]  
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.InvalidOperationException">Растровое изображение не был заблокирован вызовом <see cref="M:System.Windows.Media.Imaging.WriteableBitmap.Lock" /> или <see cref="M:System.Windows.Media.Imaging.WriteableBitmap.TryLock(System.Windows.Duration)" /> методы.</exception>
-        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <exception cref="T:System.InvalidOperationException">Растровое изображение не было заблокировано вызовом метода <see cref="M:System.Windows.Media.Imaging.WriteableBitmap.Lock" /> или <see cref="M:System.Windows.Media.Imaging.WriteableBitmap.TryLock(System.Windows.Duration)" />.</exception>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
         <altmember cref="M:System.Windows.Media.Imaging.WriteableBitmap.Lock" />
         <altmember cref="M:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect(System.Windows.Int32Rect)" />
       </Docs>
@@ -651,7 +651,7 @@
         <AssemblyVersion>4.0.0.0</AssemblyVersion>
       </AssemblyInfo>
       <Docs>
-        <summary>Обновляет пиксели растрового изображения для записи.</summary>
+        <summary>Обновляет пиксели растрового изображения, доступного для записи.</summary>
       </Docs>
     </MemberGroup>
     <Member MemberName="WritePixels">
@@ -682,7 +682,7 @@
         <Parameter Name="offset" Type="System.Int32" />
       </Parameters>
       <Docs>
-        <param name="sourceRect">Прямоугольник <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" /> для обновления.</param>
+        <param name="sourceRect">Обновляемый прямоугольник растрового изображения <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.</param>
         <param name="pixels">Массив пикселей, используемый для обновления растрового изображения.</param>
         <param name="stride">Шаг области обновления в <paramref name="pixels" />.</param>
         <param name="offset">Смещение входного буфера.</param>
@@ -691,29 +691,29 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.Array%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> И <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.IntPtr%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> перегрузки предпочтительнее, чем с помощью этого метода.  
+ Для <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.Array%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> использования <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.IntPtr%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> этого метода предпочтительнее использовать перегрузки и.  
   
 > [!NOTE]
->  В режиме частичного доверия используйте <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.Array%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> перегрузки.  
+>  В режиме частичного доверия используйте <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.Array%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> перегрузку.  
   
    
   
 ## Examples  
- В следующем примере кода показано, как обновить пикселя в заднем буфере с помощью <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%2A> метод.  
+ В следующем примере кода показано, как обновить пиксель в обратном буфере с помощью <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%2A> метода.  
   
  [!code-csharp[WriteableBitmap2#3](~/samples/snippets/csharp/VS_Snippets_Wpf/WriteableBitmap2/CS/Program.cs#3)]  
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.ArgumentOutOfRangeException">Один или несколько из следующих условий верно.  
+        <exception cref="T:System.ArgumentOutOfRangeException">Одно или несколько из следующих условий истинно.  
   
- <paramref name="sourceRect" /> выходит за пределы границы <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.  
+ Параметр <paramref name="sourceRect" /> выходит за пределы растрового изображения <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.  
   
  <paramref name="stride" /> &lt; 1 
  <paramref name="offset" /> &lt; 0</exception>
         <exception cref="T:System.ArgumentNullException">Свойство <paramref name="pixels" /> имеет значение <see langword="null" />.</exception>
-        <exception cref="T:System.ArgumentException"><paramref name="pixels" /> имеет ранг, отличный от 1 или 2, или его длина меньше или равно 0.</exception>
-        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <exception cref="T:System.ArgumentException">Значение параметра <paramref name="pixels" /> имеет ранг, отличный от 1 или 2, или его длина меньше или равна 0.</exception>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
       </Docs>
     </Member>
     <Member MemberName="WritePixels">
@@ -744,7 +744,7 @@
         <Parameter Name="stride" Type="System.Int32" />
       </Parameters>
       <Docs>
-        <param name="sourceRect">Прямоугольник <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" /> для обновления.</param>
+        <param name="sourceRect">Обновляемый прямоугольник растрового изображения <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.</param>
         <param name="buffer">Входной буфер, используемый для обновления растрового изображения.</param>
         <param name="bufferSize">Размер входного буфера.</param>
         <param name="stride">Шаг области обновления в <paramref name="buffer" />.</param>
@@ -753,21 +753,21 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.Array%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> И <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.IntPtr%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> перегрузки предпочтительнее, чем с помощью этого метода.  
+ Для <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.Array%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> использования <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.IntPtr%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> этого метода предпочтительнее использовать перегрузки и.  
   
 > [!NOTE]
->  В режиме частичного доверия используйте <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.Array%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> перегрузки.  
+>  В режиме частичного доверия используйте <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.Array%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> перегрузку.  
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.ArgumentOutOfRangeException">Один или несколько из следующих условий верно.  
+        <exception cref="T:System.ArgumentOutOfRangeException">Одно или несколько из следующих условий истинно.  
   
- <paramref name="sourceRect" /> выходит за пределы границы <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.  
+ Параметр <paramref name="sourceRect" /> выходит за пределы растрового изображения <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.  
   
  <paramref name="bufferSize" /> &lt; 1 
  <paramref name="stride" /> &lt; 1</exception>
         <exception cref="T:System.ArgumentNullException">Свойство <paramref name="buffer" /> имеет значение <see langword="null" />.</exception>
-        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
       </Docs>
     </Member>
     <Member MemberName="WritePixels">
@@ -802,30 +802,30 @@
         <param name="sourceRect">Прямоугольник в <paramref name="sourceBuffer" /> для копирования.</param>
         <param name="sourceBuffer">Входной буфер, используемый для обновления растрового изображения.</param>
         <param name="sourceBufferStride">Шаг буфера входящих данных, в байтах.</param>
-        <param name="destinationX">Конечная координата x крайнего левого пикселя в заднем буфере.</param>
+        <param name="destinationX">Конечная координата х крайнего левого пикселя в заднем буфере.</param>
         <param name="destinationY">Конечная координата y крайнего верхнего пикселя в заднем буфере.</param>
         <summary>Обновляет пиксели в заданной области растрового изображения.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Вызовите <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%2A> метод обновления <xref:System.Windows.Media.Imaging.WriteableBitmap> автоматически с содержимым `sourceBuffer`. Этот метод вызывается эквивалентно использованию <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> и <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> рабочего процесса, описано в разделе <xref:System.Windows.Media.Imaging.WriteableBitmap> класса "Примечания".  
+ Вызовите <xref:System.Windows.Media.Imaging.WriteableBitmap> метод, чтобы `sourceBuffer`автоматически обновить содержимое. <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%2A> Вызов этого метода эквивалентен использованию <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> рабочего процесса и <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> , описанного в разделе <xref:System.Windows.Media.Imaging.WriteableBitmap> примечания к классу.  
   
 > [!NOTE]
->  Используйте эту перегрузку с частичным доверием.  
+>  Используйте эту перегрузку при частичном доверии.  
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.ArgumentOutOfRangeException">Один или несколько из следующих условий верно.  
+        <exception cref="T:System.ArgumentOutOfRangeException">Одно или несколько из следующих условий истинно.  
   
- <paramref name="sourceRect" /> выходит за пределы границы <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.  
+ Параметр <paramref name="sourceRect" /> выходит за пределы растрового изображения <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.  
   
- <paramref name="destinationX" /> или <paramref name="destinationY" /> выходит за границы <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.  
+ Параметр <paramref name="destinationX" /> или <paramref name="destinationY" /> выходит за пределы растрового изображения <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.  
   
  <paramref name="sourceBufferStride" /> &lt; 1</exception>
         <exception cref="T:System.ArgumentNullException">Свойство <paramref name="sourceBuffer" /> имеет значение <see langword="null" />.</exception>
-        <exception cref="T:System.ArgumentException"><paramref name="sourceBuffer" /> имеет ранг, отличный от 1 или 2, или его длина меньше или равно 0.</exception>
-        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <exception cref="T:System.ArgumentException">Значение параметра <paramref name="sourceBuffer" /> имеет ранг, отличный от 1 или 2, или его длина меньше или равна 0.</exception>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
         <altmember cref="M:System.Windows.Media.Imaging.WriteableBitmap.WritePixels(System.Windows.Int32Rect,System.IntPtr,System.Int32,System.Int32,System.Int32,System.Int32)" />
       </Docs>
     </Member>
@@ -863,30 +863,30 @@
         <param name="sourceBuffer">Входной буфер, используемый для обновления растрового изображения.</param>
         <param name="sourceBufferSize">Размер входного буфера.</param>
         <param name="sourceBufferStride">Шаг буфера входящих данных, в байтах.</param>
-        <param name="destinationX">Конечная координата x крайнего левого пикселя в заднем буфере.</param>
+        <param name="destinationX">Конечная координата х крайнего левого пикселя в заднем буфере.</param>
         <param name="destinationY">Конечная координата y крайнего верхнего пикселя в заднем буфере.</param>
         <summary>Обновляет пиксели в заданной области растрового изображения.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Вызовите <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%2A> метод обновления <xref:System.Windows.Media.Imaging.WriteableBitmap> автоматически с содержимым `sourceBuffer`. Этот метод вызывается эквивалентно использованию <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> и <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> рабочего процесса, описано в разделе <xref:System.Windows.Media.Imaging.WriteableBitmap> класса "Примечания".  
+ Вызовите <xref:System.Windows.Media.Imaging.WriteableBitmap> метод, чтобы `sourceBuffer`автоматически обновить содержимое. <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%2A> Вызов этого метода эквивалентен использованию <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> рабочего процесса и <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> , описанного в разделе <xref:System.Windows.Media.Imaging.WriteableBitmap> примечания к классу.  
   
 > [!NOTE]
->  В режиме частичного доверия используйте <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.Array%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> перегрузки.  
+>  В режиме частичного доверия используйте <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.Array%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> перегрузку.  
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.ArgumentOutOfRangeException">Один или несколько из следующих условий верно.  
+        <exception cref="T:System.ArgumentOutOfRangeException">Одно или несколько из следующих условий истинно.  
   
- <paramref name="sourceRect" /> выходит за пределы границы <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.  
+ Параметр <paramref name="sourceRect" /> выходит за пределы растрового изображения <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.  
   
- <paramref name="destinationX" /> или <paramref name="destinationY" /> выходит за границы <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.  
+ Параметр <paramref name="destinationX" /> или <paramref name="destinationY" /> выходит за пределы растрового изображения <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.  
   
  <paramref name="sourceBufferSize" /> &lt; 1 
  <paramref name="sourceBufferStride" /> &lt; 1</exception>
         <exception cref="T:System.ArgumentNullException">Свойство <paramref name="sourceBuffer" /> имеет значение <see langword="null" />.</exception>
-        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
         <altmember cref="M:System.Windows.Media.Imaging.WriteableBitmap.WritePixels(System.Windows.Int32Rect,System.Array,System.Int32,System.Int32,System.Int32)" />
       </Docs>
     </Member>
