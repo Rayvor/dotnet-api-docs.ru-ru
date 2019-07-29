@@ -32,13 +32,13 @@
       <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Следует отметить, что даже в том случае, если диспетчер ресурсов реализует этот интерфейс для поддержки однофазную оптимизацию фиксации, не гарантируется, что он получает однофазной фиксации. Диспетчер транзакций по-прежнему можно вместо этого отправить два уведомлений о двухфазной фиксации.  
+ Следует отметить, что даже если диспетчер ресурсов реализует этот интерфейс для поддержки оптимизации однофазной фиксации, он не гарантирует, что он получит один этап фиксации. Диспетчер транзакций по-прежнему может отправлять уведомления о двухфазной фиксации в два этапа.  
   
- Чтобы прикрепить к диспетчер ресурсов как участника испытаний в транзакции, вызовите <xref:System.Transactions.Transaction.EnlistVolatile%2A> метод или <xref:System.Transactions.Transaction.EnlistDurable%2A> метод <xref:System.Transactions.Transaction> класса. В частности `EnlistmentOptions` должно быть равно параметр <xref:System.Transactions.EnlistmentOptions.None> чтобы обеспечить выполнение однофазной фиксации. Если ошибочно присвоено <xref:System.Transactions.EnlistmentOptions.EnlistDuringPrepareRequired>, не один этап, фиксация происходит.  
+ Чтобы прикрепить диспетчер ресурсов как участника транзакции, вызовите <xref:System.Transactions.Transaction.EnlistVolatile%2A> метод <xref:System.Transactions.Transaction.EnlistDurable%2A> или метод <xref:System.Transactions.Transaction> класса. В частности, `EnlistmentOptions` параметр должен <xref:System.Transactions.EnlistmentOptions.None> равняться значению, чтобы обеспечить выполнение однофазной фиксации. Если по <xref:System.Transactions.EnlistmentOptions.EnlistDuringPrepareRequired>ошибке задано значение, однофазная фиксация не выполняется.  
   
- Так как <xref:System.Transactions.ISinglePhaseNotification> интерфейс является производным от <xref:System.Transactions.IEnlistmentNotification> интерфейс, диспетчер ресурсов также должен реализовывать все методы последний для двухфазной фиксации уведомления.  Это, чтобы выбрать диспетчер транзакций, является ли двухфазной фиксации или однофазную оптимизацию фиксации, используемый с этим диспетчером ресурсов.  Тем не менее реализован этот интерфейс предоставляет диспетчер ресурсов возможность воспользоваться преимуществами оптимизации, когда она станет доступна.  
+ Поскольку интерфейс является производным <xref:System.Transactions.IEnlistmentNotification> от интерфейса, диспетчер ресурсов также должен реализовать все методы второго этапа для уведомлений о двухфазной фиксации. <xref:System.Transactions.ISinglePhaseNotification>  Диспетчер транзакций определяет, используется ли для этого диспетчера ресурсов две фазы фиксации или оптимизация однофазной фиксации.  Однако реализация этого интерфейса предоставляет диспетчеру ресурсов возможность использовать преимущества оптимизации, когда она доступна.  
   
- Если используется оптимизация и диспетчер транзакций вызывает <xref:System.Transactions.ISinglePhaseNotification.SinglePhaseCommit%2A> метод включенный в список ресурсов, диспетчер ресурсов должен откликаться на этот вызов с помощью различных методов класса <xref:System.Transactions.SinglePhaseEnlistment> класса, чтобы информировать диспетчер транзакций, если транзакции — фиксация или откат.  
+ Если используется оптимизация и диспетчер транзакций вызывает <xref:System.Transactions.ISinglePhaseNotification.SinglePhaseCommit%2A> метод прикрепленного ресурса, диспетчер ресурсов должен ответить на этот вызов, используя различные методы <xref:System.Transactions.SinglePhaseEnlistment> класса для информирования диспетчера транзакций, если транзакция должна быть зафиксирована или отменена.  
   
  ]]></format>
     </remarks>
@@ -83,20 +83,20 @@
         <Parameter Name="enlistment" Type="System.Transactions.SinglePhaseEnlistment" Index="0" FrameworkAlternate="xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
-        <param name="singlePhaseEnlistment">Объект <see cref="T:System.Transactions.SinglePhaseEnlistment" /> используется для передачи ответа диспетчеру транзакций.</param>
-        <param name="enlistment">Объект <see cref="T:System.Transactions.SinglePhaseEnlistment" /> используется для передачи ответа диспетчеру транзакций.</param>
-        <summary>Представляет реализацию диспетчера ресурсов обратного вызова для оптимизации однофазной фиксации.</summary>
+        <param name="singlePhaseEnlistment">Объект <see cref="T:System.Transactions.SinglePhaseEnlistment" />, используемый для передачи отклика диспетчеру транзакций.</param>
+        <param name="enlistment">Объект <see cref="T:System.Transactions.SinglePhaseEnlistment" />, используемый для передачи отклика диспетчеру транзакций.</param>
+        <summary>Представляет реализацию диспетчером ресурсов функции обратного вызова для оптимизации однофазной фиксации.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Это, чтобы выбрать диспетчер транзакций, является ли двухфазной фиксации или однофазную оптимизацию фиксации, используемый с этим диспетчером ресурсов.  Дополнительные сведения об однофазной и двухфазной фиксации, см. в разделе [фиксации транзакции в Single-Phase и Многофазная](https://msdn.microsoft.com/library/74b3cfe1-d33a-45b8-91f4-dfd6f6598c4d).  
+ Диспетчер транзакций определяет, используется ли для этого диспетчера ресурсов две фазы фиксации или оптимизация однофазной фиксации.  Дополнительные сведения об одном фазе и двухфазной фиксации см. [в разделе фиксация транзакции в однофазном и](https://msdn.microsoft.com/library/74b3cfe1-d33a-45b8-91f4-dfd6f6598c4d)многофазном состоянии.  
   
- Таким образом, на этом зачисления диспетчер ресурсов либо <xref:System.Transactions.ISinglePhaseNotification.SinglePhaseCommit%2A> был вызван или двухфазной фиксации методы, определенные в <xref:System.Transactions.IEnlistmentNotification> интерфейса вызываются.  
+ Таким образом, при таком зачислении диспетчера ресурсов вызывается либо <xref:System.Transactions.ISinglePhaseNotification.SinglePhaseCommit%2A> метод, либо методы фиксации двух фаз, определенные <xref:System.Transactions.IEnlistmentNotification> в интерфейсе.  
   
- Реализация этого метода должна вызывать либо <xref:System.Transactions.SinglePhaseEnlistment.Committed%2A> метод или <xref:System.Transactions.SinglePhaseEnlistment.Aborted%2A> метод `singlePhaseEnlistment` параметр, чтобы указать, следует ли транзакция зафиксирована или выполнен откат.  
+ Реализация этого метода должна вызывать <xref:System.Transactions.SinglePhaseEnlistment.Committed%2A> метод <xref:System.Transactions.SinglePhaseEnlistment.Aborted%2A> или метод `singlePhaseEnlistment` параметра, чтобы указать, следует ли зафиксировать или откатить транзакцию.  
   
- Диспетчер транзакций вызывает этот метод, если имеется только один неустойчивый ресурс, который поддерживает однофазной фиксации, или при наличии ноль или более Временные приемы и одно зачисление устойчивых ресурсов. В последнем случае зачисленные неустойчивые ресурсы получают <xref:System.Transactions.IEnlistmentNotification.Prepare%2A> уведомления для двух phase фиксации и единственного зачисление устойчивых ресурсов получает уведомление об однофазной фиксации.  
+ Диспетчер транзакций вызывает этот метод, если имеется только одно переменное прикрепление, которое поддерживает однофазную фиксацию, или если имеется ноль или более переменных прикрепления и одно устойчивое прикрепление. В последнем случае временные прикрепления получают <xref:System.Transactions.IEnlistmentNotification.Prepare%2A> уведомления о двухфазной фиксации, а единственный устойчивый связующий объект получает однофазное уведомление о фиксации.  
   
  ]]></format>
         </remarks>
