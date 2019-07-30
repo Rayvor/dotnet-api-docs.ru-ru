@@ -45,16 +45,16 @@
       <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- <xref:System.Runtime.InteropServices.GCHandle> Структура будет использована в <xref:System.Runtime.InteropServices.GCHandleType> перечисления для создания дескриптора, соответствующего любого управляемого объекта. Этот дескриптор может быть один из четырех типов: `Weak`, `WeakTrackResurrection`, `Normal`, или `Pinned`. Если дескриптор выделен, его можно использовать для предотвращения собираются сборщиком мусора, когда неуправляемый клиент содержит только одну ссылку на управляемый объект. Без такого дескриптора объект может быть собран сборщиком мусора до завершения его работы от имени неуправляемого клиента.  
+ <xref:System.Runtime.InteropServices.GCHandle> Структура используется <xref:System.Runtime.InteropServices.GCHandleType> с перечислением для создания маркера, соответствующего любому управляемому объекту. Этот обработчик может иметь один из четырех типов: `Weak`, `WeakTrackResurrection`, `Normal`или `Pinned`. После выделения маркера его можно использовать для предотвращения сбора управляемого объекта сборщиком мусора, если неуправляемый клиент содержит единственную ссылку. Без такого маркера объект может быть собран сборщиком мусора до завершения его работы от имени неуправляемого клиента.  
   
- Можно также использовать <xref:System.Runtime.InteropServices.GCHandle> для создания закрепленного объекта, который возвращает адрес памяти, чтобы помешать сборщику мусора перемещать объект в памяти.  
+ Можно также использовать <xref:System.Runtime.InteropServices.GCHandle> для создания закрепленного объекта, который возвращает адрес памяти, чтобы сборщик мусора не мог переместить объект в памяти.  
   
- Когда дескриптор выходит из области необходимо явно освободить его, вызвав <xref:System.Runtime.InteropServices.GCHandle.Free%2A> метода; в противном случае — памяти, могут возникнуть утечки. При освобождении закрепленный дескриптор, связанный объект освобождается и становится доступным для сборки мусора, если нет других ссылок на него.  
+ Когда дескриптор выходит из области действия, необходимо явно освободить его, вызвав <xref:System.Runtime.InteropServices.GCHandle.Free%2A> метод; в противном случае могут возникнуть утечки памяти. При освобождении закрепленного маркера связанный объект будет откреплен и станет пригодным для сборки мусора, если в нем нет других ссылок.  
   
    
   
 ## Examples  
- В следующем примере показан `App` класс, который создает дескриптор для управляемого объекта, используя `GCHandle.Alloc` метод, который предотвращает собираемых управляемого объекта. Вызов `EnumWindows` метод передает делегат и управляемый объект (оба объявлены как управляемые типы, но не показан) и приводит дескриптор <xref:System.IntPtr>. Неуправляемая функция передает тип обратно в вызывающий объект в качестве параметра функции обратного вызова.  
+ В следующем примере показан `App` класс, который создает обработчик для управляемого объекта `GCHandle.Alloc` с помощью метода, который предотвращает сбор управляемого объекта. Вызов `EnumWindows` метода передает делегат и управляемый объект (оба объявляются как управляемые типы, но не отображаются) и приводит этот обработчик <xref:System.IntPtr>к типу. Неуправляемая функция передает тип обратно вызывающему объекту в качестве параметра функции обратного вызова.  
   
  [!code-csharp[System.Runtime.InteropServices.GCHandle#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Runtime.InteropServices.GCHandle/cs/sample.cs#1)]
  [!code-vb[System.Runtime.InteropServices.GCHandle#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Runtime.InteropServices.GCHandle/vb/sample.vb#1)]  
@@ -107,18 +107,18 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>Извлекает адрес объекта в <see cref="F:System.Runtime.InteropServices.GCHandleType.Pinned" /> обработки.</summary>
+        <summary>Возвращает адрес объекта в дескрипторе <see cref="F:System.Runtime.InteropServices.GCHandleType.Pinned" />.</summary>
         <returns>Адрес закрепленного объекта как указатель <see cref="T:System.IntPtr" />.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот метод используется для получения постоянного указателя на объект. При закреплении объекта не позволяет сборщику мусора перемещать их в памяти, поэтому эффективность сборщика мусора.  
+ Этот метод используется для получения постоянного указателя на объект. Закрепление объекта предотвращает его перемещение сборщиком мусора в памяти, тем самым уменьшая эффективность сборщика мусора.  
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.InvalidOperationException">Дескриптор имеет любой тип, кроме <see cref="F:System.Runtime.InteropServices.GCHandleType.Pinned" />.</exception>
-        <permission cref="T:System.Security.SecurityCriticalAttribute">Требует полного доверия для непосредственного вызывающего объекта. Этот член не может использоваться частично доверенным или прозрачным кодом.</permission>
+        <exception cref="T:System.InvalidOperationException">Типом дескриптора может быть любой тип, кроме <see cref="F:System.Runtime.InteropServices.GCHandleType.Pinned" />.</exception>
+        <permission cref="T:System.Security.SecurityCriticalAttribute">требуется полное доверие для немедленного вызывающего объекта. Этот член не может использоваться частично доверенным или прозрачным кодом.</permission>
         <altmember cref="T:System.Runtime.InteropServices.GCHandleType" />
       </Docs>
     </Member>
@@ -181,26 +181,26 @@
         <Parameter Name="value" Type="System.Object" />
       </Parameters>
       <Docs>
-        <param name="value">Объект, который использует <see cref="T:System.Runtime.InteropServices.GCHandle" />.</param>
-        <summary>Выделяет <see cref="F:System.Runtime.InteropServices.GCHandleType.Normal" /> дескриптор для указанного объекта.</summary>
-        <returns>Новый <see cref="T:System.Runtime.InteropServices.GCHandle" /> , защищающий объект от сборщика мусора. Это <see cref="T:System.Runtime.InteropServices.GCHandle" /> должен освобождаться с помощью <see cref="M:System.Runtime.InteropServices.GCHandle.Free" /> когда он больше не нужен.</returns>
+        <param name="value">Объект, использующий дескриптор <see cref="T:System.Runtime.InteropServices.GCHandle" />.</param>
+        <summary>Выделяет дескриптор <see cref="F:System.Runtime.InteropServices.GCHandleType.Normal" /> для указанного объекта.</summary>
+        <returns>Новый дескриптор <see cref="T:System.Runtime.InteropServices.GCHandle" />, защищающий объект от сборщика мусора. Этот дескриптор <see cref="T:System.Runtime.InteropServices.GCHandle" /> должен освобождаться с помощью метода <see cref="M:System.Runtime.InteropServices.GCHandle.Free" />, если в нем больше нет необходимости.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- <xref:System.Runtime.InteropServices.GCHandleType.Normal> дескрипторы, непрозрачны, это означает, что не удается разрешить адрес объекта, содержащиеся в ней через дескриптор.  
+ <xref:System.Runtime.InteropServices.GCHandleType.Normal>Дескрипторы являются непрозрачными. Это означает, что нельзя разрешить адрес объекта, который он содержит, через дескриптор.  
   
    
   
 ## Examples  
- В следующем примере показан `App` класс, который создает дескриптор для управляемого объекта, используя `GCHandle.Alloc` метод, который предотвращает собираемых управляемого объекта. Вызов `EnumWindows` метод передает делегат и управляемый объект (оба объявлены как управляемые типы, но не показан) и приводит дескриптор <xref:System.IntPtr>. Неуправляемая функция передает тип обратно в вызывающий объект в качестве параметра функции обратного вызова.  
+ В следующем примере показан `App` класс, который создает обработчик для управляемого объекта `GCHandle.Alloc` с помощью метода, который предотвращает сбор управляемого объекта. Вызов `EnumWindows` метода передает делегат и управляемый объект (оба объявляются как управляемые типы, но не отображаются) и приводит этот обработчик <xref:System.IntPtr>к типу. Неуправляемая функция передает тип обратно вызывающему объекту в качестве параметра функции обратного вызова.  
   
  [!code-csharp[System.Runtime.InteropServices.GCHandle#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Runtime.InteropServices.GCHandle/cs/sample.cs#1)]
  [!code-vb[System.Runtime.InteropServices.GCHandle#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Runtime.InteropServices.GCHandle/vb/sample.vb#1)]  
   
  ]]></format>
         </remarks>
-        <permission cref="T:System.Security.SecurityCriticalAttribute">Требует полного доверия для непосредственного вызывающего объекта. Этот член не может использоваться частично доверенным или прозрачным кодом.</permission>
+        <permission cref="T:System.Security.SecurityCriticalAttribute">требуется полное доверие для немедленного вызывающего объекта. Этот член не может использоваться частично доверенным или прозрачным кодом.</permission>
         <altmember cref="T:System.Runtime.InteropServices.GCHandleType" />
       </Docs>
     </Member>
@@ -250,13 +250,13 @@
         <Parameter Name="type" Type="System.Runtime.InteropServices.GCHandleType" />
       </Parameters>
       <Docs>
-        <param name="value">Объект, который использует <see cref="T:System.Runtime.InteropServices.GCHandle" />.</param>
-        <param name="type">Один из <see cref="T:System.Runtime.InteropServices.GCHandleType" /> значений, указывающий тип <see cref="T:System.Runtime.InteropServices.GCHandle" /> для создания.</param>
+        <param name="value">Объект, использующий дескриптор <see cref="T:System.Runtime.InteropServices.GCHandle" />.</param>
+        <param name="type">Одно из значений <see cref="T:System.Runtime.InteropServices.GCHandleType" />, показывающее тип создаваемого дескриптора <see cref="T:System.Runtime.InteropServices.GCHandle" />.</param>
         <summary>Выделяет дескриптор указанного типа для указанного объекта.</summary>
-        <returns>Новый <see cref="T:System.Runtime.InteropServices.GCHandle" /> указанного типа. Это <see cref="T:System.Runtime.InteropServices.GCHandle" /> должен освобождаться с помощью <see cref="M:System.Runtime.InteropServices.GCHandle.Free" /> когда он больше не нужен.</returns>
+        <returns>Новый дескриптор <see cref="T:System.Runtime.InteropServices.GCHandle" /> указанного типа. Этот дескриптор <see cref="T:System.Runtime.InteropServices.GCHandle" /> должен освобождаться с помощью метода <see cref="M:System.Runtime.InteropServices.GCHandle.Free" />, если в нем больше нет необходимости.</returns>
         <remarks>To be added.</remarks>
-        <exception cref="T:System.ArgumentException">Экземпляр с членами nonprimitive (непреобразуемые) не может быть закреплен.</exception>
-        <permission cref="T:System.Security.SecurityCriticalAttribute">Требует полного доверия для непосредственного вызывающего объекта. Этот член не может использоваться частично доверенным или прозрачным кодом.</permission>
+        <exception cref="T:System.ArgumentException">Экземпляр с членами, не являющимися примитивами (не требующими преобразования), не может быть закреплен.</exception>
+        <permission cref="T:System.Security.SecurityCriticalAttribute">требуется полное доверие для немедленного вызывающего объекта. Этот член не может использоваться частично доверенным или прозрачным кодом.</permission>
         <altmember cref="T:System.Runtime.InteropServices.GCHandleType" />
       </Docs>
     </Member>
@@ -300,13 +300,13 @@
       </Parameters>
       <Docs>
         <param name="o">Объект <see cref="T:System.Runtime.InteropServices.GCHandle" />, сравниваемый с текущим объектом <see cref="T:System.Runtime.InteropServices.GCHandle" />.</param>
-        <summary>Определяет, является ли указанного <see cref="T:System.Runtime.InteropServices.GCHandle" /> объект равен текущему <see cref="T:System.Runtime.InteropServices.GCHandle" /> объекта.</summary>
-        <returns><see langword="true" /> Если указанный <see cref="T:System.Runtime.InteropServices.GCHandle" /> объект равен текущему <see cref="T:System.Runtime.InteropServices.GCHandle" /> объекта; в противном случае <see langword="false" />.</returns>
+        <summary>Определяет, равен ли заданный объект <see cref="T:System.Runtime.InteropServices.GCHandle" /> текущему объекту <see cref="T:System.Runtime.InteropServices.GCHandle" />.</summary>
+        <returns>Значение <see langword="true" />, если заданный объект <see cref="T:System.Runtime.InteropServices.GCHandle" /> равен текущему объекту <see cref="T:System.Runtime.InteropServices.GCHandle" />; в противном случае — значение <see langword="false" />.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Два <xref:System.Runtime.InteropServices.GCHandle> объекты равны, если они указывают на том же дескрипторе памяти.  
+ Два <xref:System.Runtime.InteropServices.GCHandle> объекта равны, если они указывают на один и тот же маркер памяти.  
   
  ]]></format>
         </remarks>
@@ -355,25 +355,25 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>Выпуски <see cref="T:System.Runtime.InteropServices.GCHandle" />.</summary>
+        <summary>Освобождает дескриптор <see cref="T:System.Runtime.InteropServices.GCHandle" />.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Вызывающий объект должен гарантировать, что для заданного дескриптора <xref:System.Runtime.InteropServices.GCHandle.Free%2A> вызывается только один раз.  
+ Вызывающий объект должен гарантировать, что для данного обработчика <xref:System.Runtime.InteropServices.GCHandle.Free%2A> вызывается только один раз.  
   
    
   
 ## Examples  
- В следующем примере показан `App` класс, который создает дескриптор для управляемого объекта, используя `GCHandle.Alloc` метод, который предотвращает собираемых управляемого объекта. Вызов `EnumWindows` метод передает делегат и управляемый объект (оба объявлены как управляемые типы, но не показан) и приводит дескриптор <xref:System.IntPtr>. Неуправляемая функция передает тип обратно в вызывающий объект в качестве параметра функции обратного вызова.  
+ В следующем примере показан `App` класс, который создает обработчик для управляемого объекта `GCHandle.Alloc` с помощью метода, который предотвращает сбор управляемого объекта. Вызов `EnumWindows` метода передает делегат и управляемый объект (оба объявляются как управляемые типы, но не отображаются) и приводит этот обработчик <xref:System.IntPtr>к типу. Неуправляемая функция передает тип обратно вызывающему объекту в качестве параметра функции обратного вызова.  
   
  [!code-csharp[System.Runtime.InteropServices.GCHandle#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Runtime.InteropServices.GCHandle/cs/sample.cs#1)]
  [!code-vb[System.Runtime.InteropServices.GCHandle#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Runtime.InteropServices.GCHandle/vb/sample.vb#1)]  
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.InvalidOperationException">Дескриптор освобожден или не инициализирован.</exception>
-        <permission cref="T:System.Security.SecurityCriticalAttribute">Требует полного доверия для непосредственного вызывающего объекта. Этот член не может использоваться частично доверенным или прозрачным кодом.</permission>
+        <exception cref="T:System.InvalidOperationException">Дескриптор освобожден или не был инициализирован.</exception>
+        <permission cref="T:System.Security.SecurityCriticalAttribute">требуется полное доверие для немедленного вызывающего объекта. Этот член не может использоваться частично доверенным или прозрачным кодом.</permission>
       </Docs>
     </Member>
     <Member MemberName="FromIntPtr">
@@ -420,14 +420,14 @@
         <Parameter Name="value" Type="System.IntPtr" Index="0" FrameworkAlternate="dotnet-uwp-10.0;netcore-1.0;netcore-1.1;netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netstandard-1.1;netstandard-1.2;netstandard-1.3;netstandard-1.4;netstandard-1.5;netstandard-1.6;netstandard-2.0;netstandard-2.1;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
-        <param name="value"><see cref="T:System.IntPtr" /> Дескриптор для управляемого объекта для создания <see cref="T:System.Runtime.InteropServices.GCHandle" /> объекта из.</param>
-        <summary>Возвращает новый <see cref="T:System.Runtime.InteropServices.GCHandle" /> объект, созданный из дескриптора управляемого объекта.</summary>
-        <returns>Новый <see cref="T:System.Runtime.InteropServices.GCHandle" /> объект, соответствующий значению параметра.</returns>
+        <param name="value">Дескриптор <see cref="T:System.IntPtr" /> управляемого объекта, для создания из него объекта <see cref="T:System.Runtime.InteropServices.GCHandle" />.</param>
+        <summary>Возвращает новый объект <see cref="T:System.Runtime.InteropServices.GCHandle" />, созданный из дескриптора управляемого объекта.</summary>
+        <returns>Новый объект <see cref="T:System.Runtime.InteropServices.GCHandle" />, соответствующий значению параметра.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Examples  
- В следующем коде показано в примере `App` класс, который создает дескриптор для управляемого объекта, используя `GCHandle.Alloc` метод, который предотвращает собираемых управляемого объекта. Вызов `EnumWindows` метод передает делегат и управляемый объект (оба объявлены как управляемые типы, но не показан) и приводит дескриптор <xref:System.IntPtr> объекта. Неуправляемая функция передает тип обратно в вызывающий объект в качестве параметра функции обратного вызова.  
+ В следующем примере кода показан `App` класс, который создает обработчик для управляемого объекта `GCHandle.Alloc` с помощью метода, который предотвращает сбор управляемого объекта. Вызов `EnumWindows` метода передает делегат и управляемый объект (оба объявляются как управляемые типы, но не отображаются) и приводит этот указатель <xref:System.IntPtr> к объекту. Неуправляемая функция передает тип обратно вызывающему объекту в качестве параметра функции обратного вызова.  
   
  [!code-csharp[System.Runtime.InteropServices.GCHandle#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Runtime.InteropServices.GCHandle/cs/sample.cs#1)]
  [!code-vb[System.Runtime.InteropServices.GCHandle#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Runtime.InteropServices.GCHandle/vb/sample.vb#1)]  
@@ -435,7 +435,7 @@
  ]]></format>
         </remarks>
         <exception cref="T:System.InvalidOperationException">параметр <paramref name="value" /> имеет значение <see cref="F:System.IntPtr.Zero" />;</exception>
-        <permission cref="T:System.Security.SecurityCriticalAttribute">Требует полного доверия для непосредственного вызывающего объекта. Этот член не может использоваться частично доверенным или прозрачным кодом.</permission>
+        <permission cref="T:System.Security.SecurityCriticalAttribute">требуется полное доверие для немедленного вызывающего объекта. Этот член не может использоваться частично доверенным или прозрачным кодом.</permission>
       </Docs>
     </Member>
     <Member MemberName="GetHashCode">
@@ -475,13 +475,13 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>Возвращает идентификатор для текущего <see cref="T:System.Runtime.InteropServices.GCHandle" /> объекта.</summary>
-        <returns>Идентификатор для текущего <see cref="T:System.Runtime.InteropServices.GCHandle" /> объекта.</returns>
+        <summary>Возвращает идентификатор текущего объекта <see cref="T:System.Runtime.InteropServices.GCHandle" />.</summary>
+        <returns>Идентификатор текущего объекта <see cref="T:System.Runtime.InteropServices.GCHandle" />.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- <xref:System.Runtime.InteropServices.GCHandle.GetHashCode%2A> Метод возвращает целочисленное представление дескриптора внутренней памяти, инкапсулированных в <xref:System.Runtime.InteropServices.GCHandle> структуры.  
+ Метод возвращает целочисленное представление внутреннего маркера памяти, инкапсулированного <xref:System.Runtime.InteropServices.GCHandle> структурой. <xref:System.Runtime.InteropServices.GCHandle.GetHashCode%2A>  
   
  ]]></format>
         </remarks>
@@ -525,12 +525,12 @@
       </ReturnValue>
       <Docs>
         <summary>Возвращает значение, показывающее, выделен ли дескриптор.</summary>
-        <value><see langword="true" /> Если дескриптор выделен; в противном случае <see langword="false" />.</value>
+        <value>Значение <see langword="true" />, если дескриптор выделен; в противном случае — значение <see langword="false" />.</value>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Это свойство используется при использовании <xref:System.Runtime.InteropServices.GCHandleType.Weak> маркеры, чтобы определить, если <xref:System.Runtime.InteropServices.GCHandle> по-прежнему доступна. Когда сборщик мусора собирает объекта, <xref:System.Runtime.InteropServices.GCHandleType.Weak> дескриптор по-прежнему может быть восстановлен в методе завершения. В этом случае не выделяется дескриптор (он теряется при попытке удалить объект, сборщик мусора), несмотря на то, что целевой объект является допустимым.  
+ Используйте это свойство при использовании <xref:System.Runtime.InteropServices.GCHandleType.Weak> дескрипторов, чтобы определить <xref:System.Runtime.InteropServices.GCHandle> , доступен ли объект. Когда сборщик мусора собирает объект, этот <xref:System.Runtime.InteropServices.GCHandleType.Weak> обработчик по-прежнему может быть восстановлен в методе завершения. В этом случае этот маркер не выделяется (он теряется, когда сборщик мусора пытается получить объект), даже если целевой объект является допустимым.  
   
  ]]></format>
         </remarks>
@@ -577,12 +577,12 @@
         <Parameter Name="b" Type="System.Runtime.InteropServices.GCHandle" Index="1" FrameworkAlternate="dotnet-uwp-10.0;netcore-1.0;netcore-1.1;netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netstandard-1.1;netstandard-1.2;netstandard-1.3;netstandard-1.4;netstandard-1.5;netstandard-1.6;netstandard-2.0;netstandard-2.1;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
-        <param name="a">Объект <see cref="T:System.Runtime.InteropServices.GCHandle" /> объект для сравнения с <paramref name="b" /> параметра.</param>
-        <param name="b">Объект <see cref="T:System.Runtime.InteropServices.GCHandle" /> объект для сравнения с <paramref name="a" /> параметра.</param>
-        <summary>Возвращает значение, указывающее, является ли два <see cref="T:System.Runtime.InteropServices.GCHandle" /> объекты равны.</summary>
-        <returns><see langword="true" /> Если <paramref name="a" /> и <paramref name="b" /> параметры равны; в противном случае — значение <see langword="false" />.</returns>
+        <param name="a">Объект <see cref="T:System.Runtime.InteropServices.GCHandle" />, сравниваемый с параметром <paramref name="b" />.</param>
+        <param name="b">Объект <see cref="T:System.Runtime.InteropServices.GCHandle" />, сравниваемый с параметром <paramref name="a" />.</param>
+        <summary>Возвращает значение, показывающее, равны ли два объекта <see cref="T:System.Runtime.InteropServices.GCHandle" />.</summary>
+        <returns>Значение <see langword="true" />, если параметры <paramref name="a" /> и <paramref name="b" /> равны; в противном случае — значение <see langword="false" />.</returns>
         <remarks>
-          <format type="text/markdown"><![CDATA[Эквивалентный метод для этого оператора является <xref:System.Runtime.InteropServices.GCHandle.Equals%2A?displayProperty=nameWithType>.]]></format>
+          <format type="text/markdown"><![CDATA[Эквивалентным методом для этого оператора является <xref:System.Runtime.InteropServices.GCHandle.Equals%2A?displayProperty=nameWithType>.]]></format>
         </remarks>
       </Docs>
     </Member>
@@ -597,7 +597,7 @@
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
       </AssemblyInfo>
       <Docs>
-        <summary>Преобразует значение <see cref="T:System.Runtime.InteropServices.GCHandle" /> в другой тип.</summary>
+        <summary>Преобразует значение объекта <see cref="T:System.Runtime.InteropServices.GCHandle" /> в другой тип.</summary>
       </Docs>
     </MemberGroup>
     <Member MemberName="op_Explicit">
@@ -645,18 +645,18 @@
         <Parameter Name="value" Type="System.IntPtr" />
       </Parameters>
       <Docs>
-        <param name="value"><see cref="T:System.IntPtr" /> На дескриптор, для которого необходим преобразование.</param>
+        <param name="value">Указатель <see cref="T:System.IntPtr" /> на дескриптор, для которого необходимо выполнить преобразование.</param>
         <summary>Дескриптор <see cref="T:System.Runtime.InteropServices.GCHandle" /> хранится в виде целого числа как внутреннего представления.</summary>
         <returns>Сохраненный объект <see cref="T:System.Runtime.InteropServices.GCHandle" /> в виде целого числа как внутреннего представления.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот метод позволяет получать <xref:System.Runtime.InteropServices.GCHandle> из целочисленного значения.  
+ Этот метод позволяет получить <xref:System.Runtime.InteropServices.GCHandle> из целочисленного значения.  
   
  ]]></format>
         </remarks>
-        <permission cref="T:System.Security.SecurityCriticalAttribute">Требует полного доверия для непосредственного вызывающего объекта. Этот член не может использоваться частично доверенным или прозрачным кодом.</permission>
+        <permission cref="T:System.Security.SecurityCriticalAttribute">требуется полное доверие для немедленного вызывающего объекта. Этот член не может использоваться частично доверенным или прозрачным кодом.</permission>
         <altmember cref="T:System.Runtime.InteropServices.GCHandleType" />
       </Docs>
     </Member>
@@ -700,18 +700,18 @@
         <Parameter Name="value" Type="System.Runtime.InteropServices.GCHandle" />
       </Parameters>
       <Docs>
-        <param name="value"><see cref="T:System.Runtime.InteropServices.GCHandle" /> Для которого требуется целое число.</param>
+        <param name="value">Дескриптор <see cref="T:System.Runtime.InteropServices.GCHandle" />, для которого требуется целое число.</param>
         <summary>Дескриптор <see cref="T:System.Runtime.InteropServices.GCHandle" /> хранится в виде целого числа как внутреннего представления.</summary>
         <returns>Целочисленное значение.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот метод можно использовать для получения целочисленное значение из <xref:System.Runtime.InteropServices.GCHandle>.  
+ Этот метод можно использовать для получения целочисленного значения из <xref:System.Runtime.InteropServices.GCHandle>.  
   
  ]]></format>
         </remarks>
-        <permission cref="T:System.Security.SecurityCriticalAttribute">Требует полного доверия для непосредственного вызывающего объекта. Этот член не может использоваться частично доверенным или прозрачным кодом.</permission>
+        <permission cref="T:System.Security.SecurityCriticalAttribute">требуется полное доверие для немедленного вызывающего объекта. Этот член не может использоваться частично доверенным или прозрачным кодом.</permission>
         <altmember cref="T:System.Runtime.InteropServices.GCHandleType" />
       </Docs>
     </Member>
@@ -755,12 +755,12 @@
         <Parameter Name="b" Type="System.Runtime.InteropServices.GCHandle" Index="1" FrameworkAlternate="dotnet-uwp-10.0;netcore-1.0;netcore-1.1;netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netstandard-1.1;netstandard-1.2;netstandard-1.3;netstandard-1.4;netstandard-1.5;netstandard-1.6;netstandard-2.0;netstandard-2.1;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
-        <param name="a">Объект <see cref="T:System.Runtime.InteropServices.GCHandle" /> объект для сравнения с <paramref name="b" /> параметра.</param>
-        <param name="b">Объект <see cref="T:System.Runtime.InteropServices.GCHandle" /> объект для сравнения с <paramref name="a" /> параметра.</param>
-        <summary>Возвращает значение, указывающее, является ли два <see cref="T:System.Runtime.InteropServices.GCHandle" /> объекты не равны.</summary>
-        <returns><see langword="true" /> Если <paramref name="a" /> и <paramref name="b" /> параметры не равны; в противном случае — значение <see langword="false" />.</returns>
+        <param name="a">Объект <see cref="T:System.Runtime.InteropServices.GCHandle" />, сравниваемый с параметром <paramref name="b" />.</param>
+        <param name="b">Объект <see cref="T:System.Runtime.InteropServices.GCHandle" />, сравниваемый с параметром <paramref name="a" />.</param>
+        <summary>Возвращает значение, показывающее, являются ли два объекта <see cref="T:System.Runtime.InteropServices.GCHandle" /> неравными.</summary>
+        <returns>Значение <see langword="true" />, если параметры <paramref name="a" /> и <paramref name="b" /> не равны; в противном случае — значение <see langword="false" />.</returns>
         <remarks>
-          <format type="text/markdown"><![CDATA[Эквивалентный метод для этого оператора является <xref:System.Runtime.InteropServices.GCHandle.Equals%2A?displayProperty=nameWithType>.]]></format>
+          <format type="text/markdown"><![CDATA[Эквивалентным методом для этого оператора является <xref:System.Runtime.InteropServices.GCHandle.Equals%2A?displayProperty=nameWithType>.]]></format>
         </remarks>
       </Docs>
     </Member>
@@ -815,15 +815,15 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Examples  
- В следующем примере показан `App` класс, который создает дескриптор для управляемого объекта, используя `GCHandle.Alloc` метод, который предотвращает собираемых управляемого объекта. Вызов `EnumWindows` метод передает делегат и управляемый объект (оба объявлены как управляемые типы, но не показан) и приводит дескриптор <xref:System.IntPtr>. Неуправляемая функция передает тип обратно в вызывающий объект в качестве параметра функции обратного вызова.  
+ В следующем примере показан `App` класс, который создает обработчик для управляемого объекта `GCHandle.Alloc` с помощью метода, который предотвращает сбор управляемого объекта. Вызов `EnumWindows` метода передает делегат и управляемый объект (оба объявляются как управляемые типы, но не отображаются) и приводит этот обработчик <xref:System.IntPtr>к типу. Неуправляемая функция передает тип обратно вызывающему объекту в качестве параметра функции обратного вызова.  
   
  [!code-csharp[System.Runtime.InteropServices.GCHandle#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Runtime.InteropServices.GCHandle/cs/sample.cs#1)]
  [!code-vb[System.Runtime.InteropServices.GCHandle#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Runtime.InteropServices.GCHandle/vb/sample.vb#1)]  
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.InvalidOperationException">Дескриптор освобожден или не инициализирован.</exception>
-        <permission cref="T:System.Security.SecurityCriticalAttribute">Требует полного доверия для непосредственного вызывающего объекта. Этот член не может использоваться частично доверенным или прозрачным кодом.</permission>
+        <exception cref="T:System.InvalidOperationException">Дескриптор освобожден или не был инициализирован.</exception>
+        <permission cref="T:System.Security.SecurityCriticalAttribute">требуется полное доверие для немедленного вызывающего объекта. Этот член не может использоваться частично доверенным или прозрачным кодом.</permission>
         <altmember cref="T:System.Runtime.InteropServices.GCHandleType" />
       </Docs>
     </Member>
@@ -866,14 +866,14 @@
         <Parameter Name="value" Type="System.Runtime.InteropServices.GCHandle" Index="0" FrameworkAlternate="dotnet-uwp-10.0;netcore-1.0;netcore-1.1;netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netstandard-1.1;netstandard-1.2;netstandard-1.3;netstandard-1.4;netstandard-1.5;netstandard-1.6;netstandard-2.0;netstandard-2.1;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
-        <param name="value">Объект <see cref="T:System.Runtime.InteropServices.GCHandle" /> объект для извлечения внутреннего целочисленного представления.</param>
-        <summary>Возвращает внутреннее целочисленное представление <see cref="T:System.Runtime.InteropServices.GCHandle" /> объекта.</summary>
-        <returns><see cref="T:System.IntPtr" /> , Представляющий <see cref="T:System.Runtime.InteropServices.GCHandle" /> объекта.</returns>
+        <param name="value">Объект <see cref="T:System.Runtime.InteropServices.GCHandle" /> для извлечения внутреннего целочисленного представления.</param>
+        <summary>Возвращает внутреннее целочисленное представление объекта <see cref="T:System.Runtime.InteropServices.GCHandle" />.</summary>
+        <returns>Объект <see cref="T:System.IntPtr" />, представляющий объект <see cref="T:System.Runtime.InteropServices.GCHandle" />.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Examples  
- В следующем коде показано в примере `App` класс, который создает дескриптор для управляемого объекта, используя `GCHandle.Alloc` метод, который предотвращает собираемых управляемого объекта. Вызов `EnumWindows` метод передает делегат и управляемый объект (оба объявлены как управляемые типы, но не показан) и приводит дескриптор <xref:System.IntPtr> объекта. Неуправляемая функция передает тип обратно в вызывающий объект в качестве параметра функции обратного вызова.  
+ В следующем примере кода показан `App` класс, который создает обработчик для управляемого объекта `GCHandle.Alloc` с помощью метода, который предотвращает сбор управляемого объекта. Вызов `EnumWindows` метода передает делегат и управляемый объект (оба объявляются как управляемые типы, но не отображаются) и приводит этот указатель <xref:System.IntPtr> к объекту. Неуправляемая функция передает тип обратно вызывающему объекту в качестве параметра функции обратного вызова.  
   
  [!code-csharp[System.Runtime.InteropServices.GCHandle#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Runtime.InteropServices.GCHandle/cs/sample.cs#1)]
  [!code-vb[System.Runtime.InteropServices.GCHandle#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Runtime.InteropServices.GCHandle/vb/sample.vb#1)]  
