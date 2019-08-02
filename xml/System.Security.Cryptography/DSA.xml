@@ -1,5 +1,5 @@
 <Type Name="DSA" FullName="System.Security.Cryptography.DSA">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="39575b26498a18eb4c633d1038fb72cfed7c271a" /><Meta Name="ms.sourcegitcommit" Value="634678f7ccd2928c6b2cf792a301b079b63639af" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="07/26/2019" /><Meta Name="ms.locfileid" Value="68543596" /></Metadata><TypeSignature Language="C#" Value="public abstract class DSA : System.Security.Cryptography.AsymmetricAlgorithm" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="e356a21b201d2d37b40a85131fe8b3dd297856c4" /><Meta Name="ms.sourcegitcommit" Value="406d23aba879fbb482c6da0f64c8ef9494f6a944" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="07/31/2019" /><Meta Name="ms.locfileid" Value="68686305" /></Metadata><TypeSignature Language="C#" Value="public abstract class DSA : System.Security.Cryptography.AsymmetricAlgorithm" />
   <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract beforefieldinit DSA extends System.Security.Cryptography.AsymmetricAlgorithm" />
   <TypeSignature Language="DocId" Value="T:System.Security.Cryptography.DSA" />
   <TypeSignature Language="VB.NET" Value="Public MustInherit Class DSA&#xA;Inherits AsymmetricAlgorithm" />
@@ -489,11 +489,41 @@
         <Parameter Name="bytesRead" Type="System.Int32" RefType="out" Index="2" FrameworkAlternate="netcore-3.0" />
       </Parameters>
       <Docs>
-        <param name="passwordBytes">To be added.</param>
-        <param name="source">To be added.</param>
-        <param name="bytesRead">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="passwordBytes">Байты, используемые в качестве пароля при расшифровке материала ключа.</param>
+        <param name="source">Байты структуры PKCS#8 EncryptedPrivateKeyInfo в кодировке ASN.1-BER.</param>
+        <param name="bytesRead">При возврате метода содержит значение, которое показывает количество символов, считанных из <paramref name="source" />. Этот параметр обрабатывается как неинициализированный.</param>
+        <summary>Импортирует пару из открытого и закрытого ключей из структуры PKCS#8 EncryptedPrivateKeyInfo после расшифровки с помощью пароля на основе байтов, заменяя ключи для этого объекта.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Байты паролей передаются непосредственно в функцию формирования ключа (ПОДПРОГРАММ), используемую алгоритмом, указанным в содержимом Енкриптедприватекэйинфо.
+Это обеспечивает совместимость с другими системами, использующими кодировку текста, отличную от UTF-8, при обработке паролей с помощью PBKDF2 (функция наследования ключа на основе пароля 2).
+Этот метод поддерживает только двоичную (ЛИЧЕСТВО/CER/DER) кодировку Енкриптедприватекэйинфо.
+Если значение в кодировке Base64 или в текстовом формате PEM, вызывающий объект должен в Base64-декодировать содержимое перед вызовом этого метода.
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Security.Cryptography.CryptographicException">Неправильный пароль.
+
+-или-
+
+Содержимое <paramref name="source" />, указывающее, что как функцию формирования ключа (KDF) следует использовать устаревшую версию PKCS#12 KDF, которая требует пароли на основе <see cref="T:System.Char" />.
+
+- или -
+
+Содержимое <paramref name="source" /> не представляет структуру PKCS#8 EncryptedPrivateKeyInfo в кодировке ASN.1-BER.
+
+- или -
+
+Содержимое <paramref name="source" /> указывает, что ключ относится к алгоритму, отличному от алгоритма, представленного этим экземпляром.
+
+-или-
+
+Содержимое <paramref name="source" /> представляет ключ в неподдерживаемом формате.
+
+-или-
+
+Не удалось выполнить импорт ключа, зависящего от алгоритма.</exception>
       </Docs>
     </Member>
     <Member MemberName="ImportEncryptedPkcs8PrivateKey">
@@ -523,11 +553,36 @@
         <Parameter Name="bytesRead" Type="System.Int32" RefType="out" Index="2" FrameworkAlternate="netcore-3.0" />
       </Parameters>
       <Docs>
-        <param name="password">To be added.</param>
-        <param name="source">To be added.</param>
-        <param name="bytesRead">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="password">Пароль, используемый при расшифровке материала ключа.</param>
+        <param name="source">Байты структуры PKCS#8 EncryptedPrivateKeyInfo в кодировке ASN.1-BER.</param>
+        <param name="bytesRead">При возврате метода содержит значение, которое показывает количество символов, считанных из <paramref name="source" />. Этот параметр обрабатывается как неинициализированный.</param>
+        <summary>Импортирует пару из открытого и закрытого ключей из структуры PKCS#8 EncryptedPrivateKeyInfo после расшифровки с помощью пароля на основе символов, заменяя ключи для этого объекта.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если содержимое `source` указывает алгоритм, использующий PBKDF1 (функция формирования ключа на основе пароля 1) или PBKDF2 (функция формирования ключа на основе пароля 2), то пароль преобразуется в байты через кодировку UTF-8.
+Этот метод поддерживает только двоичную (ЛИЧЕСТВО/CER/DER) кодировку Енкриптедприватекэйинфо.
+Если значение в кодировке Base64 или в текстовом формате PEM, вызывающий объект должен в Base64-декодировать содержимое перед вызовом этого метода.
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Security.Cryptography.CryptographicException">Неправильный пароль.
+
+- или -
+
+Содержимое <paramref name="source" /> не представляет структуру PKCS#8 EncryptedPrivateKeyInfo в кодировке ASN.1-BER.
+
+- или -
+
+Содержимое <paramref name="source" /> указывает, что ключ относится к алгоритму, отличному от алгоритма, представленного этим экземпляром.
+
+- или -
+
+Содержимое <paramref name="source" /> представляет ключ в неподдерживаемом формате.
+
+-или-
+
+Не удалось выполнить импорт ключа, зависящего от алгоритма.</exception>
       </Docs>
     </Member>
     <Member MemberName="ImportParameters">
@@ -594,10 +649,30 @@
         <Parameter Name="bytesRead" Type="System.Int32" RefType="out" Index="1" FrameworkAlternate="netcore-3.0" />
       </Parameters>
       <Docs>
-        <param name="source">To be added.</param>
-        <param name="bytesRead">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="source">Байты структуры PKCS#8 PrivateKeyInfo в кодировке ASN.1-BER.</param>
+        <param name="bytesRead">При возврате метода содержит значение, которое показывает количество символов, считанных из <paramref name="source" />. Этот параметр обрабатывается как неинициализированный.</param>
+        <summary>Импортирует пару из открытого и закрытого ключей из структуры PKCS#8 PrivateKeyInfo после расшифровки, заменяя ключи для этого объекта.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод поддерживает только двоичную (ЛИЧЕСТВО/CER/DER) кодировку Приватекэйинфо.
+Если значение в кодировке Base64 или в текстовом формате PEM, вызывающий объект должен в Base64-декодировать содержимое перед вызовом этого метода.
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Security.Cryptography.CryptographicException">Содержимое <paramref name="source" /> не представляет структуру PKCS#8 PrivateKeyInfo в кодировке ASN.1-BER.
+
+-или-
+
+Содержимое <paramref name="source" /> указывает, что ключ относится к алгоритму, отличному от алгоритма, представленного этим экземпляром.
+
+- или -
+
+Содержимое <paramref name="source" /> представляет ключ в неподдерживаемом формате.
+
+- или -
+
+Не удалось выполнить импорт ключа, зависящего от алгоритма.</exception>
       </Docs>
     </Member>
     <Member MemberName="ImportSubjectPublicKeyInfo">
@@ -626,10 +701,30 @@
         <Parameter Name="bytesRead" Type="System.Int32" RefType="out" Index="1" FrameworkAlternate="netcore-3.0" />
       </Parameters>
       <Docs>
-        <param name="source">To be added.</param>
-        <param name="bytesRead">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="source">Байты структуры X.509 SubjectPublicKeyInfo в кодировке ASN.1-DER.</param>
+        <param name="bytesRead">При возврате метода содержит значение, которое показывает количество символов, считанных из <paramref name="source" />. Этот параметр обрабатывается как неинициализированный.</param>
+        <summary>Импортирует открытый ключ из структуры X.509 SubjectPublicKeyInfo после расшифровки, заменяя ключи для этого объекта.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод поддерживает только двоичное кодирование (DER) Субжектпубликкэйинфо.
+Если значение в кодировке Base64 или в текстовом формате PEM, вызывающий объект должен в Base64-декодировать содержимое перед вызовом этого метода.
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Security.Cryptography.CryptographicException">Содержимое <paramref name="source" /> не представляет структуру X.509 SubjectPublicKeyInfo в кодировке ASN.1-DER.
+
+-или-
+
+Содержимое <paramref name="source" /> указывает, что ключ относится к алгоритму, отличному от алгоритма, представленного этим экземпляром.
+
+- или -
+
+Содержимое <paramref name="source" /> представляет ключ в неподдерживаемом формате.
+
+-или-
+
+Не удалось выполнить импорт ключа, зависящего от алгоритма.</exception>
       </Docs>
     </Member>
     <MemberGroup MemberName="SignData">
@@ -677,7 +772,7 @@
         <summary>Вычисляет хэш-значение заданного массива байтов с помощью указанного алгоритма хэширования и подписывает результирующее хэш-значение.</summary>
         <returns>Подпись DSA для указанных данных.</returns>
         <remarks>To be added.</remarks>
-        <exception cref="T:System.ArgumentNullException"><paramref name="data" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="data" /> имеет значение <see langword="null" />.</exception>
         <exception cref="T:System.ArgumentException"><paramref name="hashAlgorithm" />.<see cref="P:System.Security.Cryptography.HashAlgorithmName.Name" /> имеет значение <see langword="null" /> или <see cref="F:System.String.Empty" />.</exception>
       </Docs>
     </Member>
@@ -716,7 +811,7 @@
         <summary>Вычисляет хэш-значение заданного потока с помощью указанного алгоритма хэширования и подписывает результирующее хэш-значение.</summary>
         <returns>Подпись DSA для указанных данных.</returns>
         <remarks>To be added.</remarks>
-        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="data" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentNullException"><paramref name="data" /> — <see langword="null" />.</exception>
         <exception cref="T:System.ArgumentException"><paramref name="hashAlgorithm" />.<see cref="P:System.Security.Cryptography.HashAlgorithmName.Name" /> имеет значение <see langword="null" /> или <see cref="F:System.String.Empty" />.</exception>
       </Docs>
     </Member>
@@ -759,14 +854,14 @@
         <summary>Вычисляет хэш-значение фрагмента заданного массива байтов с помощью указанного алгоритма хэширования и подписывает результирующее хэш-значение.</summary>
         <returns>Подпись DSA для указанных данных.</returns>
         <remarks>To be added.</remarks>
-        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="data" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentNullException"><paramref name="data" /> — <see langword="null" />.</exception>
         <exception cref="T:System.ArgumentException"><paramref name="hashAlgorithm" />.<see cref="P:System.Security.Cryptography.HashAlgorithmName.Name" /> имеет значение <see langword="null" /> или <see cref="F:System.String.Empty" />.</exception>
         <exception cref="T:System.ArgumentOutOfRangeException">Значение параметра <paramref name="offset" /> меньше нуля.  
   
--или- 
+- или - 
  Значение параметра <paramref name="count" /> меньше нуля.  
   
--или- 
+- или - 
  <paramref name="offset" /> + <paramref name="count" /> — 1 приводит к получению значения индекса, который выходит за пределы верхней границы <paramref name="data" />.</exception>
       </Docs>
     </Member>
@@ -852,7 +947,7 @@
         </remarks>
         <exception cref="T:System.Security.Cryptography.CryptographicException">Этот экземпляр представляет только открытый ключ.
 
-- или -
+-или-
 
 Тип реализации поддерживает только устаревший DSA (FIPS 186-2) и <paramref name="hash" /> не является 20-байтовым значением.
 
@@ -888,13 +983,26 @@
         <Parameter Name="bytesWritten" Type="System.Int32" RefType="out" Index="3" FrameworkAlternate="netcore-3.0" />
       </Parameters>
       <Docs>
-        <param name="passwordBytes">To be added.</param>
-        <param name="pbeParameters">To be added.</param>
-        <param name="destination">To be added.</param>
-        <param name="bytesWritten">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="passwordBytes">Байты, используемые в качестве пароля при шифровании материала ключа.</param>
+        <param name="pbeParameters">Параметры шифрования на основе пароля (PBE), используемые при шифровании материала ключа.</param>
+        <param name="destination">Диапазон байтов для получения данных PKCS#8 EncryptedPrivateKeyInfo.</param>
+        <param name="bytesWritten">При возврате метода содержит значение, которое показывает количество байтов, записанных в <paramref name="destination" />. Этот параметр обрабатывается как неинициализированный.</param>
+        <summary>Пытается экспортировать текущий ключ в формате PKCS#8 EncryptedPrivateKeyInfo в предоставленный буфер с использованием пароля на основе байтов.</summary>
+        <returns><see langword="true" />, если размер <paramref name="destination" /> достаточно велик, чтобы вместить выходные данные; в противном случае — <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Байты паролей передаются непосредственно в функцию формирования ключа (ПОДПРОГРАММ), используемую алгоритмом, `pbeParameters`указанным.
+Это обеспечивает совместимость с другими системами, использующими кодировку текста, отличную от UTF-8, при обработке паролей с помощью PBKDF2 (функция наследования ключа на основе пароля 2).
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Security.Cryptography.CryptographicException">Не удалось экспортировать ключ.
+
+-или-
+
+<paramref name="pbeParameters" /> указывает, что следует использовать <see cref="F:System.Security.Cryptography.PbeEncryptionAlgorithm.TripleDes3KeyPkcs12" />: это требует паролей на основе <see cref="T:System.Char" />.</exception>
+        <altmember cref="Overload:System.Security.Cryptography.AsymmetricAlgorithm.ExportEncryptedPkcs8PrivateKey" />
       </Docs>
     </Member>
     <Member MemberName="TryExportEncryptedPkcs8PrivateKey">
@@ -924,13 +1032,21 @@
         <Parameter Name="bytesWritten" Type="System.Int32" RefType="out" Index="3" FrameworkAlternate="netcore-3.0" />
       </Parameters>
       <Docs>
-        <param name="password">To be added.</param>
-        <param name="pbeParameters">To be added.</param>
-        <param name="destination">To be added.</param>
-        <param name="bytesWritten">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="password">Пароль, используемый при шифровании материала ключа.</param>
+        <param name="pbeParameters">Параметры шифрования на основе пароля (PBE), используемые при шифровании материала ключа.</param>
+        <param name="destination">Диапазон байтов для получения данных PKCS#8 EncryptedPrivateKeyInfo.</param>
+        <param name="bytesWritten">При возврате метода содержит значение, которое показывает количество байтов, записанных в <paramref name="destination" />. Этот параметр обрабатывается как неинициализированный.</param>
+        <summary>Пытается экспортировать текущий ключ в формате PKCS#8 EncryptedPrivateKeyInfo в предоставленный буфер с использованием пароля на основе символов.</summary>
+        <returns><see langword="true" />, если размер <paramref name="destination" /> достаточно велик, чтобы вместить выходные данные; в противном случае — <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Когда `pbeParameters` указывает алгоритм, использующий PBKDF2 (функция формирования ключа на основе пароля 2), пароль преобразуется в байты через кодировку UTF-8.
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Security.Cryptography.CryptographicException">Не удалось экспортировать ключ.</exception>
+        <altmember cref="Overload:System.Security.Cryptography.AsymmetricAlgorithm.ExportEncryptedPkcs8PrivateKey" />
       </Docs>
     </Member>
     <Member MemberName="TryExportPkcs8PrivateKey">
@@ -959,11 +1075,13 @@
         <Parameter Name="bytesWritten" Type="System.Int32" RefType="out" Index="1" FrameworkAlternate="netcore-3.0" />
       </Parameters>
       <Docs>
-        <param name="destination">To be added.</param>
-        <param name="bytesWritten">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <param name="destination">Диапазон байтов для получения данных PKCS#8 PrivateKeyInfo.</param>
+        <param name="bytesWritten">При возврате метода содержит значение, которое показывает количество байтов, записанных в <paramref name="destination" />. Этот параметр обрабатывается как неинициализированный.</param>
+        <summary>Пытается экспортировать текущий ключ в формате PKCS#8 PrivateKeyInfo в предоставленный буфер.</summary>
+        <returns><see langword="true" />, если размер <paramref name="destination" /> достаточно велик, чтобы вместить выходные данные; в противном случае — <see langword="false" />.</returns>
         <remarks>To be added.</remarks>
+        <exception cref="T:System.Security.Cryptography.CryptographicException">Не удалось экспортировать ключ.</exception>
+        <altmember cref="Overload:System.Security.Cryptography.AsymmetricAlgorithm.ExportPkcs8PrivateKey" />
       </Docs>
     </Member>
     <Member MemberName="TryExportSubjectPublicKeyInfo">
@@ -992,11 +1110,13 @@
         <Parameter Name="bytesWritten" Type="System.Int32" RefType="out" Index="1" FrameworkAlternate="netcore-3.0" />
       </Parameters>
       <Docs>
-        <param name="destination">To be added.</param>
-        <param name="bytesWritten">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <param name="destination">Диапазон байтов для получения данных X.509 SubjectPublicKeyInfo.</param>
+        <param name="bytesWritten">При возврате метода содержит значение, которое показывает количество байтов, записанных в <paramref name="destination" />. Этот параметр обрабатывается как неинициализированный.</param>
+        <summary>Пытается экспортировать текущий ключ в формате X.509 SubjectPublicKeyInfo в предоставленный буфер.</summary>
+        <returns><see langword="true" />, если размер <paramref name="destination" /> достаточно велик, чтобы вместить выходные данные; в противном случае — <see langword="false" />.</returns>
         <remarks>To be added.</remarks>
+        <exception cref="T:System.Security.Cryptography.CryptographicException">Не удалось экспортировать ключ.</exception>
+        <altmember cref="Overload:System.Security.Cryptography.AsymmetricAlgorithm.ExportSubjectPublicKeyInfo" />
       </Docs>
     </Member>
     <Member MemberName="TryHashData">
@@ -1135,7 +1255,7 @@
  Свойство <paramref name="signature" /> имеет значение <see langword="null" />.</exception>
         <exception cref="T:System.Security.Cryptography.CryptographicException">Тип реализации поддерживает только устаревший DSA (FIPS 186-2), а хэш-алгоритм не является SHA-1.
 
-- или -
+-или-
 
 Не удалось проверить подпись по другим причинам.</exception>
         <exception cref="T:System.ArgumentException"><paramref name="hashAlgorithm" />.<see cref="P:System.Security.Cryptography.HashAlgorithmName.Name" /> имеет значение <see langword="null" /> или <see cref="F:System.String.Empty" />.</exception>
@@ -1180,12 +1300,12 @@
         <remarks>To be added.</remarks>
         <exception cref="T:System.ArgumentNullException">Свойство <paramref name="data" /> имеет значение <see langword="null" />.  
   
--или- 
- <paramref name="signature" /> — <see langword="null" />.</exception>
+- или - 
+ Свойство <paramref name="signature" /> имеет значение <see langword="null" />.</exception>
         <exception cref="T:System.ArgumentException"><paramref name="hashAlgorithm" />.<see cref="P:System.Security.Cryptography.HashAlgorithmName.Name" /> имеет значение <see langword="null" /> или <see cref="F:System.String.Empty" />.</exception>
         <exception cref="T:System.Security.Cryptography.CryptographicException">Тип реализации поддерживает только устаревший DSA (FIPS 186-2), а хэш-алгоритм не является SHA-1.
 
--или-
+- или -
 
 Не удалось проверить подпись по другим причинам.</exception>
       </Docs>
@@ -1227,7 +1347,7 @@
         <exception cref="T:System.ArgumentException"><paramref name="hashAlgorithm" />.<see cref="P:System.Security.Cryptography.HashAlgorithmName.Name" /> имеет значение <see langword="null" /> или <see cref="F:System.String.Empty" />.</exception>
         <exception cref="T:System.Security.Cryptography.CryptographicException">Тип реализации поддерживает только устаревший DSA (FIPS 186-2), а хэш-алгоритм не является SHA-1.
 
-- или -
+-или-
 
 Не удалось проверить подпись по другим причинам.</exception>
       </Docs>
@@ -1275,15 +1395,15 @@
         <remarks>To be added.</remarks>
         <exception cref="T:System.ArgumentNullException">Свойство <paramref name="data" /> имеет значение <see langword="null" />.  
   
--или- 
+- или - 
  Свойство <paramref name="signature" /> имеет значение <see langword="null" />.</exception>
         <exception cref="T:System.ArgumentException"><paramref name="hashAlgorithm" />.<see cref="P:System.Security.Cryptography.HashAlgorithmName.Name" /> имеет значение <see langword="null" /> или <see cref="F:System.String.Empty" />.</exception>
         <exception cref="T:System.ArgumentOutOfRangeException">Значение параметра <paramref name="offset" /> меньше нуля.  
   
--или- 
+- или - 
  Значение параметра <paramref name="count" /> меньше нуля.  
   
--или- 
+- или - 
  <paramref name="offset" /> + <paramref name="count" /> — 1 приводит к получению значения индекса, который выходит за пределы верхней границы <paramref name="data" />.</exception>
         <exception cref="T:System.Security.Cryptography.CryptographicException">Тип реализации поддерживает только устаревший DSA (FIPS 186-2), а хэш-алгоритм не является SHA-1.
 
@@ -1332,7 +1452,7 @@
         <remarks>To be added.</remarks>
         <exception cref="T:System.Security.Cryptography.CryptographicException">Тип реализации поддерживает только устаревший DSA (FIPS 186-2), а хэш-значение не является 20-байтовым.
 
-- или -
+-или-
 
 Не удалось проверить подпись по другим причинам.</exception>
         <related type="Article" href="~/docs/standard/security/cryptographic-services.md">службы шифрования</related>
