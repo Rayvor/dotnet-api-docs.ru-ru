@@ -1,5 +1,5 @@
 <Type Name="BrotliStream" FullName="System.IO.Compression.BrotliStream">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="29f22ad2e73a3181f369f4ab0098911707b10abf" /><Meta Name="ms.sourcegitcommit" Value="a3e01ec36374fac54a55add0dcc1e754e394abeb" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="03/30/2019" /><Meta Name="ms.locfileid" Value="58731396" /></Metadata><TypeSignature Language="C#" Value="public sealed class BrotliStream : System.IO.Stream" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="22a3f881771a01ad5a30a0a62f3f3c969d964ca0" /><Meta Name="ms.sourcegitcommit" Value="634678f7ccd2928c6b2cf792a301b079b63639af" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="07/26/2019" /><Meta Name="ms.locfileid" Value="68543372" /></Metadata><TypeSignature Language="C#" Value="public sealed class BrotliStream : System.IO.Stream" />
   <TypeSignature Language="ILAsm" Value=".class public auto ansi sealed beforefieldinit BrotliStream extends System.IO.Stream" />
   <TypeSignature Language="DocId" Value="T:System.IO.Compression.BrotliStream" />
   <TypeSignature Language="VB.NET" Value="Public NotInheritable Class BrotliStream&#xA;Inherits Stream" />
@@ -362,9 +362,21 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <summary>Асинхронно освобождает неуправляемые ресурсы, используемые классом <see cref="T:System.IO.Compression.BrotliStream" />.</summary>
+        <returns>Задача, представляющая асинхронную операцию закрытия.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
+
+`DisposeAsync` Метод позволяет выполнять ресурсоемкие операции удаления без блокировки основного потока. Это соображение, связанное с производительностью, особенно важно в приложениях [!INCLUDE[win8_appname_long](~/includes/win8-appname-long-md.md)] и [!INCLUDE[desktop_appname](~/includes/desktop-appname-md.md)] , где длительная потоковая операция может блокировать поток пользовательского интерфейса и создавать впечатление, что приложение не работает. Асинхронные методы используются в сочетании с `async` ключевыми словами и `await` в Visual Basic и C#. 
+
+Этот метод уничтожает поток Brotli, записывая изменения в резервном хранилище и закрывая поток для освобождения ресурсов.   
+
+Вызов `DisposeAsync` позволяет перераспределить ресурсы, используемые <xref:System.IO.Compression.BrotliStream> в, для других целей. Дополнительные сведения см. в разделе [Очистка неуправляемых ресурсов](~/docs/standard/garbage-collection/unmanaged.md).  
+
+          ]]></format>
+        </remarks>
       </Docs>
     </Member>
     <Member MemberName="EndRead">
@@ -474,10 +486,18 @@
         <Parameter Name="cancellationToken" Type="System.Threading.CancellationToken" Index="0" FrameworkAlternate="netcore-3.0" />
       </Parameters>
       <Docs>
-        <param name="cancellationToken">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="cancellationToken">Токен для отслеживания запросов отмены. Значение по умолчанию — <see cref="P:System.Threading.CancellationToken.None" />.</param>
+        <summary>Асинхронно очищает все буферы данного потока Brotli, вызывает запись буферизованных данных в базовое устройство и отслеживает запросы отмены.</summary>
+        <returns>Задача, представляющая асинхронную операцию очистки.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
+
+Если операция отменяется до ее завершения, возвращаемая задача содержит <xref:System.Threading.Tasks.TaskStatus.Canceled?displayProperty=nameWithType> значение <xref:System.Threading.Tasks.Task.Status?displayProperty=nameWithType> для свойства.
+
+          ]]></format>
+        </remarks>
       </Docs>
     </Member>
     <Member MemberName="Length">
@@ -554,10 +574,22 @@
         <Parameter Name="buffer" Type="System.Span&lt;System.Byte&gt;" Index="0" FrameworkAlternate="netcore-3.0" />
       </Parameters>
       <Docs>
-        <param name="buffer">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="buffer">Область памяти. При возвращении данного метода содержимое этой области заменяется байтами, считанными из текущего источника.</param>
+        <summary>Считывает последовательность байтов из текущего потока Brotli в диапазон байтов и перемещает позицию внутри потока Brotli на число считанных байтов.</summary>
+        <returns>Общее количество байтов, считанных в буфер. Это число может быть меньше количества выделенных в буфере байтов, если столько байтов в настоящее время недоступно, а также равняться нулю (0), если был достигнут конец потока.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
+
+Используйте свойство <xref:System.IO.Compression.BrotliStream.CanRead%2A> , чтобы определить, поддерживает ли текущий экземпляр чтение. <xref:System.IO.Compression.BrotliStream.ReadAsync%2A> Используйте метод для асинхронного чтения из текущего потока.
+
+Этот метод считывает максимум `buffer.Length` байт из текущего потока и сохраняет их в. `buffer` Текущая координата в потоке Brotli увеличивается на число считанных байтов; Однако при возникновении исключения текущее место в потоке Brotli остается неизменным. Этот метод блокируется до тех пор, пока не будет прочитан хотя бы один байт данных в случае, если данные недоступны. `Read`Возвращает 0 только в том случае, если в потоке больше нет данных и больше не ожидается (например, закрытый сокет или конец файла). Метод может возвращать меньшее количество байтов, чем было запрошено, даже если конец потока не был достигнут.
+
+ Используется <xref:System.IO.BinaryReader> для чтения примитивных типов данных.
+
+          ]]></format>
+        </remarks>
       </Docs>
     </Member>
     <Member MemberName="Read">
@@ -620,11 +652,23 @@
         <Parameter Name="cancellationToken" Type="System.Threading.CancellationToken" Index="1" FrameworkAlternate="netcore-3.0" />
       </Parameters>
       <Docs>
-        <param name="buffer">To be added.</param>
-        <param name="cancellationToken">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="buffer">Область памяти, в которую будут записываться данные.</param>
+        <param name="cancellationToken">Токен для отслеживания запросов отмены. Значение по умолчанию — <see cref="P:System.Threading.CancellationToken.None" />.</param>
+        <summary>Асинхронно считывает последовательность байтов из текущего потока Brotli, записывает их в диапазон памяти байтов, перемещает позицию в потоке Brotli на число считанных байтов и отслеживает запросы отмены.</summary>
+        <returns>Задача, которая представляет асинхронную операцию чтения, которая переносит общее число считанных байтов в буфер. Итоговое значение может быть меньше количества выделенных в буфере байтов, если столько байтов в настоящее время недоступно, или оно может равняться нулю (0), если был достигнут конец потока Brotli.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
+
+`ReadAsync` Метод позволяет выполнять ресурсоемкие операции ввода-вывода без блокировки основного потока. Это соображение, связанное с производительностью, особенно важно в приложениях [!INCLUDE[win8_appname_long](~/includes/win8-appname-long-md.md)] и [!INCLUDE[desktop_appname](~/includes/desktop-appname-md.md)] , где длительная потоковая операция может блокировать поток пользовательского интерфейса и создавать впечатление, что приложение не работает. Асинхронные методы используются в сочетании с `async` ключевыми словами и `await` в Visual Basic и C#.
+
+Используйте свойство <xref:System.IO.Compression.BrotliStream.CanRead%2A> , чтобы определить, поддерживает ли текущий экземпляр чтение.
+
+Если операция отменяется до ее завершения, возвращаемая задача содержит <xref:System.Threading.Tasks.TaskStatus.Canceled?displayProperty=nameWithType> значение <xref:System.Threading.Tasks.Task.Status?displayProperty=nameWithType> для свойства.
+
+          ]]></format>
+        </remarks>
       </Docs>
     </Member>
     <Member MemberName="ReadAsync">
@@ -652,13 +696,25 @@
         <Parameter Name="cancellationToken" Type="System.Threading.CancellationToken" />
       </Parameters>
       <Docs>
-        <param name="buffer">To be added.</param>
-        <param name="offset">To be added.</param>
-        <param name="count">To be added.</param>
-        <param name="cancellationToken">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="buffer">Буфер, в который записываются данные.</param>
+        <param name="offset">Смещение байтов в <paramref name="buffer" />, с которого начинается запись данных из потока Brotli.</param>
+        <param name="count">Максимальное число байтов, предназначенных для чтения.</param>
+        <param name="cancellationToken">Токен для отслеживания запросов отмены. Значение по умолчанию — <see cref="P:System.Threading.CancellationToken.None" />.</param>
+        <summary>Асинхронно считывает последовательность байтов из текущего потока Brotli, записывает их в массив байтов по указанному индексу, перемещает позицию в потоке Brotli на число считанных байтов и отслеживает запросы отмены.</summary>
+        <returns>Задача, которая представляет асинхронную операцию чтения, которая переносит общее число считанных байтов в <paramref name="buffer" />. Значение результата может быть меньше запрошенного числа байтов, если число доступных в данный момент байтов меньше запрошенного числа, или результат может быть равен 0 (нулю), если был достигнут конец потока Brotli.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+  
+## Remarks
+
+`ReadAsync` Метод позволяет выполнять ресурсоемкие операции ввода-вывода без блокировки основного потока. Это соображение, связанное с производительностью, особенно важно в приложениях [!INCLUDE[win8_appname_long](~/includes/win8-appname-long-md.md)] и [!INCLUDE[desktop_appname](~/includes/desktop-appname-md.md)] , где длительная потоковая операция может блокировать поток пользовательского интерфейса и создавать впечатление, что приложение не работает. Асинхронные методы используются в сочетании с `async` ключевыми словами и `await` в Visual Basic и C#.
+
+Используйте свойство <xref:System.IO.Compression.BrotliStream.CanRead%2A> , чтобы определить, поддерживает ли текущий экземпляр чтение.
+
+Если операция отменяется до ее завершения, возвращаемая задача содержит <xref:System.Threading.Tasks.TaskStatus.Canceled?displayProperty=nameWithType> значение <xref:System.Threading.Tasks.Task.Status?displayProperty=nameWithType> для свойства.
+
+          ]]></format>
+        </remarks>
       </Docs>
     </Member>
     <Member MemberName="Seek">
@@ -686,7 +742,7 @@
       </Parameters>
       <Docs>
         <param name="offset">Расположение в потоке.</param>
-        <param name="origin">Одно из значений <see cref="T:System.IO.SeekOrigin" />.</param>
+        <param name="origin">Одно из значений перечисления <see cref="T:System.IO.SeekOrigin" />.</param>
         <summary>Это свойство не поддерживается и всегда вызывает исключение <see cref="T:System.NotSupportedException" />.</summary>
         <returns>Значение типа long.</returns>
         <remarks>To be added.</remarks>
@@ -743,9 +799,19 @@
         <Parameter Name="buffer" Type="System.ReadOnlySpan&lt;System.Byte&gt;" Index="0" FrameworkAlternate="netcore-3.0" />
       </Parameters>
       <Docs>
-        <param name="buffer">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="buffer">Область памяти. Этот метод копирует содержимое данной области в текущий поток Brotli.</param>
+        <summary>Записывает последовательность байтов в текущий поток Brotli из диапазона байтов только для чтения и перемещает текущую позицию внутри потока Brotli на число записанных байтов.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
+
+Используйте свойство <xref:System.IO.Compression.BrotliStream.CanWrite%2A> , чтобы определить, поддерживает ли текущий экземпляр запись. <xref:System.IO.Compression.BrotliStream.WriteAsync%2A> Используйте метод для асинхронной записи в текущий поток.
+
+Если операция записи выполнена успешно, то позицию в потоке Brotli увеличивается на число записанных байтов. При возникновении исключения расположение в потоке Brotli остается неизменным.
+
+          ]]></format>
+        </remarks>
       </Docs>
     </Member>
     <Member MemberName="Write">
@@ -802,11 +868,23 @@
         <Parameter Name="cancellationToken" Type="System.Threading.CancellationToken" Index="1" FrameworkAlternate="netcore-3.0" />
       </Parameters>
       <Docs>
-        <param name="buffer">To be added.</param>
-        <param name="cancellationToken">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="buffer">Область памяти, из которой записываются данные.</param>
+        <param name="cancellationToken">Токен для отслеживания запросов отмены. Значение по умолчанию — <see cref="P:System.Threading.CancellationToken.None" />.</param>
+        <summary>Асинхронно записывает сжатые байты в базовый поток Brotli из указанного диапазона памяти байтов.</summary>
+        <returns>Задача, представляющая асинхронную операцию записи.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
+
+`WriteAsync` Метод позволяет выполнять ресурсоемкие операции ввода-вывода без блокировки основного потока. Это соображение, связанное с производительностью, особенно важно в приложениях [!INCLUDE[win8_appname_long](~/includes/win8-appname-long-md.md)] и [!INCLUDE[desktop_appname](~/includes/desktop-appname-md.md)] , где длительная потоковая операция может блокировать поток пользовательского интерфейса и создавать впечатление, что приложение не работает. Асинхронные методы используются в сочетании с `async` ключевыми словами и `await` в Visual Basic и C#.
+
+Используйте свойство <xref:System.IO.Compression.BrotliStream.CanWrite%2A> , чтобы определить, поддерживает ли текущий экземпляр запись.
+
+Если операция отменяется до ее завершения, возвращаемая задача содержит <xref:System.Threading.Tasks.TaskStatus.Canceled?displayProperty=nameWithType> значение <xref:System.Threading.Tasks.Task.Status?displayProperty=nameWithType> для свойства.
+
+          ]]></format>
+        </remarks>
       </Docs>
     </Member>
     <Member MemberName="WriteAsync">
@@ -834,13 +912,25 @@
         <Parameter Name="cancellationToken" Type="System.Threading.CancellationToken" />
       </Parameters>
       <Docs>
-        <param name="buffer">To be added.</param>
-        <param name="offset">To be added.</param>
-        <param name="count">To be added.</param>
-        <param name="cancellationToken">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="buffer">Буфер, содержащий данные для сжатия.</param>
+        <param name="offset">Смещение байтов (начиная с нуля) в объекте <paramref name="buffer" />, с которого начинается копирование байтов в поток Brotli.</param>
+        <param name="count">Максимальное число байтов для записи.</param>
+        <param name="cancellationToken">Токен для отслеживания запросов отмены. Значение по умолчанию — <see cref="P:System.Threading.CancellationToken.None" />.</param>
+        <summary>Асинхронно записывает сжатые байты в основной поток Brotli из указанного массива байтов.</summary>
+        <returns>Задача, представляющая асинхронную операцию записи.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
+
+`WriteAsync` Метод позволяет выполнять ресурсоемкие операции ввода-вывода без блокировки основного потока. Это соображение, связанное с производительностью, особенно важно в приложениях [!INCLUDE[win8_appname_long](~/includes/win8-appname-long-md.md)] и [!INCLUDE[desktop_appname](~/includes/desktop-appname-md.md)] , где длительная потоковая операция может блокировать поток пользовательского интерфейса и создавать впечатление, что приложение не работает. Асинхронные методы используются в сочетании с `async` ключевыми словами и `await` в Visual Basic и C#.
+
+Используйте свойство <xref:System.IO.Compression.BrotliStream.CanWrite%2A> , чтобы определить, поддерживает ли текущий экземпляр запись.
+
+Если операция отменяется до ее завершения, возвращаемая задача содержит <xref:System.Threading.Tasks.TaskStatus.Canceled?displayProperty=nameWithType> значение <xref:System.Threading.Tasks.Task.Status?displayProperty=nameWithType> для свойства.
+
+          ]]></format>
+        </remarks>
       </Docs>
     </Member>
   </Members>

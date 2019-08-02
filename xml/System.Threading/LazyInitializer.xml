@@ -1,5 +1,5 @@
 <Type Name="LazyInitializer" FullName="System.Threading.LazyInitializer">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="9d610ccd14ffc2fbf55ba0c7a01c44865c2f030f" /><Meta Name="ms.sourcegitcommit" Value="690605a2d62010b93e13edf329aafe2bdc57423a" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="07/11/2019" /><Meta Name="ms.locfileid" Value="67801577" /></Metadata><TypeSignature Language="C#" Value="public static class LazyInitializer" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="b8f1237cfd6d85d48bb50e363e78511841ce1202" /><Meta Name="ms.sourcegitcommit" Value="634678f7ccd2928c6b2cf792a301b079b63639af" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="07/26/2019" /><Meta Name="ms.locfileid" Value="68543706" /></Metadata><TypeSignature Language="C#" Value="public static class LazyInitializer" />
   <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract sealed beforefieldinit LazyInitializer extends System.Object" />
   <TypeSignature Language="DocId" Value="T:System.Threading.LazyInitializer" />
   <TypeSignature Language="VB.NET" Value="Public Class LazyInitializer" />
@@ -32,12 +32,12 @@
       <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Эти подпрограммы избежать необходимости выделять экземпляр выделенной, отложенной инициализации, вместо использования ссылок, чтобы убедиться, что целевые объекты были инициализированы, поскольку они доступны.  
+ Эти подпрограммы не требуют выделения выделенного экземпляра с отложенной инициализацией вместо того, чтобы использовать ссылки, чтобы гарантировать инициализацию целевых объектов при обращении к ним.  
   
    
   
 ## Examples  
- В следующем примере демонстрируется использование EnsureInitialized выполнять отложенную инициализацию значение, используя значение типа Boolean для отслеживания ли инициализация уже произошло и объект для использования в качестве взаимоисключающую блокировку.  
+ В следующем примере показано, как использовать EnsureInitialized для неактивной инициализации значения с помощью логического значения, чтобы определить, была ли уже выполнена инициализация, и объект для использования в качестве взаимной блокировки исключения.  
   
 ```vb  
 Dim _data As ExpensiveData = Nothing  
@@ -59,7 +59,7 @@ ExpensiveData dataToUse = LazyInitializer.EnsureInitialized(ref _data, ref _data
   
  ]]></format>
     </remarks>
-    <threadsafe>Методы <see cref="T:System.Threading.LazyInitializer" /> являются поточно ориентированными и может быть вызвана из нескольких потоков одновременно.</threadsafe>
+    <threadsafe>Методы <see cref="T:System.Threading.LazyInitializer" /> являются потокобезопасными и могут вызываться из нескольких потоков одновременно.</threadsafe>
     <related type="Article" href="~/docs/framework/performance/lazy-initialization.md">Отложенная инициализация</related>
   </Docs>
   <Members>
@@ -115,22 +115,22 @@ ExpensiveData dataToUse = LazyInitializer.EnsureInitialized(ref _data, ref _data
       <Docs>
         <typeparam name="T">Тип инициализируемой ссылки.</typeparam>
         <param name="target">Ссылка, которую необходимо инициализировать, если она еще не инициализирована.</param>
-        <summary>Инициализирует целевой ссылочный тип его конструктором типа по умолчанию, если он еще не инициализирован.</summary>
+        <summary>Инициализирует целевой ссылочный тип его конструктором типа без параметров, если он еще не инициализирован.</summary>
         <returns>Инициализированный объект.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот метод может использоваться только со ссылочными типами. Чтобы обеспечить инициализацию типов значений, см. в разделе другие перегрузки `EnsureInitialized`.  
+ Этот метод может использоваться только для ссылочных типов. Чтобы обеспечить инициализацию типов значений, см `EnsureInitialized`. раздел другие перегрузки.  
   
- Этот метод может использоваться одновременно несколькими потоками для инициализации `target`.  
+ Этот метод может быть одновременно использован несколькими потоками для инициализации `target`.  
   
- В случае, если несколько потоков, доступа к этому методу параллельно, несколько экземпляров `T` может создаваться, но только один будет храниться в `target`. В случае наступления этот метод не удалит объекты, которые не были сохранены. Если необходимо удалить такие объекты, то вызывающий объект для определения того, если объект не использовался и затем соответствующим образом удалить объект.  
+ В случае, если несколько потоков обращаются к этому методу параллельно, `T` может быть создано несколько экземпляров, но только один из них будет сохранен в. `target` В таком случае этот метод не будет удалять объекты, которые не были сохранены. Если такие объекты должны быть удалены, то вызывающему объекту следует определить, не использовался ли объект, а затем соответствующим образом удалить объект.  
   
  ]]></format>
         </remarks>
         <exception cref="T:System.MemberAccessException">Разрешения на доступ к конструктору типа <paramref name="T" /> отсутствовали.</exception>
-        <exception cref="T:System.MissingMemberException">Тип <paramref name="T" /> не имеет конструктора по умолчанию.</exception>
+        <exception cref="T:System.MissingMemberException">У типа <paramref name="T" /> нет конструктора без параметров.</exception>
         <related type="Article" href="~/docs/framework/performance/lazy-initialization.md">Отложенная инициализация</related>
       </Docs>
     </Member>
@@ -183,15 +183,15 @@ ExpensiveData dataToUse = LazyInitializer.EnsureInitialized(ref _data, ref _data
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот метод может использоваться только со ссылочными типами, и `valueFactory` не может возвращать пустую ссылку (Nothing в Visual Basic). Чтобы обеспечить инициализацию типов значений или разрешить значение null ссылочных типов, см. в разделе другие перегрузки EnsureInitialized.  
+ Этот метод может использоваться только для ссылочных типов и `valueFactory` не может возвращать пустую ссылку (Nothing в Visual Basic). Чтобы обеспечить инициализацию типов значений или разрешить ссылочные типы null, ознакомьтесь с другими перегрузками EnsureInitialized.  
   
- Этот метод может использоваться одновременно несколькими потоками для инициализации `target`.  
+ Этот метод может быть одновременно использован несколькими потоками для инициализации `target`.  
   
- В случае, если несколько потоков, доступа к этому методу параллельно, несколько экземпляров `T` может создаваться, но только один будет храниться в `target`. В случае наступления этот метод не удалит объекты, которые не были сохранены. Если необходимо удалить такие объекты, то вызывающий объект для определения того, если объект не использовался и затем соответствующим образом удалить объект.  
+ В случае, если несколько потоков обращаются к этому методу параллельно, `T` может быть создано несколько экземпляров, но только один из них будет сохранен в. `target` В таком случае этот метод не будет удалять объекты, которые не были сохранены. Если такие объекты должны быть удалены, то вызывающему объекту следует определить, не использовался ли объект, а затем соответствующим образом удалить объект.  
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.MissingMemberException">Тип <paramref name="T" /> не имеет конструктора по умолчанию.</exception>
+        <exception cref="T:System.MissingMemberException">У типа <paramref name="T" /> нет конструктора без параметров.</exception>
         <exception cref="T:System.InvalidOperationException"><paramref name="valueFactory" /> вернул значение NULL (Nothing в Visual Basic).</exception>
         <related type="Article" href="~/docs/framework/performance/lazy-initialization.md">Отложенная инициализация</related>
       </Docs>
@@ -237,18 +237,18 @@ ExpensiveData dataToUse = LazyInitializer.EnsureInitialized(ref _data, ref _data
         <param name="target">Ссылка или значение типа <c>T</c>, которое необходимо инициализировать, если оно еще не инициализировано.</param>
         <param name="initialized">Ссылка на логическое значение, определяющее, инициализирована ли цель.</param>
         <param name="syncLock">Ссылка на объект, используемый как взаимоисключающая блокировка для инициализации параметра <paramref name="target" />. Если <paramref name="syncLock" /> равно <see langword="null" />, то нового объект будет создан экземпляр.</param>
-        <summary>Инициализирует целевой ссылочный тип или тип значения его конструктором по умолчанию, если он еще не инициализирован.</summary>
+        <summary>Инициализирует целевой ссылочный тип или тип значения его конструктором без параметров, если он еще не инициализирован.</summary>
         <returns>Инициализированный объект.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Если `initialized` имеет значение true, то Дополнительная инициализация не выполняется.  
+ Если `initialized` задано значение true, дальнейшая инициализация не выполняется.  
   
  ]]></format>
         </remarks>
         <exception cref="T:System.MemberAccessException">Разрешения на доступ к конструктору типа <paramref name="T" /> отсутствовали.</exception>
-        <exception cref="T:System.MissingMemberException">Тип <paramref name="T" /> не имеет конструктора по умолчанию.</exception>
+        <exception cref="T:System.MissingMemberException">У типа <paramref name="T" /> нет конструктора без параметров.</exception>
         <related type="Article" href="~/docs/framework/performance/lazy-initialization.md">Отложенная инициализация</related>
       </Docs>
     </Member>
@@ -346,12 +346,12 @@ ExpensiveData dataToUse = LazyInitializer.EnsureInitialized(ref _data, ref _data
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Если `initialized` имеет значение true, то Дополнительная инициализация не выполняется.  
+ Если `initialized` задано значение true, дальнейшая инициализация не выполняется.  
   
  ]]></format>
         </remarks>
         <exception cref="T:System.MemberAccessException">Разрешения на доступ к конструктору типа <paramref name="T" /> отсутствовали.</exception>
-        <exception cref="T:System.MissingMemberException">Тип <paramref name="T" /> не имеет конструктора по умолчанию.</exception>
+        <exception cref="T:System.MissingMemberException">У типа <paramref name="T" /> нет конструктора без параметров.</exception>
         <related type="Article" href="~/docs/framework/performance/lazy-initialization.md">Отложенная инициализация</related>
       </Docs>
     </Member>
