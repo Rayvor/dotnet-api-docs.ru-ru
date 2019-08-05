@@ -1,5 +1,5 @@
 <Type Name="Utf8JsonReader" FullName="System.Text.Json.Utf8JsonReader">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="d819d79b85a5451effbb779c90de4a7d1fa77343" /><Meta Name="ms.sourcegitcommit" Value="74239f3977d28923e5020663db2c4e91601bea79" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="07/24/2019" /><Meta Name="ms.locfileid" Value="68434921" /></Metadata><TypeSignature Language="C#" Value="public struct Utf8JsonReader" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="f96f08bbedddf791c3a57f3e7a62c982af293c15" /><Meta Name="ms.sourcegitcommit" Value="406d23aba879fbb482c6da0f64c8ef9494f6a944" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="07/31/2019" /><Meta Name="ms.locfileid" Value="68686111" /></Metadata><TypeSignature Language="C#" Value="public struct Utf8JsonReader" />
   <TypeSignature Language="ILAsm" Value=".class public sequential ansi sealed beforefieldinit Utf8JsonReader extends System.ValueType" />
   <TypeSignature Language="DocId" Value="T:System.Text.Json.Utf8JsonReader" />
   <TypeSignature Language="VB.NET" Value="Public Structure Utf8JsonReader" />
@@ -21,13 +21,13 @@
   <Docs>
     <summary>Предоставляет высокопроизводительный API для однонаправленного доступа только для чтения к тексту JSON в кодировке UTF-8.</summary>
     <remarks>
-      <format type="text/markdown"><![CDATA[  
+      <format type="text/markdown"><![CDATA[
 
 ## Remarks
 
 `Utf8JsonReader`обрабатывает текст последовательно без кэширования, и по умолчанию строго придерживается [формата JSON RFC](https://tools.ietf.org/html/rfc8259).
 
-При `Utf8JsonReader` обнаружении недопустимого формата JSON он <xref:System.Text.Json.JsonReaderException> создает исключение со сведениями об основной ошибке, такими как номер строки и расположение байта в строке.
+При `Utf8JsonReader` обнаружении недопустимого формата JSON он <xref:System.Text.Json.JsonException> создает исключение со сведениями об основной ошибке, такими как номер строки и расположение байта в строке.
 
 Так как этот тип является структурой ссылок, он не поддерживает асинхронность напрямую. Однако он обеспечивает поддержку повторного входа для чтения незавершенных данных и продолжения чтения после представления большего количества данных.
 
@@ -99,11 +99,20 @@
         <Parameter Name="state" Type="System.Text.Json.JsonReaderState" />
       </Parameters>
       <Docs>
-        <param name="jsonData">To be added.</param>
-        <param name="isFinalBlock">To be added.</param>
-        <param name="state">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="jsonData">Предназначенный для обработки текст JSON в кодировке UTF-8.</param>
+        <param name="isFinalBlock">Значение <see langword="true" />, если входная последовательность содержит все данные для обработки. Значение <see langword="false" />, только если известно, что входной диапазон содержит лишь часть данных, и дополнительные данные поступят позднее.</param>
+        <param name="state">Если это первый вызов конструктора, передайте состояние по умолчанию. В противном случае запишите состояние из предыдущего экземпляра <see cref="T:System.Text.Json.Utf8JsonReader" /> и передайте его обратно.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Text.Json.Utf8JsonReader" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
+
+Поскольку этот тип является структурой ссылок, он является типом, предназначенным только для стека, и к нему применяются все ограничения ссылочных структур.
+Именно по этой причине конструктор принимает <xref:System.Text.Json.JsonReaderState>.
+
+ ]]></format>
+        </remarks>
       </Docs>
     </Member>
     <Member MemberName=".ctor">
@@ -129,7 +138,7 @@
         <param name="state">Структура, содержащая состояние модуля чтения. При первом вызове конструктора она должна отражать состояние по умолчанию, в противном случае — записать состояние из предыдущего экземпляра <see cref="T:System.Text.Json.Utf8JsonReader" /> и передать его обратно.</param>
         <summary>Инициализирует новый экземпляр класса <see cref="T:System.Text.Json.Utf8JsonReader" />.</summary>
         <remarks>
-          <format type="text/markdown"><![CDATA[  
+          <format type="text/markdown"><![CDATA[
 
 ## Remarks
 
@@ -180,7 +189,7 @@
         <summary>Возвращает глубину текущего токена.</summary>
         <value>Глубина текущего маркера.</value>
         <remarks>
-          <format type="text/markdown"><![CDATA[  
+          <format type="text/markdown"><![CDATA[
 
 ## Remarks
 
@@ -209,7 +218,7 @@
         <summary>Возвращает текущий снимок состояния <see cref="T:System.Text.Json.Utf8JsonReader" />, которое должно быть записано вызывающим объектом и передано обратно в конструктор <see cref="T:System.Text.Json.Utf8JsonReader" /> с дополнительными данными.</summary>
         <value>To be added.</value>
         <remarks>
-          <format type="text/markdown"><![CDATA[  
+          <format type="text/markdown"><![CDATA[
 
 ## Remarks
 
@@ -282,9 +291,11 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <summary>Анализирует текущее значение токена JSON из источника и декодирует строку JSON в кодировке Base64 в виде массива байтов.</summary>
+        <returns>Массив байтов, представляющий текущее значение токена JSON.</returns>
         <remarks>To be added.</remarks>
+        <exception cref="T:System.InvalidOperationException">Тип токена JSON не является <see cref="F:System.Text.Json.JsonTokenType.String" />.</exception>
+        <exception cref="T:System.FormatException">Значение не закодировано в тексте Base64 и поэтому не может быть декодировано в байты.</exception>
       </Docs>
     </Member>
     <Member MemberName="GetComment">
@@ -304,9 +315,10 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <summary>Анализирует текущее значение токена JSON из источника как комментарий, перекодируя его как <see cref="T:System.String" />.</summary>
+        <returns>Комментарий, представляющий текущее значение токена JSON.</returns>
         <remarks>To be added.</remarks>
+        <exception cref="T:System.InvalidOperationException">Токен JSON не является комментарием.</exception>
       </Docs>
     </Member>
     <Member MemberName="GetDateTime">
@@ -377,7 +389,7 @@
         <summary>Считывает следующее значение токена JSON из источника и преобразует его в <see cref="T:System.Decimal" />.</summary>
         <returns>Значение токена в кодировке UTF-8, преобразуемое в <see cref="T:System.Decimal" />.</returns>
         <remarks>
-          <format type="text/markdown"><![CDATA[  
+          <format type="text/markdown"><![CDATA[
 
 ## Remarks
 
@@ -410,7 +422,7 @@
         <summary>Считывает следующее значение токена JSON из источника и преобразует его в <see cref="T:System.Double" />.</summary>
         <returns>Значение токена в кодировке UTF-8, преобразуемое в <see cref="T:System.Double" />.</returns>
         <remarks>
-          <format type="text/markdown"><![CDATA[  
+          <format type="text/markdown"><![CDATA[
 
 ## Remarks
 
@@ -489,7 +501,7 @@
         <summary>Считывает следующее значение токена JSON из источника и преобразует его в <see cref="T:System.Int32" />.</summary>
         <returns>Значение токена в кодировке UTF-8, преобразуемое в <see cref="T:System.Int32" />.</returns>
         <remarks>
-          <format type="text/markdown"><![CDATA[  
+          <format type="text/markdown"><![CDATA[
 
 ## Remarks
 
@@ -526,7 +538,7 @@
         <summary>Считывает следующее значение токена JSON из источника и преобразует его в <see cref="T:System.Int64" />.</summary>
         <returns>Значение токена в кодировке UTF-8, преобразуемое в <see cref="T:System.Int64" />.</returns>
         <remarks>
-          <format type="text/markdown"><![CDATA[  
+          <format type="text/markdown"><![CDATA[
 
 ## Remarks
 
@@ -590,7 +602,7 @@
         <summary>Считывает следующее значение токена JSON из источника и преобразует его в <see cref="T:System.Single" />.</summary>
         <returns>Значение токена в кодировке UTF-8, преобразуемое в <see cref="T:System.Single" />.</returns>
         <remarks>
-          <format type="text/markdown"><![CDATA[  
+          <format type="text/markdown"><![CDATA[
 
 ## Remarks
 
@@ -750,7 +762,7 @@
         <summary>Возвращает значение, указывающее, какое свойство <c>Value</c> нужно использовать для получения значения токена.</summary>
         <value><see langword="true" />значение <see cref="P:System.Text.Json.Utf8JsonReader.ValueSequence" /> , если необходимо использовать для получения значения токена. <see langword="false" />значение <see cref="P:System.Text.Json.Utf8JsonReader.ValueSpan" /> , если вместо этого следует использовать.</value>
         <remarks>
-          <format type="text/markdown"><![CDATA[  
+          <format type="text/markdown"><![CDATA[
 
 ## Remarks
 
@@ -778,8 +790,8 @@
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
+        <summary>Возвращает режим данного экземпляра <see cref="T:System.Text.Json.Utf8JsonReader" />, который указывает, были ли предоставлены все данные JSON или еще поступят дополнительные данные.</summary>
+        <value><see langword="true" />значение, если модуль чтения был создан с входным диапазоном или последовательностью, содержащими все данные JSON для обработки. <see langword="false" />Если модуль чтения был создан с входным диапазоном или последовательностью, которая может содержать часть данных JSON с дополнительными данными.</value>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -826,7 +838,7 @@
         <remarks>To be added.</remarks>
         <exception cref="T:System.Text.Json.JsonException">Обнаружен токен JSON, не являющийся допустимым согласно RFC по JSON.
         
-- или -
+-или-
 
 Текущая глубина превышает рекурсивный предел, заданный максимальной глубиной.</exception>
       </Docs>
@@ -848,8 +860,26 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Пропускает дочерний узел текущего токена JSON.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
+
+Если <xref:System.Text.Json.Utf8JsonReader.TokenType> имеет<xref:System.Text.Json.JsonTokenType.PropertyName?displayProperty=nameWithType>значение, модуль чтения сначала переходит к значению свойства.
+
+Если <xref:System.Text.Json.Utf8JsonReader.TokenType> (изначально или после улучшения) — <xref:System.Text.Json.JsonTokenType.StartObject?displayProperty=nameWithtype> или <xref:System.Text.Json.JsonTokenType.StartArray?displayProperty=nameWithType>, то модуль чтения переходит к соответствующему <xref:System.Text.Json.JsonTokenType.EndObject?displayProperty=nameWithType> или <xref:System.Text.Json.JsonTokenType.EndArray?displayProperty=nameWithType>.
+            
+Для всех других типов токенов средство чтения не перемещается. После следующего вызова методу <xref:System.Text.Json.Utf8JsonReader.Read>чтения будет присвоено следующее значение (когда в массиве), имя следующего свойства (в объекте) или маркер конца массива или объекта.
+
+            ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Модулю чтения были переданы частичные данные с последующими дополнительными данными (то есть <see cref="P:System.Text.Json.Utf8JsonReader.IsFinalBlock" /> — это <see langword="false" />).</exception>
+        <exception cref="T:System.Text.Json.JsonException">При пропуске обнаружен токен JSON, не являющийся допустимым согласно RFC по JSON.
+
+-или-
+
+Текущая глубина превышает рекурсивный предел, заданный максимальной глубиной.</exception>
       </Docs>
     </Member>
     <Member MemberName="TokenStartIndex">
@@ -873,9 +903,19 @@
         <ReturnType>System.Int64</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Возвращает индекс, с которого начинается последний обработанный токен JSON (в заданном входном тексте UTF-8), пропуская все пробелы.</summary>
+        <value>Начальный индекс последнего обработанного маркера JSON в заданном входном тексте в кодировке UTF-8.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
+
+Для строк JSON (включая имена свойств) это значение указывает на начало цитаты.
+
+Для комментариев это значение указывает на перед первым разделителем комментариев (то есть "/").
+
+            ]]></format>
+        </remarks>
       </Docs>
     </Member>
     <Member MemberName="TokenType">
@@ -943,10 +983,11 @@
         <Parameter Name="value" Type="System.Byte[]" RefType="out" />
       </Parameters>
       <Docs>
-        <param name="value">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <param name="value">Если метод выполнен, содержит декодированное двоичное представление текста в кодировке Base64.</param>
+        <summary>Пытается проанализировать текущее значение токена JSON из источника и декодирует строку JSON в кодировке Base64 в виде массива байтов.</summary>
+        <returns><see langword="true" />, если все значение токена закодировано как допустимый текст в Base64 и может быть успешно декодировано в байты; <see langword="false" /> в противном случае.</returns>
         <remarks>To be added.</remarks>
+        <exception cref="T:System.InvalidOperationException">Токен JSON не является <see cref="F:System.Text.Json.JsonTokenType.String" />.</exception>
       </Docs>
     </Member>
     <Member MemberName="TryGetDateTime">
@@ -1078,7 +1119,9 @@
         <summary>Считывает следующее значение токена JSON из источника и преобразует его в <see cref="T:System.Guid" />.</summary>
         <returns>Значение <see langword="true" />, если все значение токена в кодировке UTF-8 можно успешно преобразовать в значение <see cref="T:System.Guid" />; в противном случае — значение <see langword="false" />.</returns>
         <remarks>
-          <format type="text/markdown"><![CDATA[  
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
 
 Этот метод анализирует <xref:System.Guid> только значения с дефисами и без окружающих украшений. 
 
@@ -1334,9 +1377,28 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <summary>Пытается пропустить дочерние узлы текущего токена JSON.</summary>
+        <returns><see langword="true" /> при наличии достаточного количества данных для успешного пропуска дочерних элементов; в противном случае — <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
+
+Если у читателя недостаточно данных для полного пропуска дочерних элементов текущего маркера, он будет сброшен до того состояния, в котором оно находилось до вызова метода.
+              
+Если <xref:System.Text.Json.Utf8JsonReader.TokenType> имеет<xref:System.Text.Json.JsonTokenType.PropertyName?displayProperty=nameWithType>значение, модуль чтения сначала переходит к значению свойства.
+
+Если <xref:System.Text.Json.Utf8JsonReader.TokenType> (изначально или после улучшения) — <xref:System.Text.Json.JsonTokenType.StartObject?displayProperty=nameWithType> или <xref:System.Text.Json.JsonTokenType.StartArray?displayProperty=nameWithType>, то модуль чтения переходит к соответствующему <xref:System.Text.Json.JsonTokenType.EndObject?displayProperty=nameWithType> или <xref:System.Text.Json.JsonTokenType.EndArray?displayProperty=nameWithType>.
+            
+Для всех других типов токенов средство чтения не перемещается. После следующего вызова методу <xref:System.Text.Json.Utf8JsonReader.Read>чтения будет присвоено следующее значение (когда в массиве), имя следующего свойства (в объекте) или маркер конца массива или объекта.
+
+          ]]></format>
+        </remarks>
+        <exception cref="T:System.Text.Json.JsonException">При пропуске обнаружен токен JSON, не являющийся допустимым согласно RFC по JSON.
+          
+-или-
+
+Текущая глубина превышает рекурсивный предел, заданный максимальной глубиной.</exception>
       </Docs>
     </Member>
     <Member MemberName="ValueSequence">
@@ -1364,7 +1426,7 @@
 В противном случае <see cref="P:System.Text.Json.Utf8JsonReader.ValueSequence" /> содержит значение токена.</summary>
         <value>To be added.</value>
         <remarks>
-          <format type="text/markdown"><![CDATA[  
+          <format type="text/markdown"><![CDATA[
 
 ## Remarks
 
@@ -1401,7 +1463,7 @@
 В противном случае <see cref="P:System.Text.Json.Utf8JsonReader.ValueSequence" /> содержит значение токена.</summary>
         <value>To be added.</value>
         <remarks>
-          <format type="text/markdown"><![CDATA[  
+          <format type="text/markdown"><![CDATA[
 
 ## Remarks
 
