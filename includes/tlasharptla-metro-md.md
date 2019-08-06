@@ -1,1 +1,0 @@
-<span data-ttu-id="60a7d-101">Формат XPS (XML Paper Specification)</span><span class="sxs-lookup"><span data-stu-id="60a7d-101">XML Paper Specification (XPS)</span></span>
