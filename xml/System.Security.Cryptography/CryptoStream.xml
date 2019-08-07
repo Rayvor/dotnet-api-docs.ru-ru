@@ -1,5 +1,5 @@
 <Type Name="CryptoStream" FullName="System.Security.Cryptography.CryptoStream">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="7926cb2f266b315fb81634423124042712c2c009" /><Meta Name="ms.sourcegitcommit" Value="2767b5903996fbd7e2b81eda1114dfc9d0d9db63" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="05/02/2019" /><Meta Name="ms.locfileid" Value="64997381" /></Metadata><TypeSignature Language="C#" Value="public class CryptoStream : System.IO.Stream" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="c41b9b61de00807bad1df95c497d07afbcfec5f3" /><Meta Name="ms.sourcegitcommit" Value="0959d8d88abd48debd487e54e54df29d51634f7f" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="08/02/2019" /><Meta Name="ms.locfileid" Value="68731461" /></Metadata><TypeSignature Language="C#" Value="public class CryptoStream : System.IO.Stream" />
   <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit CryptoStream extends System.IO.Stream implements class System.IDisposable" />
   <TypeSignature Language="DocId" Value="T:System.Security.Cryptography.CryptoStream" />
   <TypeSignature Language="VB.NET" Value="Public Class CryptoStream&#xA;Inherits Stream" />
@@ -142,7 +142,7 @@
         <param name="leaveOpen"><see langword="true" />, чтобы не закрывать базовый поток при ликвидации объекта <see cref="T:System.Security.Cryptography.CryptoStream" />, в противном случае — <see langword="false" />.</param>
         <summary>Инициализирует новый экземпляр класса <see cref="T:System.Security.Cryptography.CryptoStream" />.</summary>
         <remarks>To be added.</remarks>
-        <exception cref="T:System.ArgumentException">Значение параметра <paramref name="mode" /> недопустимо.</exception>
+        <exception cref="T:System.ArgumentException"><paramref name="mode" /> недопустим.</exception>
       </Docs>
     </Member>
     <Member MemberName="BeginRead">
@@ -175,14 +175,35 @@
         <Parameter Name="state" Type="System.Object" Index="4" FrameworkAlternate="netcore-2.1;netcore-2.2;netcore-3.0;netstandard-2.1" />
       </Parameters>
       <Docs>
-        <param name="buffer">To be added.</param>
-        <param name="offset">To be added.</param>
-        <param name="count">To be added.</param>
-        <param name="callback">To be added.</param>
-        <param name="state">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="buffer">Буфер, в который необходимо считать данные.</param>
+        <param name="offset">Смещение байтов в буфере <paramref name="buffer" />, с которого начинается запись данных, считанных из потока.</param>
+        <param name="count">Максимальное число байтов, предназначенных для чтения.</param>
+        <param name="callback">Дополнительный асинхронный ответный вызов по завершении чтения.</param>
+        <param name="state">Предоставляемый пользователем объект, являющийся отличительным признаком данного конкретного запроса на асинхронное чтение от других запросов.</param>
+        <summary>Начинает операцию асинхронного чтения. (Рекомендуется использовать <see cref="Overload:System.Security.Cryptography.CryptoStream.ReadAsync" />.)</summary>
+        <returns><see cref="T:System.IAsyncResult" /> представляет асинхронное чтение, которое может все еще быть отложено.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ В платформе .NET Framework 4 и более ранних версий для реализации операций асинхронного ввода-вывода необходимо использовать такие методы, как <xref:System.IO.Stream.BeginRead%2A> и <xref:System.IO.Stream.EndRead%2A> . Эти методы по-прежнему доступны в .NET для поддержки устаревшего кода. Однако новые <xref:System.Security.Cryptography.CryptoStream.ReadAsync%2A>асинхронные методы, такие как <xref:System.IO.Stream.CopyToAsync%2A>, <xref:System.Security.Cryptography.CryptoStream.WriteAsync%2A>, и <xref:System.Security.Cryptography.CryptoStream.FlushAsync%2A>, упрощают реализацию асинхронных операций ввода-вывода.  
+  
+ <xref:System.Security.Cryptography.CryptoStream.EndRead%2A> Передайте `IAsyncResult` возвращаемое значение методу потока, чтобы определить количество считанных байтов и освободить ресурсы операционной системы, используемые для чтения. <xref:System.Security.Cryptography.CryptoStream.EndRead%2A>должен вызываться один раз для каждого вызова <xref:System.Security.Cryptography.CryptoStream.BeginRead%2A>метода. Это можно сделать с помощью того же кода, который вызвал `BeginRead` или в обратном вызове, переданном в. `BeginRead`  
+  
+ Текущая позицией в потоке обновляется при выдаче асинхронного чтения или записи, а не по завершении операции ввода-вывода.  
+  
+ Несколько одновременных асинхронных запросов отрабатывают порядок выполнения запроса неопределенным образом.  
+  
+ Используйте свойство <xref:System.Security.Cryptography.CryptoStream.CanRead%2A> , чтобы определить, поддерживает ли текущий экземпляр чтение.  
+  
+ Если поток закрыт или передан недопустимый аргумент, исключения немедленно создаются из `BeginRead`. Ошибки, возникающие во время асинхронного запроса чтения, такие как сбой диска во время запроса ввода-вывода, происходят в потоке пула потоков и вызывают исключения при `EndRead`вызове метода.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.IO.IOException">Попытка выполнить чтение в асинхронном режиме за пределами конца потока или ошибка диска.</exception>
+        <exception cref="T:System.ArgumentException">Один или несколько аргументов являются недопустимыми.</exception>
+        <exception cref="T:System.ObjectDisposedException">Методы были вызваны после закрытия потока.</exception>
+        <exception cref="T:System.NotSupportedException">Текущая реализация класса <see langword="Stream" /> не поддерживает операцию чтения.</exception>
       </Docs>
     </Member>
     <Member MemberName="BeginWrite">
@@ -215,14 +236,35 @@
         <Parameter Name="state" Type="System.Object" Index="4" FrameworkAlternate="netcore-2.1;netcore-2.2;netcore-3.0;netstandard-2.1" />
       </Parameters>
       <Docs>
-        <param name="buffer">To be added.</param>
-        <param name="offset">To be added.</param>
-        <param name="count">To be added.</param>
-        <param name="callback">To be added.</param>
-        <param name="state">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="buffer">Буфер, из которого записываются данные.</param>
+        <param name="offset">Смещение байтов в буфере <paramref name="buffer" />, с которого начинается запись.</param>
+        <param name="count">Максимальное число байтов для записи.</param>
+        <param name="callback">Дополнительный асинхронный обратный вызов по завершении записи.</param>
+        <param name="state">Предоставляемый пользователем объект, являющийся отличительным признаком данного конкретного запроса на асинхронную запись от других запросов.</param>
+        <summary>Начинает операцию асинхронной записи. (Рекомендуется использовать <see cref="Overload:System.Security.Cryptography.CryptoStream.WriteAsync" />.)</summary>
+        <returns><see langword="IAsyncResult" /> представляет асинхронную запись, которая может все еще быть отложена.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ В платформе .NET Framework 4 и более ранних версий для реализации операций асинхронного ввода-вывода необходимо использовать такие методы, как <xref:System.Security.Cryptography.CryptoStream.BeginWrite%2A> и <xref:System.Security.Cryptography.CryptoStream.EndWrite%2A> . Эти методы по-прежнему доступны в .NET для поддержки устаревшего кода. Однако новые <xref:System.Security.Cryptography.CryptoStream.ReadAsync%2A>асинхронные методы, такие как <xref:System.IO.Stream.CopyToAsync%2A>, <xref:System.Security.Cryptography.CryptoStream.WriteAsync%2A>, и <xref:System.Security.Cryptography.CryptoStream.FlushAsync%2A>, упрощают реализацию асинхронных операций ввода-вывода.  
+  
+ <xref:System.Security.Cryptography.CryptoStream.EndWrite%2A> Передайте `IAsyncResult` возвращенное текущим методом значение, чтобы убедиться, что запись завершается и освобождает ресурсы соответствующим образом. <xref:System.Security.Cryptography.CryptoStream.EndWrite%2A>должен вызываться один раз для каждого вызова <xref:System.Security.Cryptography.CryptoStream.BeginWrite%2A>метода. Это можно сделать с помощью того же кода, который вызвал `BeginWrite` или в обратном вызове, переданном в. `BeginWrite` Если во время асинхронной записи возникает ошибка, то исключение не будет вызываться до `EndWrite` вызова метода `IAsyncResult` с возвращаемым этим методом.  
+  
+ Если поток доступен для записи, запись в конце потока расширяет поток.  
+  
+ Текущая позицией в потоке обновляется при выдаче асинхронного чтения или записи, а не после завершения операции ввода-вывода. Несколько одновременных асинхронных запросов отрабатывают порядок выполнения запроса неопределенным образом.  
+  
+ Используйте свойство <xref:System.Security.Cryptography.CryptoStream.CanWrite%2A> , чтобы определить, поддерживает ли текущий экземпляр запись.  
+  
+ Если поток закрыт или передан недопустимый аргумент, исключения немедленно создаются из `BeginWrite`. Ошибки, возникающие при асинхронном запросе записи, такие как сбой диска во время запроса ввода-вывода, происходят в потоке пула потоков и вызывают исключения при вызове метода `EndWrite`.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.IO.IOException">Попытка выполнить запись в асинхронном режиме за пределами конца потока или ошибка диска.</exception>
+        <exception cref="T:System.ArgumentException">Один или несколько аргументов являются недопустимыми.</exception>
+        <exception cref="T:System.ObjectDisposedException">Методы были вызваны после закрытия потока.</exception>
+        <exception cref="T:System.NotSupportedException">Текущая реализация класса <see langword="Stream" /> не поддерживает операцию записи.</exception>
       </Docs>
     </Member>
     <Member MemberName="CanRead">
@@ -487,9 +529,20 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <summary>Асинхронно освобождает неуправляемые ресурсы, используемые классом <see cref="T:System.Security.Cryptography.CryptoStream" />.</summary>
+        <returns>Задача, представляющая асинхронную операцию закрытия.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Security.Cryptography.CryptoStream.DisposeAsync%2A> Метод позволяет выполнять ресурсоемкие операции удаления без блокировки основного потока. Это соображение, связанное с производительностью, особенно важно в приложениях [!INCLUDE[win8_appname_long](~/includes/win8-appname-long-md.md)] и [!INCLUDE[desktop_appname](~/includes/desktop-appname-md.md)] , где длительная потоковая операция может блокировать поток пользовательского интерфейса и создавать впечатление, что приложение не работает. Асинхронные методы используются в сочетании с `async` ключевыми словами и `await` в Visual Basic и C#. 
+ 
+ Этот метод уничтожает поток, записывая изменения в резервное хранилище и закрывая поток для освобождения ресурсов.   
+  
+ Вызов `DisposeAsync` позволяет перераспределить ресурсы, используемые <xref:System.Security.Cryptography.CryptoStream> в, для других целей. Дополнительные сведения см. в разделе [Очистка неуправляемых ресурсов](~/docs/standard/garbage-collection/unmanaged.md).  
+  
+ ]]></format>
+        </remarks>
       </Docs>
     </Member>
     <Member MemberName="EndRead">
@@ -518,10 +571,31 @@
         <Parameter Name="asyncResult" Type="System.IAsyncResult" Index="0" FrameworkAlternate="netcore-2.1;netcore-2.2;netcore-3.0;netstandard-2.1" />
       </Parameters>
       <Docs>
-        <param name="asyncResult">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="asyncResult">Ссылка на отложенный асинхронный запрос, который необходимо завершить.</param>
+        <summary>Ожидает завершения отложенного асинхронного чтения. (Рекомендуется использовать <see cref="Overload:System.Security.Cryptography.CryptoStream.ReadAsync" />.)</summary>
+        <returns>Количество байтов, считанных из потока, от нуля (0) до количества запрошенных байтов. Потоки возвращают нуль (0) только в конце. В противном случае они должны блокироваться до тех пор, пока доступен хотя бы один байт.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ В платформе .NET Framework 4 и более ранних версий для реализации операций асинхронного ввода-вывода необходимо использовать такие методы, как <xref:System.Security.Cryptography.CryptoStream.BeginRead%2A> и <xref:System.Security.Cryptography.CryptoStream.EndRead%2A> . Эти методы по-прежнему доступны в .NET для поддержки устаревшего кода. Однако новые <xref:System.Security.Cryptography.CryptoStream.ReadAsync%2A>асинхронные методы, такие как <xref:System.IO.Stream.CopyToAsync%2A>, <xref:System.Security.Cryptography.CryptoStream.WriteAsync%2A>, и <xref:System.Security.Cryptography.CryptoStream.FlushAsync%2A>, упрощают реализацию асинхронных операций ввода-вывода.  
+  
+ Вызовите метод `EndRead` , чтобы определить, сколько байтов было считано из потока.  
+  
+ `EndRead`может вызываться один раз для <xref:System.IAsyncResult> каждого <xref:System.Security.Cryptography.CryptoStream.BeginRead%2A>из.  
+  
+ Этот метод блокируется до завершения операции ввода-вывода.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="asyncResult" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException">Обработчик отложенной операции считывания не доступен.  
+  
+ - или -  
+  
+ Ожидающая операция не поддерживает чтение.</exception>
+        <exception cref="T:System.InvalidOperationException"><paramref name="asyncResult" /> не происходит из метода <see cref="M:System.Security.Cryptography.CryptoStream.BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)" /> в текущем потоке.</exception>
+        <exception cref="T:System.IO.IOException">Поток закрыт, или произошла внутренняя ошибка.</exception>
       </Docs>
     </Member>
     <Member MemberName="EndWrite">
@@ -550,9 +624,28 @@
         <Parameter Name="asyncResult" Type="System.IAsyncResult" Index="0" FrameworkAlternate="netcore-2.1;netcore-2.2;netcore-3.0;netstandard-2.1" />
       </Parameters>
       <Docs>
-        <param name="asyncResult">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="asyncResult">Ссылка на невыполненный асинхронный запрос ввода-вывода.</param>
+        <summary>Заканчивает операцию асинхронной записи. (Рекомендуется использовать <see cref="Overload:System.Security.Cryptography.CryptoStream.WriteAsync" />.)</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ В платформе .NET Framework 4 и более ранних версий для реализации операций асинхронного ввода-вывода необходимо использовать такие методы, как <xref:System.Security.Cryptography.CryptoStream.BeginWrite%2A> и <xref:System.Security.Cryptography.CryptoStream.EndWrite%2A> . Эти методы по-прежнему доступны в .NET для поддержки устаревшего кода. Однако новые <xref:System.Security.Cryptography.CryptoStream.ReadAsync%2A>асинхронные методы, такие как <xref:System.IO.Stream.CopyToAsync%2A>, <xref:System.Security.Cryptography.CryptoStream.WriteAsync%2A>, и <xref:System.Security.Cryptography.CryptoStream.FlushAsync%2A>, упрощают реализацию асинхронных операций ввода-вывода.  
+  
+ `EndWrite`метод должен вызываться только один раз <xref:System.IAsyncResult> для <xref:System.Security.Cryptography.CryptoStream.BeginWrite%2A>каждого из.  
+  
+ Этот метод блокируется до завершения операции ввода-вывода. Ошибки, возникающие во время запроса асинхронной записи, такие как сбой диска во время запроса ввода-вывода, происходят в потоке пула потоков и становятся видимыми при вызове `EndWrite`. Исключения, вызываемые потоком пула потоков, не будут видны `EndWrite`при вызове.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="asyncResult" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException">Обработчик отложенной операции записи не доступен.  
+  
+ - или -  
+  
+ Ожидающая операция не поддерживает запись.</exception>
+        <exception cref="T:System.InvalidOperationException">Параметр <paramref name="asyncResult" /> не был порожден методом <see cref="M:System.IO.Stream.BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)" /> в текущем потоке.</exception>
+        <exception cref="T:System.IO.IOException">Поток закрыт, или произошла внутренняя ошибка.</exception>
       </Docs>
     </Member>
     <Member MemberName="Finalize">
@@ -717,8 +810,9 @@
         <exception cref="T:System.Security.Cryptography.CryptographicException">Ключ поврежден, что может привести к неправильному заполнению потока.</exception>
         <exception cref="T:System.NotSupportedException">Текущий поток недоступен для записи.  
   
-- или - 
-Последний блок уже преобразован.</exception>
+ -или-  
+  
+ Последний блок уже преобразован.</exception>
         <related type="Article" href="~/docs/standard/security/cryptographic-services.md">службы шифрования</related>
       </Docs>
     </Member>
@@ -899,7 +993,7 @@
         <exception cref="T:System.NotSupportedException">Режим <see cref="T:System.Security.Cryptography.CryptoStreamMode" />, связанный с текущим объектом <see cref="T:System.Security.Cryptography.CryptoStream" /> не соответствует базовому потоку.  Например, это исключение возникает при использовании режима <see cref="F:System.Security.Cryptography.CryptoStreamMode.Read" /> с потоком, доступным только для записи.</exception>
         <exception cref="T:System.ArgumentOutOfRangeException">Значение параметра <paramref name="offset" /> меньше нуля.  
   
-- или - 
+-или- 
 Значение параметра <paramref name="count" /> меньше нуля.</exception>
         <exception cref="T:System.ArgumentException">Сумма параметров <paramref name="count" /> и <paramref name="offset" /> превышает длину буфера.</exception>
         <related type="Article" href="~/docs/standard/security/cryptographic-services.md">службы шифрования</related>
@@ -988,9 +1082,20 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <summary>Считывает байт из потока и перемещает позицию в потоке на один байт или возвращает -1, если достигнут конец потока.</summary>
+        <returns>Байт без знака, приведенный к <see langword="Int32" />, или значение -1, если достигнут конец потока.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Используйте свойство <xref:System.Security.Cryptography.CryptoStream.CanRead%2A> , чтобы определить, поддерживает ли текущий экземпляр чтение.  
+  
+ Попытки управления потоком после закрытия потока могут вызвать <xref:System.ObjectDisposedException>исключение.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.NotSupportedException">Поток не поддерживает чтение.</exception>
+        <exception cref="T:System.ObjectDisposedException">Методы были вызваны после закрытия потока.</exception>
       </Docs>
     </Member>
     <Member MemberName="Seek">
@@ -1168,7 +1273,7 @@
         <exception cref="T:System.NotSupportedException">Режим <see cref="T:System.Security.Cryptography.CryptoStreamMode" />, связанный с текущим объектом <see cref="T:System.Security.Cryptography.CryptoStream" /> не соответствует базовому потоку.  Например, это исключение возникает при использовании <see cref="F:System.Security.Cryptography.CryptoStreamMode.Write" /> с базовым потоком, доступным только для чтения.</exception>
         <exception cref="T:System.ArgumentOutOfRangeException">Значение параметра <paramref name="offset" /> меньше нуля.  
   
-- или - 
+-или- 
 Значение параметра <paramref name="count" /> меньше нуля.</exception>
         <exception cref="T:System.ArgumentException">Сумма параметров <paramref name="count" /> и <paramref name="offset" /> превышает длину буфера.</exception>
         <related type="Article" href="~/docs/standard/security/cryptographic-services.md">службы шифрования</related>
@@ -1259,9 +1364,19 @@
         <Parameter Name="value" Type="System.Byte" Index="0" FrameworkAlternate="netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netstandard-2.1" />
       </Parameters>
       <Docs>
-        <param name="value">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="value">Байт, записываемый в поток.</param>
+        <summary>Записывает байт в текущее положение в потоке и перемещает позицию в потоке вперед на один байт.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Используйте свойство <xref:System.Security.Cryptography.CryptoStream.CanWrite%2A> , чтобы определить, поддерживает ли текущий экземпляр запись.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.IO.IOException">Ошибка ввода-вывода.</exception>
+        <exception cref="T:System.NotSupportedException">Поток не поддерживает запись или был закрыт до начала операции.</exception>
+        <exception cref="T:System.ObjectDisposedException">Методы были вызваны после закрытия потока.</exception>
       </Docs>
     </Member>
   </Members>
