@@ -1,5 +1,5 @@
 <Type Name="Pkcs12CertBag" FullName="System.Security.Cryptography.Pkcs.Pkcs12CertBag">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="8e67171bcb6867e3d0c4bcf5ec2f48ea650da677" /><Meta Name="ms.sourcegitcommit" Value="bc24a3ba616ee1df8b858f9400cae4f058ea3a7e" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="06/19/2019" /><Meta Name="ms.locfileid" Value="67247164" /></Metadata><TypeSignature Language="C#" Value="public sealed class Pkcs12CertBag : System.Security.Cryptography.Pkcs.Pkcs12SafeBag" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="3acb9c5e2e4fcc8cfb7600792777514885258724" /><Meta Name="ms.sourcegitcommit" Value="08fc3691deb7adaf0dfd751b9d9d0b23a3d3a7b8" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="08/09/2019" /><Meta Name="ms.locfileid" Value="68894529" /></Metadata><TypeSignature Language="C#" Value="public sealed class Pkcs12CertBag : System.Security.Cryptography.Pkcs.Pkcs12SafeBag" />
   <TypeSignature Language="ILAsm" Value=".class public auto ansi sealed beforefieldinit Pkcs12CertBag extends System.Security.Cryptography.Pkcs.Pkcs12SafeBag" />
   <TypeSignature Language="DocId" Value="T:System.Security.Cryptography.Pkcs.Pkcs12CertBag" />
   <TypeSignature Language="VB.NET" Value="Public NotInheritable Class Pkcs12CertBag&#xA;Inherits Pkcs12SafeBag" />
@@ -15,7 +15,7 @@
   </Base>
   <Interfaces />
   <Docs>
-    <summary>To be added.</summary>
+    <summary>Представляет контейнер CertBag PKCS#12. Этот класс не наследуется.</summary>
     <remarks>To be added.</remarks>
   </Docs>
   <Members>
@@ -43,12 +43,16 @@
         <remarks>
           <format type="text/markdown"><![CDATA[
 
-Чтобы убедиться, что не проверяются `encodedCertificate` значение является правильным для указанного `certificateType`.
+## Remarks 
 
-Обратите внимание, что сертификаты открытого ключа X.509, правильную кодировку для значения CertBag программы-оболочки для сертификатов DER-кодировке в виде строки ОКТЕТ.
+Проверка того, что `encodedCertificate` значение указано правильно для указанного `certificateType`значения, не выполняется.
+
+Обратите внимание, что для сертификатов с открытым ключом X. 509 правильная кодировка для значения Цертбаг заключается в переносе сертификата в кодировке DER в строку ОКТЕТа.
 
           ]]></format>
         </remarks>
+        <exception cref="T:System.ArgumentNullException">Параметр <paramref name="certificateType" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.Security.Cryptography.CryptographicException">Параметр <paramref name="encodedCertificate" /> не представляет одиночное значение в кодировке ASN.1 BER.</exception>
       </Docs>
     </Member>
     <Member MemberName="EncodedCertificate">
@@ -68,9 +72,18 @@
         <ReturnType>System.ReadOnlyMemory&lt;System.Byte&gt;</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Возвращает неинтерпретированное содержимое сертификата из контейнера CertSafeBag.</summary>
+        <value>Неинтерпретируемое содержимое сертификата Цертсафебаг.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
+
+Для сертификатов с открытым ключом X. 509 значение этого свойства является СТРОКой ОКТЕТа в кодировке ЛИЧЕСТВО, охватывающей значение сертификата в кодировке DER.
+
+          ]]></format>
+        </remarks>
+        <altmember cref="M:System.Security.Cryptography.Pkcs.Pkcs12CertBag.GetCertificate" />
       </Docs>
     </Member>
     <Member MemberName="GetCertificate">
@@ -91,9 +104,12 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <summary>Возвращает содержимое объекта CertBag, интерпретированное как сертификат открытого ключа X.509.</summary>
+        <returns>Сертификат, декодированный из содержимого объекта CertBag.</returns>
         <remarks>To be added.</remarks>
+        <exception cref="T:System.InalidOperationException">Это не тип содержимого сертификата открытого ключа X.509.</exception>
+        <exception cref="T:System.Security.Cryptography.CryptographicException">Содержимое недопустимо для типа содержимого сертификата X.509.</exception>
+        <altmember cref="P:System.Security.Cryptography.Pkcs.Pkcs12CertBag.IsX509Certificate" />
       </Docs>
     </Member>
     <Member MemberName="GetCertificateType">
@@ -114,9 +130,18 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <summary>Возвращает идентификатор объекта (OID), определяющий тип содержимого закодированного значения сертификата.</summary>
+        <returns>Идентификатор объекта (OID), определяющий тип содержимого закодированного значения сертификата.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks 
+
+IETF RFC 7292 определяет два типа содержимого для Цертбаг: Сертификат открытого ключа X. 509 (1.2.840.113549.1.9.22.1) и сертификат СДСИ (1.2.840.113549.1.9.22.2), а также другие типы, которые можно добавить в будущем. Этот тип имеет специальную поддержку сертификатов открытого ключа X. 509, которые представлены <xref:System.Security.Cryptography.X509Certificates.X509Certificate2> классом .NET с <xref:System.Security.Cryptography.Pkcs.Pkcs12CertBag.IsX509Certificate> помощью членов и <xref:System.Security.Cryptography.Pkcs.Pkcs12CertBag.GetCertificate> . Этот тип не имеет специальной поддержки для сертификатов сдси, но вызывающие объекты, ожидающие сертификат сдси (или тип сертификата, определенный после IETF RFC 7292), могут обработать это значение непосредственно <xref:System.Security.Cryptography.Pkcs.Pkcs12CertBag.EncodedCertificate> через свойство.
+
+          ]]></format>
+        </remarks>
+        <altmember cref="P:System.Security.Cryptography.Pkcs.Pkcs12CertBag.IsX509Certificate" />
       </Docs>
     </Member>
     <Member MemberName="IsX509Certificate">
@@ -136,9 +161,10 @@
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
+        <summary>Возвращает значение, указывающее, имеет ли закодированный сертификат тип содержимого сертификата открытого ключа X.509.</summary>
+        <value><see langword="true" />Если тип содержимого — это тип содержимого сертификата открытого ключа X. 509 (1.2.840.113549.1.9.22.1); в противном случае —. <see langword="false" /></value>
         <remarks>To be added.</remarks>
+        <altmember cref="M:System.Security.Cryptography.Pkcs.Pkcs12CertBag.GetCertificateType" />
       </Docs>
     </Member>
   </Members>
