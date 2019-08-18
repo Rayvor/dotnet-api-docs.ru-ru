@@ -1,5 +1,5 @@
 <Type Name="WorkflowInstance" FullName="System.Activities.Hosting.WorkflowInstance">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="d3f9599fb8a859242cf5b1b2a1ae36d9717ba339" /><Meta Name="ms.sourcegitcommit" Value="bac13a81377b1c4ebf3990e3287a6f1700f73751" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="03/19/2019" /><Meta Name="ms.locfileid" Value="57936827" /></Metadata><TypeSignature Language="C#" Value="public abstract class WorkflowInstance" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="fc28f05dc1d614b37de8e2d163b658a13b622888" /><Meta Name="ms.sourcegitcommit" Value="055a4a82a0b08bfbdc21bd1347fb71f7fe2c099e" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="08/15/2019" /><Meta Name="ms.locfileid" Value="69308722" /></Metadata><TypeSignature Language="C#" Value="public abstract class WorkflowInstance" />
   <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract WorkflowInstance extends System.Object" />
   <TypeSignature Language="DocId" Value="T:System.Activities.Hosting.WorkflowInstance" />
   <TypeSignature Language="VB.NET" Value="Public MustInherit Class WorkflowInstance" />
@@ -21,7 +21,7 @@
 ## Remarks  
  Класс <xref:System.Activities.Hosting.WorkflowInstance> является однопотоковым и предполагает, что узел выполняет синхронизацию доступа к нему. При попытке одновременного вызова нескольких API сформируется исключение <xref:System.InvalidOperationException>.  
   
- На внутреннем уровне <xref:System.Activities.Hosting.WorkflowInstance> имеет два состояния: Запущен и приостановлена. Единственным способом перевода среды выполнения из состояния «приостановлен» в состояние «выполняется» является вызов метода <xref:System.Activities.Hosting.WorkflowInstance.WorkflowInstanceControl.Run%2A>. Все действия (за исключением приостановки) могут выполняться только во время приостановки среды выполнения. Среда выполнения будет автоматически приостановлена в следующих ситуациях.  
+ Внутри компонент <xref:System.Activities.Hosting.WorkflowInstance> имеет два состояния: Запуск и приостановка. Единственным способом перевода среды выполнения из состояния «приостановлен» в состояние «выполняется» является вызов метода <xref:System.Activities.Hosting.WorkflowInstance.WorkflowInstanceControl.Run%2A>. Все действия (за исключением приостановки) могут выполняться только во время приостановки среды выполнения. Среда выполнения будет автоматически приостановлена в следующих ситуациях.  
   
 -   Произошла неустранимая ошибка среды выполнения. Метод <xref:System.Activities.Hosting.WorkflowInstance.OnRequestAbort%2A> отправит уведомление узлу (что не означает переход в состояние «приостановлено»), после чего узлу будет отправлено уведомление с помощью <xref:System.Activities.Hosting.WorkflowInstance.OnNotifyPaused%2A>.  
   
@@ -33,9 +33,9 @@
   
  Метод <xref:System.Activities.Hosting.WorkflowInstance.WorkflowInstanceControl.RequestPause%2A> экземпляра <xref:System.Activities.Hosting.WorkflowInstance.WorkflowInstanceControl>, возвращенный свойством <xref:System.Activities.Hosting.WorkflowInstance.Controller%2A>, является единственным методом, который может быть вызван, если <xref:System.Activities.Hosting.WorkflowInstance> находится в состоянии «выполняется». При вызове других методов будет сформировано исключение <xref:System.InvalidOperationException>. В соответствии с правилами изменения состояния <xref:System.Activities.Hosting.WorkflowInstance> общее определение состояний «выполняется» и «приостановлено» можно сформулировать следующим образом:  
   
--   Выполнение — состояние между вызовом <xref:System.Activities.Hosting.WorkflowInstance.WorkflowInstanceControl.Run%2A> и следующим WorkflowInstance.OnNotify*.  
+-   Выполнение — состояние между вызовом <xref:System.Activities.Hosting.WorkflowInstance.WorkflowInstanceControl.Run%2A> и следующим объектом WorkflowInstance. OnNotify *.  
   
--   Приостановлено — состояние между последним вызовом WorkflowInstance.OnNotify* и следующего вызова <xref:System.Activities.Hosting.WorkflowInstance.WorkflowInstanceControl.Run%2A>.  
+-   Приостановка — состояние между последним WorkflowInstance. OnNotify * и следующим вызовом метода <xref:System.Activities.Hosting.WorkflowInstance.WorkflowInstanceControl.Run%2A>.  
   
  ]]></format>
     </remarks>
@@ -348,7 +348,7 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Если это свойство задается после инициализации экземпляра рабочего процесса и <xref:System.Activities.Hosting.WorkflowInstance.IsReadOnly%2A> возвращает `true`, <xref:System.InvalidOperationException> возникает исключение.  
+ Если это свойство задается после инициализации и <xref:System.Activities.Hosting.WorkflowInstance.IsReadOnly%2A> возврата `true`экземпляра рабочего процесса, <xref:System.InvalidOperationException> создается исключение.  
   
  ]]></format>
         </remarks>
@@ -826,7 +826,7 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Расширения отличаются типом; расширения, предоставленные узлом, всегда используются. Расширения, добавляемые с помощью метода <xref:System.Activities.Hosting.WorkflowInstanceExtensionManager.Add%2A>, используют в качестве параметра типа тип среды выполнения объекта. Поставщики расширений, добавляемые через <xref:System.Activities.Hosting.WorkflowInstanceExtensionManager.Add%2A> использовать типа объявленный тип т Func\<T > в качестве параметра типа. Поставщики расширений, добавленные действиями с помощью различных методов *ActivityMetadata.AddDefaultExtensionProvider, сбрасываются, если для объявленного типа существует расширение узла или если существует более широкий тип, предоставленный через объект AddDefaultExtensionProvider (например, Если Func\<StreamWriter > предоставляются и Func\<TextWriter > предоставляется только Func\<StreamWriter > будут храниться). Если расширение, необходимое для выполнения действия (выраженное вызовом *ActivityMetadata.RequireExtension), отсутствует в коллекции, возникает исключение <xref:System.Activities.ValidationException>.  
+ Расширения отличаются типом; расширения, предоставленные узлом, всегда используются. Расширения, добавляемые с помощью метода <xref:System.Activities.Hosting.WorkflowInstanceExtensionManager.Add%2A>, используют в качестве параметра типа тип среды выполнения объекта. Поставщики расширений, добавленные с помощью <xref:System.Activities.Hosting.WorkflowInstanceExtensionManager.Add%2A> , используют в качестве ключа типа отменяющий тип t > Func\<T. Поставщики расширений, добавленные действиями с помощью различных методов *ActivityMetadata.AddDefaultExtensionProvider, сбрасываются, если для объявленного типа существует расширение узла или если существует более широкий тип, предоставленный через объект AddDefaultExtensionProvider (например, Если функция\<Func StreamWriter > предоставляется, а\<функция Func TextWriter > предоставляется, будет\<сохраняться только функция Func StreamWriter >. Если расширение, необходимое для выполнения действия (выраженное вызовом *ActivityMetadata.RequireExtension), отсутствует в коллекции, возникает исключение <xref:System.Activities.ValidationException>.  
   
  ]]></format>
         </remarks>
@@ -880,7 +880,7 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Если это свойство задается после инициализации экземпляра рабочего процесса и <xref:System.Activities.Hosting.WorkflowInstance.IsReadOnly%2A> возвращает `true`, <xref:System.InvalidOperationException> возникает исключение.  
+ Если это свойство задается после инициализации и <xref:System.Activities.Hosting.WorkflowInstance.IsReadOnly%2A> возврата `true`экземпляра рабочего процесса, <xref:System.InvalidOperationException> создается исключение.  
   
  ]]></format>
         </remarks>
@@ -908,7 +908,7 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Если <xref:System.Activities.Hosting.WorkflowInstance.IsReadOnly%2A> возвращает `true`, а затем <xref:System.InvalidOperationException> возникает исключение.  
+ Если <xref:System.Activities.Hosting.WorkflowInstance.IsReadOnly%2A> возвращает `true` ,<xref:System.InvalidOperationException> создается исключение.  
   
  ]]></format>
         </remarks>
