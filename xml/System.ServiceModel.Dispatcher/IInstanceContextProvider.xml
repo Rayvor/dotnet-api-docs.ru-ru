@@ -1,5 +1,5 @@
 <Type Name="IInstanceContextProvider" FullName="System.ServiceModel.Dispatcher.IInstanceContextProvider">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="28c37f44bfb30eb2dcec7a72634b22bd36550b6c" /><Meta Name="ms.sourcegitcommit" Value="16d2d159872fd213cae4b8f371d7ae9c8b027c89" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="11/17/2018" /><Meta Name="ms.locfileid" Value="51868185" /></Metadata><TypeSignature Language="C#" Value="public interface IInstanceContextProvider" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="d5fe22adabd6c7ddbd809e7be39d5cd041175a39" /><Meta Name="ms.sourcegitcommit" Value="055a4a82a0b08bfbdc21bd1347fb71f7fe2c099e" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="08/15/2019" /><Meta Name="ms.locfileid" Value="69150298" /></Metadata><TypeSignature Language="C#" Value="public interface IInstanceContextProvider" />
   <TypeSignature Language="ILAsm" Value=".class public interface auto ansi abstract IInstanceContextProvider" />
   <TypeSignature Language="DocId" Value="T:System.ServiceModel.Dispatcher.IInstanceContextProvider" />
   <TypeSignature Language="VB.NET" Value="Public Interface IInstanceContextProvider" />
@@ -19,10 +19,10 @@
 ## Remarks  
  Реализуйте интерфейс <xref:System.ServiceModel.Dispatcher.IInstanceContextProvider>, чтобы предоставить системе соответствующий объект <xref:System.ServiceModel.InstanceContext?displayProperty=nameWithType>. Обычно этот интерфейс реализуется для поддержки общих сеансов, обеспечения пулов экземпляров служб, контроля времени существования экземпляров служб или группировки контекстов клиентов.  
   
- Например, для реализации общего использования вставьте пользовательский интерфейс <xref:System.ServiceModel.Dispatcher.IInstanceContextProvider>, чтобы определить, какой сеанс или вызов от клиента связан с объектом <xref:System.ServiceModel.InstanceContext>. Пример, демонстрирующий общее использование контекстов экземпляров, см. в разделе [InstanceContextSharing](https://msdn.microsoft.com/library/4a6a46d7-b7d7-4bb5-a0dd-03ffa3cbc230).  
+ Например, для реализации общего использования вставьте пользовательский интерфейс <xref:System.ServiceModel.Dispatcher.IInstanceContextProvider>, чтобы определить, какой сеанс или вызов от клиента связан с объектом <xref:System.ServiceModel.InstanceContext>. Пример, демонстрирующий совместное использование контекстов экземпляра, см. в разделе [инстанцеконтекстшаринг](https://msdn.microsoft.com/library/4a6a46d7-b7d7-4bb5-a0dd-03ffa3cbc230).  
   
 > [!NOTE]
->  Когда <xref:System.ServiceModel.Dispatcher.IInstanceContextProvider> вставляется в Windows Communication Foundation (WCF), обычное свойство, которое контролирует создание <xref:System.ServiceModel.InstanceContext> объектов ( <xref:System.ServiceModel.ServiceBehaviorAttribute.InstanceContextMode%2A?displayProperty=nameWithType> свойство), больше не проверяется и не оказывает влияния.  
+>  Когда объект <xref:System.ServiceModel.Dispatcher.IInstanceContextProvider> вставляется в Windows Communication Foundation (WCF), свойство "нормальное", которое управляет <xref:System.ServiceModel.InstanceContext> созданием объектов <xref:System.ServiceModel.ServiceBehaviorAttribute.InstanceContextMode%2A?displayProperty=nameWithType> (свойство), больше не проверяется и не оказывает никакого влияния.  
   
  Более универсальным механизмом, с помощью которого можно инициализировать объекты <xref:System.ServiceModel.InstanceContext> при создании (например, для присоединения пользовательских расширений к каждому объекту<xref:System.ServiceModel.InstanceContext>) является интерфейс <xref:System.ServiceModel.Dispatcher.IInstanceContextInitializer?displayProperty=nameWithType>.  
   
@@ -58,7 +58,7 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Метод <xref:System.ServiceModel.Dispatcher.IInstanceContextProvider.GetExistingInstanceContext%2A> вызывается при получении сообщения. Передайте объект <xref:System.ServiceModel.InstanceContext>, который требуется использовать для обработки сообщения, или `null`. В случае использования `null`, WCF создает новую <xref:System.ServiceModel.InstanceContext> объект для сообщения, а затем вызывает <xref:System.ServiceModel.Dispatcher.IInstanceContextProvider.InitializeInstanceContext%2A> метод.  
+ Метод <xref:System.ServiceModel.Dispatcher.IInstanceContextProvider.GetExistingInstanceContext%2A> вызывается при получении сообщения. Передайте объект <xref:System.ServiceModel.InstanceContext>, который требуется использовать для обработки сообщения, или `null`. В случае `null`, WCF создает новый <xref:System.ServiceModel.InstanceContext> объект для <xref:System.ServiceModel.Dispatcher.IInstanceContextProvider.InitializeInstanceContext%2A> сообщения, а затем вызывает метод.  
   
  Если передается значение `null`, то новый объект<xref:System.ServiceModel.InstanceContext> проходит через систему регулирования количества запросов и увеличивает число <xref:System.ServiceModel.Dispatcher.ServiceThrottle.MaxConcurrentInstances%2A?displayProperty=nameWithType>.  
   
@@ -127,9 +127,9 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- <xref:System.ServiceModel.Dispatcher.IInstanceContextProvider.IsIdle%2A> вызывается, когда WCF пытается закрыть и уничтожить бездействующий <xref:System.ServiceModel.InstanceContext> таким образом, чтобы сообщить среде выполнения следует ли продолжать делать это.  
+ <xref:System.ServiceModel.Dispatcher.IInstanceContextProvider.IsIdle%2A>вызывается, когда WCF собирается закрыть и повторно запустить неактивный <xref:System.ServiceModel.InstanceContext> объект, чтобы вы могли сообщить среде выполнения, следует ли продолжать это.  
   
- Пример, демонстрирующий общее использование контекстов экземпляров, см. в разделе [InstanceContextSharing](https://msdn.microsoft.com/library/4a6a46d7-b7d7-4bb5-a0dd-03ffa3cbc230).  
+ Пример, демонстрирующий совместное использование контекстов экземпляра, см. в разделе [инстанцеконтекстшаринг](https://msdn.microsoft.com/library/4a6a46d7-b7d7-4bb5-a0dd-03ffa3cbc230).  
   
  ]]></format>
         </remarks>
@@ -162,7 +162,7 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- <xref:System.ServiceModel.Dispatcher.IInstanceContextProvider.NotifyIdle%2A> Метод вызывается, когда <xref:System.ServiceModel.Dispatcher.IInstanceContextProvider.IsIdle%2A> возвращает `false` чтобы можно было предоставить WCF при помощи <xref:System.ServiceModel.Dispatcher.InstanceContextIdleCallback?displayProperty=nameWithType> объекта, которая позволяет сообщить среде выполнения, <xref:System.ServiceModel.InstanceContext> завершил работу. Когда <xref:System.ServiceModel.Dispatcher.InstanceContextIdleCallback?displayProperty=nameWithType> объект предписывает среде выполнения, <xref:System.ServiceModel.InstanceContext> завершения его работы, WCF-вызовов <xref:System.ServiceModel.Dispatcher.IInstanceContextProvider.IsIdle%2A> еще раз. Этот цикл продолжается, пока метод <xref:System.ServiceModel.Dispatcher.IInstanceContextProvider.IsIdle%2A> не вернет значение `true`, а контекст не будет закрыт и уничтожен.  
+ `false` <xref:System.ServiceModel.Dispatcher.InstanceContextIdleCallback?displayProperty=nameWithType> <xref:System.ServiceModel.InstanceContext> Метод вызывается, <xref:System.ServiceModel.Dispatcher.IInstanceContextProvider.IsIdle%2A> когда метод возвращает, чтобы предоставить WCF объекту, который используется для информирования среды выполнения о завершении работы. <xref:System.ServiceModel.Dispatcher.IInstanceContextProvider.NotifyIdle%2A> Когда объект уведомляет среду выполнения <xref:System.ServiceModel.InstanceContext> о завершении работы, WCF вызывает <xref:System.ServiceModel.Dispatcher.IInstanceContextProvider.IsIdle%2A> один раз. <xref:System.ServiceModel.Dispatcher.InstanceContextIdleCallback?displayProperty=nameWithType> Этот цикл продолжается, пока метод <xref:System.ServiceModel.Dispatcher.IInstanceContextProvider.IsIdle%2A> не вернет значение `true`, а контекст не будет закрыт и уничтожен.  
   
  ]]></format>
         </remarks>
