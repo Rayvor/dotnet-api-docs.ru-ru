@@ -1,5 +1,5 @@
 <Type Name="MemoryMarshal" FullName="System.Runtime.InteropServices.MemoryMarshal">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="10291d94526466a6a071d4ad6764465616a0532c" /><Meta Name="ms.sourcegitcommit" Value="634678f7ccd2928c6b2cf792a301b079b63639af" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="07/26/2019" /><Meta Name="ms.locfileid" Value="68542983" /></Metadata><TypeSignature Language="C#" Value="public static class MemoryMarshal" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="061fde1ad6b10337c3320608dcc3a5dd94f4c8dc" /><Meta Name="ms.sourcegitcommit" Value="cb4d218ffd5a459a5f921fe1d945c682d1e09aca" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="08/16/2019" /><Meta Name="ms.locfileid" Value="69540073" /></Metadata><TypeSignature Language="C#" Value="public static class MemoryMarshal" />
   <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract sealed beforefieldinit MemoryMarshal extends System.Object" />
   <TypeSignature Language="DocId" Value="T:System.Runtime.InteropServices.MemoryMarshal" />
   <TypeSignature Language="VB.NET" Value="Public Class MemoryMarshal" />
@@ -380,7 +380,11 @@
 
 Ни `TFrom` они `TTo` , ни не могут содержать указатели или ссылки. `TFrom`и `TTo` проверяются во время выполнения, чтобы обеспечить безопасность типов.  
 
-Приведение выполняется в непроверяемом контексте. Если диапазон `TTo` меньше `TFrom`, чем диапазон, могут возникать потери данных. Например `TFrom` , если <xref:System.Int32>имеет <xref:System.Int64>значение, то одно из `ReadOnlySpan<Int32>` значений — 0x100001111110F0F, а `TTo` —, то результирующим значением является 11110F0F.
+Если размеры двух типов различаются, приведение объединяет или разделяет значения, что приводит к изменению длины.
+
+`TFrom` Например, если имеет <xref:System.Int64>значение, в `ReadOnlySpan<Int64>` параметре содержится одиночное value, 0x0100001111110F0F `TTo` , <xref:System.Int32>а — результирующий `ReadOnlySpan<Int32>` объект содержит два значения. Значения — 0x11110F0F и 0x01000011 в архитектуре с прямым порядком байтов, например x86. В архитектуре с обратным порядком байтов два значения меняются на обратный, т. е. 0x01000011, за которым следует 0x11110F0F.
+
+В качестве другого примера, `TFrom` если <xref:System.Int32>имеет значение `ReadOnlySpan<Int32>` , параметр содержит значения 1, 2 и 3, а `TTo` — <xref:System.Int64>, а результирующее `ReadOnlySpan<Int64>` поле содержит только одно. 0x0000000200000001 в архитектуре с прямым порядком байтов и 0x0000000100000002 в архитектуре с обратным порядком байтов.
 
 Этот метод поддерживается только на платформах, которые поддерживают несогласованный доступ к памяти или когда блок памяти соответствует другим средствам.
 
@@ -423,7 +427,7 @@
         <param name="start">Индекс <paramref name="array" />, с которого определяется начало блока памяти.</param>
         <param name="length">Количество элементов, которые будут включены в блок памяти.</param>
         <summary>Создает новый буфер памяти размером, который соответствует части предварительно привязанного целевого массива с начальным индексом <paramref name="start" /> и количеством элементов <paramref name="length" />.</summary>
-        <returns>Блок памяти, содержащий указанные элементы <paramref name="array" />. Если <paramref name="array" /> имеет значение <see langword="null" />, а <paramref name="start" /> и <paramref name="length" /> — 0, метод возвращает экземпляр <see cref="T:System.Memory`1" /> со свойством <see cref="System.Memory`1.Length" />, равным 0.</returns>
+        <returns>Блок памяти, содержащий указанные элементы <paramref name="array" />. Если <paramref name="array" /> имеет значение <see langword="null" />, а <paramref name="start" /> и <paramref name="length" /> — 0, метод возвращает экземпляр <see cref="T:System.Memory`1" /> со свойством <see cref="P:System.Memory`1.Length" />, равным 0.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
