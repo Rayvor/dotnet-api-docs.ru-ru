@@ -1,5 +1,5 @@
 <Type Name="DbConnection" FullName="System.Data.Common.DbConnection">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="9da4369b329ee9a2630950166793dc348f6d6da3" /><Meta Name="ms.sourcegitcommit" Value="74239f3977d28923e5020663db2c4e91601bea79" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="07/24/2019" /><Meta Name="ms.locfileid" Value="68438443" /></Metadata><TypeSignature Language="C#" Value="public abstract class DbConnection : System.ComponentModel.Component, IDisposable, System.Data.IDbConnection" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="bc836f2bdb28f5a99e9003969128c0af98e371a7" /><Meta Name="ms.sourcegitcommit" Value="cb4d218ffd5a459a5f921fe1d945c682d1e09aca" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="08/16/2019" /><Meta Name="ms.locfileid" Value="69539573" /></Metadata><TypeSignature Language="C#" Value="public abstract class DbConnection : System.ComponentModel.Component, IDisposable, System.Data.IDbConnection" />
   <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract beforefieldinit DbConnection extends System.ComponentModel.Component implements class System.Data.IDbConnection, class System.IDisposable" />
   <TypeSignature Language="DocId" Value="T:System.Data.Common.DbConnection" />
   <TypeSignature Language="VB.NET" Value="Public MustInherit Class DbConnection&#xA;Inherits Component&#xA;Implements IDbConnection, IDisposable" />
@@ -36,10 +36,10 @@
     </Interface>
   </Interfaces>
   <Docs>
-    <summary>Представляет подключение к базе данных.</summary>
+    <summary>Определяет основное поведение подключений к базе данных и предоставляет базовый класс для подключений, связанных с базой данных.</summary>
     <remarks>To be added.</remarks>
     <block subset="none" type="overrides"><para>При наследовании из <see cref="T:System.Data.Common.DbConnection" />необходимо переопределить следующие члены: <see cref="M:System.Data.Common.DbConnection.Close" />, <see cref="M:System.Data.Common.DbConnection.BeginDbTransaction(System.Data.IsolationLevel)" />, <see cref="M:System.Data.Common.DbConnection.ChangeDatabase(System.String)" />, <see cref="M:System.Data.Common.DbConnection.CreateDbCommand" /> <see cref="M:System.Data.Common.DbConnection.Open" />, и <see cref="E:System.Data.Common.DbConnection.StateChange" />. Необходимо также предоставить следующие свойства: <see cref="P:System.Data.Common.DbConnection.ConnectionString" />, <see cref="P:System.Data.Common.DbConnection.Database" />, <see cref="P:System.Data.Common.DbConnection.DataSource" />, <see cref="P:System.Data.Common.DbConnection.ServerVersion" />и <see cref="P:System.Data.Common.DbConnection.State" />.</para></block>
-    <related type="Article" href="https://msdn.microsoft.com/library/2a8e2640-3a49-42a1-a3a9-b43026907ae1">Классы DbProviderFactory (ADO.NET)</related>
+    <related type="Article" href="~/docs/framework/data/adonet/dbproviderfactories.md">Классы DbProviderFactory (ADO.NET)</related>
     <related type="Article" href="~/docs/framework/data/adonet/ado-net-overview.md">Общие сведения о ADO.NET</related>
   </Docs>
   <Members>
@@ -72,7 +72,7 @@
       <Docs>
         <summary>Инициализирует новый экземпляр класса <see cref="T:System.Data.Common.DbConnection" />.</summary>
         <remarks>To be added.</remarks>
-        <related type="Article" href="https://msdn.microsoft.com/library/2a8e2640-3a49-42a1-a3a9-b43026907ae1">Классы DbProviderFactory (ADO.NET)</related>
+        <related type="Article" href="~/docs/framework/data/adonet/dbproviderfactories.md">Классы DbProviderFactory (ADO.NET)</related>
         <related type="Article" href="~/docs/framework/data/adonet/ado-net-overview.md">Общие сведения о ADO.NET</related>
       </Docs>
     </Member>
@@ -108,8 +108,8 @@
         <Parameter Name="isolationLevel" Type="System.Data.IsolationLevel" />
       </Parameters>
       <Docs>
-        <param name="isolationLevel">Указывает уровень изоляции транзакции.</param>
-        <summary>Начинает транзакцию базы данных.</summary>
+        <param name="isolationLevel">Одно из значений перечисления, задающих уровень изоляции используемой транзакции.</param>
+        <summary>При переопределении в производном классе запускает транзакцию в базе данных.</summary>
         <returns>Объект, представляющий новую транзакцию.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[  
@@ -147,12 +147,21 @@
         <Parameter Name="cancellationToken" Type="System.Threading.CancellationToken" Index="1" FrameworkAlternate="netcore-3.0" />
       </Parameters>
       <Docs>
-        <param name="isolationLevel">To be added.</param>
-        <param name="cancellationToken">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
-      </Docs>
+        <param name="isolationLevel">Одно из значений перечисления, задающих уровень изоляции используемой транзакции.</param>
+        <param name="cancellationToken">Токен для отмены асинхронной операции.</param>
+        <summary>Асинхронно запускает транзакцию в базе данных.</summary>
+        <returns>Задача, свойство <see cref="P:System.Threading.Tasks.Task`1.Result" /> которой является объектом, представляющим новую транзакцию.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация этого асинхронного метода по умолчанию делегирует его синхронному аналогу и `Task`возвращает завершенный, потенциально блокирующий вызывающий поток.
+ 
+ Поставщики данных, поддерживающие [Асинхронное программирование](~/docs/framework/data/adonet/asynchronous-programming.md) , должны переопределять инмплементатион по умолчанию с помощью асинхронных операций ввода-вывода.
+  
+ ]]></format>
+        </remarks>
+    </Docs>
     </Member>
     <MemberGroup MemberName="BeginTransaction">
       <AssemblyInfo>
@@ -169,7 +178,7 @@
   
  ]]></format>
         </remarks>
-        <related type="Article" href="https://msdn.microsoft.com/library/f46570de-9e50-4fe6-8710-a8c31fa8569b">Транзакции (ADO.NET)</related>
+        <related type="Article" href="~/docs/framework/data/adonet/transactions-and-concurrency.md">Транзакции и параллельность (ADO.NET)</related>
         <related type="Article" href="~/docs/framework/data/adonet/ado-net-overview.md">Общие сведения о ADO.NET</related>
       </Docs>
     </MemberGroup>
@@ -214,7 +223,7 @@
   
  ]]></format>
         </remarks>
-        <related type="Article" href="https://msdn.microsoft.com/library/f46570de-9e50-4fe6-8710-a8c31fa8569b">Транзакции (ADO.NET)</related>
+        <related type="Article" href="~/docs/framework/data/adonet/transactions-and-concurrency.md">Транзакции и параллельность (ADO.NET)</related>
         <related type="Article" href="~/docs/framework/data/adonet/ado-net-overview.md">Общие сведения о ADO.NET</related>
       </Docs>
     </Member>
@@ -250,11 +259,11 @@
         <Parameter Name="isolationLevel" Type="System.Data.IsolationLevel" />
       </Parameters>
       <Docs>
-        <param name="isolationLevel">Указывает уровень изоляции транзакции.</param>
+        <param name="isolationLevel">Одно из значений перечисления, задающих уровень изоляции используемой транзакции.</param>
         <summary>Начинает транзакцию базы данных с указанным уровнем изоляции.</summary>
         <returns>Объект, представляющий новую транзакцию.</returns>
         <remarks>To be added.</remarks>
-        <related type="Article" href="https://msdn.microsoft.com/library/f46570de-9e50-4fe6-8710-a8c31fa8569b">Транзакции (ADO.NET)</related>
+        <related type="Article" href="~/docs/framework/data/adonet/transactions-and-concurrency.md">Транзакции и параллельность (ADO.NET)</related>
         <related type="Article" href="~/docs/framework/data/adonet/ado-net-overview.md">Общие сведения о ADO.NET</related>
       </Docs>
     </Member>
@@ -281,10 +290,21 @@
         <Parameter Name="cancellationToken" Type="System.Threading.CancellationToken" Index="0" FrameworkAlternate="netcore-3.0" />
       </Parameters>
       <Docs>
-        <param name="cancellationToken">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="cancellationToken">Токен для отмены асинхронной операции.</param>
+        <summary>Асинхронно начинает транзакцию базы данных.</summary>
+        <returns>Задача, свойство <see cref="P:System.Threading.Tasks.Task`1.Result" /> которой является объектом, представляющим новую транзакцию.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если уровень изоляции не указан, используется уровень изоляции по умолчанию для конкретного типа соединения.
+
+ Реализация этого асинхронного метода по умолчанию делегирует его синхронному аналогу и `Task`возвращает завершенный, потенциально блокирующий вызывающий поток.
+ 
+ Поставщики данных, поддерживающие [Асинхронное программирование](~/docs/framework/data/adonet/asynchronous-programming.md) , должны переопределять инмплементатион по умолчанию с помощью асинхронных операций ввода-вывода.
+  
+ ]]></format>
+        </remarks>
       </Docs>
     </Member>
     <Member MemberName="BeginTransactionAsync">
@@ -311,11 +331,20 @@
         <Parameter Name="cancellationToken" Type="System.Threading.CancellationToken" Index="1" FrameworkAlternate="netcore-3.0" />
       </Parameters>
       <Docs>
-        <param name="isolationLevel">To be added.</param>
-        <param name="cancellationToken">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="isolationLevel">Одно из значений перечисления, задающих уровень изоляции используемой транзакции.</param>
+        <param name="cancellationToken">Токен для отмены асинхронной операции.</param>
+        <summary>Асинхронно начинает транзакцию базы данных.</summary>
+        <returns>Задача, свойство <see cref="P:System.Threading.Tasks.Task`1.Result" /> которой является объектом, представляющим новую транзакцию.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация этого асинхронного метода по умолчанию делегирует его синхронному аналогу и `Task`возвращает завершенный, потенциально блокирующий вызывающий поток.
+ 
+ Поставщики данных, поддерживающие [Асинхронное программирование](~/docs/framework/data/adonet/asynchronous-programming.md) , должны переопределять инмплементатион по умолчанию с помощью асинхронных операций ввода-вывода.
+  
+ ]]></format>
+        </remarks>
       </Docs>
     </Member>
     <Member MemberName="ChangeDatabase">
@@ -354,8 +383,8 @@
         <Parameter Name="databaseName" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="databaseName">Указывает имя базы данных для используемого подключения.</param>
-        <summary>Изменяет текущую базу данных для открытого подключения.</summary>
+        <param name="databaseName">Имя базы данных для используемого подключения.</param>
+        <summary>При переопределении в производном классе изменяет текущую базу данных для открытого подключения.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
@@ -391,11 +420,22 @@
         <Parameter Name="cancellationToken" Type="System.Threading.CancellationToken" Index="1" FrameworkAlternate="netcore-3.0" />
       </Parameters>
       <Docs>
-        <param name="databaseName">To be added.</param>
-        <param name="cancellationToken">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="databaseName">Имя базы данных для используемого подключения.</param>
+        <param name="cancellationToken">Токен для отмены асинхронной операции.</param>
+        <summary>Асинхронно изменяет текущую базу данных для открытого подключения.</summary>
+        <returns>Задача, представляющая асинхронную операцию.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение, указываемое в `databaseName` параметре, должно быть допустимым именем базы данных для текущего экземпляра.  
+
+ Реализация этого асинхронного метода по умолчанию делегирует его синхронному аналогу и `Task`возвращает завершенный, потенциально блокирующий вызывающий поток.
+ 
+ Поставщики данных, поддерживающие [Асинхронное программирование](~/docs/framework/data/adonet/asynchronous-programming.md) , должны переопределять инмплементатион по умолчанию с помощью асинхронных операций ввода-вывода.
+
+ ]]></format>
+        </remarks>
       </Docs>
     </Member>
     <Member MemberName="Close">
@@ -432,24 +472,24 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>Закрывает соединение с базой данных. Рекомендуется использовать этот метод для закрытия любого открытого подключения.</summary>
+        <summary>При переопределении в производном классе закрывает подключение к базе данных.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- <xref:System.Data.Common.DbConnection.Close%2A> Метод выполняет откат всех ожидающих транзакций. Затем он освобождает подключение к пулу подключений или закрывает подключение, если пул соединений отключен.  
+ Методы <xref:System.Data.Common.DbConnection.Close%2A> и<xref:System.Data.Common.DbConnection.CloseAsync%2A> выполняют откат всех ожидающих транзакций. Затем они освобождают подключение к пулу подключений или закрывают подключение, если пул соединений отключен.  
   
- Приложение может вызывать <xref:System.Data.Common.DbConnection.Close%2A> более одного раза. Исключение не создается.  
+ Приложение может вызываться <xref:System.Data.Common.DbConnection.Close%2A> или <xref:System.Data.Common.DbConnection.CloseAsync%2A> более одного раза. Исключение не создается.  
   
  Если объект <xref:System.Data.Common.DbConnection> выходит из области действия, он не закрывается. Поэтому необходимо явно закрыть соединение, вызвав метод `Close` или `Dispose`, который функционально эквивалентен. Если для `Pooling` `true` параметра пул соединений задано значение или `yes`, это также освобождает физическое подключение.  
   
 > [!CAUTION]
->  Не вызывайте `Close` или `Dispose` для **соединения**, **DataReader**или любого другого управляемого объекта в `Finalize` методе класса. В методе завершения следует освобождать только неуправляемые ресурсы, непосредственно принадлежащие классу. Если класс не владеет какими-либо неуправляемыми ресурсами, не включайте в его определение метод `Finalize`. Дополнительные сведения см. в разделе [Сборка мусора](~/docs/standard/garbage-collection/index.md).  
+>  Не закрывайте и не дисипосе `DbConnection` `DbDataReader`, или любой `Finalize` другой управляемый объект в методе класса. В методе завершения следует освобождать только неуправляемые ресурсы, непосредственно принадлежащие классу. Если класс не владеет какими-либо неуправляемыми ресурсами, не включайте в его определение метод `Finalize`. Дополнительные сведения см. в разделе [Сборка мусора](~/docs/standard/garbage-collection/index.md).  
   
  ]]></format>
         </remarks>
         <altmember cref="M:System.Data.Common.DbConnection.Open" />
-        <related type="Article" href="https://msdn.microsoft.com/library/955c057f-aea8-4ba8-aa6d-e3dfa18ba8d5">Объединение подключений в пул (ADO.NET)</related>
+        <related type="Article" href="~/docs/framework/data/adonet/connection-pooling.md">Объединение подключений в пул (ADO.NET)</related>
         <related type="Article" href="~/docs/framework/data/adonet/ado-net-overview.md">Общие сведения о ADO.NET</related>
       </Docs>
     </Member>
@@ -476,9 +516,27 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <summary>Асинхронно закрывает подключение к базе данных.</summary>
+        <returns><see cref="T:System.Threading.Tasks.Task" />, представляющий асинхронную операцию.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация этого асинхронного метода по умолчанию делегирует его синхронному аналогу и `Task`возвращает завершенный, потенциально блокирующий вызывающий поток.
+ 
+ Поставщики данных, поддерживающие [Асинхронное программирование](~/docs/framework/data/adonet/asynchronous-programming.md) , должны переопределять инмплементатион по умолчанию с помощью асинхронных операций ввода-вывода.
+  
+ Методы <xref:System.Data.Common.DbConnection.Close%2A> и<xref:System.Data.Common.DbConnection.CloseAsync%2A> выполняют откат всех ожидающих транзакций. Затем они освобождают подключение к пулу подключений или закрывают подключение, если пул соединений отключен.  
+  
+ Приложение может вызываться <xref:System.Data.Common.DbConnection.Close%2A> или <xref:System.Data.Common.DbConnection.CloseAsync%2A> более одного раза. Исключение не создается.  
+  
+ Если объект <xref:System.Data.Common.DbConnection> выходит из области действия, он не закрывается. Поэтому необходимо явно закрыть соединение, вызвав метод `Close` или `Dispose`, который функционально эквивалентен. Если для `Pooling` `true` параметра пул соединений задано значение или `yes`, это также освобождает физическое подключение.  
+  
+> [!CAUTION]
+>  Не закрывайте и не удаляйте `DbConnection`a `DbDataReader`, или любой `Finalize` другой управляемый объект в методе класса. В методе завершения следует освобождать только неуправляемые ресурсы, непосредственно принадлежащие классу. Если класс не владеет какими-либо неуправляемыми ресурсами, не включайте в его определение метод `Finalize`. Дополнительные сведения см. в разделе [Сборка мусора](~/docs/standard/garbage-collection/index.md).  
+  
+ ]]></format>
+        </remarks>
       </Docs>
     </Member>
     <Member MemberName="ConnectionString">
@@ -528,7 +586,7 @@
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Возвращает или задает строку, используемую для открытия подключения.</summary>
+        <summary>При переопределении в производном классе получает или задает строку, используемую для открытия подключения.</summary>
         <value>Строка подключения использована для установления первоначального подключения. Точное содержимое строки подключения зависит от конкретного источника данных для этого подключения. Значение по умолчанию - пустая строка.</value>
         <remarks>
           <format type="text/markdown"><![CDATA[  
@@ -538,7 +596,7 @@
   
  ]]></format>
         </remarks>
-        <related type="Article" href="https://msdn.microsoft.com/library/745c5f95-2f02-4674-b378-6d51a7ec2490">Строки подключения (ADO.NET)</related>
+        <related type="Article" href="~/docs/framework/data/adonet/connection-strings.md">Строки подключения (ADO.NET)</related>
         <related type="Article" href="~/docs/framework/data/adonet/ado-net-overview.md">Общие сведения о ADO.NET</related>
       </Docs>
     </Member>
@@ -650,7 +708,7 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>Создает и возвращает объект <see cref="T:System.Data.Common.DbCommand" />, связанный с текущим подключением.</summary>
+        <summary>При переопределении в производном классе создает и возвращает объект <see cref="T:System.Data.Common.DbCommand" />, связанный с текущим подключением.</summary>
         <returns>Объект <see cref="T:System.Data.Common.DbCommand" />.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[  
@@ -697,7 +755,7 @@
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Получает имя текущей базы данных после открытия подключения или имя базы данных, указанное в строке подключения, перед открытием подключения.</summary>
+        <summary>При переопределении в производном классе получает имя текущей базы данных после открытия подключения или имя базы данных, указанное в строке подключения перед открытием подключения.</summary>
         <value>Имя текущей базы данных или базы данных, которая будет использоваться после открытия подключения. Значение по умолчанию - пустая строка.</value>
         <remarks>
           <format type="text/markdown"><![CDATA[  
@@ -740,7 +798,7 @@
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Получает имя сервера базы данных, к которому осуществляется подключение.</summary>
+        <summary>При переопределении в производном классе возвращает имя сервера базы данных, к которому осуществляется подключение.</summary>
         <value>Имя сервера базы данных, к которому осуществляется подключение. Значение по умолчанию - пустая строка.</value>
         <remarks>
           <format type="text/markdown"><![CDATA[  
@@ -750,7 +808,7 @@
   
  ]]></format>
         </remarks>
-        <related type="Article" href="https://msdn.microsoft.com/library/745c5f95-2f02-4674-b378-6d51a7ec2490">Строки подключения (ADO.NET)</related>
+        <related type="Article" href="~/docs/framework/data/adonet/connection-strings.md">Строки подключения (ADO.NET)</related>
         <related type="Article" href="~/docs/framework/data/adonet/ado-net-overview.md">Общие сведения о ADO.NET</related>
       </Docs>
     </Member>
@@ -873,9 +931,19 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <summary>Асинхронно размещает объект подключения.</summary>
+        <returns><see cref="P:System.Threading.Tasks.ValueTask" />, представляющий асинхронную операцию.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация этого асинхронного метода по умолчанию делегирует его синхронному аналогу и `ValueTask`возвращает завершенный, потенциально блокирующий вызывающий поток.
+ 
+ Поставщики данных, поддерживающие [Асинхронное программирование](~/docs/framework/data/adonet/asynchronous-programming.md) , должны переопределять инмплементатион по умолчанию с помощью асинхронных операций ввода-вывода.
+  
+ ]]></format>
+
+        </remarks>
       </Docs>
     </Member>
     <Member MemberName="EnlistTransaction">
@@ -918,7 +986,7 @@
   
  ]]></format>
         </remarks>
-        <related type="Article" href="https://msdn.microsoft.com/library/f46570de-9e50-4fe6-8710-a8c31fa8569b">Транзакции (ADO.NET)</related>
+        <related type="Article" href="~/docs/framework/data/adonet/transactions-and-concurrency.md">Транзакции и параллельность (ADO.NET)</related>
         <related type="Article" href="~/docs/framework/data/adonet/ado-net-overview.md">Общие сведения о ADO.NET</related>
       </Docs>
     </Member>
@@ -1166,7 +1234,7 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>Открывает подключение к базе данных с параметрами, определяемыми свойством <see cref="P:System.Data.Common.DbConnection.ConnectionString" />.</summary>
+        <summary>При переопределении в производном классе открывает подключение к базе данных с параметрами, определяемыми свойством <see cref="P:System.Data.Common.DbConnection.ConnectionString" />.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
@@ -1332,7 +1400,7 @@
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Получает строку, представляющую версию сервера, к которому подключен объект.</summary>
+        <summary>При переопределении в производном классе получает строку, представляющую версию сервера, к которому подключен объект.</summary>
         <value>Версия базы данных. Формат возвращенной строки зависит от конкретного типа используемого подключения.</value>
         <remarks>To be added.</remarks>
         <exception cref="T:System.InvalidOperationException"><see cref="P:System.Data.Common.DbConnection.ServerVersion" /> был вызван, когда возвращаемая задача не была завершена, и не было открыто соединение после вызова <see cref="Overload:System.Data.Common.DbConnection.OpenAsync" />.</exception>
@@ -1516,8 +1584,8 @@
         <Parameter Name="isolationLevel" Type="System.Data.IsolationLevel" Index="0" FrameworkAlternate="netcore-1.0;netcore-1.1;netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netstandard-2.0;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netstandard-2.1" />
       </Parameters>
       <Docs>
-        <param name="isolationLevel">Одно из значений <see cref="T:System.Data.IsolationLevel" />.</param>
-        <summary>Начинает транзакцию базы данных с указанным значением <see cref="T:System.Data.IsolationLevel" />.</summary>
+        <param name="isolationLevel">Одно из значений перечисления, задающих уровень изоляции используемой транзакции.</param>
+        <summary>Начинает транзакцию базы данных с указанным уровнем изоляции.</summary>
         <returns>Объект, представляющий новую транзакцию.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[  
