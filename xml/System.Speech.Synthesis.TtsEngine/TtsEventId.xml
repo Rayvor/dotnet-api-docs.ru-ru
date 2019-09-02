@@ -1,5 +1,5 @@
 <Type Name="TtsEventId" FullName="System.Speech.Synthesis.TtsEngine.TtsEventId">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="15951a861c88febb0797f7131c3f572cfbbb4c58" /><Meta Name="ms.sourcegitcommit" Value="055a4a82a0b08bfbdc21bd1347fb71f7fe2c099e" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="08/15/2019" /><Meta Name="ms.locfileid" Value="69145764" /></Metadata><TypeSignature Language="C#" Value="public enum TtsEventId" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="d086651c4e8908832d504877447c6a2fa64b60b4" /><Meta Name="ms.sourcegitcommit" Value="59288d18b8fbc142a5d38d416d6fdfb982023216" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="08/28/2019" /><Meta Name="ms.locfileid" Value="70116526" /></Metadata><TypeSignature Language="C#" Value="public enum TtsEventId" />
   <TypeSignature Language="ILAsm" Value=".class public auto ansi sealed TtsEventId extends System.Enum" />
   <TypeSignature Language="DocId" Value="T:System.Speech.Synthesis.TtsEngine.TtsEventId" />
   <TypeSignature Language="VB.NET" Value="Public Enum TtsEventId" />
@@ -30,68 +30,74 @@
    
   
 ## Examples  
- Приведенный ниже пример является частью пользовательской реализации <xref:System.Speech.Synthesis.TtsEngine.TtsEngineSsml>синтеза речи, наследуемой от, и <xref:System.Speech.Synthesis.TtsEngine.TextFragment>использования функций, <xref:System.Speech.Synthesis.TtsEngine.SpeechEventInfo>, <xref:System.Speech.Synthesis.TtsEngine.FragmentState>и.<xref:System.Speech.Synthesis.TtsEngine.TtsEventId>  
+ Следующий пример является частью пользовательской реализации синтеза речи, наследуемой от <xref:System.Speech.Synthesis.TtsEngine.TtsEngineSsml>, и <xref:System.Speech.Synthesis.TtsEngine.TextFragment>с помощью классов <xref:System.Speech.Synthesis.TtsEngine.SpeechEventInfo>, <xref:System.Speech.Synthesis.TtsEngine.FragmentState>, и <xref:System.Speech.Synthesis.TtsEngine.TtsEventId> .
   
- Реализация<xref:System.Speech.Synthesis.TtsEngine.TtsEngineSsml.Speak%2A>  
+ Реализация <xref:System.Speech.Synthesis.TtsEngine.TtsEngineSsml.Speak%2A?displayProperty=nameWithType> включает следующие шаги:
   
 1.  Получает массив <xref:System.Speech.Synthesis.TtsEngine.TextFragment> экземпляров и создает новый <xref:System.Speech.Synthesis.TtsEngine.TextFragment> массив экземпляров `Speak` для передачи в метод базового механизма синтеза.  
   
-2.  <xref:System.Speech.Synthesis.TtsEngine.TextFragment.State%2A> <xref:System.Speech.Synthesis.TtsEngine.FragmentState.Action%2A> <xref:System.Speech.Synthesis.TtsEngine.FragmentState.Action%2A> <xref:System.Speech.Synthesis.TtsEngine.TextFragment.State%2A> <xref:System.Speech.Synthesis.TtsEngine.TtsEngineAction>Если значение <xref:System.Speech.Synthesis.TtsEngine.TtsEngineAction> перечисления, найденное в свойстве, возвращаемом свойством каждого экземпляра, равно, то реализация  
+2.  Если свойство каждого <xref:System.Speech.Synthesis.TtsEngine.TextFragment.State%2A?displayProperty=nameWithType> экземпляра равно <xref:System.Speech.Synthesis.TtsEngine.TtsEngineAction.Speak?displayProperty=nameWithType>, код выполняет следующие действия: <xref:System.Speech.Synthesis.TtsEngine.FragmentState.Action%2A>
   
-    -   Преобразует Американский регион в Бритишисмс текст.  
+    - Преобразует американский английский в Английский в тексте для обречия.
   
-    -   Если свойство в интерфейсах, предоставленных для реализации, поддерживает тип события вордбаундари, то <xref:System.Speech.Synthesis.TtsEngine.SpeechEventInfo> экземпляр используется для создания события для создания счетчика хода выполнения синтезатора. <xref:System.Speech.Synthesis.TtsEngine.ITtsEngineSite.EventInterest%2A> <xref:System.Speech.Synthesis.TtsEngine.ITtsEngineSite.EventInterest%2A>  
+    - Если свойство, предоставленное для реализации, `WordBoundary` поддерживает тип события, то <xref:System.Speech.Synthesis.TtsEngine.SpeechEventInfo> экземпляр используется для создания события для создания счетчика хода выполнения синтезатора. <xref:System.Speech.Synthesis.TtsEngine.ITtsEngineSite.EventInterest%2A?displayProperty=nameWithType>  
   
-3.  Затем модуль рендеринга речи вызывается с измененным <xref:System.Speech.Synthesis.TtsEngine.TextFragment> массивом.  
+3.  Затем модуль рендеринга речи вызывается с измененным <xref:System.Speech.Synthesis.TtsEngine.TextFragment> массивом.
   
-```  
-private const int WordBoundaryFlag = 1 << (int)TtsEventId.WordBoundary;  
-private readonly char[] spaces = new char[] { ' ', '\t', '\r', '\n' };  
-internal struct UsVsUk  
-{  
-  internal string UK;  
-  internal string US;  
-}  
+```csharp
+private const int WordBoundaryFlag = 1 << (int)TtsEventId.WordBoundary;
+private readonly char[] spaces = new char[] { ' ', '\t', '\r', '\n' };
+internal struct UsVsUk
+{
+    internal string UK;
+    internal string US;
+}
+
+override public void Speak (TextFragment [] frags, IntPtr wfx, ITtsEngineSite site)
+{
+    TextFragment [] newFrags=new TextFragment[frags.Length];
   
-override public void Speak (TextFragment [] frags, IntPtr wfx, ITtsEngineSite site)  
-{  
-  TextFragment [] newFrags=new TextFragment[frags.Length];  
-  
-  for (int i=0;i<frags.Length;i++){  
-    newFrags[i].State=frags[i].State;  
-    //truncate  
-    newFrags[i].TextToSpeak = frags[i].TextToSpeak.Substring(frags[i].TextOffset,  
-                               frags[i].TextLength);  
-    newFrags[i].TextLength = newFrags[i].TextToSpeak.Length;  
-    newFrags[i].TextOffset = 0;  
-    if (newFrags[i].State.Action == TtsEngineAction.Speak) {  
-      //Us to UK conversion  
-      foreach (UsVsUk term in TransList) {  
-      newFrags[i].TextToSpeak.Replace(term.US, term.UK);  
-      }  
-      //Generate progress meter events if supported  
-      if ((site.EventInterest & WordBoundaryFlag) != 0) {  
-      string[] subs = newFrags[i].TextToSpeak.Split(spaces);  
-  
-      foreach (string s in subs) {  
-        int offset = newFrags[i].TextOffset;  
-        SpeechEventInfo spEvent = new SpeechEventInfo((Int16)TtsEventId.WordBoundary,   
-                (Int16)EventParameterType.Undefined,   
-                 s.Length, new IntPtr(offset));  
-        offset += s.Length;  
-        if (s.Trim().Length > 0) {  
-          SpeechEventInfo[] events = new SpeechEventInfo[1];  
-          events[0] = spEvent;  
-          site.AddEvents(events, 1);  
-        }  
-      }  
-      }  
-    }  
-  }  
-  
-  _baseSynthesize.Speak(newFrags, wfx, site);  
-  
-}  
+    for (int i=0;i<frags.Length;i++)
+    {
+        newFrags[i].State=frags[i].State;
+        //truncate
+        newFrags[i].TextToSpeak = frags[i].TextToSpeak.Substring(frags[i].TextOffset,
+                                  frags[i].TextLength);
+        newFrags[i].TextLength = newFrags[i].TextToSpeak.Length;
+        newFrags[i].TextOffset = 0;
+        if (newFrags[i].State.Action == TtsEngineAction.Speak)
+        {
+            //US to UK conversion
+            foreach (UsVsUk term in TransList)
+            {
+              newFrags[i].TextToSpeak.Replace(term.US, term.UK);
+            }
+            //Generate progress meter events if supported
+            if ((site.EventInterest & WordBoundaryFlag) != 0)
+            {
+                string[] subs = newFrags[i].TextToSpeak.Split(spaces);
+
+                foreach (string s in subs)
+                {
+                    int offset = newFrags[i].TextOffset;
+                    SpeechEventInfo spEvent = new SpeechEventInfo((Int16)TtsEventId.WordBoundary,
+                        (Int16)EventParameterType.Undefined,
+                        s.Length, new IntPtr(offset));
+                    offset += s.Length;
+                    if (s.Trim().Length > 0)
+                    {
+                        SpeechEventInfo[] events = new SpeechEventInfo[1];
+                        events[0] = spEvent;
+                        site.AddEvents(events, 1);
+                    }
+                }
+            }
+        }
+    }
+
+    _baseSynthesize.Speak(newFrags, wfx, site);
+
+}
 ```  
   
  ]]></format>

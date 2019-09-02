@@ -1,5 +1,5 @@
 <Type Name="TtsEngineAction" FullName="System.Speech.Synthesis.TtsEngine.TtsEngineAction">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="1ec69c6503276dc9c90919a47435b0f83553a93a" /><Meta Name="ms.sourcegitcommit" Value="406d23aba879fbb482c6da0f64c8ef9494f6a944" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="07/31/2019" /><Meta Name="ms.locfileid" Value="68686232" /></Metadata><TypeSignature Language="C#" Value="public enum TtsEngineAction" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="5d6ded8597b9515e689adf87fa98b724a0a26321" /><Meta Name="ms.sourcegitcommit" Value="59288d18b8fbc142a5d38d416d6fdfb982023216" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="08/28/2019" /><Meta Name="ms.locfileid" Value="70116471" /></Metadata><TypeSignature Language="C#" Value="public enum TtsEngineAction" />
   <TypeSignature Language="ILAsm" Value=".class public auto ansi sealed TtsEngineAction extends System.Enum" />
   <TypeSignature Language="DocId" Value="T:System.Speech.Synthesis.TtsEngine.TtsEngineAction" />
   <TypeSignature Language="VB.NET" Value="Public Enum TtsEngineAction" />
@@ -39,58 +39,64 @@
   
     -   Преобразует Американский регион в Бритишисмс текст.  
   
-    -   Если свойство в интерфейсах, предоставленных <xref:System.Speech.Synthesis.TtsEngine.TtsEventId> для реализации, поддерживает тип события, то создается событие для обработки индикатора выполнения синтезатора. <xref:System.Speech.Synthesis.TtsEngine.ITtsEngineSite.EventInterest%2A> <xref:System.Speech.Synthesis.TtsEngine.ITtsEngineSite.EventInterest%2A>  
+    -   Если свойство в интерфейсе, предоставленном <xref:System.Speech.Synthesis.TtsEngine.TtsEventId.WordBoundary?displayProperty=nameWithType> для реализации, поддерживает тип события, то создается событие для обработки индикатора выполнения синтезатора. <xref:System.Speech.Synthesis.TtsEngine.ITtsEngineSite> <xref:System.Speech.Synthesis.TtsEngine.ITtsEngineSite.EventInterest%2A>  
   
 3.  Затем модуль рендеринга речи вызывается с измененным <xref:System.Speech.Synthesis.TtsEngine.TextFragment> массивом.  
   
 ```csharp
-private const int WordBoundaryFlag = 1 << (int)TtsEventId.WordBoundary;  
-private readonly char[] spaces = new char[] { ' ', '\t', '\r', '\n' };  
-internal struct UsVsUk  
-{  
-  internal string UK;  
-  internal string US;  
-}  
-  
-override public void Speak (TextFragment [] frags, IntPtr wfx, ITtsEngineSite site)  
-{  
-  TextFragment [] newFrags=new TextFragment[frags.Length];  
-  
-  for (int i=0;i<frags.Length;i++){  
-    newFrags[i].State=frags[i].State;  
-    //truncate  
-    newFrags[i].TextToSpeak = frags[i].TextToSpeak.Substring(frags[i].TextOffset,  
-                               frags[i].TextLength);  
-    newFrags[i].TextLength = newFrags[i].TextToSpeak.Length;  
-    newFrags[i].TextOffset = 0;  
-    if (newFrags[i].State.Action == TtsEngineAction.Speak) {  
-      //Us to UK conversion  
-      foreach (UsVsUk term in TransList) {  
-      newFrags[i].TextToSpeak.Replace(term.US, term.UK);  
-      }  
-      //Generate progress meter events if supported  
-      if ((site.EventInterest & WordBoundaryFlag) != 0) {  
-      string[] subs = newFrags[i].TextToSpeak.Split(spaces);  
-  
-      foreach (string s in subs) {  
-        int offset = newFrags[i].TextOffset;  
-        SpeechEventInfo spEvent = new SpeechEventInfo((Int16)TtsEventId.WordBoundary,   
-                (Int16)EventParameterType.Undefined,   
-                 s.Length, new IntPtr(offset));  
-        offset += s.Length;  
-        if (s.Trim().Length > 0) {  
-          SpeechEventInfo[] events = new SpeechEventInfo[1];  
-          events[0] = spEvent;  
-          site.AddEvents(events, 1);  
-        }  
-      }  
-      }  
-    }  
-  }  
-  
-  _baseSynthesize.Speak(newFrags, wfx, site);  
-  
-}  
+private const int WordBoundaryFlag = 1 << (int)TtsEventId.WordBoundary;
+private readonly char[] spaces = new char[] { ' ', '\t', '\r', '\n' };
+internal struct UsVsUk
+{
+    internal string UK;
+    internal string US;
+}
+ 
+override public void Speak (TextFragment [] frags, IntPtr wfx, ITtsEngineSite site)
+{
+    TextFragment [] newFrags=new TextFragment[frags.Length];  
+    
+    for (int i=0;i<frags.Length;i++)
+    {
+        newFrags[i].State=frags[i].State;
+        //truncate
+        newFrags[i].TextToSpeak = frags[i].TextToSpeak.Substring(frags[i].TextOffset,
+                                  frags[i].TextLength);
+        newFrags[i].TextLength = newFrags[i].TextToSpeak.Length;
+        newFrags[i].TextOffset = 0;
+        if (newFrags[i].State.Action == TtsEngineAction.Speak) 
+        {
+            //US to UK conversion
+            foreach (UsVsUk term in TransList)
+            {
+                newFrags[i].TextToSpeak.Replace(term.US, term.UK);
+            }
+            //Generate progress meter events if supported
+            if ((site.EventInterest & WordBoundaryFlag) != 0)
+            {
+                string[] subs = newFrags[i].TextToSpeak.Split(spaces);
+
+                foreach (string s in subs)
+                {
+                    int offset = newFrags[i].TextOffset;
+                    SpeechEventInfo spEvent = new SpeechEventInfo((Int16)TtsEventId.WordBoundary,
+                          (Int16)EventParameterType.Undefined,
+                          s.Length, new IntPtr(offset));
+                    offset += s.Length;
+                    if (s.Trim().Length > 0) 
+                    {
+                        SpeechEventInfo[] events = new SpeechEventInfo[1];
+                        events[0] = spEvent;
+                        site.AddEvents(events, 1);
+                    }
+                }
+            }
+        }
+    }
+
+    _baseSynthesize.Speak(newFrags, wfx, site);
+
+}
 ```  
   
  ]]></format>
