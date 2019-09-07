@@ -1,0 +1,627 @@
+<Type Name="ReservationCollection" FullName="System.IO.Log.ReservationCollection">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="0b5f7c5e00b035f2197d50e122641e5237cd5df1" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70459830" /></Metadata><TypeSignature Language="C#" Value="public abstract class ReservationCollection : System.Collections.Generic.ICollection&lt;long&gt;, System.Collections.Generic.IEnumerable&lt;long&gt;" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract beforefieldinit ReservationCollection extends System.Object implements class System.Collections.Generic.ICollection`1&lt;int64&gt;, class System.Collections.Generic.IEnumerable`1&lt;int64&gt;, class System.Collections.IEnumerable" />
+  <TypeSignature Language="DocId" Value="T:System.IO.Log.ReservationCollection" />
+  <TypeSignature Language="VB.NET" Value="Public MustInherit Class ReservationCollection&#xA;Implements ICollection(Of Long), IEnumerable(Of Long)" />
+  <TypeSignature Language="C++ CLI" Value="public ref class ReservationCollection abstract : System::Collections::Generic::ICollection&lt;long&gt;, System::Collections::Generic::IEnumerable&lt;long&gt;" />
+  <TypeSignature Language="F#" Value="type ReservationCollection = class&#xA;    interface ICollection&lt;int64&gt;&#xA;    interface seq&lt;int64&gt;&#xA;    interface IEnumerable" />
+  <AssemblyInfo>
+    <AssemblyName>System.IO.Log</AssemblyName>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces>
+    <Interface>
+      <InterfaceName>System.Collections.Generic.ICollection&lt;System.Int64&gt;</InterfaceName>
+    </Interface>
+    <Interface>
+      <InterfaceName>System.Collections.Generic.IEnumerable&lt;System.Int64&gt;</InterfaceName>
+    </Interface>
+    <Interface>
+      <InterfaceName>System.Collections.Generic.IEnumerable&lt;T&gt;</InterfaceName>
+    </Interface>
+    <Interface>
+      <InterfaceName>System.Collections.IEnumerable</InterfaceName>
+    </Interface>
+  </Interfaces>
+  <Docs>
+    <summary>Управляет коллекцией резервирований пространства, созданной в последовательности записей.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот класс представляет набор областей резервирования, созданных в последовательности записей. Новые резервирования выделяются при добавлении элементов в коллекцию. При удалении элементов из коллекции данные резервирования освобождаются.  
+  
+ Приложение резервирует пространство в журнале, когда имеются данные для записи в будущем, но их нельзя записать немедленно. Резервирования гарантируют, что данные могут быть записаны в журнал, когда они будут доступны для записи. При использовании журналов приложения часто зарезервированы одну или несколько записей журнала в области маршалирования. Перед добавлением записи необходимо резервировать.  
+  
+ Резервирования можно использовать, чтобы гарантировать завершение операции перед записью данных; в противном случае выполняется откат изменений. Его также можно использовать, чтобы записать "отмененное действие" в журнале. Во время операции отката диспетчер ресурсов транзакций должен иметь возможность восстановить свое состояние, если его работа была прервана. Диспетчер ресурсов может резервировать пространство в журнале до его использования с помощью области резервирования.  
+  
+ Метод <xref:System.IO.Log.IRecordSequence.ReserveAndAppend%2A> может резервировать пространство или добавлять данные, либо выполнять оба действия, в зависимости от параметров, указанных при выполнении вызова. В ходе выполнения транзакции приложение может добавлять сведения отмены действия и резервировать пространство для записей компенсации. Во время операции отката созданные записи компенсации указывают, что было отменено на диске. Записи добавляются с использованием ранее зарезервированного пространства. Это гарантирует, что во время операции отката у диспетчера ресурсов не закончится пространство журнала, что является неустранимой ошибкой. Если журнал заполнится во время транзакции, приложение может выполнить безопасный откат без повреждения устойчивых данных.  
+  
+ CLFS — это ARIES-совместимая система, предназначенная для упреждающего ведения журнала. В упреждающем ведении журнала приложение записывает отмененное действие перед выполнением операции, резервируя пространство для внесения в журнал записи компенсации, которая может использоваться во время отката. В дальнейшем зарезервированное пространство используется при внесении записи компенсации.  
+  
+ Приложения могут резервировать или получать доступ к пространству журнала (данные операции являются взаимоисключающими). После внесения записи фиксации в журнал приложение может освободить резервирования для записей компенсации. Это действие можно выполнить с помощью вызова метода <xref:System.IO.Log.ReservationCollection.FreeReservation%2A> или <xref:System.IO.Log.IRecordSequence.ReserveAndAppend%2A>. Вызов метода <xref:System.IO.Log.IRecordSequence.ReserveAndAppend%2A> гарантирует, что операция является атомарной, а вызов метода <xref:System.IO.Log.ReservationCollection.FreeReservation%2A> такой гарантии не предоставляет.  
+  
+ При освобождении записей необходимо освобождать те же записи, которые совместно резервировались в предыдущем вызове метода <xref:System.IO.Log.IRecordSequence.ReserveAndAppend%2A>.  
+  
+> [!NOTE]
+>  Реализация <xref:System.IO.Log.IRecordSequence> должна использовать методы <xref:System.IO.Log.ReservationCollection.MakeReservation%2A> и <xref:System.IO.Log.ReservationCollection.FreeReservation%2A>, чтобы выполнить выделение и освобождение резервирований. Кроме того, реализация должна вызывать метод <xref:System.IO.Log.ReservationCollection.ReservationFreed%2A> при внесении записи в зарезервированное пространство.  
+  
+   
+  
+## Examples  
+ Резервирование можно выполнить двумя способами, которые демонстрируют следующие примеры. Для надежной обработки можно пользоваться способами из образцов. Обратите внимание, что эта задача может быть выполнена только при использовании класса <xref:System.IO.Log.LogRecordSequence>, основанного на CLFS.  
+  
+```  
+//Using the ReserveAndAppend Method  
+ReservationCollection reservations = recordSequence.CreateReservationCollection();  
+long[] lengthOfUndoRecords = new long[] { 1000 };  
+recordSequence.ReserveAndAppend(recordData,  
+                                                     userSqn,  
+                                                     previousSqn,  
+                                                     RecordSequenceAppendOptions.None,  
+                                                     reservations,  
+                                                     lengthOfUndoRecords);  
+recordSequence.Append(undoRecordData,    // If necessary …  
+                                    userSqn,  
+                                    previousSqn,  
+                                    RecordSequenceAppendOptions.ForceFlush,  
+                                    reservations);  
+  
+// Using the Manual Approach  
+ReservationCollection reservations = recordSequence.CreateReservationCollection();  
+reservations.Add(lengthOfUndoRecord);  
+try  
+{  
+   recordSequence.Append(recordData, userSqn, previousSqn, RecordAppendOptions.None);  
+}  
+catch (Exception)  
+{  
+   reservations.Remove(lengthOfUndoRecord);  
+   throw;  
+}  
+  
+recordSequence.Append(undoRecordData, userSqn, previousSqn, RecordAppendOptions.ForceFlush, reservations);  
+```  
+  
+ ]]></format>
+    </remarks>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="protected ReservationCollection ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IO.Log.ReservationCollection.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Protected Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; ReservationCollection();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IO.Log</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.IO.Log.ReservationCollection" />.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Add">
+      <MemberSignature Language="C#" Value="public void Add (long size);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void Add(int64 size) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IO.Log.ReservationCollection.Add(System.Int64)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Add (size As Long)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void Add(long size);" />
+      <MemberSignature Language="F#" Value="abstract member Add : int64 -&gt; unit&#xA;override this.Add : int64 -&gt; unit" Usage="reservationCollection.Add size" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.Collections.Generic.ICollection`1.Add(`0)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.IO.Log</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="size" Type="System.Int64" />
+      </Parameters>
+      <Docs>
+        <param name="size">Размер запрошенного резервирования в байтах.</param>
+        <summary>Выделяет резервирование и добавляет его в коллекцию. Наследовать этот метод нельзя.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Examples  
+ В следующем примере показано, как создать резервирование вручную. Обратите внимание, что эта задача может быть выполнена только при использовании класса <xref:System.IO.Log.LogRecordSequence>, основанного на CLFS.  
+  
+```  
+ReservationCollection reservations = recordSequence.CreateReservationCollection();  
+reservations.Add(lengthOfUndoRecord);  
+try  
+{  
+   recordSequence.Append(recordData, userSqn, previousSqn, RecordAppendOptions.None);  
+}  
+catch (Exception)  
+{  
+   reservations.Remove(lengthOfUndoRecord);  
+   throw;  
+}  
+  
+recordSequence.Append(undoRecordData, userSqn, previousSqn, RecordAppendOptions.ForceFlush, reservations);  
+```  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentOutOfRangeException">Значение параметра <paramref name="archiveTail" /> не лежит между основным и последним порядковыми номерами этой последовательности.</exception>
+        <exception cref="T:System.ArgumentException">Значение параметра <paramref name="size" /> недействительно или превышает максимальный размер резервирования.</exception>
+        <exception cref="T:System.IO.IOException">При создании моментального снимка архива произошла ошибка ввода-вывода.</exception>
+        <exception cref="T:System.ObjectDisposedException">Метод был вызван после удаления последовательности.</exception>
+        <exception cref="T:System.OutOfMemoryException">Недостаточно памяти, чтобы продолжить выполнение программы.</exception>
+        <exception cref="T:System.UnauthorizedAccessException">Доступ к заданному хранилищу журнала запрещен операционной системой.</exception>
+        <exception cref="T:System.IO.Log.SequenceFullException">Последовательность записей заполнена.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="Clear">
+      <MemberSignature Language="C#" Value="public void Clear ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void Clear() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IO.Log.ReservationCollection.Clear" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Clear ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void Clear();" />
+      <MemberSignature Language="F#" Value="abstract member Clear : unit -&gt; unit&#xA;override this.Clear : unit -&gt; unit" Usage="reservationCollection.Clear " />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.Collections.Generic.ICollection`1.Clear</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.IO.Log</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Освобождает все резервирования в коллекции. Наследовать этот метод нельзя.</summary>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentException">Значение параметра <paramref name="size" /> недействительно или превышает максимальный размер резервирования.</exception>
+        <exception cref="T:System.IO.IOException">При создании моментального снимка архива произошла ошибка ввода-вывода.</exception>
+        <exception cref="T:System.ObjectDisposedException">Метод был вызван после удаления последовательности.</exception>
+        <exception cref="T:System.OutOfMemoryException">Недостаточно памяти, чтобы продолжить выполнение программы.</exception>
+        <exception cref="T:System.IO.Log.SequenceFullException">Последовательность записей заполнена.</exception>
+        <exception cref="T:System.UnauthorizedAccessException">Доступ к заданному хранилищу журнала запрещен операционной системой.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="Contains">
+      <MemberSignature Language="C#" Value="public bool Contains (long size);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance bool Contains(int64 size) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IO.Log.ReservationCollection.Contains(System.Int64)" />
+      <MemberSignature Language="VB.NET" Value="Public Function Contains (size As Long) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual bool Contains(long size);" />
+      <MemberSignature Language="F#" Value="abstract member Contains : int64 -&gt; bool&#xA;override this.Contains : int64 -&gt; bool" Usage="reservationCollection.Contains size" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.Collections.Generic.ICollection`1.Contains(`0)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.IO.Log</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="size" Type="System.Int64" />
+      </Parameters>
+      <Docs>
+        <param name="size">Размер, который требуется найти в коллекции.</param>
+        <summary>Определяет, создано ли резервирование указанного размера. Наследовать этот метод нельзя.</summary>
+        <returns>Значение <see langword="true" />, если было создано по крайней мере одно резервирование указанного размера; в противном случае — значение <see langword="false" />.</returns>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ObjectDisposedException">Метод был вызван после удаления последовательности.</exception>
+        <exception cref="T:System.OutOfMemoryException">Недостаточно памяти, чтобы продолжить выполнение программы.</exception>
+        <exception cref="T:System.UnauthorizedAccessException">Доступ к заданному хранилищу журнала запрещен операционной системой.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="CopyTo">
+      <MemberSignature Language="C#" Value="public void CopyTo (long[] array, int arrayIndex);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void CopyTo(int64[] array, int32 arrayIndex) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IO.Log.ReservationCollection.CopyTo(System.Int64[],System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub CopyTo (array As Long(), arrayIndex As Integer)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void CopyTo(cli::array &lt;long&gt; ^ array, int arrayIndex);" />
+      <MemberSignature Language="F#" Value="abstract member CopyTo : int64[] * int -&gt; unit&#xA;override this.CopyTo : int64[] * int -&gt; unit" Usage="reservationCollection.CopyTo (array, arrayIndex)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IO.Log</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="array" Type="System.Int64[]" />
+        <Parameter Name="arrayIndex" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="array">Массив, который является целевым объектом копирования.</param>
+        <param name="arrayIndex">Индекс (отсчет с нуля) в массиве, с которого начинается копирование.</param>
+        <summary>Копирует коллекцию в одномерный массив, начиная с указанного индекса массива назначения. Наследовать этот метод нельзя.</summary>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentNullException">Значение параметра <paramref name="array" /> или <paramref name="arrayIndex" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentOutOfRangeException">Параметр <paramref name="arrayIndex" /> меньше нуля или больше либо равен длине массива <paramref name="array" />.</exception>
+        <exception cref="T:System.ArgumentException">В указанном пространстве недостаточно пространства для копирования данных.  
+  
+- или - 
+ Массив <paramref name="array" /> не является одномерным. Одномерный массив — это единственный тип, который поддерживается запрошенным действием.</exception>
+        <exception cref="T:System.ObjectDisposedException">Метод был вызван после удаления последовательности.</exception>
+        <exception cref="T:System.OutOfMemoryException">Недостаточно памяти, чтобы продолжить выполнение программы.</exception>
+        <exception cref="T:System.UnauthorizedAccessException">Доступ к заданному хранилищу журнала запрещен операционной системой.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="Count">
+      <MemberSignature Language="C#" Value="public int Count { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 Count" />
+      <MemberSignature Language="DocId" Value="P:System.IO.Log.ReservationCollection.Count" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property Count As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int Count { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.Count : int" Usage="System.IO.Log.ReservationCollection.Count" />
+      <MemberType>Property</MemberType>
+      <Implements>
+        <InterfaceMember>P:System.Collections.Generic.ICollection`1.Count</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.IO.Log</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает количество резервирований в коллекции.</summary>
+        <value>Количество резервирований в коллекции.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Finalize">
+      <MemberSignature Language="C#" Value="~ReservationCollection ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void Finalize() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IO.Log.ReservationCollection.Finalize" />
+      <MemberSignature Language="VB.NET" Value="Finalize ()" />
+      <MemberSignature Language="C++ CLI" Value="!ReservationCollection ()" />
+      <MemberSignature Language="F#" Value="override this.Finalize : unit -&gt; unit" Usage="reservationCollection.Finalize " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IO.Log</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Позволяет объекту <see cref="T:System.IO.Log.ReservationCollection" /> освободить ресурсы, прежде чем он будет уничтожен сборщиком мусора.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="FreeReservation">
+      <MemberSignature Language="C#" Value="protected abstract void FreeReservation (long size);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void FreeReservation(int64 size) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IO.Log.ReservationCollection.FreeReservation(System.Int64)" />
+      <MemberSignature Language="VB.NET" Value="Protected MustOverride Sub FreeReservation (size As Long)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; abstract void FreeReservation(long size);" />
+      <MemberSignature Language="F#" Value="abstract member FreeReservation : int64 -&gt; unit" Usage="reservationCollection.FreeReservation size" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IO.Log</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="size" Type="System.Int64" />
+      </Parameters>
+      <Docs>
+        <param name="size">Размер освобождаемого резервирования.</param>
+        <summary>При переопределении в производном классе освобождает резервирование указанного размера.</summary>
+        <remarks>To be added.</remarks>
+        <block subset="none" type="overrides"><para>При наследовании от класса <see cref="T:System.IO.Log.ReservationCollection" /> необходимо реализовать этот метод, чтобы освободить пространство в последовательности записей. Не следует вызывать <see cref="M:System.IO.Log.ReservationCollection.ReservationFreed(System.Int64)" /> при завершении метода; данная логика будет обработана.  
+  
+При освобождении записей необходимо освобождать те же записи, которые совместно резервировались в предыдущем вызове метода <see cref="Overload:System.IO.Log.IRecordSequence.ReserveAndAppend" />.</para></block>
+      </Docs>
+    </Member>
+    <Member MemberName="GetBestMatchingReservation">
+      <MemberSignature Language="C#" Value="protected long GetBestMatchingReservation (long size);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig instance int64 GetBestMatchingReservation(int64 size) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IO.Log.ReservationCollection.GetBestMatchingReservation(System.Int64)" />
+      <MemberSignature Language="VB.NET" Value="Protected Function GetBestMatchingReservation (size As Long) As Long" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; long GetBestMatchingReservation(long size);" />
+      <MemberSignature Language="F#" Value="member this.GetBestMatchingReservation : int64 -&gt; int64" Usage="reservationCollection.GetBestMatchingReservation size" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IO.Log</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int64</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="size" Type="System.Int64" />
+      </Parameters>
+      <Docs>
+        <param name="size">Размер резервирования, который должен совпадать.</param>
+        <summary>При переопределении в производном классе возвращает наиболее подходящее резервирование для заданного размера.</summary>
+        <returns>Резервирование из коллекции, которая больше или равна указанному размеру или -1, если такое резервирование отсутствует.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Обычно этот метод вызывается при добавлении записи из зарезервированного пространства в последовательность записей. При возвращении метода резервирование возвращаемого размера удаляется из коллекции. Если по какой-то причине отсутствует доступ к зарезервированному пространству, следует вызвать метод <xref:System.IO.Log.ReservationCollection.ReservationMade%2A>, чтобы убедиться в том, что коллекция <xref:System.IO.Log.ReservationCollection> точно представляет размер зарезервированного пространства в последовательности записей.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetEnumerator">
+      <MemberSignature Language="C#" Value="public System.Collections.Generic.IEnumerator&lt;long&gt; GetEnumerator ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Collections.Generic.IEnumerator`1&lt;int64&gt; GetEnumerator() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IO.Log.ReservationCollection.GetEnumerator" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetEnumerator () As IEnumerator(Of Long)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::Collections::Generic::IEnumerator&lt;long&gt; ^ GetEnumerator();" />
+      <MemberSignature Language="F#" Value="abstract member GetEnumerator : unit -&gt; System.Collections.Generic.IEnumerator&lt;int64&gt;&#xA;override this.GetEnumerator : unit -&gt; System.Collections.Generic.IEnumerator&lt;int64&gt;" Usage="reservationCollection.GetEnumerator " />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.Collections.Generic.IEnumerable`1.GetEnumerator</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.IO.Log</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.Generic.IEnumerator&lt;System.Int64&gt;</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Возвращает перечислитель, который выполняет итерацию коллекции <see cref="T:System.IO.Log.ReservationCollection" />. Наследовать этот метод нельзя.</summary>
+        <returns>Перечислитель, выполняющий итерацию по коллекции <see cref="T:System.IO.Log.ReservationCollection" />.</returns>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.InvalidOperationException">Операция недопустима по одной из следующих причин. 
+– Перечисление завершено.  
+  
+– Коллекция изменена.  
+  
+– Перечисление не запущено. Должен быть вызван метод <see cref="M:System.Collections.IEnumerator.MoveNext" />.</exception>
+        <exception cref="T:System.ObjectDisposedException">Метод был вызван после удаления последовательности.</exception>
+        <exception cref="T:System.OutOfMemoryException">Недостаточно памяти, чтобы продолжить выполнение программы.</exception>
+        <exception cref="T:System.UnauthorizedAccessException">Доступ к заданному хранилищу журнала запрещен операционной системой.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="IsReadOnly">
+      <MemberSignature Language="C#" Value="public bool IsReadOnly { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool IsReadOnly" />
+      <MemberSignature Language="DocId" Value="P:System.IO.Log.ReservationCollection.IsReadOnly" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property IsReadOnly As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool IsReadOnly { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.IsReadOnly : bool" Usage="System.IO.Log.ReservationCollection.IsReadOnly" />
+      <MemberType>Property</MemberType>
+      <Implements>
+        <InterfaceMember>P:System.Collections.Generic.ICollection`1.IsReadOnly</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.IO.Log</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, указывающее на то, доступна ли коллекция только для чтения.</summary>
+        <value>Данное свойство всегда возвращает значение <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Коллекция <xref:System.IO.Log.ReservationCollection> никогда не бывает доступна только для чтения.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="MakeReservation">
+      <MemberSignature Language="C#" Value="protected abstract void MakeReservation (long size);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void MakeReservation(int64 size) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IO.Log.ReservationCollection.MakeReservation(System.Int64)" />
+      <MemberSignature Language="VB.NET" Value="Protected MustOverride Sub MakeReservation (size As Long)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; abstract void MakeReservation(long size);" />
+      <MemberSignature Language="F#" Value="abstract member MakeReservation : int64 -&gt; unit" Usage="reservationCollection.MakeReservation size" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IO.Log</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="size" Type="System.Int64" />
+      </Parameters>
+      <Docs>
+        <param name="size">Размер выделяемого резервирования.</param>
+        <summary>При переопределении в производном классе выделяет резервирование указанного размера.</summary>
+        <remarks>To be added.</remarks>
+        <block subset="none" type="overrides"><para>При наследовании от класса <see cref="T:System.IO.Log.ReservationCollection" /> необходимо реализовать этот метод, чтобы зарезервировать пространство в последовательности записей. Не следует вызывать <see cref="M:System.IO.Log.ReservationCollection.ReservationMade(System.Int64)" /> при завершении метода; данная логика будет обработана.</para></block>
+      </Docs>
+    </Member>
+    <Member MemberName="Remove">
+      <MemberSignature Language="C#" Value="public bool Remove (long item);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance bool Remove(int64 item) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IO.Log.ReservationCollection.Remove(System.Int64)" />
+      <MemberSignature Language="VB.NET" Value="Public Function Remove (item As Long) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual bool Remove(long item);" />
+      <MemberSignature Language="F#" Value="abstract member Remove : int64 -&gt; bool&#xA;override this.Remove : int64 -&gt; bool" Usage="reservationCollection.Remove item" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.Collections.Generic.ICollection`1.Remove(`0)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.IO.Log</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="item" Type="System.Int64" />
+      </Parameters>
+      <Docs>
+        <param name="item">Размер освобождаемого резервирования.</param>
+        <summary>Освобождает резервирование указанного размера, если данное резервирование выполнялось. Наследовать этот метод нельзя.</summary>
+        <returns>Значение <see langword="true" />, если резервирование указанного размера было найдено и удалено; в противном случае — значение <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Examples  
+ В следующем примере показано, как создать резервирование вручную. Обратите внимание, что эта задача может быть выполнена только при использовании класса <xref:System.IO.Log.LogRecordSequence>, основанного на CLFS.  
+  
+```  
+ReservationCollection reservations = recordSequence.CreateReservationCollection();  
+reservations.Add(lengthOfUndoRecord);  
+try  
+{  
+   recordSequence.Append(recordData, userSqn, previousSqn, RecordAppendOptions.None);  
+}  
+catch (Exception)  
+{  
+   reservations.Remove(lengthOfUndoRecord);  
+   throw;  
+}  
+  
+recordSequence.Append(undoRecordData, userSqn, previousSqn, RecordAppendOptions.ForceFlush, reservations);  
+```  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">В указанной коллекции резервирования отсутствует резервирование достаточного размера, чтобы вместить предоставленную запись.</exception>
+        <exception cref="T:System.IO.IOException">При создании моментального снимка архива произошла ошибка ввода-вывода.</exception>
+        <exception cref="T:System.ObjectDisposedException">Метод был вызван после удаления последовательности.</exception>
+        <exception cref="T:System.OutOfMemoryException">Недостаточно памяти, чтобы продолжить выполнение программы.</exception>
+        <exception cref="T:System.IO.Log.SequenceFullException">Последовательность записей заполнена.</exception>
+        <exception cref="T:System.UnauthorizedAccessException">Доступ к заданному хранилищу журнала запрещен операционной системой.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="ReservationFreed">
+      <MemberSignature Language="C#" Value="protected void ReservationFreed (long size);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig instance void ReservationFreed(int64 size) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IO.Log.ReservationCollection.ReservationFreed(System.Int64)" />
+      <MemberSignature Language="VB.NET" Value="Protected Sub ReservationFreed (size As Long)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; void ReservationFreed(long size);" />
+      <MemberSignature Language="F#" Value="member this.ReservationFreed : int64 -&gt; unit" Usage="reservationCollection.ReservationFreed size" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IO.Log</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="size" Type="System.Int64" />
+      </Parameters>
+      <Docs>
+        <param name="size">Размер освобожденного резервирования.</param>
+        <summary>При переопределении в производном классе указывает, что резервирование было освобождено.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ При наследовании от класса <xref:System.IO.Log.ReservationCollection> необходимо вызвать этот метод, если резервирование было освобождено по причине, отличной от его удаления из коллекции.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ReservationMade">
+      <MemberSignature Language="C#" Value="protected void ReservationMade (long size);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig instance void ReservationMade(int64 size) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IO.Log.ReservationCollection.ReservationMade(System.Int64)" />
+      <MemberSignature Language="VB.NET" Value="Protected Sub ReservationMade (size As Long)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; void ReservationMade(long size);" />
+      <MemberSignature Language="F#" Value="member this.ReservationMade : int64 -&gt; unit" Usage="reservationCollection.ReservationMade size" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IO.Log</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="size" Type="System.Int64" />
+      </Parameters>
+      <Docs>
+        <param name="size">Размер созданного резервирования.</param>
+        <summary>При переопределении в производном классе указывает, что резервирование было создано.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ При наследовании из <xref:System.IO.Log.ReservationCollection>необходимо вызывать этот метод, когда резервирование выполняется за пределами <xref:System.IO.Log.ReservationCollection.Add%2A>вызова.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="System.Collections.IEnumerable.GetEnumerator">
+      <MemberSignature Language="C#" Value="System.Collections.IEnumerator IEnumerable.GetEnumerator ();" />
+      <MemberSignature Language="ILAsm" Value=".method hidebysig newslot virtual instance class System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IO.Log.ReservationCollection.System#Collections#IEnumerable#GetEnumerator" />
+      <MemberSignature Language="VB.NET" Value="Function GetEnumerator () As IEnumerator Implements IEnumerable.GetEnumerator" />
+      <MemberSignature Language="C++ CLI" Value=" virtual System::Collections::IEnumerator ^ System.Collections.IEnumerable.GetEnumerator() = System::Collections::IEnumerable::GetEnumerator;" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.Collections.IEnumerable.GetEnumerator</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.IO.Log</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.IEnumerator</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Возвращает перечислитель, который выполняет итерацию коллекции <see cref="T:System.IO.Log.ReservationCollection" />. Наследовать этот метод нельзя.</summary>
+        <returns>Перечислитель, выполняющий итерацию по коллекции <see cref="T:System.IO.Log.ReservationCollection" />.</returns>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.InvalidOperationException">Операция недопустима по одной из следующих причин. 
+– Перечисление завершено.  
+  
+– Коллекция изменена.  
+  
+– Перечисление не запущено. Должен быть вызван метод <see cref="M:System.Collections.IEnumerator.MoveNext" />.</exception>
+        <exception cref="T:System.ObjectDisposedException">Метод был вызван после удаления последовательности.</exception>
+        <exception cref="T:System.OutOfMemoryException">Недостаточно памяти, чтобы продолжить выполнение программы.</exception>
+        <exception cref="T:System.UnauthorizedAccessException">Доступ к заданному хранилищу журнала запрещен операционной системой.</exception>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
