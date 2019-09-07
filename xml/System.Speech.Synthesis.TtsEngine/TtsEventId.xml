@@ -1,0 +1,297 @@
+<Type Name="TtsEventId" FullName="System.Speech.Synthesis.TtsEngine.TtsEventId">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="d086651c4e8908832d504877447c6a2fa64b60b4" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70430480" /></Metadata><TypeSignature Language="C#" Value="public enum TtsEventId" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi sealed TtsEventId extends System.Enum" />
+  <TypeSignature Language="DocId" Value="T:System.Speech.Synthesis.TtsEngine.TtsEventId" />
+  <TypeSignature Language="VB.NET" Value="Public Enum TtsEventId" />
+  <TypeSignature Language="C++ CLI" Value="public enum class TtsEventId" />
+  <TypeSignature Language="F#" Value="type TtsEventId = " />
+  <AssemblyInfo>
+    <AssemblyName>System.Speech</AssemblyName>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Enum</BaseTypeName>
+  </Base>
+  <Docs>
+    <summary>Перечисляет типы событий синтеза речи.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Пользовательские модули синтеза речи определяют типы событий, передаваемых в инфраструктуру синтезатора платформы обработки речи с <xref:System.Speech.Synthesis.TtsEngine.TtsEventId>помощью.  
+  
+ Спецификация выполняется <xref:System.Speech.Synthesis.TtsEngine.SpeechEventInfo.EventId%2A> путем установки <xref:System.Speech.Synthesis.TtsEngine.SpeechEventInfo> свойства экземпляров, передаваемых <xref:System.Speech.Synthesis.TtsEngine.ITtsEngineSite.AddEvents%2A> члену класса, реализующего <xref:System.Speech.Synthesis.TtsEngine.ITtsEngineSite> интерфейс, передаваемый <xref:System.Speech.Synthesis.TtsEngine.TtsEngineSsml.Speak%2A> в метод в пользовательском обработчике речи. <xref:System.Speech.Synthesis.TtsEngine.TtsEngineSsml>реализация.  
+  
+ Инфраструктура платформы обработки речи указывает тип событий, которые сейчас обрабатываются <xref:System.Speech.Synthesis.TtsEngine.ITtsEngineSite.EventInterest%2A> свойством в, <xref:System.Speech.Synthesis.TtsEngine.ITtsEngineSite> переданном в реализацию говорите.  
+  
+ Значение <xref:System.Speech.Synthesis.TtsEngine.ITtsEngineSite.EventInterest%2A> является битовой маской, где <xref:System.Speech.Synthesis.TtsEngine.TtsEventId> элементы определяют расположение бита, соответствующего типу события. Например, вордбаундари имеет значение 5 (5), то есть пятый бит в значении, возвращаемом <xref:System.Speech.Synthesis.TtsEngine.ITtsEngineSite.EventInterest%2A> , указывает, поддерживает ли сайт тип события.  
+  
+   
+  
+## Examples  
+ Следующий пример является частью пользовательской реализации синтеза речи, наследуемой от <xref:System.Speech.Synthesis.TtsEngine.TtsEngineSsml>, и <xref:System.Speech.Synthesis.TtsEngine.TextFragment>с помощью классов <xref:System.Speech.Synthesis.TtsEngine.SpeechEventInfo>, <xref:System.Speech.Synthesis.TtsEngine.FragmentState>, и <xref:System.Speech.Synthesis.TtsEngine.TtsEventId> .
+  
+ Реализация <xref:System.Speech.Synthesis.TtsEngine.TtsEngineSsml.Speak%2A?displayProperty=nameWithType> включает следующие шаги:
+  
+1.  Получает массив <xref:System.Speech.Synthesis.TtsEngine.TextFragment> экземпляров и создает новый <xref:System.Speech.Synthesis.TtsEngine.TextFragment> массив экземпляров `Speak` для передачи в метод базового механизма синтеза.  
+  
+2.  Если свойство каждого <xref:System.Speech.Synthesis.TtsEngine.TextFragment.State%2A?displayProperty=nameWithType> экземпляра равно <xref:System.Speech.Synthesis.TtsEngine.TtsEngineAction.Speak?displayProperty=nameWithType>, код выполняет следующие действия: <xref:System.Speech.Synthesis.TtsEngine.FragmentState.Action%2A>
+  
+    - Преобразует американский английский в Английский в тексте для обречия.
+  
+    - Если свойство, предоставленное для реализации, `WordBoundary` поддерживает тип события, то <xref:System.Speech.Synthesis.TtsEngine.SpeechEventInfo> экземпляр используется для создания события для создания счетчика хода выполнения синтезатора. <xref:System.Speech.Synthesis.TtsEngine.ITtsEngineSite.EventInterest%2A?displayProperty=nameWithType>  
+  
+3.  Затем модуль рендеринга речи вызывается с измененным <xref:System.Speech.Synthesis.TtsEngine.TextFragment> массивом.
+  
+```csharp
+private const int WordBoundaryFlag = 1 << (int)TtsEventId.WordBoundary;
+private readonly char[] spaces = new char[] { ' ', '\t', '\r', '\n' };
+internal struct UsVsUk
+{
+    internal string UK;
+    internal string US;
+}
+
+override public void Speak (TextFragment [] frags, IntPtr wfx, ITtsEngineSite site)
+{
+    TextFragment [] newFrags=new TextFragment[frags.Length];
+  
+    for (int i=0;i<frags.Length;i++)
+    {
+        newFrags[i].State=frags[i].State;
+        //truncate
+        newFrags[i].TextToSpeak = frags[i].TextToSpeak.Substring(frags[i].TextOffset,
+                                  frags[i].TextLength);
+        newFrags[i].TextLength = newFrags[i].TextToSpeak.Length;
+        newFrags[i].TextOffset = 0;
+        if (newFrags[i].State.Action == TtsEngineAction.Speak)
+        {
+            //US to UK conversion
+            foreach (UsVsUk term in TransList)
+            {
+              newFrags[i].TextToSpeak.Replace(term.US, term.UK);
+            }
+            //Generate progress meter events if supported
+            if ((site.EventInterest & WordBoundaryFlag) != 0)
+            {
+                string[] subs = newFrags[i].TextToSpeak.Split(spaces);
+
+                foreach (string s in subs)
+                {
+                    int offset = newFrags[i].TextOffset;
+                    SpeechEventInfo spEvent = new SpeechEventInfo((Int16)TtsEventId.WordBoundary,
+                        (Int16)EventParameterType.Undefined,
+                        s.Length, new IntPtr(offset));
+                    offset += s.Length;
+                    if (s.Trim().Length > 0)
+                    {
+                        SpeechEventInfo[] events = new SpeechEventInfo[1];
+                        events[0] = spEvent;
+                        site.AddEvents(events, 1);
+                    }
+                }
+            }
+        }
+    }
+
+    _baseSynthesize.Speak(newFrags, wfx, site);
+
+}
+```  
+  
+ ]]></format>
+    </remarks>
+  </Docs>
+  <Members>
+    <Member MemberName="AudioLevel">
+      <MemberSignature Language="C#" Value="AudioLevel" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype System.Speech.Synthesis.TtsEngine.TtsEventId AudioLevel = int32(9)" />
+      <MemberSignature Language="DocId" Value="F:System.Speech.Synthesis.TtsEngine.TtsEventId.AudioLevel" />
+      <MemberSignature Language="VB.NET" Value="AudioLevel" />
+      <MemberSignature Language="C++ CLI" Value="AudioLevel" />
+      <MemberSignature Language="F#" Value="AudioLevel = 9" Usage="System.Speech.Synthesis.TtsEngine.TtsEventId.AudioLevel" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Speech.Synthesis.TtsEngine.TtsEventId</ReturnType>
+      </ReturnValue>
+      <MemberValue>9</MemberValue>
+      <Docs>
+        <summary>Идентифицирует события, создаваемые, когда механизм синтезирования речи завершает изменение уровня звука в процессе говорения.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Bookmark">
+      <MemberSignature Language="C#" Value="Bookmark" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype System.Speech.Synthesis.TtsEngine.TtsEventId Bookmark = int32(4)" />
+      <MemberSignature Language="DocId" Value="F:System.Speech.Synthesis.TtsEngine.TtsEventId.Bookmark" />
+      <MemberSignature Language="VB.NET" Value="Bookmark" />
+      <MemberSignature Language="C++ CLI" Value="Bookmark" />
+      <MemberSignature Language="F#" Value="Bookmark = 4" Usage="System.Speech.Synthesis.TtsEngine.TtsEventId.Bookmark" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Speech.Synthesis.TtsEngine.TtsEventId</ReturnType>
+      </ReturnValue>
+      <MemberValue>4</MemberValue>
+      <Docs>
+        <summary>Идентифицирует события, создаваемые, когда механизм синтезирования речи сталкивается с закладкой в процессе говорения.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="EndInputStream">
+      <MemberSignature Language="C#" Value="EndInputStream" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype System.Speech.Synthesis.TtsEngine.TtsEventId EndInputStream = int32(2)" />
+      <MemberSignature Language="DocId" Value="F:System.Speech.Synthesis.TtsEngine.TtsEventId.EndInputStream" />
+      <MemberSignature Language="VB.NET" Value="EndInputStream" />
+      <MemberSignature Language="C++ CLI" Value="EndInputStream" />
+      <MemberSignature Language="F#" Value="EndInputStream = 2" Usage="System.Speech.Synthesis.TtsEngine.TtsEventId.EndInputStream" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Speech.Synthesis.TtsEngine.TtsEventId</ReturnType>
+      </ReturnValue>
+      <MemberValue>2</MemberValue>
+      <Docs>
+        <summary>Идентифицирует события, создаваемые, когда механизм синтезирования речи сталкивается с завершением потока ввода в процессе говорения.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Phoneme">
+      <MemberSignature Language="C#" Value="Phoneme" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype System.Speech.Synthesis.TtsEngine.TtsEventId Phoneme = int32(6)" />
+      <MemberSignature Language="DocId" Value="F:System.Speech.Synthesis.TtsEngine.TtsEventId.Phoneme" />
+      <MemberSignature Language="VB.NET" Value="Phoneme" />
+      <MemberSignature Language="C++ CLI" Value="Phoneme" />
+      <MemberSignature Language="F#" Value="Phoneme = 6" Usage="System.Speech.Synthesis.TtsEngine.TtsEventId.Phoneme" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Speech.Synthesis.TtsEngine.TtsEventId</ReturnType>
+      </ReturnValue>
+      <MemberValue>6</MemberValue>
+      <Docs>
+        <summary>Идентифицирует события, создаваемые, когда механизм синтезирования речи завершает фонему в процессе говорения.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="SentenceBoundary">
+      <MemberSignature Language="C#" Value="SentenceBoundary" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype System.Speech.Synthesis.TtsEngine.TtsEventId SentenceBoundary = int32(7)" />
+      <MemberSignature Language="DocId" Value="F:System.Speech.Synthesis.TtsEngine.TtsEventId.SentenceBoundary" />
+      <MemberSignature Language="VB.NET" Value="SentenceBoundary" />
+      <MemberSignature Language="C++ CLI" Value="SentenceBoundary" />
+      <MemberSignature Language="F#" Value="SentenceBoundary = 7" Usage="System.Speech.Synthesis.TtsEngine.TtsEventId.SentenceBoundary" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Speech.Synthesis.TtsEngine.TtsEventId</ReturnType>
+      </ReturnValue>
+      <MemberValue>7</MemberValue>
+      <Docs>
+        <summary>Идентифицирует события, создаваемые, когда механизм синтезирования речи завершает предложение в процессе говорения.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="StartInputStream">
+      <MemberSignature Language="C#" Value="StartInputStream" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype System.Speech.Synthesis.TtsEngine.TtsEventId StartInputStream = int32(1)" />
+      <MemberSignature Language="DocId" Value="F:System.Speech.Synthesis.TtsEngine.TtsEventId.StartInputStream" />
+      <MemberSignature Language="VB.NET" Value="StartInputStream" />
+      <MemberSignature Language="C++ CLI" Value="StartInputStream" />
+      <MemberSignature Language="F#" Value="StartInputStream = 1" Usage="System.Speech.Synthesis.TtsEngine.TtsEventId.StartInputStream" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Speech.Synthesis.TtsEngine.TtsEventId</ReturnType>
+      </ReturnValue>
+      <MemberValue>1</MemberValue>
+      <Docs>
+        <summary>Идентифицирует события, создаваемые, когда механизм синтезирования речи начинает поток речи.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Viseme">
+      <MemberSignature Language="C#" Value="Viseme" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype System.Speech.Synthesis.TtsEngine.TtsEventId Viseme = int32(8)" />
+      <MemberSignature Language="DocId" Value="F:System.Speech.Synthesis.TtsEngine.TtsEventId.Viseme" />
+      <MemberSignature Language="VB.NET" Value="Viseme" />
+      <MemberSignature Language="C++ CLI" Value="Viseme" />
+      <MemberSignature Language="F#" Value="Viseme = 8" Usage="System.Speech.Synthesis.TtsEngine.TtsEventId.Viseme" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Speech.Synthesis.TtsEngine.TtsEventId</ReturnType>
+      </ReturnValue>
+      <MemberValue>8</MemberValue>
+      <Docs>
+        <summary>Идентифицирует события, создаваемые, когда механизм синтезирования речи завершает визему в процессе говорения.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="VoiceChange">
+      <MemberSignature Language="C#" Value="VoiceChange" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype System.Speech.Synthesis.TtsEngine.TtsEventId VoiceChange = int32(3)" />
+      <MemberSignature Language="DocId" Value="F:System.Speech.Synthesis.TtsEngine.TtsEventId.VoiceChange" />
+      <MemberSignature Language="VB.NET" Value="VoiceChange" />
+      <MemberSignature Language="C++ CLI" Value="VoiceChange" />
+      <MemberSignature Language="F#" Value="VoiceChange = 3" Usage="System.Speech.Synthesis.TtsEngine.TtsEventId.VoiceChange" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Speech.Synthesis.TtsEngine.TtsEventId</ReturnType>
+      </ReturnValue>
+      <MemberValue>3</MemberValue>
+      <Docs>
+        <summary>Идентифицирует события, создаваемые, когда механизм синтезирования речи сталкивается с изменением голоса в процессе говорения.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="WordBoundary">
+      <MemberSignature Language="C#" Value="WordBoundary" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype System.Speech.Synthesis.TtsEngine.TtsEventId WordBoundary = int32(5)" />
+      <MemberSignature Language="DocId" Value="F:System.Speech.Synthesis.TtsEngine.TtsEventId.WordBoundary" />
+      <MemberSignature Language="VB.NET" Value="WordBoundary" />
+      <MemberSignature Language="C++ CLI" Value="WordBoundary" />
+      <MemberSignature Language="F#" Value="WordBoundary = 5" Usage="System.Speech.Synthesis.TtsEngine.TtsEventId.WordBoundary" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Speech.Synthesis.TtsEngine.TtsEventId</ReturnType>
+      </ReturnValue>
+      <MemberValue>5</MemberValue>
+      <Docs>
+        <summary>Идентифицирует события, создаваемые, когда механизм синтезирования речи завершает слово в процессе говорения.</summary>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
