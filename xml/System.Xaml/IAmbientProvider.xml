@@ -1,0 +1,251 @@
+<Type Name="IAmbientProvider" FullName="System.Xaml.IAmbientProvider">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="676cec76c5e65ccbe563061adfe0bf5b84afefce" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70412240" /></Metadata><TypeSignature Language="C#" Value="public interface IAmbientProvider" />
+  <TypeSignature Language="ILAsm" Value=".class public interface auto ansi abstract IAmbientProvider" />
+  <TypeSignature Language="DocId" Value="T:System.Xaml.IAmbientProvider" />
+  <TypeSignature Language="VB.NET" Value="Public Interface IAmbientProvider" />
+  <TypeSignature Language="C++ CLI" Value="public interface class IAmbientProvider" />
+  <TypeSignature Language="F#" Value="type IAmbientProvider = interface" />
+  <AssemblyInfo>
+    <AssemblyName>System.Xaml</AssemblyName>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Interfaces />
+  <Docs>
+    <summary>Представляет службу, которая может возвращать элементы сведений о внешних свойствах или внешних типах преобразователям типов и расширениям разметки.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот интерфейс представляет службу, которая может помочь преобразователям типов и расширениям разметки получать идентификаторы внешних свойств для системы типов XAML (<xref:System.Xaml.XamlMember> объектов). Служба также может получать значения свойств окружения из классов. Типы также могут быть внешними; любой член, который использует этот тип в качестве значения, должен считаться внешним.  
+  
+ Обычно эта служба возвращается посредством вызова метода <xref:System.IServiceProvider.GetService%2A>, который выполняется для конкретного поставщика служб. Поставщик услуг обычно доступен для контекстов, которым он необходим, например кода выполнения преобразователя значений. Дополнительные сведения см. в разделе [преобразователи типов и расширения разметки для XAML](~/docs/framework/xaml-services/type-converters-and-markup-extensions-for-xaml.md) и [контекстов служб, доступных для преобразователей типов и расширений разметки](~/docs/framework/xaml-services/service-contexts-available-to-type-converters-and-markup-extensions.md).  
+  
+## <a name="about-ambient-properties"></a>Сведения о внешних свойствах  
+ Внешнее свойство — это свойство, значение свойства которого должно быть доступно для преобразователей типа и использования расширения разметки, которые существуют в структуре узлов XAML и в графе объектов, созданном на основе этого объекта. Это относится к обработчику XAML на этапе создания объекта пути загрузки или фазы сериализации пути сохранения.  
+  
+ В случае пути загрузки значение свойства окружения может повлиять на значение в графе объекта других свойств, которые существуют под ним в структуре узлов XAML. При обработке в виде потока узлов XAML понятие окружения означает, что значение свойства окружения должно быть доступно для преобразователей типов и расширений `StartObject` разметки от до `EndObject`. Аналогичным образом, преобразователь типов, используемый для пути сохранения, может использовать сведения о внешнем свойстве и его значении. Таким образом, создаваемый XAML является лучшим представлением циклического приема.  
+  
+ Для членов в целом XAML не указывает порядок, в котором должны обрабатываться элементы объекта. Однако любое значение свойства окружения должно сначала обрабатываться средством чтения XAML, чтобы использование преобразователей типов и расширений разметки, которые содержатся в других свойствах, могли получить к нему <xref:System.Xaml.IAmbientProvider> доступ через службу.  
+  
+ <xref:System.Xaml.XamlMember.DependsOn%2A>— Это аналогичная концепция, которая также влияет на порядок обработки узлов XAML. <xref:System.Xaml.XamlMember.DependsOn%2A> Однако может использоваться только для отношений одноранговых членов и узлов. он не влияет на все потомки. Кроме того <xref:System.Xaml.XamlMember.DependsOn%2A> , непосредственно влияет на параметр свойства графа объекта; в то время как внешний метод полагается на преобразователи типов или расширения разметки. Во внешней методике также должен быть определен преобразователь типов или определение расширения разметки, которое указывает, как значение свойства окружения должно интерпретироваться и применяться к объекту.  
+  
+## <a name="wpf-usage-notes"></a>Примечания об использовании WPF  
+ Сценарий внешнего свойства, проиллюстрированного в [!INCLUDE[TLA2#tla_winclient](~/includes/tla2sharptla-winclient-md.md)] <xref:System.Windows.Style.TargetType%2A?displayProperty=nameWithType>наборе функций, позволяет определить необходимые имена для поиска других значений свойств. В этом случае <xref:System.Windows.Style.TargetType%2A?displayProperty=nameWithType> значение определяет <xref:System.Windows.Setter.Property%2A?displayProperty=nameWithType> значения, которые находятся в узлах XAML под ним. <xref:System.Windows.Setter.Property%2A?displayProperty=nameWithType>использует поведение преобразователя типов для <xref:System.Windows.DependencyProperty>. Это поведение обращается к внешнему <xref:System.Windows.Style.TargetType%2A?displayProperty=nameWithType> значению путем <xref:System.Xaml.IAmbientProvider.GetFirstAmbientValue%2A> запроса из контекста службы, доступного для преобразователей типов и расширений разметки.  
+  
+ Сценарий внешнего типа, который проиллюстрирован в наборе функций WPF, — <xref:System.Windows.ResourceDictionary>это. <xref:System.Windows.ResourceDictionary>имеет свойство, которое может содержать другие <xref:System.Windows.ResourceDictionary> объекты для слияния, и предполагаемый порядок разрешения ресурсов для Объединенного сценария конфликтует с порядком загрузки типов. <xref:System.Windows.ResourceDictionary.MergedDictionaries%2A> <xref:System.Windows.ResourceDictionary>применяется <xref:System.Windows.Markup.AmbientAttribute> , чтобы обработчик XAML мог правильно обрабатывать ссылки в объединенном словаре с `StaticResource` использованием. В частности `StaticResource` , является расширением разметки, которое <xref:System.Xaml.IAmbientProvider.GetAllAmbientValues%2A>вызывает.  
+  
+ ]]></format>
+    </remarks>
+    <altmember cref="T:System.Xaml.AmbientPropertyValue" />
+  </Docs>
+  <Members>
+    <MemberGroup MemberName="GetAllAmbientValues">
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Возвращает перечислимый набор информационных элементов внешнего типа или свойства для запрошенной области.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="GetAllAmbientValues">
+      <MemberSignature Language="C#" Value="public System.Collections.Generic.IEnumerable&lt;object&gt; GetAllAmbientValues (params System.Xaml.XamlType[] types);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Collections.Generic.IEnumerable`1&lt;object&gt; GetAllAmbientValues(class System.Xaml.XamlType[] types) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Xaml.IAmbientProvider.GetAllAmbientValues(System.Xaml.XamlType[])" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetAllAmbientValues (ParamArray types As XamlType()) As IEnumerable(Of Object)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Collections::Generic::IEnumerable&lt;System::Object ^&gt; ^ GetAllAmbientValues(... cli::array &lt;System::Xaml::XamlType ^&gt; ^ types);" />
+      <MemberSignature Language="F#" Value="abstract member GetAllAmbientValues : System.Xaml.XamlType[] -&gt; seq&lt;obj&gt;" Usage="iAmbientProvider.GetAllAmbientValues types" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.Generic.IEnumerable&lt;System.Object&gt;</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="types" Type="System.Xaml.XamlType[]">
+          <Attributes>
+            <Attribute FrameworkAlternate="netcore-3.0">
+              <AttributeName>System.ParamArray</AttributeName>
+            </Attribute>
+          </Attributes>
+        </Parameter>
+      </Parameters>
+      <Docs>
+        <param name="types">Набор типов, из которого извлекаются сведения о внешних типах.</param>
+        <summary>Возвращает перечислимый набор экземпляров объектов возможных внешних типов для запрошенных типов.</summary>
+        <returns>Перечисляемый набор объектов, представляющих значения для запрошенного набора идентификаторов <see cref="T:System.Xaml.XamlType" />.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetAllAmbientValues">
+      <MemberSignature Language="C#" Value="public System.Collections.Generic.IEnumerable&lt;System.Xaml.AmbientPropertyValue&gt; GetAllAmbientValues (System.Collections.Generic.IEnumerable&lt;System.Xaml.XamlType&gt; ceilingTypes, params System.Xaml.XamlMember[] properties);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Collections.Generic.IEnumerable`1&lt;class System.Xaml.AmbientPropertyValue&gt; GetAllAmbientValues(class System.Collections.Generic.IEnumerable`1&lt;class System.Xaml.XamlType&gt; ceilingTypes, class System.Xaml.XamlMember[] properties) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Xaml.IAmbientProvider.GetAllAmbientValues(System.Collections.Generic.IEnumerable{System.Xaml.XamlType},System.Xaml.XamlMember[])" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetAllAmbientValues (ceilingTypes As IEnumerable(Of XamlType), ParamArray properties As XamlMember()) As IEnumerable(Of AmbientPropertyValue)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Collections::Generic::IEnumerable&lt;System::Xaml::AmbientPropertyValue ^&gt; ^ GetAllAmbientValues(System::Collections::Generic::IEnumerable&lt;System::Xaml::XamlType ^&gt; ^ ceilingTypes, ... cli::array &lt;System::Xaml::XamlMember ^&gt; ^ properties);" />
+      <MemberSignature Language="F#" Value="abstract member GetAllAmbientValues : seq&lt;System.Xaml.XamlType&gt; * System.Xaml.XamlMember[] -&gt; seq&lt;System.Xaml.AmbientPropertyValue&gt;" Usage="iAmbientProvider.GetAllAmbientValues (ceilingTypes, properties)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.Generic.IEnumerable&lt;System.Xaml.AmbientPropertyValue&gt;</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="ceilingTypes" Type="System.Collections.Generic.IEnumerable&lt;System.Xaml.XamlType&gt;" />
+        <Parameter Name="properties" Type="System.Xaml.XamlMember[]">
+          <Attributes>
+            <Attribute FrameworkAlternate="netcore-3.0">
+              <AttributeName>System.ParamArray</AttributeName>
+            </Attribute>
+          </Attributes>
+        </Parameter>
+      </Parameters>
+      <Docs>
+        <param name="ceilingTypes">Задает один или несколько типов, на которых должна останавливаться обработка, когда эти типы встречаются при перемещении вверх по графу объектов. Эти типы содержат требуемое внешнее свойство. Может иметь значение <see langword="null" />.</param>
+        <param name="properties">Задает один или несколько объектов идентификатора свойств, которые определяют свойства как внешние.</param>
+        <summary>Возвращает перечислимый набор информационных элементов внешнего свойства для запрошенного набора свойств.</summary>
+        <returns>Перечисляемый набор элементов сведений о внешних свойствах для запрошенного набора свойств. Сведения о свойстве для каждого возвращенного объекта <see cref="T:System.Xaml.AmbientPropertyValue" /> будут соответствовать одному из входных свойств <paramref name="properties" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Каждый <xref:System.Xaml.AmbientPropertyValue> возвращаемый объект <xref:System.Xaml.XamlMember> содержит идентификатор и значение свойства.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetAllAmbientValues">
+      <MemberSignature Language="C#" Value="public System.Collections.Generic.IEnumerable&lt;System.Xaml.AmbientPropertyValue&gt; GetAllAmbientValues (System.Collections.Generic.IEnumerable&lt;System.Xaml.XamlType&gt; ceilingTypes, bool searchLiveStackOnly, System.Collections.Generic.IEnumerable&lt;System.Xaml.XamlType&gt; types, params System.Xaml.XamlMember[] properties);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Collections.Generic.IEnumerable`1&lt;class System.Xaml.AmbientPropertyValue&gt; GetAllAmbientValues(class System.Collections.Generic.IEnumerable`1&lt;class System.Xaml.XamlType&gt; ceilingTypes, bool searchLiveStackOnly, class System.Collections.Generic.IEnumerable`1&lt;class System.Xaml.XamlType&gt; types, class System.Xaml.XamlMember[] properties) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Xaml.IAmbientProvider.GetAllAmbientValues(System.Collections.Generic.IEnumerable{System.Xaml.XamlType},System.Boolean,System.Collections.Generic.IEnumerable{System.Xaml.XamlType},System.Xaml.XamlMember[])" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetAllAmbientValues (ceilingTypes As IEnumerable(Of XamlType), searchLiveStackOnly As Boolean, types As IEnumerable(Of XamlType), ParamArray properties As XamlMember()) As IEnumerable(Of AmbientPropertyValue)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Collections::Generic::IEnumerable&lt;System::Xaml::AmbientPropertyValue ^&gt; ^ GetAllAmbientValues(System::Collections::Generic::IEnumerable&lt;System::Xaml::XamlType ^&gt; ^ ceilingTypes, bool searchLiveStackOnly, System::Collections::Generic::IEnumerable&lt;System::Xaml::XamlType ^&gt; ^ types, ... cli::array &lt;System::Xaml::XamlMember ^&gt; ^ properties);" />
+      <MemberSignature Language="F#" Value="abstract member GetAllAmbientValues : seq&lt;System.Xaml.XamlType&gt; * bool * seq&lt;System.Xaml.XamlType&gt; * System.Xaml.XamlMember[] -&gt; seq&lt;System.Xaml.AmbientPropertyValue&gt;" Usage="iAmbientProvider.GetAllAmbientValues (ceilingTypes, searchLiveStackOnly, types, properties)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.Generic.IEnumerable&lt;System.Xaml.AmbientPropertyValue&gt;</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="ceilingTypes" Type="System.Collections.Generic.IEnumerable&lt;System.Xaml.XamlType&gt;" />
+        <Parameter Name="searchLiveStackOnly" Type="System.Boolean" />
+        <Parameter Name="types" Type="System.Collections.Generic.IEnumerable&lt;System.Xaml.XamlType&gt;" />
+        <Parameter Name="properties" Type="System.Xaml.XamlMember[]">
+          <Attributes>
+            <Attribute FrameworkAlternate="netcore-3.0">
+              <AttributeName>System.ParamArray</AttributeName>
+            </Attribute>
+          </Attributes>
+        </Parameter>
+      </Parameters>
+      <Docs>
+        <param name="ceilingTypes">Задает один или несколько типов, на которых должна останавливаться обработка, когда эти типы встречаются при перемещении вверх по графу объектов. Эти типы содержат требуемое внешнее свойство. Может иметь значение <see langword="null" />.</param>
+        <param name="searchLiveStackOnly">Значение <see langword="true" />, чтобы не использовать сохраненный контекст; значение <see langword="false" />, чтобы использовать сохраненный контекст. Значение по умолчанию — <see langword="false" />.</param>
+        <param name="types">Указывает один или несколько объектов идентификатора типа, которые определяют типы как внешние.</param>
+        <param name="properties">Задает один или несколько объектов идентификатора свойств, которые определяют свойства как внешние.</param>
+        <summary>Возвращает перечислимый набор информационных элементов внешнего свойства для запрошенного набора типов и свойств.</summary>
+        <returns>Перечислимый набор информационных элементов внешнего свойства для запрошенного набора типов и свойств. Сведения о свойстве для каждого возвращенного объекта <see cref="T:System.Xaml.AmbientPropertyValue" /> будут соответствовать одному из типов (<paramref name="types" />) или свойств (<paramref name="properties" />).</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Каждый <xref:System.Xaml.AmbientPropertyValue> возвращаемый объект <xref:System.Xaml.XamlMember> содержит идентификатор и значение свойства.  
+  
+ Эта конкретная <xref:System.Xaml.IAmbientProvider.GetAllAmbientValues%2A> перегрузка может искать внешние типы и внешние свойства в том же проходе через дерево. Использование этой перегрузки приводит к упорядочению элементов в возвращаемом значении, которые <xref:System.Xaml.IAmbientProvider.GetAllAmbientValues%28System.Collections.Generic.IEnumerable%7BSystem.Xaml.XamlType%7D%2CSystem.Xaml.XamlMember%5B%5D%29> отличаются <xref:System.Xaml.IAmbientProvider.GetAllAmbientValues%28System.Xaml.XamlType%5B%5D%29>от или.  
+  
+ Эта перегрузка также позволяет поиску не использовать сохраненный контекст. Перегрузки <xref:System.Xaml.IAmbientProvider.GetAllAmbientValues%28System.Xaml.XamlType%5B%5D%29> `searchLiveStackOnly` или неявно используют сохраненный контекст, если он доступен (они всегда действуют как неявный параметр `false`). <xref:System.Xaml.IAmbientProvider.GetAllAmbientValues%28System.Collections.Generic.IEnumerable%7BSystem.Xaml.XamlType%7D%2CSystem.Xaml.XamlMember%5B%5D%29> Понятие сохраненного контекста может обрабатываться по-разному с помощью определенных контекстов схемы XAML или платформ, включающих XAML. В реализации XAML в WPF сохраненные контексты используются для расширения шаблона, а также для других функциональных областей.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="GetFirstAmbientValue">
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Возвращает один информационный элемент внешнего типа или свойства из запрошенного набора на основе того, какое из таких свойств встретилось первым.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="GetFirstAmbientValue">
+      <MemberSignature Language="C#" Value="public object GetFirstAmbientValue (params System.Xaml.XamlType[] types);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance object GetFirstAmbientValue(class System.Xaml.XamlType[] types) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Xaml.IAmbientProvider.GetFirstAmbientValue(System.Xaml.XamlType[])" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetFirstAmbientValue (ParamArray types As XamlType()) As Object" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Object ^ GetFirstAmbientValue(... cli::array &lt;System::Xaml::XamlType ^&gt; ^ types);" />
+      <MemberSignature Language="F#" Value="abstract member GetFirstAmbientValue : System.Xaml.XamlType[] -&gt; obj" Usage="iAmbientProvider.GetFirstAmbientValue types" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Object</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="types" Type="System.Xaml.XamlType[]">
+          <Attributes>
+            <Attribute FrameworkAlternate="netcore-3.0">
+              <AttributeName>System.ParamArray</AttributeName>
+            </Attribute>
+          </Attributes>
+        </Parameter>
+      </Parameters>
+      <Docs>
+        <param name="types">Набор типов, из которого извлекаются сведения о внешних типах.</param>
+        <summary>Возвращает первый соответствующий объект, являющийся возможным внешним типом для запрошенных типов.</summary>
+        <returns>Первый результирующий объект для запрошенного набора.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetFirstAmbientValue">
+      <MemberSignature Language="C#" Value="public System.Xaml.AmbientPropertyValue GetFirstAmbientValue (System.Collections.Generic.IEnumerable&lt;System.Xaml.XamlType&gt; ceilingTypes, params System.Xaml.XamlMember[] properties);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Xaml.AmbientPropertyValue GetFirstAmbientValue(class System.Collections.Generic.IEnumerable`1&lt;class System.Xaml.XamlType&gt; ceilingTypes, class System.Xaml.XamlMember[] properties) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Xaml.IAmbientProvider.GetFirstAmbientValue(System.Collections.Generic.IEnumerable{System.Xaml.XamlType},System.Xaml.XamlMember[])" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetFirstAmbientValue (ceilingTypes As IEnumerable(Of XamlType), ParamArray properties As XamlMember()) As AmbientPropertyValue" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Xaml::AmbientPropertyValue ^ GetFirstAmbientValue(System::Collections::Generic::IEnumerable&lt;System::Xaml::XamlType ^&gt; ^ ceilingTypes, ... cli::array &lt;System::Xaml::XamlMember ^&gt; ^ properties);" />
+      <MemberSignature Language="F#" Value="abstract member GetFirstAmbientValue : seq&lt;System.Xaml.XamlType&gt; * System.Xaml.XamlMember[] -&gt; System.Xaml.AmbientPropertyValue" Usage="iAmbientProvider.GetFirstAmbientValue (ceilingTypes, properties)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Xaml.AmbientPropertyValue</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="ceilingTypes" Type="System.Collections.Generic.IEnumerable&lt;System.Xaml.XamlType&gt;" />
+        <Parameter Name="properties" Type="System.Xaml.XamlMember[]">
+          <Attributes>
+            <Attribute FrameworkAlternate="netcore-3.0">
+              <AttributeName>System.ParamArray</AttributeName>
+            </Attribute>
+          </Attributes>
+        </Parameter>
+      </Parameters>
+      <Docs>
+        <param name="ceilingTypes">Задает один или несколько типов, на которых должна останавливаться обработка, когда эти типы встречаются при перемещении вверх по графу объектов. Эти типы содержат требуемое внешнее свойство.</param>
+        <param name="properties">Задает один или несколько объектов, идентифицирующих свойства, которые должны рассматриваться как внешние.</param>
+        <summary>Возвращает один информационный элемент внешнего типа или свойства из запрошенного набора свойств на основе того, какое из свойств встретилось первым.</summary>
+        <returns>Один элемент сведений о внешних свойствах для первого значения внешнего свойства, найденного в списке <paramref name="properties" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Каждый <xref:System.Xaml.AmbientPropertyValue> возвращаемый объект <xref:System.Xaml.XamlMember> содержит идентификатор и значение свойства.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
