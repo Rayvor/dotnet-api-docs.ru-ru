@@ -1,0 +1,996 @@
+<Type Name="SessionSecurityTokenHandler" FullName="System.IdentityModel.Tokens.SessionSecurityTokenHandler">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="a87da613926af9faf82add64d298b573be21ce43" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70437760" /></Metadata><TypeSignature Language="C#" Value="public class SessionSecurityTokenHandler : System.IdentityModel.Tokens.SecurityTokenHandler" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit SessionSecurityTokenHandler extends System.IdentityModel.Tokens.SecurityTokenHandler" />
+  <TypeSignature Language="DocId" Value="T:System.IdentityModel.Tokens.SessionSecurityTokenHandler" />
+  <TypeSignature Language="VB.NET" Value="Public Class SessionSecurityTokenHandler&#xA;Inherits SecurityTokenHandler" />
+  <TypeSignature Language="C++ CLI" Value="public ref class SessionSecurityTokenHandler : System::IdentityModel::Tokens::SecurityTokenHandler" />
+  <TypeSignature Language="F#" Value="type SessionSecurityTokenHandler = class&#xA;    inherit SecurityTokenHandler" />
+  <AssemblyInfo>
+    <AssemblyName>System.IdentityModel</AssemblyName>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.IdentityModel.Tokens.SecurityTokenHandler</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary><see cref="T:System.IdentityModel.Tokens.SecurityTokenHandler" />, который обрабатывает токены безопасности типа <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" />.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler> Класс сериализует, десериализует и проверяет токены сеанса. Токены сеанса — это маркеры <xref:System.IdentityModel.Tokens.SessionSecurityToken>типа. <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler> Класс сериализует маркеры в формат файла cookie и обратно. По умолчанию класс сериализует маркеры в элементы WS-Secure Conversation Feb2005 или WS-Secure Conversation 1,3 `<wsc:SecurityContextToken>` . Токены сеанса используются <xref:System.IdentityModel.Services.WSFederationAuthenticationModule> (всфам) <xref:System.IdentityModel.Services.SessionAuthenticationModule> и (SAM) для хранения сведений о сеансе. в первую очередь, <xref:System.Security.Claims.ClaimsPrincipal> это связано с прошедшей проверку подлинности пользователем и временем начала и истечения срока действия сеанса.  
+  
+ В пассивных сценариях <xref:System.IdentityModel.Services.WSFederationAuthenticationModule> вызовы <xref:System.IdentityModel.Services.SessionAuthenticationModule> к (SAM) из конвейера проверки подлинности создают токен сеанса из <xref:System.Security.Claims.ClaimsPrincipal> , который представляет пользователя, прошедшего проверку подлинности. Диспетчер SAM использует настроенный <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler> для создания маркера и его сериализации в файл cookie (и для десериализации маркера из файла cookie в последующих запросах). SAM использует экземпляр настроенного <xref:System.IdentityModel.Services.CookieHandler> класса для записи файла cookie обратно в HTTP-ответ. Затем этот файл cookie возвращается клиенту, а в последующих запросах клиент может представлять файл cookie, а не циклический обмен данными с поставщиком удостоверений для повторного получения маркера безопасности. Дополнительные сведения о том, как сеансы работают с WIF, см. в разделе [WIF Session Management](~/docs/framework/security/wif-session-management.md).  
+  
+> [!NOTE]
+>  Элемент конфигурации <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler> securityTokenHandlers > можно использовать для указания объекта, ответственного за защиту сеансов приложения. \< Разработчики должны соблюдать осторожность при изменении этого параметра конфигурации, так как неправильно настроенная система может привести к компрометации приложения. Например, при указании производного <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler> экземпляра и передаче коллекции пустых преобразований (кукиетрансформ) в базовый идентификатор пользователя будет сериализован в файл cookie, который не был защищен. Это может позволить злоумышленнику изменить удостоверение и, соответственно, изменить права доступа.  
+  
+ Если токен сеанса находится в режиме ссылки, то есть его <xref:System.IdentityModel.Tokens.SessionSecurityToken.IsReferenceMode%2A?displayProperty=nameWithType> свойство имеет `true`значение, обработчик токена сеанса только Сериализует свойства токена сеанса, которые необходимы для <xref:System.IdentityModel.Tokens.SessionSecurityTokenCache>повторного создания ключа в. В случае <xref:System.IdentityModel.Tokens.SessionSecurityTokenCacheKey> по умолчанию класс используется для представления ключей кэша, а обработчик токена <xref:System.IdentityModel.Tokens.SessionSecurityToken.ContextId%2A?displayProperty=nameWithType> записывает свойства и <xref:System.IdentityModel.Tokens.SessionSecurityToken.KeyGeneration%2A?displayProperty=nameWithType> токена. Если токен сеанса не находится в режиме ссылки, то есть <xref:System.IdentityModel.Tokens.SessionSecurityToken.IsReferenceMode%2A?displayProperty=nameWithType> свойство имеет `false`значение, а в дополнение к упомянутым выше свойствам обработчик вызывает <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.ApplyTransforms%2A> метод для массива байтов, сериализованного из токена, и сохраняет результирующее значение также в файле cookie. Дополнительные сведения о сериализации маркера см. в <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.WriteToken%28System.Xml.XmlWriter%2CSystem.IdentityModel.Tokens.SecurityToken%29?displayProperty=nameWithType> описании метода.  
+  
+ Свойство получает список преобразований, которые применяются к токену сеанса <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.ApplyTransforms%2A> в методе. <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.Transforms%2A> Все преобразования являются производными от <xref:System.IdentityModel.CookieTransform> класса. В случае <xref:System.IdentityModel.DeflateCookieTransform> по умолчанию применяются <xref:System.IdentityModel.ProtectedDataCookieTransform> и. <xref:System.IdentityModel.ProtectedDataCookieTransform> Использует API защиты данных (DPAPI) для защиты материала файла cookie. DPAPI использует ключ, относящийся к компьютеру, на котором он работает в алгоритмах защиты. По этой причине обработчик токенов сеансов по умолчанию не может использоваться в сценариях веб-фермы, поскольку в таких сценариях может потребоваться чтение маркеров, написанных на одном компьютере, на другом компьютере. Для обхода этой проблемы можно использовать много стратегий. Например, с их помощью можно выполнять следующее.  
+  
+-   Замените значение по <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler> умолчанию <xref:System.IdentityModel.Services.Tokens.MachineKeySessionSecurityTokenHandler>на. Позволяет указать ключи подписывания и шифрования в элементе ASP.NET `<machineKey>` в файле конфигурации. <xref:System.IdentityModel.Services.Tokens.MachineKeySessionSecurityTokenHandler>  
+  
+-   Предоставьте обработчик для <xref:System.IdentityModel.Services.FederatedAuthentication.FederationConfigurationCreated?displayProperty=nameWithType> события в файле Global.asax.cs и замените обработчик токена сеанса по умолчанию <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler> экземпляром со списком <xref:System.IdentityModel.RsaSignatureCookieTransform> преобразований <xref:System.IdentityModel.RsaEncryptionCookieTransform>, включающих и. Новый экземпляр можно создать, вызвав один из конструкторов, принимающих список преобразований.  
+  
+-   Создайте пользовательское преобразование из <xref:System.IdentityModel.CookieTransform> базового класса и используйте приведенный выше метод, чтобы включить его в список преобразований, которые будут применены.  
+  
+-   Создайте пользовательский обработчик токена из <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler> и реализуйте собственный механизм.  
+  
+ Дополнительные сведения об использовании сеансов в сценариях веб-фермы см. в разделе [WIF and Web ферм](~/docs/framework/security/wif-and-web-farms.md).  
+  
+ Объект <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler> включен в коллекцию обработчиков маркеров по умолчанию, однако его можно заменить на обработчик пользовательского маркера сеанса, сначала [ &lt;указав элемент remove&gt; ](~/docs/framework/configure-apps/file-schema/windows-identity-foundation/remove.md) в разделе [ &lt; элемент&gt; securityTokenHandlers](~/docs/framework/configure-apps/file-schema/windows-identity-foundation/securitytokenhandlers.md) для удаления обработчика по умолчанию из коллекции и последующего добавления пользовательского [ &lt;&gt; ](~/docs/framework/configure-apps/file-schema/windows-identity-foundation/add.md) обработчика маркеров с помощью элемента Add. По умолчанию время существования токена по умолчанию можно указать [ &lt;,&gt; ](~/docs/framework/configure-apps/file-schema/windows-identity-foundation/sessiontokenrequirement.md) включив элемент сессионтокенрекуиремент `<add>` в элемент. Можно разработать пользовательский обработчик маркеров для получения пользовательских элементов конфигурации в `<add>` элементе, <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.LoadCustomConfiguration%2A> переопределив метод, чтобы предоставить логику для обработки.  
+  
+   
+  
+## Examples  
+ В следующем коде XML показано, как заменить обработчик токенов безопасности сеанса по умолчанию в коллекции обработчиков маркеров экземпляром <xref:System.IdentityModel.Services.Tokens.MachineKeySessionSecurityTokenHandler> класса в конфигурации.  
+  
+```xml  
+<securityTokenHandlers>  
+  <remove type="System.IdentityModel.Tokens.SessionSecurityTokenHandler, System.IdentityModel, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />  
+  <add type="System.IdentityModel.Services.Tokens.MachineKeySessionSecurityTokenHandler, System.IdentityModel.Services, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />  
+</securityTokenHandlers>  
+```  
+  
+ ]]></format>
+    </remarks>
+    <altmember cref="T:System.IdentityModel.Tokens.SessionSecurityTokenCache" />
+    <altmember cref="T:System.IdentityModel.Tokens.SessionSecurityToken" />
+    <altmember cref="T:System.IdentityModel.Services.Tokens.MachineKeySessionSecurityTokenHandler" />
+    <altmember cref="T:System.IdentityModel.CookieTransform" />
+    <related type="Article" href="https://msdn.microsoft.com/library/496a1735-cbb7-49d5-a6aa-dd5550462073">&lt;сессионтокенрекуиремент&gt;</related>
+    <related type="Article" href="https://msdn.microsoft.com/library/fc3cd7fa-2b45-4614-a44f-8fa9b9d15284">WIF и веб-фермы</related>
+    <related type="Article" href="https://msdn.microsoft.com/library/98bce126-18a9-401b-b20d-67ee462a5f8a">Управление сеансами WIF</related>
+  </Docs>
+  <Members>
+    <MemberGroup MemberName=".ctor">
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.IdentityModel.Tokens.SessionSecurityTokenHandler" />.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public SessionSecurityTokenHandler ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Tokens.SessionSecurityTokenHandler.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; SessionSecurityTokenHandler();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.IdentityModel.Tokens.SessionSecurityTokenHandler" />, использующий преобразования файлов cookie и время жизни токена по умолчанию.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойства и инициализируются <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.Transforms%2A>  значением <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.DefaultCookieTransforms> и. <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.DefaultLifetime> <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.TokenLifetime%2A>  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public SessionSecurityTokenHandler (System.Collections.ObjectModel.ReadOnlyCollection&lt;System.IdentityModel.CookieTransform&gt; transforms);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.Collections.ObjectModel.ReadOnlyCollection`1&lt;class System.IdentityModel.CookieTransform&gt; transforms) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Tokens.SessionSecurityTokenHandler.#ctor(System.Collections.ObjectModel.ReadOnlyCollection{System.IdentityModel.CookieTransform})" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (transforms As ReadOnlyCollection(Of CookieTransform))" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; SessionSecurityTokenHandler(System::Collections::ObjectModel::ReadOnlyCollection&lt;System::IdentityModel::CookieTransform ^&gt; ^ transforms);" />
+      <MemberSignature Language="F#" Value="new System.IdentityModel.Tokens.SessionSecurityTokenHandler : System.Collections.ObjectModel.ReadOnlyCollection&lt;System.IdentityModel.CookieTransform&gt; -&gt; System.IdentityModel.Tokens.SessionSecurityTokenHandler" Usage="new System.IdentityModel.Tokens.SessionSecurityTokenHandler transforms" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="transforms" Type="System.Collections.ObjectModel.ReadOnlyCollection&lt;System.IdentityModel.CookieTransform&gt;" />
+      </Parameters>
+      <Docs>
+        <param name="transforms">Преобразование, которое требуется применять для кодирования или декодирования файлов cookie. Задает свойство <see cref="P:System.IdentityModel.Tokens.SessionSecurityTokenHandler.Transforms" />.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.IdentityModel.Tokens.SessionSecurityTokenHandler" />, в котором используются указанные преобразования файла cookie.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойство <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.TokenLifetime%2A> инициализировано значением параметра <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.DefaultLifetime>.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="transforms" /> — <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public SessionSecurityTokenHandler (System.Collections.ObjectModel.ReadOnlyCollection&lt;System.IdentityModel.CookieTransform&gt; transforms, TimeSpan tokenLifetime);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.Collections.ObjectModel.ReadOnlyCollection`1&lt;class System.IdentityModel.CookieTransform&gt; transforms, valuetype System.TimeSpan tokenLifetime) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Tokens.SessionSecurityTokenHandler.#ctor(System.Collections.ObjectModel.ReadOnlyCollection{System.IdentityModel.CookieTransform},System.TimeSpan)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (transforms As ReadOnlyCollection(Of CookieTransform), tokenLifetime As TimeSpan)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; SessionSecurityTokenHandler(System::Collections::ObjectModel::ReadOnlyCollection&lt;System::IdentityModel::CookieTransform ^&gt; ^ transforms, TimeSpan tokenLifetime);" />
+      <MemberSignature Language="F#" Value="new System.IdentityModel.Tokens.SessionSecurityTokenHandler : System.Collections.ObjectModel.ReadOnlyCollection&lt;System.IdentityModel.CookieTransform&gt; * TimeSpan -&gt; System.IdentityModel.Tokens.SessionSecurityTokenHandler" Usage="new System.IdentityModel.Tokens.SessionSecurityTokenHandler (transforms, tokenLifetime)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="transforms" Type="System.Collections.ObjectModel.ReadOnlyCollection&lt;System.IdentityModel.CookieTransform&gt;" />
+        <Parameter Name="tokenLifetime" Type="System.TimeSpan" />
+      </Parameters>
+      <Docs>
+        <param name="transforms">Преобразование, которое требуется применять для кодирования или декодирования файлов cookie. Задает свойство <see cref="P:System.IdentityModel.Tokens.SessionSecurityTokenHandler.Transforms" />.</param>
+        <param name="tokenLifetime">Время существования токена по умолчанию. Задает свойство <see cref="P:System.IdentityModel.Tokens.SessionSecurityTokenHandler.TokenLifetime" />.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.IdentityModel.Tokens.SessionSecurityTokenHandler" />, использующий указанные преобразования файлов cookie и время жизни токена.</summary>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="transforms" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.InvalidOperationException">Значение параметра <paramref name="tokenLifetime" /> меньше или равно <see cref="F:System.TimeSpan.Zero" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="ApplyTransforms">
+      <MemberSignature Language="C#" Value="protected virtual byte[] ApplyTransforms (byte[] cookie, bool outbound);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance unsigned int8[] ApplyTransforms(unsigned int8[] cookie, bool outbound) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Tokens.SessionSecurityTokenHandler.ApplyTransforms(System.Byte[],System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Function ApplyTransforms (cookie As Byte(), outbound As Boolean) As Byte()" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual cli::array &lt;System::Byte&gt; ^ ApplyTransforms(cli::array &lt;System::Byte&gt; ^ cookie, bool outbound);" />
+      <MemberSignature Language="F#" Value="abstract member ApplyTransforms : byte[] * bool -&gt; byte[]&#xA;override this.ApplyTransforms : byte[] * bool -&gt; byte[]" Usage="sessionSecurityTokenHandler.ApplyTransforms (cookie, outbound)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Byte[]</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="cookie" Type="System.Byte[]" />
+        <Parameter Name="outbound" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="cookie">Файл cookie, который будет преобразован.</param>
+        <param name="outbound">Значение <see langword="true" />, если файл cookie должен быть закодирован; значение <see langword="false" />, если файл cookie должен быть декодирован.</param>
+        <summary>Применяет преобразования, заданные свойством <see cref="P:System.IdentityModel.Tokens.SessionSecurityTokenHandler.Transforms" />, чтобы кодировать или декодировать указанный файл cookie.</summary>
+        <returns>Зашифрованный или расшифрованный файл cookie.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ При кодировании преобразований «cookie» применяются в порядке, в котором они отображаются в <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.Transforms%2A> свойстве. При декодировании файла cookie они применяются в прямом порядке.  
+  
+ Вызывается из <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.WriteToken%2A> методов <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.ReadToken%2A> и для кодирования и декодирования материала файла cookie.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Значение свойства <see cref="P:System.IdentityModel.Tokens.SessionSecurityTokenHandler.Transforms" /> — <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="CanReadToken">
+      <MemberSignature Language="C#" Value="public override bool CanReadToken (System.Xml.XmlReader reader);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance bool CanReadToken(class System.Xml.XmlReader reader) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Tokens.SessionSecurityTokenHandler.CanReadToken(System.Xml.XmlReader)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function CanReadToken (reader As XmlReader) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override bool CanReadToken(System::Xml::XmlReader ^ reader);" />
+      <MemberSignature Language="F#" Value="override this.CanReadToken : System.Xml.XmlReader -&gt; bool" Usage="sessionSecurityTokenHandler.CanReadToken reader" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="reader" Type="System.Xml.XmlReader" />
+      </Parameters>
+      <Docs>
+        <param name="reader">Объект <see cref="T:System.Xml.XmlReader" /> над входящим объектом <see cref="T:System.IdentityModel.Tokens.SecurityToken" />. Средство чтения должно находиться в элементе <see langword="&lt;wsc:SecurityContextToken&gt;" />.</param>
+        <summary>Возвращает значение, указывающее, расположено ли средство чтения в элементе <see langword="&lt;wsc:SecurityContextToken&gt;" />.</summary>
+        <returns>Значение <see langword="true" />, если средство чтения указывает на элемент <see langword="&lt;wsc:SecurityContextToken&gt;" />; в противном случае — значение <see langword="false" />.</returns>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="reader" /> — <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="CanValidateToken">
+      <MemberSignature Language="C#" Value="public override bool CanValidateToken { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool CanValidateToken" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Tokens.SessionSecurityTokenHandler.CanValidateToken" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides ReadOnly Property CanValidateToken As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property bool CanValidateToken { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.CanValidateToken : bool" Usage="System.IdentityModel.Tokens.SessionSecurityTokenHandler.CanValidateToken" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает значение, указывающее, может ли этот обработчик поддерживать проверку токенов типа <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" />.</summary>
+        <value>Значение <see langword="true" />, если обработчик поддерживает проверку токенов типа <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" />; в противном случае — значение <see langword="false" />. Всегда имеет значение <see langword="true" />.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CanWriteToken">
+      <MemberSignature Language="C#" Value="public override bool CanWriteToken { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool CanWriteToken" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Tokens.SessionSecurityTokenHandler.CanWriteToken" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides ReadOnly Property CanWriteToken As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property bool CanWriteToken { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.CanWriteToken : bool" Usage="System.IdentityModel.Tokens.SessionSecurityTokenHandler.CanWriteToken" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает значение, указывающее, может ли этот обработчик записать токены типа <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" />.</summary>
+        <value>Значение <see langword="true" />, если обработчик может записывать токены типа <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" />; в противном случае — значение <see langword="false" />. Всегда имеет значение <see langword="true" />.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CookieElementName">
+      <MemberSignature Language="C#" Value="public virtual string CookieElementName { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string CookieElementName" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Tokens.SessionSecurityTokenHandler.CookieElementName" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable ReadOnly Property CookieElementName As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::String ^ CookieElementName { System::String ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.CookieElementName : string" Usage="System.IdentityModel.Tokens.SessionSecurityTokenHandler.CookieElementName" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает имя для элемента файла cookie.</summary>
+        <value>Имя элемента файла cookie. Имя элемента по умолчанию — "cookie".</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Это свойство используется в <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.WriteToken%2A> методах и <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.ReadToken%2A> для определения элемента, в котором закодированный материал маркера должен быть записан или прочитан.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.IdentityModel.Tokens.SessionSecurityTokenHandler.CookieNamespace" />
+        <altmember cref="M:System.IdentityModel.Tokens.SessionSecurityTokenHandler.WriteToken(System.IdentityModel.Tokens.SessionSecurityToken)" />
+        <altmember cref="M:System.IdentityModel.Tokens.SessionSecurityTokenHandler.ReadToken(System.Byte[],System.IdentityModel.Selectors.SecurityTokenResolver)" />
+      </Docs>
+    </Member>
+    <Member MemberName="CookieNamespace">
+      <MemberSignature Language="C#" Value="public virtual string CookieNamespace { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string CookieNamespace" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Tokens.SessionSecurityTokenHandler.CookieNamespace" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable ReadOnly Property CookieNamespace As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::String ^ CookieNamespace { System::String ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.CookieNamespace : string" Usage="System.IdentityModel.Tokens.SessionSecurityTokenHandler.CookieNamespace" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает пространство имен для элемента файла cookie.</summary>
+        <value>Пространство имен для элемента файла cookie. Пространство имен по умолчанию — <c>"http://schemas.microsoft.com/ws/2006/05/security"</c>.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Это свойство используется в <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.WriteToken%2A> методах и <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.ReadToken%2A> для определения пространства имен элемента, в котором закодированный материал маркера должен быть записан или прочитан.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.IdentityModel.Tokens.SessionSecurityTokenHandler.CookieElementName" />
+        <altmember cref="M:System.IdentityModel.Tokens.SessionSecurityTokenHandler.WriteToken(System.IdentityModel.Tokens.SessionSecurityToken)" />
+        <altmember cref="M:System.IdentityModel.Tokens.SessionSecurityTokenHandler.ReadToken(System.Byte[],System.IdentityModel.Selectors.SecurityTokenResolver)" />
+      </Docs>
+    </Member>
+    <Member MemberName="CreateSessionSecurityToken">
+      <MemberSignature Language="C#" Value="public virtual System.IdentityModel.Tokens.SessionSecurityToken CreateSessionSecurityToken (System.Security.Claims.ClaimsPrincipal principal, string context, string endpointId, DateTime validFrom, DateTime validTo);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.IdentityModel.Tokens.SessionSecurityToken CreateSessionSecurityToken(class System.Security.Claims.ClaimsPrincipal principal, string context, string endpointId, valuetype System.DateTime validFrom, valuetype System.DateTime validTo) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Tokens.SessionSecurityTokenHandler.CreateSessionSecurityToken(System.Security.Claims.ClaimsPrincipal,System.String,System.String,System.DateTime,System.DateTime)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function CreateSessionSecurityToken (principal As ClaimsPrincipal, context As String, endpointId As String, validFrom As DateTime, validTo As DateTime) As SessionSecurityToken" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::IdentityModel::Tokens::SessionSecurityToken ^ CreateSessionSecurityToken(System::Security::Claims::ClaimsPrincipal ^ principal, System::String ^ context, System::String ^ endpointId, DateTime validFrom, DateTime validTo);" />
+      <MemberSignature Language="F#" Value="abstract member CreateSessionSecurityToken : System.Security.Claims.ClaimsPrincipal * string * string * DateTime * DateTime -&gt; System.IdentityModel.Tokens.SessionSecurityToken&#xA;override this.CreateSessionSecurityToken : System.Security.Claims.ClaimsPrincipal * string * string * DateTime * DateTime -&gt; System.IdentityModel.Tokens.SessionSecurityToken" Usage="sessionSecurityTokenHandler.CreateSessionSecurityToken (principal, context, endpointId, validFrom, validTo)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Tokens.SessionSecurityToken</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="principal" Type="System.Security.Claims.ClaimsPrincipal" />
+        <Parameter Name="context" Type="System.String" />
+        <Parameter Name="endpointId" Type="System.String" />
+        <Parameter Name="validFrom" Type="System.DateTime" />
+        <Parameter Name="validTo" Type="System.DateTime" />
+      </Parameters>
+      <Docs>
+        <param name="principal">Субъект утверждений.</param>
+        <param name="context">Строка контекста, определяемая вызывающим объектом.</param>
+        <param name="endpointId">Идентификатор конечной точки, к которой относится токен.</param>
+        <param name="validFrom">Момент времени, когда токен становится действительным.</param>
+        <param name="validTo">Момент времени, после которого токен больше недействителен.</param>
+        <summary>Создает <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" /> на основе указанного субъекта утверждений и диапазона времени, в течение которого токен является допустимым.</summary>
+        <returns>Созданный токен безопасности сеанса. Свойства на новом токене сеанса задаются в соответствии с заданным параметрам.</returns>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="principal" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.InvalidOperationException">Значение свойства <see cref="P:System.IdentityModel.Tokens.SecurityTokenHandler.Configuration" /> — <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="CreateToken">
+      <MemberSignature Language="C#" Value="public override System.IdentityModel.Tokens.SecurityToken CreateToken (System.IdentityModel.Tokens.SecurityTokenDescriptor tokenDescriptor);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance class System.IdentityModel.Tokens.SecurityToken CreateToken(class System.IdentityModel.Tokens.SecurityTokenDescriptor tokenDescriptor) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Tokens.SessionSecurityTokenHandler.CreateToken(System.IdentityModel.Tokens.SecurityTokenDescriptor)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function CreateToken (tokenDescriptor As SecurityTokenDescriptor) As SecurityToken" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::IdentityModel::Tokens::SecurityToken ^ CreateToken(System::IdentityModel::Tokens::SecurityTokenDescriptor ^ tokenDescriptor);" />
+      <MemberSignature Language="F#" Value="override this.CreateToken : System.IdentityModel.Tokens.SecurityTokenDescriptor -&gt; System.IdentityModel.Tokens.SecurityToken" Usage="sessionSecurityTokenHandler.CreateToken tokenDescriptor" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Tokens.SecurityToken</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="tokenDescriptor" Type="System.IdentityModel.Tokens.SecurityTokenDescriptor" />
+      </Parameters>
+      <Docs>
+        <param name="tokenDescriptor">Дескриптор токена, из которого требуется создать токен.</param>
+        <summary>Создает токен безопасности на основе заданного дескриптора токена.</summary>
+        <returns>Созданный токен безопасности. Это будет экземпляр класса <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Создает и возвращает маркер безопасности сеанса, используя следующие свойства в дескрипторе токена: <xref:System.IdentityModel.Tokens.SecurityTokenDescriptor.Subject%2A?displayProperty=nameWithType>и. <xref:System.IdentityModel.Tokens.SecurityTokenDescriptor.Lifetime%2A?displayProperty=nameWithType> Если свойство задано `true` в конфигурации <xref:System.IdentityModel.Tokens.SecurityTokenHandler.Configuration%2A> обработчика токенов <xref:System.IdentityModel.Tokens.SecurityTokenDescriptor.Token%2A?displayProperty=nameWithType> , заданной свойством, контекст начальной загрузки создается из свойства и сохраняется в токене сеанса. <xref:System.IdentityModel.Tokens.SecurityTokenHandlerConfiguration.SaveBootstrapContext%2A?displayProperty=nameWithType>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="tokenDescriptor" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.InvalidOperationException">Значение свойства <see cref="P:System.IdentityModel.Tokens.SecurityTokenHandler.Configuration" /> — <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="DefaultCookieTransforms">
+      <MemberSignature Language="C#" Value="public static readonly System.Collections.ObjectModel.ReadOnlyCollection&lt;System.IdentityModel.CookieTransform&gt; DefaultCookieTransforms;" />
+      <MemberSignature Language="ILAsm" Value=".field public static initonly class System.Collections.ObjectModel.ReadOnlyCollection`1&lt;class System.IdentityModel.CookieTransform&gt; DefaultCookieTransforms" />
+      <MemberSignature Language="DocId" Value="F:System.IdentityModel.Tokens.SessionSecurityTokenHandler.DefaultCookieTransforms" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly DefaultCookieTransforms As ReadOnlyCollection(Of CookieTransform) " />
+      <MemberSignature Language="C++ CLI" Value="public: static initonly System::Collections::ObjectModel::ReadOnlyCollection&lt;System::IdentityModel::CookieTransform ^&gt; ^ DefaultCookieTransforms;" />
+      <MemberSignature Language="F#" Value=" staticval mutable DefaultCookieTransforms : System.Collections.ObjectModel.ReadOnlyCollection&lt;System.IdentityModel.CookieTransform&gt;" Usage="System.IdentityModel.Tokens.SessionSecurityTokenHandler.DefaultCookieTransforms" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.ObjectModel.ReadOnlyCollection&lt;System.IdentityModel.CookieTransform&gt;</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Только для чтения коллекция, содержащая список по умолчанию преобразований, которые применяются к файлам cookie, <see cref="T:System.IdentityModel.DeflateCookieTransform" /> и <see cref="T:System.IdentityModel.ProtectedDataCookieTransform" />.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="DefaultLifetime">
+      <MemberSignature Language="C#" Value="public static readonly TimeSpan DefaultLifetime;" />
+      <MemberSignature Language="ILAsm" Value=".field public static initonly valuetype System.TimeSpan DefaultLifetime" />
+      <MemberSignature Language="DocId" Value="F:System.IdentityModel.Tokens.SessionSecurityTokenHandler.DefaultLifetime" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly DefaultLifetime As TimeSpan " />
+      <MemberSignature Language="C++ CLI" Value="public: static initonly TimeSpan DefaultLifetime;" />
+      <MemberSignature Language="F#" Value=" staticval mutable DefaultLifetime : TimeSpan" Usage="System.IdentityModel.Tokens.SessionSecurityTokenHandler.DefaultLifetime" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.TimeSpan</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Константа, которая указывает время существования по умолчанию для файла cookie, 10 часов.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="DefaultTokenLifetime">
+      <MemberSignature Language="C#" Value="public static TimeSpan DefaultTokenLifetime { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property valuetype System.TimeSpan DefaultTokenLifetime" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Tokens.SessionSecurityTokenHandler.DefaultTokenLifetime" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property DefaultTokenLifetime As TimeSpan" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property TimeSpan DefaultTokenLifetime { TimeSpan get(); };" />
+      <MemberSignature Language="F#" Value="member this.DefaultTokenLifetime : TimeSpan" Usage="System.IdentityModel.Tokens.SessionSecurityTokenHandler.DefaultTokenLifetime" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.TimeSpan</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает время жизни токена по умолчанию.</summary>
+        <value>Время жизни токена по умолчанию. Всегда имеет значение <see cref="F:System.IdentityModel.Tokens.SessionSecurityTokenHandler.DefaultLifetime" />.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetTokenTypeIdentifiers">
+      <MemberSignature Language="C#" Value="public override string[] GetTokenTypeIdentifiers ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance string[] GetTokenTypeIdentifiers() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Tokens.SessionSecurityTokenHandler.GetTokenTypeIdentifiers" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetTokenTypeIdentifiers () As String()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override cli::array &lt;System::String ^&gt; ^ GetTokenTypeIdentifiers();" />
+      <MemberSignature Language="F#" Value="override this.GetTokenTypeIdentifiers : unit -&gt; string[]" Usage="sessionSecurityTokenHandler.GetTokenTypeIdentifiers " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String[]</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Получает универсальные коды ресурсов (URI) идентификаторов типов токенов для типов токенов, которые могут обрабатываться этим обработчиком.</summary>
+        <returns>Универсальные коды ресурсов (URI) идентификаторов типов токенов для типов токенов, которые могут обрабатываться этим обработчиком.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Поддерживаются следующие URI типа: 
+ 
+ - `http://schemas.microsoft.com/ws/2006/05/servicemodel/tokens/SecureConversation`
+ - `http://docs.oasis-open.org/ws-sx/ws-secureconversation/200512/sct`
+ - `http://schemas.xmlsoap.org/ws/2005/02/sc/sct`.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="LoadCustomConfiguration">
+      <MemberSignature Language="C#" Value="public override void LoadCustomConfiguration (System.Xml.XmlNodeList customConfigElements);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void LoadCustomConfiguration(class System.Xml.XmlNodeList customConfigElements) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Tokens.SessionSecurityTokenHandler.LoadCustomConfiguration(System.Xml.XmlNodeList)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Sub LoadCustomConfiguration (customConfigElements As XmlNodeList)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void LoadCustomConfiguration(System::Xml::XmlNodeList ^ customConfigElements);" />
+      <MemberSignature Language="F#" Value="override this.LoadCustomConfiguration : System.Xml.XmlNodeList -&gt; unit" Usage="sessionSecurityTokenHandler.LoadCustomConfiguration customConfigElements" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="customConfigElements" Type="System.Xml.XmlNodeList" />
+      </Parameters>
+      <Docs>
+        <param name="customConfigElements">Пользовательские элементы конфигурации.</param>
+        <summary>Загружает пользовательскую конфигурацию из XML.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вызывается инфраструктурой конфигурации для инициализации <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler> экземпляра. Инициализирует `lifetime` свойство из [ атрибута &lt; элемента сессионтокенрекуиремент &gt;  ](~/docs/framework/configure-apps/file-schema/windows-identity-foundation/sessiontokenrequirement.md) в файле конфигурации. <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.TokenLifetime%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="customConfigElements" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.InvalidOperationException">Конфигурация, заданная параметром <paramref name="customConfigElements" />, является недопустимой. Например, не содержит элемент <see langword="&lt;sessionTokenRequirement&gt;" />, содержит более одного элемента <see langword="&lt;sessionTokenRequirement&gt;" />, допустимое значение <see cref="T:System.TimeSpan" /> невозможно прочитать из атрибута <see langword="lifetime" /> или атрибут <see langword="lifetime" /> задает значение меньше, чем <see cref="F:System.TimeSpan.Zero" />.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/496a1735-cbb7-49d5-a6aa-dd5550462073">&lt;сессионтокенрекуиремент&gt;</related>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="ReadToken">
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Считывает <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks
+
+[!INCLUDE [untrusted-data-method-note](~/includes/untrusted-data-method-note.md)]
+
+ Реализация по умолчанию десериализует маркер из элемента WS-Secure Conversation Feb2005 или WS-Secure Conversation 1,3 `<wsc:SecurityContextToken>` .  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="ReadToken">
+      <MemberSignature Language="C#" Value="public override System.IdentityModel.Tokens.SecurityToken ReadToken (System.Xml.XmlReader reader);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance class System.IdentityModel.Tokens.SecurityToken ReadToken(class System.Xml.XmlReader reader) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Tokens.SessionSecurityTokenHandler.ReadToken(System.Xml.XmlReader)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function ReadToken (reader As XmlReader) As SecurityToken" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::IdentityModel::Tokens::SecurityToken ^ ReadToken(System::Xml::XmlReader ^ reader);" />
+      <MemberSignature Language="F#" Value="override this.ReadToken : System.Xml.XmlReader -&gt; System.IdentityModel.Tokens.SecurityToken" Usage="sessionSecurityTokenHandler.ReadToken reader" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Tokens.SecurityToken</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="reader" Type="System.Xml.XmlReader" />
+      </Parameters>
+      <Docs>
+        <param name="reader">Объект <see cref="T:System.Xml.XmlReader" /> над входящим объектом <see cref="T:System.IdentityModel.Tokens.SecurityToken" />.</param>
+        <summary>Считывает <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" />, используя указанное средство чтения XML.</summary>
+        <returns>Считанный токен безопасности сеанса, экземпляр <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks
+
+[!INCLUDE [untrusted-data-method-note](~/includes/untrusted-data-method-note.md)]
+
+ Модуль чтения должен располагаться либо в WS-Secure Conversation Feb2005, либо в элементе WS-Secure Conversation `<wsc:SecurityContextToken>` 1,3.  
+  
+ Реализация по умолчанию вызывает метод <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.ReadToken%28System.Xml.XmlReader%2CSystem.IdentityModel.Selectors.SecurityTokenResolver%29?displayProperty=nameWithType> , используя Сопоставитель токенов по умолчанию.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="reader" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.IdentityModel.Tokens.SecurityTokenException">Средство чтения не находится на объекте <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" /> или не удается прочитать объект <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="ReadToken">
+      <MemberSignature Language="C#" Value="public virtual System.IdentityModel.Tokens.SecurityToken ReadToken (byte[] token, System.IdentityModel.Selectors.SecurityTokenResolver tokenResolver);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.IdentityModel.Tokens.SecurityToken ReadToken(unsigned int8[] token, class System.IdentityModel.Selectors.SecurityTokenResolver tokenResolver) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Tokens.SessionSecurityTokenHandler.ReadToken(System.Byte[],System.IdentityModel.Selectors.SecurityTokenResolver)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function ReadToken (token As Byte(), tokenResolver As SecurityTokenResolver) As SecurityToken" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::IdentityModel::Tokens::SecurityToken ^ ReadToken(cli::array &lt;System::Byte&gt; ^ token, System::IdentityModel::Selectors::SecurityTokenResolver ^ tokenResolver);" />
+      <MemberSignature Language="F#" Value="override this.ReadToken : byte[] * System.IdentityModel.Selectors.SecurityTokenResolver -&gt; System.IdentityModel.Tokens.SecurityToken" Usage="sessionSecurityTokenHandler.ReadToken (token, tokenResolver)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Tokens.SecurityToken</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="token" Type="System.Byte[]" />
+        <Parameter Name="tokenResolver" Type="System.IdentityModel.Selectors.SecurityTokenResolver" />
+      </Parameters>
+      <Docs>
+        <param name="token">Поток байтов, содержащий токен.</param>
+        <param name="tokenResolver">Сопоставитель токенов для использования.</param>
+        <summary>Считывает <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" /> из потока байтов с помощью заданного сопоставителя токенов.</summary>
+        <returns>Считанный маркер <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks
+
+[!INCLUDE [untrusted-data-method-note](~/includes/untrusted-data-method-note.md)]
+
+ Реализация по умолчанию создает <xref:System.Xml.XmlDictionaryReader> маркер над токеном и вызывает <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.ReadToken%28System.Xml.XmlReader%2CSystem.IdentityModel.Selectors.SecurityTokenResolver%29?displayProperty=nameWithType> метод.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ReadToken">
+      <MemberSignature Language="C#" Value="public override System.IdentityModel.Tokens.SecurityToken ReadToken (System.Xml.XmlReader reader, System.IdentityModel.Selectors.SecurityTokenResolver tokenResolver);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance class System.IdentityModel.Tokens.SecurityToken ReadToken(class System.Xml.XmlReader reader, class System.IdentityModel.Selectors.SecurityTokenResolver tokenResolver) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Tokens.SessionSecurityTokenHandler.ReadToken(System.Xml.XmlReader,System.IdentityModel.Selectors.SecurityTokenResolver)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function ReadToken (reader As XmlReader, tokenResolver As SecurityTokenResolver) As SecurityToken" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::IdentityModel::Tokens::SecurityToken ^ ReadToken(System::Xml::XmlReader ^ reader, System::IdentityModel::Selectors::SecurityTokenResolver ^ tokenResolver);" />
+      <MemberSignature Language="F#" Value="override this.ReadToken : System.Xml.XmlReader * System.IdentityModel.Selectors.SecurityTokenResolver -&gt; System.IdentityModel.Tokens.SecurityToken" Usage="sessionSecurityTokenHandler.ReadToken (reader, tokenResolver)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Tokens.SecurityToken</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="reader" Type="System.Xml.XmlReader" />
+        <Parameter Name="tokenResolver" Type="System.IdentityModel.Selectors.SecurityTokenResolver" />
+      </Parameters>
+      <Docs>
+        <param name="reader">Объект <see cref="T:System.Xml.XmlReader" /> над входящим объектом <see cref="T:System.IdentityModel.Tokens.SecurityToken" />.</param>
+        <param name="tokenResolver"><see cref="T:System.IdentityModel.Selectors.SecurityTokenResolver" />, который может использоваться для сопоставления <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" />.</param>
+        <summary>Считывает <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" />, используя указанные сопоставитель токена и средства чтения XML.</summary>
+        <returns>Считанный токен безопасности сеанса, экземпляр <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks
+
+[!INCLUDE [untrusted-data-method-note](~/includes/untrusted-data-method-note.md)]
+
+ Модуль чтения должен располагаться либо в WS-Secure Conversation Feb2005, либо в элементе WS-Secure Conversation `<wsc:SecurityContextToken>` 1,3.  
+  
+ Если материал маркера кэшируется, он считывается из кэша маркеров, который является экземпляром <xref:System.IdentityModel.Tokens.SessionSecurityTokenCache> класса. В противном случае материал маркера считывается из дочернего элемента `<wsc:SecurityContextToken>` элемента, заданного <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.CookieElementName%2A> свойствами и <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.CookieNamespace%2A> , и <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.ApplyTransforms%2A> вызывается метод для декодирования файла cookie.  
+  
+ Дополнительные сведения о том, как маркеры сеанса сериализуются в `<SecurityContextToken` элемент, см. в <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.WriteToken%28System.Xml.XmlWriter%2CSystem.IdentityModel.Tokens.SecurityToken%29?displayProperty=nameWithType> описании метода.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="reader" /> — <see langword="null" />.  
+  
+-или- 
+ <paramref name="tokenResolver" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.IdentityModel.Tokens.SecurityTokenException">Средство чтения не находится на объекте <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" /> или не удается прочитать объект <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="SetTransforms">
+      <MemberSignature Language="C#" Value="protected void SetTransforms (System.Collections.Generic.IEnumerable&lt;System.IdentityModel.CookieTransform&gt; transforms);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig instance void SetTransforms(class System.Collections.Generic.IEnumerable`1&lt;class System.IdentityModel.CookieTransform&gt; transforms) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Tokens.SessionSecurityTokenHandler.SetTransforms(System.Collections.Generic.IEnumerable{System.IdentityModel.CookieTransform})" />
+      <MemberSignature Language="VB.NET" Value="Protected Sub SetTransforms (transforms As IEnumerable(Of CookieTransform))" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; void SetTransforms(System::Collections::Generic::IEnumerable&lt;System::IdentityModel::CookieTransform ^&gt; ^ transforms);" />
+      <MemberSignature Language="F#" Value="member this.SetTransforms : seq&lt;System.IdentityModel.CookieTransform&gt; -&gt; unit" Usage="sessionSecurityTokenHandler.SetTransforms transforms" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="transforms" Type="System.Collections.Generic.IEnumerable&lt;System.IdentityModel.CookieTransform&gt;" />
+      </Parameters>
+      <Docs>
+        <param name="transforms">Преобразования для использования.</param>
+        <summary>Задает преобразование, применяемое к файлам cookie.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Задает список преобразований, <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.Transforms%2A> возвращаемых свойством. Преобразования будут применены в том порядке, в котором они отображаются в списке при кодировании файла cookie и в обратный порядок при декодировании файла cookie.  
+  
+> [!WARNING]
+>  Если параметр имеет значение `null`, то при вызове для кодирования или <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.ApplyTransforms%2A> декодирования файла cookie будет создано исключение из метода. `transforms`  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="TokenLifetime">
+      <MemberSignature Language="C#" Value="public virtual TimeSpan TokenLifetime { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance valuetype System.TimeSpan TokenLifetime" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Tokens.SessionSecurityTokenHandler.TokenLifetime" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Property TokenLifetime As TimeSpan" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property TimeSpan TokenLifetime { TimeSpan get(); void set(TimeSpan value); };" />
+      <MemberSignature Language="F#" Value="member this.TokenLifetime : TimeSpan with get, set" Usage="System.IdentityModel.Tokens.SessionSecurityTokenHandler.TokenLifetime" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.TimeSpan</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает время жизни токена.</summary>
+        <value>Время существования токена. Значение по умолчанию — <see cref="F:System.IdentityModel.Tokens.SessionSecurityTokenHandler.DefaultLifetime" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ По умолчанию, если [ &lt;элемент&gt; сессионтокенрекуиремент](~/docs/framework/configure-apps/file-schema/windows-identity-foundation/sessiontokenrequirement.md) <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.TokenLifetime%2A> указан в файле конфигурации, свойство <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.LoadCustomConfiguration%2A> инициализируется значением `lifetime` атрибута с помощью метода.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Предпринята попытка задать диапазон времени меньше либо равное нуля.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/496a1735-cbb7-49d5-a6aa-dd5550462073">&lt;сессионтокенрекуиремент&gt;</related>
+      </Docs>
+    </Member>
+    <Member MemberName="TokenType">
+      <MemberSignature Language="C#" Value="public override Type TokenType { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Type TokenType" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Tokens.SessionSecurityTokenHandler.TokenType" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides ReadOnly Property TokenType As Type" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property Type ^ TokenType { Type ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.TokenType : Type" Usage="System.IdentityModel.Tokens.SessionSecurityTokenHandler.TokenType" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Type</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает тип токенов, обрабатываемых данным обработчиком.</summary>
+        <value>Коллекция <see cref="T:System.Type" /> типа <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" />.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Transforms">
+      <MemberSignature Language="C#" Value="public System.Collections.ObjectModel.ReadOnlyCollection&lt;System.IdentityModel.CookieTransform&gt; Transforms { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Collections.ObjectModel.ReadOnlyCollection`1&lt;class System.IdentityModel.CookieTransform&gt; Transforms" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Tokens.SessionSecurityTokenHandler.Transforms" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property Transforms As ReadOnlyCollection(Of CookieTransform)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Collections::ObjectModel::ReadOnlyCollection&lt;System::IdentityModel::CookieTransform ^&gt; ^ Transforms { System::Collections::ObjectModel::ReadOnlyCollection&lt;System::IdentityModel::CookieTransform ^&gt; ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Transforms : System.Collections.ObjectModel.ReadOnlyCollection&lt;System.IdentityModel.CookieTransform&gt;" Usage="System.IdentityModel.Tokens.SessionSecurityTokenHandler.Transforms" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.ObjectModel.ReadOnlyCollection&lt;System.IdentityModel.CookieTransform&gt;</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает преобразования, который будут применены к этому файлу cookie.</summary>
+        <value>Список преобразований, которые будут применены к этому файлу cookie.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Преобразования применяются в <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.ApplyTransforms%2A> методе.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ValidateSession">
+      <MemberSignature Language="C#" Value="protected virtual void ValidateSession (System.IdentityModel.Tokens.SessionSecurityToken securityToken);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void ValidateSession(class System.IdentityModel.Tokens.SessionSecurityToken securityToken) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Tokens.SessionSecurityTokenHandler.ValidateSession(System.IdentityModel.Tokens.SessionSecurityToken)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub ValidateSession (securityToken As SessionSecurityToken)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void ValidateSession(System::IdentityModel::Tokens::SessionSecurityToken ^ securityToken);" />
+      <MemberSignature Language="F#" Value="abstract member ValidateSession : System.IdentityModel.Tokens.SessionSecurityToken -&gt; unit&#xA;override this.ValidateSession : System.IdentityModel.Tokens.SessionSecurityToken -&gt; unit" Usage="sessionSecurityTokenHandler.ValidateSession securityToken" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="securityToken" Type="System.IdentityModel.Tokens.SessionSecurityToken" />
+      </Parameters>
+      <Docs>
+        <param name="securityToken">Проверяемый токен.</param>
+        <summary>Определяет, является ли сеанс, связанный с заданным токеном, все еще действительным. Допустимость определяется путем проверки свойств <see cref="P:System.IdentityModel.Tokens.SecurityToken.ValidFrom" /> и <see cref="P:System.IdentityModel.Tokens.SecurityToken.ValidTo" /> указанного токена. Исключение возникает, когда сеанс более не допустим.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Токен является недопустимым, если <xref:System.IdentityModel.Tokens.SecurityToken.ValidFrom%2A> его свойству присвоено значение, которое происходит <xref:System.DateTime.UtcNow%2A>позже или если его <xref:System.IdentityModel.Tokens.SecurityToken.ValidTo%2A> свойство имеет значение, которое <xref:System.DateTime.UtcNow%2A>предшествует.  
+  
+ Вызывается из <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.ValidateToken%2A> методов для проверки сеанса.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="securityToken" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.InvalidOperationException">Значение свойства <see cref="P:System.IdentityModel.Tokens.SecurityTokenHandler.Configuration" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.IdentityModel.Tokens.SecurityTokenNotYetValidException">Свойство <see cref="P:System.IdentityModel.Tokens.SecurityToken.ValidFrom" /> токена задает более поздний момент времени, чем <see cref="P:System.DateTime.UtcNow" />.</exception>
+        <exception cref="T:System.IdentityModel.Tokens.SecurityTokenExpiredException">Свойство <see cref="P:System.IdentityModel.Tokens.SecurityToken.ValidTo" /> токена задает более ранний момент времени, чем <see cref="P:System.DateTime.UtcNow" />.</exception>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="ValidateToken">
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Проверяет токен и возвращает его утверждения.</summary>
+        <altmember cref="P:System.IdentityModel.Tokens.SessionSecurityTokenHandler.CanValidateToken" />
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="ValidateToken">
+      <MemberSignature Language="C#" Value="public override System.Collections.ObjectModel.ReadOnlyCollection&lt;System.Security.Claims.ClaimsIdentity&gt; ValidateToken (System.IdentityModel.Tokens.SecurityToken token);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance class System.Collections.ObjectModel.ReadOnlyCollection`1&lt;class System.Security.Claims.ClaimsIdentity&gt; ValidateToken(class System.IdentityModel.Tokens.SecurityToken token) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Tokens.SessionSecurityTokenHandler.ValidateToken(System.IdentityModel.Tokens.SecurityToken)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function ValidateToken (token As SecurityToken) As ReadOnlyCollection(Of ClaimsIdentity)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::Collections::ObjectModel::ReadOnlyCollection&lt;System::Security::Claims::ClaimsIdentity ^&gt; ^ ValidateToken(System::IdentityModel::Tokens::SecurityToken ^ token);" />
+      <MemberSignature Language="F#" Value="override this.ValidateToken : System.IdentityModel.Tokens.SecurityToken -&gt; System.Collections.ObjectModel.ReadOnlyCollection&lt;System.Security.Claims.ClaimsIdentity&gt;" Usage="sessionSecurityTokenHandler.ValidateToken token" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.ObjectModel.ReadOnlyCollection&lt;System.Security.Claims.ClaimsIdentity&gt;</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="token" Type="System.IdentityModel.Tokens.SecurityToken" />
+      </Parameters>
+      <Docs>
+        <param name="token">Маркер, подлежащий проверке. Должен назначаться из <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" />.</param>
+        <summary>Проверяет указанный маркер и возвращает его утверждения.</summary>
+        <returns>Удостоверения, содержащиеся в маркере.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.ValidateSession%2A> Вызывает метод для проверки маркера.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="token" />
+          <see langword="null" />.</exception>
+        <exception cref="T:System.InvalidOperationException"><paramref name="token" /> не может быть назначен из <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" />.</exception>
+        <altmember cref="P:System.IdentityModel.Tokens.SessionSecurityTokenHandler.CanValidateToken" />
+      </Docs>
+    </Member>
+    <Member MemberName="ValidateToken">
+      <MemberSignature Language="C#" Value="public virtual System.Collections.ObjectModel.ReadOnlyCollection&lt;System.Security.Claims.ClaimsIdentity&gt; ValidateToken (System.IdentityModel.Tokens.SessionSecurityToken token, string endpointId);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Collections.ObjectModel.ReadOnlyCollection`1&lt;class System.Security.Claims.ClaimsIdentity&gt; ValidateToken(class System.IdentityModel.Tokens.SessionSecurityToken token, string endpointId) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Tokens.SessionSecurityTokenHandler.ValidateToken(System.IdentityModel.Tokens.SessionSecurityToken,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function ValidateToken (token As SessionSecurityToken, endpointId As String) As ReadOnlyCollection(Of ClaimsIdentity)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::Collections::ObjectModel::ReadOnlyCollection&lt;System::Security::Claims::ClaimsIdentity ^&gt; ^ ValidateToken(System::IdentityModel::Tokens::SessionSecurityToken ^ token, System::String ^ endpointId);" />
+      <MemberSignature Language="F#" Value="override this.ValidateToken : System.IdentityModel.Tokens.SessionSecurityToken * string -&gt; System.Collections.ObjectModel.ReadOnlyCollection&lt;System.Security.Claims.ClaimsIdentity&gt;" Usage="sessionSecurityTokenHandler.ValidateToken (token, endpointId)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.ObjectModel.ReadOnlyCollection&lt;System.Security.Claims.ClaimsIdentity&gt;</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="token" Type="System.IdentityModel.Tokens.SessionSecurityToken" />
+        <Parameter Name="endpointId" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="token">Маркер, подлежащий проверке. Должен назначаться из <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" />.</param>
+        <param name="endpointId">Идентификатор конечной точки, к которой относится токен.</param>
+        <summary>Проверяет указанный токен сеанса и возвращает его утверждения.</summary>
+        <returns>Удостоверения, содержащиеся в маркере.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Выполняет проверку, чтобы убедиться, что указанный токен находится в области действия для указанного идентификатора конечной точки, и, если да, вызывает <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.ValidateToken%28System.IdentityModel.Tokens.SecurityToken%29?displayProperty=nameWithType> метод; в противном случае <xref:System.IdentityModel.Tokens.SecurityTokenException>создает исключение.  
+  
+> [!IMPORTANT]
+>  Токены сеанса, у <xref:System.IdentityModel.Tokens.SessionSecurityToken.EndpointId%2A> которых есть `null` или пустое свойство, считаются глобально областями. Это представляет потенциальную угрозу безопасности. По этой причине необходимо убедиться, что <xref:System.IdentityModel.Tokens.SessionSecurityToken.EndpointId%2A> свойство задано в токенах сеанса.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="token" /> — <see langword="null" />.  
+  
+- или - 
+ <paramref name="endpointId" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.InvalidOperationException"><paramref name="token" /> не может быть назначен из <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" />.</exception>
+        <exception cref="T:System.IdentityModel.Tokens.SecurityTokenException">Свойство <see cref="P:System.IdentityModel.Tokens.SessionSecurityToken.EndpointId" /> заданного токена не является <see langword="null" /> или пустым и его значение отличается от значения, заданного параметром <paramref name="endpointId" />.</exception>
+        <altmember cref="P:System.IdentityModel.Tokens.SessionSecurityTokenHandler.CanValidateToken" />
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="WriteToken">
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Сериализует токен.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация по умолчанию сериализует маркер в элемент WS-Secure Conversation Feb2005 или WS-Secure Conversation 1,3 `<wsc:SecurityContextToken>` .  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.IdentityModel.Tokens.SessionSecurityTokenHandler.CanWriteToken" />
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="WriteToken">
+      <MemberSignature Language="C#" Value="public virtual byte[] WriteToken (System.IdentityModel.Tokens.SessionSecurityToken sessionToken);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance unsigned int8[] WriteToken(class System.IdentityModel.Tokens.SessionSecurityToken sessionToken) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Tokens.SessionSecurityTokenHandler.WriteToken(System.IdentityModel.Tokens.SessionSecurityToken)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function WriteToken (sessionToken As SessionSecurityToken) As Byte()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual cli::array &lt;System::Byte&gt; ^ WriteToken(System::IdentityModel::Tokens::SessionSecurityToken ^ sessionToken);" />
+      <MemberSignature Language="F#" Value="override this.WriteToken : System.IdentityModel.Tokens.SessionSecurityToken -&gt; byte[]" Usage="sessionSecurityTokenHandler.WriteToken sessionToken" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Byte[]</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="sessionToken" Type="System.IdentityModel.Tokens.SessionSecurityToken" />
+      </Parameters>
+      <Docs>
+        <param name="sessionToken">Токен для записи.</param>
+        <summary>Сериализует указанный токен в массив байтов.</summary>
+        <returns>Кодированный массив байтов.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Сериализует указанный токен путем создания модуля записи XML и его поверх <xref:System.IO.MemoryStream> и вызова <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.WriteToken%28System.Xml.XmlWriter%2CSystem.IdentityModel.Tokens.SecurityToken%29?displayProperty=nameWithType> метода. Дополнительные сведения см. в описании этой перегрузки.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="sessiontoken" /> — <see langword="null" />.</exception>
+        <altmember cref="P:System.IdentityModel.Tokens.SessionSecurityTokenHandler.CanWriteToken" />
+      </Docs>
+    </Member>
+    <Member MemberName="WriteToken">
+      <MemberSignature Language="C#" Value="public override void WriteToken (System.Xml.XmlWriter writer, System.IdentityModel.Tokens.SecurityToken token);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void WriteToken(class System.Xml.XmlWriter writer, class System.IdentityModel.Tokens.SecurityToken token) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Tokens.SessionSecurityTokenHandler.WriteToken(System.Xml.XmlWriter,System.IdentityModel.Tokens.SecurityToken)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Sub WriteToken (writer As XmlWriter, token As SecurityToken)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void WriteToken(System::Xml::XmlWriter ^ writer, System::IdentityModel::Tokens::SecurityToken ^ token);" />
+      <MemberSignature Language="F#" Value="override this.WriteToken : System.Xml.XmlWriter * System.IdentityModel.Tokens.SecurityToken -&gt; unit" Usage="sessionSecurityTokenHandler.WriteToken (writer, token)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="writer" Type="System.Xml.XmlWriter" />
+        <Parameter Name="token" Type="System.IdentityModel.Tokens.SecurityToken" />
+      </Parameters>
+      <Docs>
+        <param name="writer">Средство записи XML для сериализации токена.</param>
+        <param name="token">Токен для сериализации. Экземпляр <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" />.</param>
+        <summary>Сериализует указанный токен с помощью заданного модуля записи XML.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация по умолчанию сериализует указанный маркер как элемент WS-Secure Conversation Feb2005 или WS-Secure Conversation 1,3 `<wsc:SecurityContextToken>` в зависимости от значения <xref:System.IdentityModel.Tokens.SessionSecurityToken.SecureConversationVersion%2A?displayProperty=nameWithType> свойства. Свойство сериализуется как  `Id` атрибут. <xref:System.IdentityModel.Tokens.SessionSecurityToken.Id%2A?displayProperty=nameWithType> Свойство сериализуется `<Identifier>` как дочерний элемент. <xref:System.IdentityModel.Tokens.SessionSecurityToken.ContextId%2A?displayProperty=nameWithType> Значение, `null` если <xref:System.IdentityModel.Tokens.SessionSecurityToken.KeyGeneration%2A?displayProperty=nameWithType> свойство не сериализуется как `<Instance>` элемент. Наконец, если <xref:System.IdentityModel.Tokens.SessionSecurityToken.IsReferenceMode%2A?displayProperty=nameWithType> свойство имеет `false`значение, весь маркер сериализуется в двоичный массив <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.ApplyTransforms%2A> , который передается в метод для кодирования. Закодированный маркер затем записывается в виде значения в кодировке Base64 в элемент и пространство имен, <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.CookieElementName%2A> заданные <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.CookieNamespace%2A> свойствами и. Если свойство имеет `true`значение, маркер не сериализуется. <xref:System.IdentityModel.Tokens.SessionSecurityToken.IsReferenceMode%2A?displayProperty=nameWithType>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="writer" /> — <see langword="null" />.  
+  
+- или - 
+ <paramref name="token" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.InvalidOperationException"><paramref name="token" /> не может быть назначен из <see cref="T:System.IdentityModel.Tokens.SessionSecurityToken" />.  
+  
+- или - 
+<see cref="P:System.IdentityModel.Tokens.SessionSecurityToken.SecureConversationVersion" /> токена задает версию WS-Secure Conversation, не поддерживаемую обработчиком.</exception>
+        <altmember cref="P:System.IdentityModel.Tokens.SessionSecurityTokenHandler.CanWriteToken" />
+      </Docs>
+    </Member>
+  </Members>
+</Type>

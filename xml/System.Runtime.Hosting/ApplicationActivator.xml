@@ -1,0 +1,215 @@
+<Type Name="ApplicationActivator" FullName="System.Runtime.Hosting.ApplicationActivator">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="9663fe80db8e01c1b37c486df84d988524775e9a" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70547475" /></Metadata><TypeSignature Language="C#" Value="public class ApplicationActivator" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit ApplicationActivator extends System.Object" />
+  <TypeSignature Language="DocId" Value="T:System.Runtime.Hosting.ApplicationActivator" />
+  <TypeSignature Language="VB.NET" Value="Public Class ApplicationActivator" />
+  <TypeSignature Language="C++ CLI" Value="public ref class ApplicationActivator" />
+  <TypeSignature Language="F#" Value="type ApplicationActivator = class" />
+  <AssemblyInfo>
+    <AssemblyName>mscorlib</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>2.0.5.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Attributes>
+    <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8">
+      <AttributeName>System.Runtime.InteropServices.ComVisible(true)</AttributeName>
+    </Attribute>
+  </Attributes>
+  <Docs>
+    <summary>Предоставляет базовый класс для активации сборок на основе манифестов.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Существует один назначенный экземпляр <xref:System.Runtime.Hosting.ApplicationActivator> класса в каждом <xref:System.AppDomain> , на который направляются все вызовы активации. Для <xref:System.AppDomainManager> текущей <xref:System.AppDomain> цели может предоставляться собственный пользовательский <xref:System.Runtime.Hosting.ApplicationActivator> объект. Если пользователь <xref:System.Runtime.Hosting.ApplicationActivator> не указан, создается экземпляр по умолчанию <xref:System.Runtime.Hosting.ApplicationActivator> .  
+  
+ Следующие шаги описывают поведение реализации метода по умолчанию <xref:System.Runtime.Hosting.ApplicationActivator.CreateInstance%2A> :  
+  
+1.  Проверяет, <xref:System.ActivationContext> <xref:System.ActivationContext> соответствует ли активируемая надстройка текущему домену. в противном случае переходит к шагу 2. В противном случае выполняет сборку и возвращает результат, заключенный в маркер объекта.  
+  
+2.  Активирует надстройку в новом <xref:System.AppDomain>. Чтобы инициализировать новый <xref:System.AppDomain> объект <xref:System.Runtime.Hosting.ActivationArguments> с помощью для надстройки, выполняются следующие действия.  
+  
+    1.  Создает новый <xref:System.AppDomainSetup> объект, <xref:System.Runtime.Hosting.ActivationArguments> используя объект, содержащий контекст активации для надстройки.  
+  
+    2.  Вызывает метод для создания нового домена <xref:System.AppDomainSetup> с помощью объекта. <xref:System.Runtime.Hosting.ApplicationActivator.CreateInstanceHelper%2A>  
+  
+    3.  Метод вызывает метод, чтобы получить <xref:System.Security.Policy.ApplicationTrust> объект для надстройки. <xref:System.Security.HostSecurityManager.DetermineApplicationTrust%2A?displayProperty=nameWithType> <xref:System.Runtime.Hosting.ApplicationActivator.CreateInstanceHelper%2A> Если свойство возвращает `true`значение, выполняется надстройка. <xref:System.Security.Policy.ApplicationTrust.IsApplicationTrustedToRun%2A> В противном <xref:System.Runtime.Hosting.ApplicationActivator.CreateInstanceHelper%2A> случае выдает исключение, указывающее, что не удалось получить разрешение на <xref:System.Security.Policy.PolicyException> выполнение.  
+  
+    4.  Если надстройка является доверенной для выполнения, то создается и настраивается <xref:System.AppDomain> <xref:System.ActivationContext> новая версия надстройки, а надстройка загружается и выполняется.  
+  
+    5.  Результат активации надстройки возвращается в виде, заключенном в маркер объекта.  
+  
+ Пользовательский активатор может адаптировать активацию надстройки к определенному набору обстоятельств. Например, Пользовательский активатор может найти существующий <xref:System.AppDomain> объект для активации этой надстройки вместо того, чтобы создавать новый домен каждый раз.  
+  
+ Следующие шаги описывают поведение пользовательского <xref:System.Runtime.Hosting.ApplicationActivator> объекта, который активирует надстройку в существующем: <xref:System.AppDomain>  
+  
+1.  Пользовательский активатор находит домен, который совпадает <xref:System.ActivationContext> с активируемой надстройкой.  
+  
+2.  Если объект <xref:System.ActivationContext> ранее не встречался в процессе, Пользовательский активатор создает новый <xref:System.AppDomain.CreateDomain%2A> <xref:System.AppDomain> для этого <xref:System.ActivationContext> , вызывая метод напрямую или делегируя это действие <xref:System.Runtime.Hosting.ApplicationActivator.CreateInstanceHelper%2A> в базовом классе.  
+  
+3.  Если существует домен с таким же <xref:System.ActivationContext>доменом, активатор может <xref:System.Runtime.Hosting.ApplicationActivator.CreateInstance%2A> делегировать вызов <xref:System.Runtime.Hosting.ApplicationActivator> метода в в целевом домене. Обратите внимание, что это может быть междоменным вызовом <xref:System.Runtime.Hosting.ApplicationActivator> , который находится в целевом объекте. <xref:System.AppDomain>  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как получить <xref:System.Runtime.Hosting.ApplicationActivator> объект из текущего <xref:System.AppDomain.DomainManager%2A> объекта для приложения на основе манифеста.  
+  
+ [!code-csharp[System.Runtime.Hosting.ApplicationActivator#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Runtime.Hosting.ApplicationActivator/cs/program.cs#1)]
+ [!code-vb[System.Runtime.Hosting.ApplicationActivator#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Runtime.Hosting.ApplicationActivator/vb/program.vb#1)]  
+  
+ ]]></format>
+    </remarks>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public ApplicationActivator ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Hosting.ApplicationActivator.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; ApplicationActivator();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Runtime.Hosting.ApplicationActivator" />.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="CreateInstance">
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Создает экземпляр приложения, которое необходимо активировать, используя контекст активации, определяющий приложение.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="CreateInstance">
+      <MemberSignature Language="C#" Value="public virtual System.Runtime.Remoting.ObjectHandle CreateInstance (ActivationContext activationContext);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Runtime.Remoting.ObjectHandle CreateInstance(class System.ActivationContext activationContext) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Hosting.ApplicationActivator.CreateInstance(System.ActivationContext)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::Runtime::Remoting::ObjectHandle ^ CreateInstance(ActivationContext ^ activationContext);" />
+      <MemberSignature Language="F#" Value="abstract member CreateInstance : ActivationContext -&gt; System.Runtime.Remoting.ObjectHandle&#xA;override this.CreateInstance : ActivationContext -&gt; System.Runtime.Remoting.ObjectHandle" Usage="applicationActivator.CreateInstance activationContext" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Runtime.Remoting.ObjectHandle</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="activationContext" Type="System.ActivationContext" />
+      </Parameters>
+      <Docs>
+        <param name="activationContext">Контекст активации <see cref="T:System.ActivationContext" />, определяющий активируемое приложение.</param>
+        <summary>Создает экземпляр приложения, которое должно быть активировано, используя указанный контекст активации.</summary>
+        <returns>Дескриптор <see cref="T:System.Runtime.Remoting.ObjectHandle" />, являющийся оболочкой для возвращаемого при выполнении приложения значения. Необходимо развернуть возвращенное значение, чтобы получить доступ к истинному объекту.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод предназначен для активации приложений на основе манифеста.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="activationContext" /> — <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="CreateInstance">
+      <MemberSignature Language="C#" Value="public virtual System.Runtime.Remoting.ObjectHandle CreateInstance (ActivationContext activationContext, string[] activationCustomData);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Runtime.Remoting.ObjectHandle CreateInstance(class System.ActivationContext activationContext, string[] activationCustomData) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Hosting.ApplicationActivator.CreateInstance(System.ActivationContext,System.String[])" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::Runtime::Remoting::ObjectHandle ^ CreateInstance(ActivationContext ^ activationContext, cli::array &lt;System::String ^&gt; ^ activationCustomData);" />
+      <MemberSignature Language="F#" Value="abstract member CreateInstance : ActivationContext * string[] -&gt; System.Runtime.Remoting.ObjectHandle&#xA;override this.CreateInstance : ActivationContext * string[] -&gt; System.Runtime.Remoting.ObjectHandle" Usage="applicationActivator.CreateInstance (activationContext, activationCustomData)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecuritySafeCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Runtime.Remoting.ObjectHandle</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="activationContext" Type="System.ActivationContext" />
+        <Parameter Name="activationCustomData" Type="System.String[]" />
+      </Parameters>
+      <Docs>
+        <param name="activationContext">Контекст активации <see cref="T:System.ActivationContext" />, определяющий активируемое приложение.</param>
+        <param name="activationCustomData">Пользовательские данные активации.</param>
+        <summary>Создает экземпляр приложения, которое необходимо активировать, используя заданный контекст активации и пользовательские данные активации.</summary>
+        <returns>Дескриптор <see cref="T:System.Runtime.Remoting.ObjectHandle" />, являющийся оболочкой для возвращаемого при выполнении приложения значения. Необходимо развернуть возвращенное значение, чтобы получить доступ к истинному объекту.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод предназначен для активации приложений на основе манифеста. Данные активации состоят из информации, такой как часть строки запроса URL-адреса.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="activationContext" /> — <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="CreateInstanceHelper">
+      <MemberSignature Language="C#" Value="protected static System.Runtime.Remoting.ObjectHandle CreateInstanceHelper (AppDomainSetup adSetup);" />
+      <MemberSignature Language="ILAsm" Value=".method familystatic hidebysig class System.Runtime.Remoting.ObjectHandle CreateInstanceHelper(class System.AppDomainSetup adSetup) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Hosting.ApplicationActivator.CreateInstanceHelper(System.AppDomainSetup)" />
+      <MemberSignature Language="VB.NET" Value="Protected Shared Function CreateInstanceHelper (adSetup As AppDomainSetup) As ObjectHandle" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; static System::Runtime::Remoting::ObjectHandle ^ CreateInstanceHelper(AppDomainSetup ^ adSetup);" />
+      <MemberSignature Language="F#" Value="static member CreateInstanceHelper : AppDomainSetup -&gt; System.Runtime.Remoting.ObjectHandle" Usage="System.Runtime.Hosting.ApplicationActivator.CreateInstanceHelper adSetup" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecuritySafeCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Runtime.Remoting.ObjectHandle</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="adSetup" Type="System.AppDomainSetup" />
+      </Parameters>
+      <Docs>
+        <param name="adSetup">Объект <see cref="T:System.AppDomainSetup" />, свойство <see cref="P:System.AppDomainSetup.ActivationArguments" /> которого определяет активируемое приложение.</param>
+        <summary>Создает экземпляр приложения с помощью указанного объекта <see cref="T:System.AppDomainSetup" />.</summary>
+        <returns>Дескриптор <see cref="T:System.Runtime.Remoting.ObjectHandle" />, являющийся оболочкой для возвращаемого при выполнении приложения значения. Необходимо развернуть возвращенное значение, чтобы получить доступ к истинному объекту.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод предназначен для активации приложений на основе манифеста.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Свойству <see cref="P:System.AppDomainSetup.ActivationArguments" /> объекта <paramref name="adSetup" /> присвоено значение <see langword="null" />.</exception>
+        <exception cref="T:System.Security.Policy.PolicyException">Выполнение экземпляра приложения не удалось, поскольку настройки политики в текущем домене приложения не разрешают выполнение приложения.</exception>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
