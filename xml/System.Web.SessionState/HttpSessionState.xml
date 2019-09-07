@@ -1,0 +1,979 @@
+<Type Name="HttpSessionState" FullName="System.Web.SessionState.HttpSessionState">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="12d32f4619b09c7442301d6d634bb0fd3b2ae850" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70505725" /></Metadata><TypeSignature Language="C#" Value="public sealed class HttpSessionState : System.Collections.ICollection" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi sealed beforefieldinit HttpSessionState extends System.Object implements class System.Collections.ICollection, class System.Collections.IEnumerable" />
+  <TypeSignature Language="DocId" Value="T:System.Web.SessionState.HttpSessionState" />
+  <TypeSignature Language="VB.NET" Value="Public NotInheritable Class HttpSessionState&#xA;Implements ICollection" />
+  <TypeSignature Language="C++ CLI" Value="public ref class HttpSessionState sealed : System::Collections::ICollection" />
+  <TypeSignature Language="F#" Value="type HttpSessionState = class&#xA;    interface ICollection&#xA;    interface IEnumerable" />
+  <AssemblyInfo>
+    <AssemblyName>System.Web</AssemblyName>
+    <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces>
+    <Interface>
+      <InterfaceName>System.Collections.ICollection</InterfaceName>
+    </Interface>
+    <Interface>
+      <InterfaceName>System.Collections.IEnumerable</InterfaceName>
+    </Interface>
+  </Interfaces>
+  <Docs>
+    <summary>Предоставляет доступ к значениям состояния сеанса, а также к параметрам уровня сеанса и методам управления длительностью сеанса.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ ASP.NET обеспечивает управление состоянием сеанса, позволяя хранить информацию, связанную с уникальным сеансом браузера, между несколькими запросами. Можно сохранить коллекцию значений, на которые ссылается имя ключа или числовой индекс. Доступ к значениям и функциональным возможностям сеанса можно получить <xref:System.Web.SessionState.HttpSessionState> с помощью класса, доступного <xref:System.Web.HttpContext.Session%2A> через свойство текущего <xref:System.Web.HttpContext>объекта или <xref:System.Web.UI.Page.Session%2A> свойства <xref:System.Web.UI.Page>.  
+  
+ Данные сеанса связаны с конкретным сеансом браузера с помощью уникального идентификатора. По умолчанию этот идентификатор хранится в файле cookie сеанса с неистекшим сроком действия в браузере, но можно также настроить приложение для хранения идентификатора сеанса в URL-адресе, задав `cookieless` для `true` атрибута значение или <xref:System.Web.HttpCookieMode.UseUri> в поле [ Элемент sessionState](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/h6bb9cz9(v%3dvs.100)) конфигурации приложения. С помощью ASP.NET можно определить, поддерживаются ли в браузере файлы cookie, указав значение <xref:System.Web.HttpCookieMode.UseDeviceProfile> `cookieless` для атрибута. Кроме того, можно определить, включены ли файлы cookie для браузера с помощью ASP.NET, указав значение <xref:System.Web.HttpCookieMode.AutoDetect> `cookieless` для атрибута. Если файлы cookie поддерживаются <xref:System.Web.HttpCookieMode.UseDeviceProfile> при указании или включены при <xref:System.Web.HttpCookieMode.AutoDetect> указании, идентификатор сеанса будет храниться в файле cookie; в противном случае идентификатор сеанса будет храниться в URL-адресе.  
+  
+ Сеансы запускаются во время первого запроса, и значения сеанса сохраняются до тех пор, пока новый запрос выполняется браузером до количества минут, указанного в <xref:System.Web.SessionState.HttpSessionState.Timeout%2A> проходе свойства. При начале нового сеанса возникает событие Session <xref:System.Web.SessionState.SessionStateModule.Start> . Это событие можно использовать для выполнения любой дополнительной работы в начале сеанса, например для задания значений сеанса по умолчанию. Когда время ожидания сеанса истекло, <xref:System.Web.SessionState.HttpSessionState.Abandon%2A> вызывается метод или приложение ASP.NET завершает работу, вызывается событие Session <xref:System.Web.SessionState.SessionStateModule.End> . Это событие можно использовать для выполнения необходимой очистки. Событие возникает только в том случае, если для `mode` <xref:System.Web.SessionState.SessionStateMode.InProc>состояния сеанса задано значение. <xref:System.Web.SessionState.SessionStateModule.End>  
+  
+ Для повышения производительности сеансы, использующие файлы cookie, не распределяют хранилище сеансов, пока данные не будут сохранены <xref:System.Web.UI.Page.Session%2A> в объекте. Дополнительные сведения см. в описании свойства <xref:System.Web.SessionState.HttpSessionState.SessionID%2A>.  
+  
+ Состояние сеанса не сохраняется в границах приложения ASP.NET. Если браузер переходит к другому приложению, сведения о сеансе не доступны для нового приложения.  
+  
+ Значения сеанса по умолчанию хранятся в памяти на веб-сервере. Значения сеанса также можно хранить в SQL Server базе данных, сервере состояний ASP.NET или на настраиваемом сервере. Это позволяет сохранять значения сеанса в случаях, когда перезапускаются процессы ASP.NET или IIS или ASP.NET, а также для обеспечения доступности значений сеанса на всех серверах в веб-ферме. Это поведение настраивается путем присвоения `mode` атрибуту допустимого <xref:System.Web.SessionState.SessionStateMode> значения в элементе [sessionState](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/h6bb9cz9(v%3dvs.100)) конфигурации приложения. Дополнительные сведения см. в разделе [режимы состояния сеанса](https://msdn.microsoft.com/library/0bb0a3a3-650f-4c47-a0c5-b08b9b591bb4).  
+  
+ Альтернативы состоянию сеанса включают состояние приложения (см <xref:System.Web.HttpApplication.Application%2A> . свойство) и кэш ASP.NET ( <xref:System.Web.Caching> см. пространство имен), в котором хранятся переменные, доступные для всех пользователей приложения ASP.NET; профиль ASP.NET (см. <xref:System.Web.Profile> пространство имен), сохраняющее значения пользователей в хранилище данных без истечения времени ожидания; ASP.NET <xref:System.Web.UI.WebControls?displayProperty=nameWithType>, сохраняющая значения элементов управления <xref:System.Web.UI.Control.ViewState%2A>в; ; свойство, и поля в HTML-форме, доступные <xref:System.Web.HttpRequest.Form%2A> из HTTP `POST` с помощью коллекции. <xref:System.Web.HttpRequest.QueryString%2A> <xref:System.Web.HttpResponse.Cookies%2A> Дополнительные сведения о различиях между состоянием сеанса и другими альтернативами управления состоянием см. в разделе [рекомендации по управлению состоянием ASP.NET](https://msdn.microsoft.com/library/af79fa0d-4bc8-47a6-9915-d8e355bfb732).  
+  
+   
+  
+## Examples  
+ В следующем примере кода задаются и извлекаются значения из состояния сеанса.  
+  
+> [!IMPORTANT]
+>  В этом примере имеется текстовое поле, принимающее вводимые пользователем данные, что является потенциальной угрозой безопасности. По умолчанию данные, вводимые пользователем на веб-страницах ASP.NET, проверяются на наличие скриптов и HTML-элементов. Дополнительные сведения см. в разделе [Общие сведения об использовании сценариев](https://msdn.microsoft.com/library/772c7312-211a-4eb3-8d6e-eec0aa1dcc07).  
+  
+ [!code-aspx-csharp[HttpSessionState#30](~/samples/snippets/csharp/VS_Snippets_WebNet/HttpSessionState/CS/session2cs.aspx#30)]
+ [!code-aspx-vb[HttpSessionState#30](~/samples/snippets/visualbasic/VS_Snippets_WebNet/HttpSessionState/VB/session2vb.aspx#30)]  
+  
+ ]]></format>
+    </remarks>
+    <altmember cref="N:System.Web.Profile" />
+    <altmember cref="N:System.Web.Caching" />
+    <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+    <related type="Article" href="https://msdn.microsoft.com/library/772c7312-211a-4eb3-8d6e-eec0aa1dcc07">Общие сведения об эксплойтах сценариев</related>
+  </Docs>
+  <Members>
+    <Member MemberName="Abandon">
+      <MemberSignature Language="C#" Value="public void Abandon ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Abandon() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SessionState.HttpSessionState.Abandon" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Abandon ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Abandon();" />
+      <MemberSignature Language="F#" Value="member this.Abandon : unit -&gt; unit" Usage="httpSessionState.Abandon " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Отменяет текущий сеанс.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ После вызова <xref:System.Web.SessionState.HttpSessionState.Abandon%2A> метода текущий сеанс больше не действителен, и можно запустить новый сеанс. <xref:System.Web.SessionState.HttpSessionState.Abandon%2A>приводит к возникновению события. <xref:System.Web.SessionState.SessionStateModule.End> При следующем <xref:System.Web.SessionState.SessionStateModule.Start> запросе будет создано новое событие.  
+  
+ Идентификаторы сеансов для прерванных или истекших сеансов по умолчанию перезапускаются. Это значит, что если выполняется запрос, включающий идентификатор сеанса для просроченного или прерванного сеанса, то новый сеанс запускается с тем же идентификатором сеанса. Это можно отключить, задав `regenerateExpiredSessionId` атрибуту элемента `true`конфигурации [sessionState](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/h6bb9cz9(v%3dvs.100)) значение. Дополнительные сведения см. в разделе [идентификаторы сеансов](https://msdn.microsoft.com/library/146ca206-d151-4f2e-a548-bcca05ccf0cb).  
+  
+ Событие поддерживается только в том случае, <xref:System.Web.SessionState.HttpSessionState.Mode%2A> если свойство имеет значение  <xref:System.Web.SessionState.SessionStateMode.InProc> .  <xref:System.Web.SessionState.SessionStateModule.End>  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Add">
+      <MemberSignature Language="C#" Value="public void Add (string name, object value);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Add(string name, object value) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SessionState.HttpSessionState.Add(System.String,System.Object)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Add (name As String, value As Object)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Add(System::String ^ name, System::Object ^ value);" />
+      <MemberSignature Language="F#" Value="member this.Add : string * obj -&gt; unit" Usage="httpSessionState.Add (name, value)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="name" Type="System.String" />
+        <Parameter Name="value" Type="System.Object" />
+      </Parameters>
+      <Docs>
+        <param name="name">Имя элемента, добавляемого в коллекцию состояний сеанса.</param>
+        <param name="value">Значение элемента, добавляемого в коллекцию состояний сеанса.</param>
+        <summary>Добавляет новый элемент в коллекцию состояния сеанса.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если параметр ссылается на существующий элемент состояния сеанса, существующий элемент перезаписывается указанным  `value` .  `name`  
+  
+   
+  
+## Examples  
+ В следующем примере показано, как хранить значения в состоянии сеанса с помощью <xref:System.Web.SessionState.HttpSessionState.Add%2A> метода. В нем также показано, как удалить значения в состоянии сеанса с помощью <xref:System.Web.SessionState.HttpSessionState.Remove%2A> метода. <xref:System.Web.UI.WebControls.Repeater> Элемент управления используется для отображения состояния сеанса содержимого на веб-странице. Метод используется для прохода по коллекции состояния сеанса и заполнения <xref:System.Web.UI.WebControls.Repeater> элемента управления. <xref:System.Web.SessionState.HttpSessionState.GetEnumerator%2A>  
+  
+> [!IMPORTANT]
+>  В этом примере имеется текстовое поле, принимающее вводимые пользователем данные, что является потенциальной угрозой безопасности. По умолчанию данные, вводимые пользователем на веб-страницах ASP.NET, проверяются на наличие скриптов и HTML-элементов. Дополнительные сведения см. в разделе [Общие сведения об использовании сценариев](https://msdn.microsoft.com/library/772c7312-211a-4eb3-8d6e-eec0aa1dcc07).  
+  
+ [!code-aspx-csharp[HttpSessionState#13](~/samples/snippets/csharp/VS_Snippets_WebNet/HttpSessionState/CS/HttpSessionStateAddCS.aspx#13)]
+ [!code-aspx-vb[HttpSessionState#13](~/samples/snippets/visualbasic/VS_Snippets_WebNet/HttpSessionState/VB/HttpSessionStateAddVB.aspx#13)]  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+        <related type="Article" href="https://msdn.microsoft.com/library/772c7312-211a-4eb3-8d6e-eec0aa1dcc07">Общие сведения об эксплойтах сценариев</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Clear">
+      <MemberSignature Language="C#" Value="public void Clear ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Clear() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SessionState.HttpSessionState.Clear" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Clear ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Clear();" />
+      <MemberSignature Language="F#" Value="member this.Clear : unit -&gt; unit" Usage="httpSessionState.Clear " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Удаляет из коллекции состояния сеанса все ключи и значения.</summary>
+        <remarks>To be added.</remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </Member>
+    <Member MemberName="CodePage">
+      <MemberSignature Language="C#" Value="public int CodePage { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 CodePage" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SessionState.HttpSessionState.CodePage" />
+      <MemberSignature Language="VB.NET" Value="Public Property CodePage As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int CodePage { int get(); void set(int value); };" />
+      <MemberSignature Language="F#" Value="member this.CodePage : int with get, set" Usage="System.Web.SessionState.HttpSessionState.CodePage" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает идентификатор кодировки для текущего сеанса.</summary>
+        <value>Идентификатор кодировки для текущего сеанса.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Кодировка (кодовая страница) используется для интерпретации многобайтовых символьных данных, определения значения символа и, следовательно, порядка сортировки. Параметры кодовой страницы применяются только к многобайтным символьным данным, а не к символьным данным в Юникоде.  
+  
+ Это <xref:System.Web.SessionState.IHttpSessionState.CodePage%2A> свойство предназначено только для совместимости с предыдущими версиями ASP. Если не требуется поддерживать обратную совместимость со страницами ASP, используйте <xref:System.Web.HttpResponse.ContentEncoding%2A> вместо этого свойство.  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Contents">
+      <MemberSignature Language="C#" Value="public System.Web.SessionState.HttpSessionState Contents { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Web.SessionState.HttpSessionState Contents" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SessionState.HttpSessionState.Contents" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property Contents As HttpSessionState" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Web::SessionState::HttpSessionState ^ Contents { System::Web::SessionState::HttpSessionState ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Contents : System.Web.SessionState.HttpSessionState" Usage="System.Web.SessionState.HttpSessionState.Contents" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.SessionState.HttpSessionState</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает ссылку на текущий объект состояния сеанса.</summary>
+        <value>Текущий контекст <see cref="T:System.Web.SessionState.HttpSessionState" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.SessionState.HttpSessionState.Contents%2A> Свойство предоставляется для совместимости с более ранними версиями ASP.  
+  
+   
+  
+## Examples  
+ В следующем примере кода перечислены имена и значения элементов в <xref:System.Web.SessionState.HttpSessionState.Contents%2A> свойстве.  
+  
+ [!code-csharp[HttpSessionState#9](~/samples/snippets/csharp/VS_Snippets_WebNet/HttpSessionState/CS/snippetscs.aspx#9)]
+ [!code-vb[HttpSessionState#9](~/samples/snippets/visualbasic/VS_Snippets_WebNet/HttpSessionState/VB/snippetsvb.aspx#9)]  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </Member>
+    <Member MemberName="CookieMode">
+      <MemberSignature Language="C#" Value="public System.Web.HttpCookieMode CookieMode { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance valuetype System.Web.HttpCookieMode CookieMode" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SessionState.HttpSessionState.CookieMode" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property CookieMode As HttpCookieMode" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Web::HttpCookieMode CookieMode { System::Web::HttpCookieMode get(); };" />
+      <MemberSignature Language="F#" Value="member this.CookieMode : System.Web.HttpCookieMode" Usage="System.Web.SessionState.HttpSessionState.CookieMode" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.HttpCookieMode</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, позволяющее определить, настроено ли приложение для сеансов без поддержки файлов Cookie.</summary>
+        <value>Одно из значений <see cref="T:System.Web.HttpCookieMode" />, позволяющее определить, настроено ли приложение для сеансов без поддержки файлов Cookie. Значение по умолчанию — <see cref="F:System.Web.HttpCookieMode.UseCookies" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если <xref:System.Web.SessionState.HttpSessionState.IsCookieless%2A> имеет <xref:System.Web.SessionState.HttpSessionState.CookieMode%2A> <xref:System.Web.HttpCookieMode.UseCookies>значение, <xref:System.Web.SessionState.HttpSessionState.CookieMode%2A> свойство возвращает <xref:System.Web.HttpCookieMode.UseUri> значение; в противном случае свойство возвращает значение. `true`  
+  
+   
+  
+## Examples  
+ В следующем примере кода `cookieless` `true` атрибут Session задается в файле Web. config. Для этого примера конфигурации <xref:System.Web.SessionState.HttpSessionState.CookieMode%2A> приложения свойство будет возвращать <xref:System.Web.HttpCookieMode.UseUri>значение.  
+  
+```  
+<configuration>  
+  <system.web>  
+    <sessionState   
+      mode="InProc"  
+      cookieless="true"  
+      timeout="30" />  
+  </system.web>  
+</configuration>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </Member>
+    <Member MemberName="CopyTo">
+      <MemberSignature Language="C#" Value="public void CopyTo (Array array, int index);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void CopyTo(class System.Array array, int32 index) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SessionState.HttpSessionState.CopyTo(System.Array,System.Int32)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void CopyTo(Array ^ array, int index);" />
+      <MemberSignature Language="F#" Value="abstract member CopyTo : Array * int -&gt; unit&#xA;override this.CopyTo : Array * int -&gt; unit" Usage="httpSessionState.CopyTo (array, index)" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.Collections.ICollection.CopyTo(System.Array,System.Int32)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="array" Type="System.Array" />
+        <Parameter Name="index" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="array">Массив <see cref="T:System.Array" />, в который записываются значения сеанса.</param>
+        <param name="index">Значение индекса в массиве <paramref name="array" /> (индексация с нуля), с которого начинается копирование.</param>
+        <summary>Копирует коллекцию значений состояния сеанса в одномерный массив, начиная с заданного индекса массива.</summary>
+        <remarks>To be added.</remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Count">
+      <MemberSignature Language="C#" Value="public int Count { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 Count" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SessionState.HttpSessionState.Count" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property Count As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int Count { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.Count : int" Usage="System.Web.SessionState.HttpSessionState.Count" />
+      <MemberType>Property</MemberType>
+      <Implements>
+        <InterfaceMember>P:System.Collections.ICollection.Count</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает число элементов в коллекции состояний сеанса.</summary>
+        <value>Количество элементов в коллекции.</value>
+        <remarks>To be added.</remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </Member>
+    <Member MemberName="GetEnumerator">
+      <MemberSignature Language="C#" Value="public System.Collections.IEnumerator GetEnumerator ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Collections.IEnumerator GetEnumerator() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SessionState.HttpSessionState.GetEnumerator" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetEnumerator () As IEnumerator" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::Collections::IEnumerator ^ GetEnumerator();" />
+      <MemberSignature Language="F#" Value="abstract member GetEnumerator : unit -&gt; System.Collections.IEnumerator&#xA;override this.GetEnumerator : unit -&gt; System.Collections.IEnumerator" Usage="httpSessionState.GetEnumerator " />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.Collections.IEnumerable.GetEnumerator</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.IEnumerator</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Возвращает перечислитель, который можно использовать для считывания всех имен переменных состояния сеанса в текущем сеансе.</summary>
+        <returns>Объект <see cref="T:System.Collections.IEnumerator" />, который может использоваться для итерации по именам переменных в коллекции состояния сеанса.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Examples  
+ В следующем примере показано, как хранить значения в состоянии сеанса с помощью <xref:System.Web.SessionState.HttpSessionState.Add%2A> метода. В нем также показано, как удалить значения в состоянии сеанса с помощью <xref:System.Web.SessionState.HttpSessionState.Remove%2A> метода. <xref:System.Web.UI.WebControls.Repeater> Элемент управления используется для отображения содержимого состояния сеанса на веб-странице. Метод используется для прохода по коллекции состояния сеанса и заполнения <xref:System.Web.UI.WebControls.Repeater> элемента управления. <xref:System.Web.SessionState.HttpSessionState.GetEnumerator%2A>  
+  
+ [!code-aspx-csharp[HttpSessionState#13](~/samples/snippets/csharp/VS_Snippets_WebNet/HttpSessionState/CS/HttpSessionStateAddCS.aspx#13)]
+ [!code-aspx-vb[HttpSessionState#13](~/samples/snippets/visualbasic/VS_Snippets_WebNet/HttpSessionState/VB/HttpSessionStateAddVB.aspx#13)]  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </Member>
+    <Member MemberName="IsCookieless">
+      <MemberSignature Language="C#" Value="public bool IsCookieless { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool IsCookieless" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SessionState.HttpSessionState.IsCookieless" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property IsCookieless As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool IsCookieless { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.IsCookieless : bool" Usage="System.Web.SessionState.HttpSessionState.IsCookieless" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, позволяющее определить, был ли идентификатор сеанса внедрен в URL-адрес или сохранен в HTTP-файле Cookie.</summary>
+        <value>Если сеанс был внедрен в URL-адрес, значение <see langword="true" />, если нет, значение <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ ASP.NET определяет сеансы, уникальные для каждого браузера. По умолчанию уникальный идентификатор сеанса хранится в файле cookie сеанса без истечения срока действия в браузере. Можно указать, чтобы `cookieless` `true` идентификаторы сеанса не хранились в файле cookie, задав атрибут в элементе конфигурации [sessionState](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/h6bb9cz9(v%3dvs.100)) .  
+  
+> [!NOTE]
+>  Для повышения безопасности приложения приложение должно разрешать пользователям выходить из системы, после чего он должен вызывать <xref:System.Web.SessionState.HttpSessionState.Abandon%2A> метод. Это сокращает вероятность нежелательного источника с помощью уникального идентификатора в URL-адресе для получения закрытых данных, хранящихся в сеансе для пользователя.  
+  
+ ASP.NET поддерживает состояние сеанса без файлов cookie, автоматически вставляя уникальный идентификатор сеанса в URL-адрес страницы. Например, следующий URL-адрес был изменен с помощью ASP.NET, чтобы включить уникальный идентификатор сеанса lit3py55t21z5v55vlm25s55:  
+  
+```  
+http://www.example.com/(S(4danlfat035muve4g0mvgfrr))/orderform.aspx  
+```  
+  
+ ASP.NET изменяет ссылки, содержащиеся во всех запрашиваемых страницах, путем встраивания значения идентификатора сеанса в ссылки непосредственно перед отправкой каждой страницы в браузер. Состояние сеанса сохраняется, если пользователь соответствует пути ссылок, предоставляемых сайтом. Однако если агент пользователя перезаписывает URL-адрес, экземпляр состояния сеанса будет потерян.  
+  
+ Идентификатор сеанса внедряется в URL-адрес после косой черты, следующей за именем приложения, и перед любым оставшимся файлом или идентификатором виртуального каталога. Это позволяет ASP.NET разрешить имя приложения перед включением <xref:System.Web.SessionState.SessionStateModule> в запрос.  
+  
+ По умолчанию идентификаторы сеансов, используемые в сеансах без файлов cookie, перезапускаются. То есть, если запрос выполняется с ИДЕНТИФИКАТОРом сеанса с истекшим сроком действия, то новый сеанс запускается с использованием идентификатора сеанса, предоставленного с запросом. Такое поведение может привести к нежелательному совместному использованию данных сеанса, если ссылка, содержащая идентификатор сеанса без файлов cookie, является общей для нескольких браузеров, возможно, с помощью поисковой системы или другой программы. Можно уменьшить вероятность совместного использования данных сеанса несколькими клиентами, отключив повторное использование идентификаторов сеансов. Для этого присвойте `regenerateExpiredSessionId` атрибуту элемента `true`конфигурации [sessionState](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/h6bb9cz9(v%3dvs.100)) значение. Это приведет к созданию нового идентификатора сеанса при запросе сеанса без поддержки файлов cookie с просроченным ИДЕНТИФИКАТОРом сеанса. Обратите внимание, что если запрос, выполненный с истекшим идентификатором `POST` сеанса, использует метод HTTP, то все отправленные `regenerateExpiredSessionId` данные `true`будут потеряны, так как ASP.NET выполняет перенаправление, чтобы убедиться в том, что браузер имеет новый идентификатор сеанса в URL-адресе.  
+  
+> [!NOTE]
+>  При задании `regenerateExpiredSessionId` атрибута для `true` уменьшения вероятности нежелательного совместного использования данных сеанса он не защищается от нежелательного источника, получая доступ к сеансу <xref:System.Web.SessionState.HttpSessionState.SessionID%2A> другого пользователя, получая значение и включая его в запросах к серверу. Если конфиденциальная или конфиденциальная информация хранится в состоянии сеанса, рекомендуется использовать SSL для шифрования любого обмена данными между браузером и сервером, содержащим <xref:System.Web.SessionState.HttpSessionState.SessionID%2A>.  
+  
+   
+  
+## Examples  
+ В следующем примере кода для атрибута `cookieless` Session задается значение true в файле Web. config.  
+  
+```  
+<configuration>  
+  <system.web>  
+    <sessionState   
+      mode="InProc"  
+      cookieless="true"  
+      regenerateExpiredSessionId="true"  
+      timeout="30" />  
+  </system.web>  
+</configuration>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </Member>
+    <Member MemberName="IsNewSession">
+      <MemberSignature Language="C#" Value="public bool IsNewSession { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool IsNewSession" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SessionState.HttpSessionState.IsNewSession" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property IsNewSession As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool IsNewSession { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.IsNewSession : bool" Usage="System.Web.SessionState.HttpSessionState.IsNewSession" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, позволяющее определить, был ли создан сеанс с текущим запросом.</summary>
+        <value>Если сеанс был создан с текущим запросом, значение <see langword="true" />, если нет, значение <see langword="false" />.</value>
+        <remarks>To be added.</remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </Member>
+    <Member MemberName="IsReadOnly">
+      <MemberSignature Language="C#" Value="public bool IsReadOnly { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool IsReadOnly" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SessionState.HttpSessionState.IsReadOnly" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property IsReadOnly As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool IsReadOnly { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.IsReadOnly : bool" Usage="System.Web.SessionState.HttpSessionState.IsReadOnly" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, позволяющее определить, доступен ли сеанс только для чтения.</summary>
+        <value>Если сеанс доступен только для чтения, значение <see langword="true" />, если нет, значение <see langword="false" />.</value>
+        <remarks>To be added.</remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </Member>
+    <Member MemberName="IsSynchronized">
+      <MemberSignature Language="C#" Value="public bool IsSynchronized { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool IsSynchronized" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SessionState.HttpSessionState.IsSynchronized" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property IsSynchronized As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool IsSynchronized { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.IsSynchronized : bool" Usage="System.Web.SessionState.HttpSessionState.IsSynchronized" />
+      <MemberType>Property</MemberType>
+      <Implements>
+        <InterfaceMember>P:System.Collections.ICollection.IsSynchronized</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, позволяющее определить, синхронизирован ли доступ к коллекции значений состояния сеанса (потокобезопасный доступ).</summary>
+        <value>Значение <see langword="true" />, если доступ к коллекции синхронизирован (потокобезопасен); в противном случае — значение <see langword="false" />.</value>
+        <remarks>To be added.</remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="Item">
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Возвращает или задает индивидуальные значения сеанса.</summary>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="Item">
+      <MemberSignature Language="C#" Value="public object this[int index] { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance object Item(int32)" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SessionState.HttpSessionState.Item(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Default Public Property Item(index As Integer) As Object" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Object ^ default[int] { System::Object ^ get(int index); void set(int index, System::Object ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.Item(int) : obj with get, set" Usage="System.Web.SessionState.HttpSessionState.Item" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Object</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="index" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="index">Числовой индекс значения сеанса.</param>
+        <summary>Возвращает или задает значение сеанса по числовому индексу.</summary>
+        <value>Значение состояния сеанса, сохраненное по указанному индексу или значение <see langword="null" />, если элемент не существует.</value>
+        <remarks>To be added.</remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Item">
+      <MemberSignature Language="C#" Value="public object this[string name] { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance object Item(string)" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SessionState.HttpSessionState.Item(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Default Public Property Item(name As String) As Object" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Object ^ default[System::String ^] { System::Object ^ get(System::String ^ name); void set(System::String ^ name, System::Object ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.Item(string) : obj with get, set" Usage="System.Web.SessionState.HttpSessionState.Item" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Object</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="name" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="name">Имя ключа значения сеанса.</param>
+        <summary>Возвращает или задает значение сеанса по имени.</summary>
+        <value>Значение состояния сеанса с указанным именем или значение <see langword="null" />, если элемент не существует.</value>
+        <remarks>To be added.</remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Keys">
+      <MemberSignature Language="C#" Value="public System.Collections.Specialized.NameObjectCollectionBase.KeysCollection Keys { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Collections.Specialized.NameObjectCollectionBase/KeysCollection Keys" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SessionState.HttpSessionState.Keys" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property Keys As NameObjectCollectionBase.KeysCollection" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Collections::Specialized::NameObjectCollectionBase::KeysCollection ^ Keys { System::Collections::Specialized::NameObjectCollectionBase::KeysCollection ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Keys : System.Collections.Specialized.NameObjectCollectionBase.KeysCollection" Usage="System.Web.SessionState.HttpSessionState.Keys" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.Specialized.NameObjectCollectionBase+KeysCollection</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает коллекцию ключей для всех значений, хранящихся в коллекции состояния сеанса.</summary>
+        <value>Объект <see cref="T:System.Collections.Specialized.NameObjectCollectionBase.KeysCollection" />, в котором содержатся все сеансовые ключи.</value>
+        <remarks>To be added.</remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </Member>
+    <Member MemberName="LCID">
+      <MemberSignature Language="C#" Value="public int LCID { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 LCID" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SessionState.HttpSessionState.LCID" />
+      <MemberSignature Language="VB.NET" Value="Public Property LCID As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int LCID { int get(); void set(int value); };" />
+      <MemberSignature Language="F#" Value="member this.LCID : int with get, set" Usage="System.Web.SessionState.HttpSessionState.LCID" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает код языка текущего сеанса.</summary>
+        <value>Экземпляр <see cref="T:System.Globalization.CultureInfo" />, который задает язык и региональные параметры текущего сеанса.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.SessionState.HttpSessionState.LCID%2A> Свойство предоставляется только для совместимости с предыдущими версиями ASP. Если не требуется поддерживать обратную совместимость со страницами ASP, используйте <xref:System.Globalization.CultureInfo.LCID%2A> вместо этого свойство.  
+  
+ ASP.NET не сохраняет код локали в состоянии сеанса. Свойство обращается к свойству, чтобы получить и задать идентификатор. <xref:System.Globalization.CultureInfo.LCID%2A> <xref:System.Web.SessionState.HttpSessionState.LCID%2A>  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Mode">
+      <MemberSignature Language="C#" Value="public System.Web.SessionState.SessionStateMode Mode { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance valuetype System.Web.SessionState.SessionStateMode Mode" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SessionState.HttpSessionState.Mode" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property Mode As SessionStateMode" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Web::SessionState::SessionStateMode Mode { System::Web::SessionState::SessionStateMode get(); };" />
+      <MemberSignature Language="F#" Value="member this.Mode : System.Web.SessionState.SessionStateMode" Usage="System.Web.SessionState.HttpSessionState.Mode" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.SessionState.SessionStateMode</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает текущий режим состояния сеанса.</summary>
+        <value>Одно из значений <see cref="T:System.Web.SessionState.SessionStateMode" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Сведения о настройке сервера для <xref:System.Web.SessionState.SessionStateMode.StateServer> или <xref:System.Web.SessionState.SessionStateMode.SQLServer> хранилища состояний сеанса см. в разделе [ASP.NET Session State Overview](https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc).  
+  
+   
+  
+## Examples  
+ В следующем примере кода `mode` <xref:System.Web.SessionState.SessionStateMode.SQLServer> атрибут Session задается в файле Web. config. Для режима `sqlConnectionString` сеанса SQL Server также требуется атрибут.  
+  
+```  
+<configuration>  
+  <system.web>  
+    <sessionState   
+      mode="SQLServer"  
+      sqlConnectionString="Data Source=localhost;Integrated Security=SSPI"  
+      cookieless="true"  
+      timeout="30" />  
+  </system.web>  
+</configuration>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Remove">
+      <MemberSignature Language="C#" Value="public void Remove (string name);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Remove(string name) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SessionState.HttpSessionState.Remove(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Remove (name As String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Remove(System::String ^ name);" />
+      <MemberSignature Language="F#" Value="member this.Remove : string -&gt; unit" Usage="httpSessionState.Remove name" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="name" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="name">Имя элемента, который необходимо удалить из коллекции состояния сеанса.</param>
+        <summary>Удаляет элемент из коллекции состояния сеанса.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если коллекция состояния сеанса не содержит элемент с указанным `name`параметром, коллекция остается неизменной. Исключение не возникает.  
+  
+   
+  
+## Examples  
+ В следующем примере показано, как хранить значения в состоянии сеанса с помощью <xref:System.Web.SessionState.HttpSessionState.Add%2A> метода. В нем также показано, как удалить значения в состоянии сеанса с помощью <xref:System.Web.SessionState.HttpSessionState.Remove%2A> метода. <xref:System.Web.UI.WebControls.Repeater> Элемент управления используется для отображения содержимого состояния сеанса на веб-странице. Метод используется для прохода по коллекции состояния сеанса и заполнения <xref:System.Web.UI.WebControls.Repeater> элемента управления. <xref:System.Web.SessionState.HttpSessionState.GetEnumerator%2A>  
+  
+ [!code-aspx-csharp[HttpSessionState#13](~/samples/snippets/csharp/VS_Snippets_WebNet/HttpSessionState/CS/HttpSessionStateAddCS.aspx#13)]
+ [!code-aspx-vb[HttpSessionState#13](~/samples/snippets/visualbasic/VS_Snippets_WebNet/HttpSessionState/VB/HttpSessionStateAddVB.aspx#13)]  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </Member>
+    <Member MemberName="RemoveAll">
+      <MemberSignature Language="C#" Value="public void RemoveAll ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void RemoveAll() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SessionState.HttpSessionState.RemoveAll" />
+      <MemberSignature Language="VB.NET" Value="Public Sub RemoveAll ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void RemoveAll();" />
+      <MemberSignature Language="F#" Value="member this.RemoveAll : unit -&gt; unit" Usage="httpSessionState.RemoveAll " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Удаляет из коллекции состояния сеанса все ключи и значения.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.SessionState.HttpSessionState.RemoveAll%2A>выполняет ту же функцию, <xref:System.Web.SessionState.HttpSessionState.Clear%2A>что и.  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </Member>
+    <Member MemberName="RemoveAt">
+      <MemberSignature Language="C#" Value="public void RemoveAt (int index);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void RemoveAt(int32 index) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SessionState.HttpSessionState.RemoveAt(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub RemoveAt (index As Integer)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void RemoveAt(int index);" />
+      <MemberSignature Language="F#" Value="member this.RemoveAt : int -&gt; unit" Usage="httpSessionState.RemoveAt index" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="index" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="index">Индекс элемента, который необходимо удалить из коллекции состояния сеанса.</param>
+        <summary>Удаляет элемент по заданному индексу из коллекции состояния сеанса.</summary>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentOutOfRangeException">Значение параметра <paramref name="index" /> меньше нуля.  
+  
+- или - 
+ Значение параметра <paramref name="index" /> больше или равно значению свойства <see cref="P:System.Web.SessionState.HttpSessionState.Count" />.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </Member>
+    <Member MemberName="SessionID">
+      <MemberSignature Language="C#" Value="public string SessionID { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string SessionID" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SessionState.HttpSessionState.SessionID" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property SessionID As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ SessionID { System::String ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.SessionID : string" Usage="System.Web.SessionState.HttpSessionState.SessionID" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает для сеанса уникальный идентификатор.</summary>
+        <value>Уникальный идентификатор сеанса.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.SessionState.HttpSessionState.SessionID%2A> Свойство используется для уникальной идентификации браузера с данными сеанса на сервере. <xref:System.Web.SessionState.HttpSessionState.SessionID%2A> Значение создается случайным образом ASP.NET и сохраняется в файле cookie сеанса без истечения срока действия в браузере. Затем <xref:System.Web.SessionState.HttpSessionState.SessionID%2A> значение отправляется в файл cookie с каждым запросом к приложению ASP.NET.  
+  
+ Если вы хотите отключить использование файлов cookie в приложении ASP.NET и по-прежнему использовать состояние сеанса, можно настроить приложение для хранения идентификатора сеанса в URL-адресе вместо файла cookie, задав `cookieless` атрибут для [sessionState. ](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/h6bb9cz9(v%3dvs.100))для элемента конфигурации `true`значение <xref:System.Web.HttpCookieMode.UseUri>, или в, в файле Web. config для приложения. С помощью ASP.NET можно определить, поддерживаются ли в браузере файлы cookie, указав значение <xref:System.Web.HttpCookieMode.UseDeviceProfile> `cookieless` для атрибута. Кроме того, можно определить, включены ли файлы cookie для браузера с помощью ASP.NET, указав значение <xref:System.Web.HttpCookieMode.AutoDetect> `cookieless` для атрибута. Если файлы cookie поддерживаются <xref:System.Web.HttpCookieMode.UseDeviceProfile> при указании или включены при <xref:System.Web.HttpCookieMode.AutoDetect> указании, идентификатор сеанса будет храниться в файле cookie; в противном случае идентификатор сеанса будет храниться в URL-адресе. Дополнительные сведения см. в описании свойства <xref:System.Web.SessionState.HttpSessionState.IsCookieless%2A>.  
+  
+ Объект <xref:System.Web.SessionState.HttpSessionState.SessionID%2A> передается между сервером и браузером в виде открытого текста: в файле cookie или в URL-адресе. В результате нежелательный источник может получить доступ к сеансу другого пользователя, получая <xref:System.Web.SessionState.HttpSessionState.SessionID%2A> значение и включая его в запросах к серверу. Если конфиденциальная или конфиденциальная информация хранится в состоянии сеанса, рекомендуется использовать SSL для шифрования любого обмена данными между браузером и сервером, содержащим <xref:System.Web.SessionState.HttpSessionState.SessionID%2A>.  
+  
+ При использовании состояния сеанса на основе файлов cookie ASP.NET не выделяет память для данных сеанса до тех пор <xref:System.Web.UI.Page.Session%2A> , пока не будет использован объект. В результате новый идентификатор сеанса создается для каждого запроса страницы до тех пор, пока не будет осуществлен доступ к объекту сеанса. Если приложению требуется статический идентификатор сеанса для всего сеанса, можно либо реализовать `Session_Start` метод в файле Global. asax приложения, и сохранить данные <xref:System.Web.UI.Page.Session%2A> в объекте, чтобы исправить идентификатор сеанса, или использовать код в другой части приложение для явного хранения данных в <xref:System.Web.UI.Page.Session%2A> объекте.  
+  
+ Если приложение использует состояние сеанса без файлов cookie, идентификатор сеанса создается в первом представлении страницы и сохраняется для всего сеанса.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показан файл Web. config, который настраивает состояние сеанса для использования идентификаторов сеанса без файлов cookie. Дополнительные сведения см. в описании свойства <xref:System.Web.SessionState.HttpSessionState.IsCookieless%2A>.  
+  
+```  
+<configuration>  
+  <system.web>  
+    <sessionState   
+      cookieless="true"  
+      regenerateExpiredSessionId="true"  
+      timeout="30" />  
+  </system.web>  
+</configuration>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </Member>
+    <Member MemberName="StaticObjects">
+      <MemberSignature Language="C#" Value="public System.Web.HttpStaticObjectsCollection StaticObjects { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Web.HttpStaticObjectsCollection StaticObjects" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SessionState.HttpSessionState.StaticObjects" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property StaticObjects As HttpStaticObjectsCollection" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Web::HttpStaticObjectsCollection ^ StaticObjects { System::Web::HttpStaticObjectsCollection ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.StaticObjects : System.Web.HttpStaticObjectsCollection" Usage="System.Web.SessionState.HttpSessionState.StaticObjects" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.HttpStaticObjectsCollection</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает коллекцию объектов, объявленных в файле Global.asax приложения ASP.NET тегами <see langword="&lt;object Runat=&quot;Server&quot; Scope=&quot;Session&quot;/&gt;" />.</summary>
+        <value>Коллекция <see cref="T:System.Web.HttpStaticObjectsCollection" />, содержащая объекты, объявленные в файле Global.asax.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если объект на странице не поддерживает сериализацию и <xref:System.Web.SessionState.HttpSessionState.Mode%2A> находится вне процесса (<xref:System.Web.SessionState.SessionStateMode.SQLServer> или <xref:System.Web.SessionState.SessionStateMode.StateServer>), объект не будет создан и не будет добавлен в эту коллекцию.  
+  
+ <xref:System.Web.SessionState.HttpSessionState.StaticObjects%2A> Свойство предоставляется для совместимости с более ранними версиями ASP.  
+  
+   
+  
+## Examples  
+ В следующем примере кода выводится список `id` типов объектов и <xref:System.Web.SessionState.HttpSessionState.StaticObjects%2A> в коллекции.  
+  
+ [!code-csharp[HttpSessionState#10](~/samples/snippets/csharp/VS_Snippets_WebNet/HttpSessionState/CS/snippetscs.aspx#10)]
+ [!code-vb[HttpSessionState#10](~/samples/snippets/visualbasic/VS_Snippets_WebNet/HttpSessionState/VB/snippetsvb.aspx#10)]  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </Member>
+    <Member MemberName="SyncRoot">
+      <MemberSignature Language="C#" Value="public object SyncRoot { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance object SyncRoot" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SessionState.HttpSessionState.SyncRoot" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property SyncRoot As Object" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Object ^ SyncRoot { System::Object ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.SyncRoot : obj" Usage="System.Web.SessionState.HttpSessionState.SyncRoot" />
+      <MemberType>Property</MemberType>
+      <Implements>
+        <InterfaceMember>P:System.Collections.ICollection.SyncRoot</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Object</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает объект, который можно использовать для синхронизации доступа к коллекции значений состояния сеанса.</summary>
+        <value>Объект, который можно использовать для синхронизации доступа к коллекции.</value>
+        <remarks>To be added.</remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Timeout">
+      <MemberSignature Language="C#" Value="public int Timeout { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 Timeout" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SessionState.HttpSessionState.Timeout" />
+      <MemberSignature Language="VB.NET" Value="Public Property Timeout As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int Timeout { int get(); void set(int value); };" />
+      <MemberSignature Language="F#" Value="member this.Timeout : int with get, set" Usage="System.Web.SessionState.HttpSessionState.Timeout" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает количество времени (в минутах), которое проходит между запросами, прежде чем поставщик состояния сеанса завершает сеанс.</summary>
+        <value>Время ожидания в минутах.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойство может быть задано в файле Web. config для приложения `timeout` с помощью атрибута <xref:System.Web.SessionState.HttpSessionState.Timeout%2A> элемента конфигурации [sessionState](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/h6bb9cz9(v%3dvs.100)) , или значение свойства можно задать напрямую с помощью кода приложения. <xref:System.Web.SessionState.HttpSessionState.Timeout%2A>  
+  
+ <xref:System.Web.SessionState.HttpSessionState.Timeout%2A> Свойству нельзя присвоить значение больше 525 600 минут (1 год). Значение по умолчанию — 20 минут.  
+  
+   
+  
+## Examples  
+ В следующем примере кода атрибут `timeout` Session устанавливается равным 30 минутам в файле Web. config.  
+  
+```  
+<configuration>  
+  <system.web>  
+    <sessionState   
+      mode="InProc"  
+      cookieless="true"  
+      timeout="30" />  
+  </system.web>  
+</configuration>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/6d60d381-6521-4e1d-9089-da6464f2a9bc">Общие сведения о состоянии сеанса</related>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

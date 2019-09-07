@@ -1,0 +1,334 @@
+<Type Name="BufferedGraphics" FullName="System.Drawing.BufferedGraphics">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="385cd9f35c51508596737a223b79889e3e7131a1" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70454780" /></Metadata><TypeSignature Language="C#" Value="public sealed class BufferedGraphics : IDisposable" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi sealed beforefieldinit BufferedGraphics extends System.Object implements class System.IDisposable" />
+  <TypeSignature Language="DocId" Value="T:System.Drawing.BufferedGraphics" />
+  <TypeSignature Language="VB.NET" Value="Public NotInheritable Class BufferedGraphics&#xA;Implements IDisposable" />
+  <TypeSignature Language="C++ CLI" Value="public ref class BufferedGraphics sealed : IDisposable" />
+  <TypeSignature Language="F#" Value="type BufferedGraphics = class&#xA;    interface IDisposable" />
+  <AssemblyInfo>
+    <AssemblyName>System.Drawing</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>System.Drawing.Common</AssemblyName>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.1</AssemblyVersion>
+    <AssemblyVersion>4.0.1.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces>
+    <Interface>
+      <InterfaceName>System.IDisposable</InterfaceName>
+    </Interface>
+  </Interfaces>
+  <Docs>
+    <summary>Предоставляет графический буфер для двойной буферизации.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Drawing.BufferedGraphics> Класс позволяет реализовать пользовательскую двойную буферизацию для графики. Он предоставляет оболочку для графического буфера, а также методы, которые можно использовать для записи в буфер и отрисовки его содержимого на выходном устройстве.  
+  
+ Графические объекты, использующие двойную буферизацию, могут уменьшить или устранить мерцание, вызванное перерисовкой отображаемой поверхности. При использовании двойной буферизации обновленная графика сначала рисуется в буфере в памяти, а содержимое этого буфера быстро записывается на некоторые или все отображаемые поверхности. Это относительно короткая перезапись отображаемой графики обычно сокращает или устраняет мерцание, которое иногда возникает при обновлении графики.  
+  
+> [!NOTE]
+>  Самый простой способ использовать двойную буферизацию — установить <xref:System.Windows.Forms.ControlStyles.OptimizedDoubleBuffer> флаг стиля элемента управления для элемента управления <xref:System.Windows.Forms.Control.SetStyle%2A> с помощью метода. <xref:System.Windows.Forms.ControlStyles.OptimizedDoubleBuffer> Установка флага для элемента управления перенаправляет все прорисовки элемента управления с помощью графического буфера по умолчанию, не требуя дополнительного кода. По умолчанию этот флаг `true` установлен в значение.  
+  
+ Класс не имеет открытого конструктора и должен быть создан <xref:System.Drawing.BufferedGraphicsContext> для домена приложения с помощью его <xref:System.Drawing.BufferedGraphicsContext.Allocate%2A> метода. <xref:System.Drawing.BufferedGraphics> Можно получить <xref:System.Drawing.BufferedGraphicsContext> для текущего домена приложения из статического <xref:System.Drawing.BufferedGraphicsManager.Current%2A?displayProperty=nameWithType> свойства.  
+  
+ <xref:System.Drawing.BufferedGraphics.Graphics%2A> Свойство можно использовать для рисования в графическом буфере. Это свойство предоставляет доступ <xref:System.Drawing.Graphics> к объекту, который рисуется в графическом буфере, выделенном для данного <xref:System.Drawing.BufferedGraphics> объекта.  
+  
+ <xref:System.Drawing.BufferedGraphics.Render%2A> Метод без аргументов рисует содержимое графического буфера на поверхность, указанную при выделении буфера. Другие перегрузки <xref:System.Drawing.BufferedGraphics.Render%2A> метода позволяют <xref:System.Drawing.Graphics> указать объект или <xref:System.IntPtr> объект, указывающий на контекст устройства, в который будет нарисовано содержимое графического буфера.  
+  
+ Дополнительные сведения о рисовании графических объектов с двойной буферизацией см. в разделе [Двойная буферизация графики](~/docs/framework/winforms/advanced/double-buffered-graphics.md).  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано использование <xref:System.Drawing.BufferedGraphics> объекта для рисования графики с помощью нескольких типов реализаций буферизации. При выборе формы также запускается и останавливается таймер, который вызывает обновление. Обновления Draw позволяют наблюдать за последствиями двойной буферизации. При щелчке правой кнопкой мыши формы циклически передаются следующие режимы рисования:  
+  
+-   Рисование непосредственно в <xref:System.Windows.Forms.Control.Handle%2A> <xref:System.Windows.Forms.Form>для.  
+  
+-   Рисование путем переопределения <xref:System.Windows.Forms.Form.OnPaint%2A> метода <xref:System.Windows.Forms.ControlStyles.OptimizedDoubleBuffer> с помощью стиля элемента управления.  
+  
+-   Рисование путем переопределения <xref:System.Windows.Forms.Form.OnPaint%2A> метода для метода формы без <xref:System.Windows.Forms.ControlStyles.OptimizedDoubleBuffer> использования стиля элемента управления.  
+  
+ В каждом режиме текст рисуется, который определяет текущий режим, и описывает поведение, возникающее при нажатии каждой кнопки мыши.  
+  
+ [!code-cpp[BufferedGraphicsExample#1](~/samples/snippets/cpp/VS_Snippets_Winforms/BufferedGraphicsExample/CPP/bufferingtest.cpp#1)]
+ [!code-csharp[BufferedGraphicsExample#1](~/samples/snippets/csharp/VS_Snippets_Winforms/BufferedGraphicsExample/CS/bufferingtest.cs#1)]
+ [!code-vb[BufferedGraphicsExample#1](~/samples/snippets/visualbasic/VS_Snippets_Winforms/BufferedGraphicsExample/VB/bufferingtest.vb#1)]  
+  
+ ]]></format>
+    </remarks>
+    <threadsafe>Класс <see cref="T:System.Drawing.BufferedGraphics" /> не является потокобезопасным. При доступе к графическому буферу из отдельных потоков важно использовать механизм управления доступом к потокам для предотвращения конфликтов.</threadsafe>
+    <related type="Article" href="~/docs/framework/winforms/advanced/double-buffered-graphics.md">Двойная буферизация графики</related>
+  </Docs>
+  <Members>
+    <Member MemberName="Dispose">
+      <MemberSignature Language="C#" Value="public void Dispose ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void Dispose() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Drawing.BufferedGraphics.Dispose" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Dispose ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void Dispose();" />
+      <MemberSignature Language="F#" Value="abstract member Dispose : unit -&gt; unit&#xA;override this.Dispose : unit -&gt; unit" Usage="bufferedGraphics.Dispose " />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.IDisposable.Dispose</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Drawing</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Drawing.Common</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.1</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Освобождает все ресурсы, используемые объектом <see cref="T:System.Drawing.BufferedGraphics" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ По <xref:System.Drawing.BufferedGraphics.Dispose%2A> завершении <xref:System.Drawing.BufferedGraphics> использования объекта вызовите метод. <xref:System.Drawing.BufferedGraphics.Dispose%2A> Метод <xref:System.Drawing.BufferedGraphics>  оставляет объект в непригодном для использования состоянии. После вызова <xref:System.Drawing.BufferedGraphics.Dispose%2A>необходимо освободить все ссылки <xref:System.Drawing.BufferedGraphics> на объект, чтобы сборщик мусора мог <xref:System.Drawing.BufferedGraphics> освободить память, занимаемую объектом. Дополнительные сведения см. в разделе [Очистка неуправляемых ресурсов](~/docs/standard/garbage-collection/unmanaged.md) и [Реализация метода Dispose](~/docs/standard/garbage-collection/implementing-dispose.md).  
+  
+> [!NOTE]
+>  Всегда вызывайте <xref:System.Drawing.BufferedGraphics.Dispose%2A> перед освобождением последней ссылки <xref:System.Drawing.BufferedGraphics> на объект. В противном случае используемые им ресурсы не будут освобождены до тех пор, пока сборщик мусора не вызовет для объекта <xref:System.Drawing.BufferedGraphics> метод `Finalize`.  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="~/docs/framework/winforms/advanced/double-buffered-graphics.md">Двойная буферизация графики</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Finalize">
+      <MemberSignature Language="C#" Value="~BufferedGraphics ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void Finalize() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Drawing.BufferedGraphics.Finalize" />
+      <MemberSignature Language="VB.NET" Value="Finalize ()" />
+      <MemberSignature Language="C++ CLI" Value="!BufferedGraphics ()" />
+      <MemberSignature Language="F#" Value="override this.Finalize : unit -&gt; unit" Usage="bufferedGraphics.Finalize " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Drawing</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Drawing.Common</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.1</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Позволяет объекту попытаться освободить ресурсы и выполнить другие операции очистки, перед тем как он будет уничтожен во время сборки мусора.</summary>
+        <remarks>To be added.</remarks>
+        <altmember cref="M:System.Object.Finalize" />
+      </Docs>
+    </Member>
+    <Member MemberName="Graphics">
+      <MemberSignature Language="C#" Value="public System.Drawing.Graphics Graphics { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Drawing.Graphics Graphics" />
+      <MemberSignature Language="DocId" Value="P:System.Drawing.BufferedGraphics.Graphics" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property Graphics As Graphics" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Drawing::Graphics ^ Graphics { System::Drawing::Graphics ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Graphics : System.Drawing.Graphics" Usage="System.Drawing.BufferedGraphics.Graphics" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Drawing</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Drawing.Common</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.1</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Drawing.Graphics</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает объект <see cref="T:System.Drawing.Graphics" />, выводящий данные в графический буфер.</summary>
+        <value>Объект <see cref="T:System.Drawing.Graphics" />, выводящий данные в графический буфер.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Это свойство предоставляет <xref:System.Drawing.Graphics> объект, который рисует в графическом буфере, выделенном <xref:System.Drawing.BufferedGraphics> для данного объекта.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.Drawing.Graphics" />
+        <related type="Article" href="~/docs/framework/winforms/advanced/double-buffered-graphics.md">Двойная буферизация графики</related>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="Render">
+      <AssemblyInfo>
+        <AssemblyName>System.Drawing</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Записывает содержимое графического буфера.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="Render">
+      <MemberSignature Language="C#" Value="public void Render ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Render() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Drawing.BufferedGraphics.Render" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Render ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Render();" />
+      <MemberSignature Language="F#" Value="member this.Render : unit -&gt; unit" Usage="bufferedGraphics.Render " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Drawing</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Drawing.Common</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.1</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Записывает содержимое графического буфера в устройство по умолчанию.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод записывает содержимое графического буфера на устройство, указанное путем вызова <xref:System.Drawing.BufferedGraphicsContext.Allocate%2A> метода объекта, <xref:System.Drawing.BufferedGraphicsContext> используемого для создания этого <xref:System.Drawing.BufferedGraphics> объекта.  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="~/docs/framework/winforms/advanced/double-buffered-graphics.md">Двойная буферизация графики</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Render">
+      <MemberSignature Language="C#" Value="public void Render (System.Drawing.Graphics target);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Render(class System.Drawing.Graphics target) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Drawing.BufferedGraphics.Render(System.Drawing.Graphics)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Render (target As Graphics)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Render(System::Drawing::Graphics ^ target);" />
+      <MemberSignature Language="F#" Value="member this.Render : System.Drawing.Graphics -&gt; unit" Usage="bufferedGraphics.Render target" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Drawing</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Drawing.Common</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.1</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="target" Type="System.Drawing.Graphics" />
+      </Parameters>
+      <Docs>
+        <param name="target">Объект <see cref="T:System.Drawing.Graphics" />, в который записывается содержимое графического буфера.</param>
+        <summary>Записывает содержимое графического буфера в заданный объект <see cref="T:System.Drawing.Graphics" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод записывает содержимое графического буфера в указанный <xref:System.Drawing.Graphics> объект.  
+  
+   
+  
+## Examples  
+ В следующем примере кода демонстрируется визуализация содержимого графического буфера в указанный <xref:System.Drawing.Graphics> объект. Этот код является частью большого примера, <xref:System.Drawing.BufferedGraphics> приведенного для класса.  
+  
+ [!code-cpp[BufferingExamples#5](~/samples/snippets/cpp/VS_Snippets_Winforms/BufferingExamples/CPP/bufferingexamples.cpp#5)]
+ [!code-csharp[BufferingExamples#5](~/samples/snippets/csharp/VS_Snippets_Winforms/BufferingExamples/CS/bufferingexamples.cs#5)]
+ [!code-vb[BufferingExamples#5](~/samples/snippets/visualbasic/VS_Snippets_Winforms/BufferingExamples/VB/bufferingexamples.vb#5)]  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.Drawing.Graphics" />
+        <related type="Article" href="~/docs/framework/winforms/advanced/double-buffered-graphics.md">Двойная буферизация графики</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Render">
+      <MemberSignature Language="C#" Value="public void Render (IntPtr targetDC);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Render(native int targetDC) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Drawing.BufferedGraphics.Render(System.IntPtr)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Render (targetDC As IntPtr)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Render(IntPtr targetDC);" />
+      <MemberSignature Language="F#" Value="member this.Render : nativeint -&gt; unit" Usage="bufferedGraphics.Render targetDC" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Drawing</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Drawing.Common</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.1</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="targetDC" Type="System.IntPtr" />
+      </Parameters>
+      <Docs>
+        <param name="targetDC">Ссылка <see cref="T:System.IntPtr" />, указывающая на контекст устройства, в который записывается содержимое графического буфера.</param>
+        <summary>Записывает содержимое графического буфера в контекст устройства, связанный с заданным дескриптором <see cref="T:System.IntPtr" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод записывает содержимое графического буфера в контекст устройства, связанный с указанным <xref:System.IntPtr> маркером.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как преобразовать содержимое графического буфера `grafx` в заданный контекст устройства. Этот код является частью большого примера, <xref:System.Drawing.BufferedGraphics> приведенного для класса.  
+  
+ [!code-cpp[BufferingExamples#6](~/samples/snippets/cpp/VS_Snippets_Winforms/BufferingExamples/CPP/bufferingexamples.cpp#6)]
+ [!code-csharp[BufferingExamples#6](~/samples/snippets/csharp/VS_Snippets_Winforms/BufferingExamples/CS/bufferingexamples.cs#6)]
+ [!code-vb[BufferingExamples#6](~/samples/snippets/visualbasic/VS_Snippets_Winforms/BufferingExamples/VB/bufferingexamples.vb#6)]  
+  
+ ]]></format>
+        </remarks>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемому коду. Связанное перечисление: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" />.</permission>
+        <altmember cref="T:System.IntPtr" />
+        <related type="Article" href="~/docs/framework/winforms/advanced/double-buffered-graphics.md">Двойная буферизация графики</related>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
