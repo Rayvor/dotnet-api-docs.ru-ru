@@ -1,0 +1,330 @@
+<Type Name="IRuleExpression" FullName="System.Workflow.Activities.Rules.IRuleExpression">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="89cb3deb9b91fd7dae05d04d61feabf7cb116957" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70694606" /></Metadata><TypeSignature Language="C#" Value="public interface IRuleExpression" />
+  <TypeSignature Language="ILAsm" Value=".class public interface auto ansi abstract IRuleExpression" />
+  <TypeSignature Language="DocId" Value="T:System.Workflow.Activities.Rules.IRuleExpression" />
+  <TypeSignature Language="VB.NET" Value="Public Interface IRuleExpression" />
+  <TypeSignature Language="C++ CLI" Value="public interface class IRuleExpression" />
+  <TypeSignature Language="F#" Value="type IRuleExpression = interface" />
+  <AssemblyInfo>
+    <AssemblyName>System.Workflow.Activities</AssemblyName>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Interfaces />
+  <Docs>
+    <summary>Представляет базовый класс, от которого должны наследоваться модули записи пользовательских выражений.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Examples  
+ Следующий код создает выражение, которое можно использовать в декларативных условиях и наборах правил. Выражение имеет имя `TwoOfThree` и принимает три параметра логического типа. Оно возвращает значение `true`, если два из трех выражений возвращают значение `true`.  
+  
+ Чтобы использовать этот код, необходимо добавить его в проект библиотеки классов и создать ссылку на библиотеку из проекта рабочего процесса.  
+  
+```csharp  
+using System.CodeDom;  
+using System.Text;  
+using System.Workflow.Activities.Rules;  
+using System.Workflow.ComponentModel.Compiler;  
+  
+namespace TwoOfThreeRuleExpression  
+{  
+    public class TwoOfThree : CodeExpression, IRuleExpression  
+    {  
+        CodeExpression expression1, expression2, expression3;  
+  
+        public CodeExpression First  
+        {  
+            get { return expression1; }  
+            set { expression1 = value; }  
+        }  
+  
+        public CodeExpression Second  
+        {  
+            get { return expression2; }  
+            set { expression2 = value; }  
+        }  
+  
+        public CodeExpression Third  
+        {  
+            get { return expression3; }  
+            set { expression3 = value; }  
+        }  
+  
+        public TwoOfThree()  
+        {  
+            // constructor required for deserialization  
+        }  
+  
+        public TwoOfThree(CodeExpression first, CodeExpression second, CodeExpression third)  
+        {  
+            // constructor required by parser  
+            expression1 = first;  
+            expression2 = second;  
+            expression3 = third;  
+        }  
+  
+        public void AnalyzeUsage(RuleAnalysis analysis, bool isRead, bool isWritten, RulePathQualifier qualifier)  
+        {  
+            // check what the 3 expressions use  
+            RuleExpressionWalker.AnalyzeUsage(analysis, expression1, true, false, null);  
+            RuleExpressionWalker.AnalyzeUsage(analysis, expression2, true, false, null);  
+            RuleExpressionWalker.AnalyzeUsage(analysis, expression3, true, false, null);  
+        }  
+  
+        public CodeExpression Clone()  
+        {  
+            TwoOfThree result = new TwoOfThree();  
+            result.expression1 = RuleExpressionWalker.Clone(expression1);  
+            result.expression2 = RuleExpressionWalker.Clone(expression2);  
+            result.expression3 = RuleExpressionWalker.Clone(expression3);  
+            return result;  
+        }  
+  
+        public void Decompile(StringBuilder stringBuilder, CodeExpression parentExpression)  
+        {  
+            // what should be displayed by the parser  
+            stringBuilder.Append("TwoOfThree(");  
+            RuleExpressionWalker.Decompile(stringBuilder, expression1, this);  
+            stringBuilder.Append(", ");  
+            RuleExpressionWalker.Decompile(stringBuilder, expression2, this);  
+            stringBuilder.Append(", ");  
+            RuleExpressionWalker.Decompile(stringBuilder, expression3, this);  
+            stringBuilder.Append(")");  
+        }  
+  
+        static RuleLiteralResult resultTrue = new RuleLiteralResult(true);  
+        static RuleLiteralResult resultFalse = new RuleLiteralResult(false);  
+  
+        public RuleExpressionResult Evaluate(RuleExecution execution)  
+        {  
+            // start by doing the first 2 expressions  
+            RuleExpressionResult r1 = RuleExpressionWalker.Evaluate(execution, expression1);  
+            RuleExpressionResult r2 = RuleExpressionWalker.Evaluate(execution, expression2);  
+            bool b1 = (bool)r1.Value;  
+            bool b2 = (bool)r2.Value;  
+            if (b1 && b2)  
+            {  
+                // both are true, so result is true  
+                return resultTrue;  
+            }  
+            else if (b1 || b2)  
+            {  
+                // only one of the first 2 is true, evaluate the third to determine result  
+                return RuleExpressionWalker.Evaluate(execution, expression3);  
+            }  
+            else  
+                // both e1 and e2 are false, so skip e3 and return false;  
+                return resultFalse;  
+        }  
+  
+        public bool Match(CodeExpression expression)  
+        {  
+            TwoOfThree other = expression as TwoOfThree;  
+            return (other != null) &&  
+                RuleExpressionWalker.Match(expression1, other.expression1) &&  
+                RuleExpressionWalker.Match(expression2, other.expression2) &&  
+                RuleExpressionWalker.Match(expression3, other.expression3);  
+        }  
+  
+        public RuleExpressionInfo Validate(RuleValidation validation, bool isWritten)  
+        {  
+            ValidateExpression(validation, expression1, "First");  
+            ValidateExpression(validation, expression2, "Second");  
+            ValidateExpression(validation, expression3, "Third");  
+            return new RuleExpressionInfo(typeof(bool));  
+        }  
+  
+        private void ValidateExpression(RuleValidation validation, CodeExpression expression, string propertyName)  
+        {  
+            ValidationError error;  
+            if (expression == null)  
+            {  
+                error = new ValidationError(propertyName + " cannot be null", 123);  
+                validation.Errors.Add(error);  
+            }  
+            else  
+            {  
+                RuleExpressionInfo result = RuleExpressionWalker.Validate(validation, expression, false);  
+                if ((result == null) || (result.ExpressionType != typeof(bool)))  
+                {  
+                    error = new ValidationError(propertyName + " must return boolean result", 123);  
+                    validation.Errors.Add(error);  
+                }  
+            }  
+        }  
+    }  
+}  
+```  
+  
+ ]]></format>
+    </remarks>
+  </Docs>
+  <Members>
+    <Member MemberName="AnalyzeUsage">
+      <MemberSignature Language="C#" Value="public void AnalyzeUsage (System.Workflow.Activities.Rules.RuleAnalysis analysis, bool isRead, bool isWritten, System.Workflow.Activities.Rules.RulePathQualifier qualifier);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void AnalyzeUsage(class System.Workflow.Activities.Rules.RuleAnalysis analysis, bool isRead, bool isWritten, class System.Workflow.Activities.Rules.RulePathQualifier qualifier) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Workflow.Activities.Rules.IRuleExpression.AnalyzeUsage(System.Workflow.Activities.Rules.RuleAnalysis,System.Boolean,System.Boolean,System.Workflow.Activities.Rules.RulePathQualifier)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub AnalyzeUsage (analysis As RuleAnalysis, isRead As Boolean, isWritten As Boolean, qualifier As RulePathQualifier)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void AnalyzeUsage(System::Workflow::Activities::Rules::RuleAnalysis ^ analysis, bool isRead, bool isWritten, System::Workflow::Activities::Rules::RulePathQualifier ^ qualifier);" />
+      <MemberSignature Language="F#" Value="abstract member AnalyzeUsage : System.Workflow.Activities.Rules.RuleAnalysis * bool * bool * System.Workflow.Activities.Rules.RulePathQualifier -&gt; unit" Usage="iRuleExpression.AnalyzeUsage (analysis, isRead, isWritten, qualifier)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Workflow.Activities</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="analysis" Type="System.Workflow.Activities.Rules.RuleAnalysis" />
+        <Parameter Name="isRead" Type="System.Boolean" />
+        <Parameter Name="isWritten" Type="System.Boolean" />
+        <Parameter Name="qualifier" Type="System.Workflow.Activities.Rules.RulePathQualifier" />
+      </Parameters>
+      <Docs>
+        <param name="analysis">Метод <see cref="T:System.Workflow.Activities.Rules.RuleAnalysis" /> для хранения полей и свойств, считываемых условием или действием.</param>
+        <param name="isRead">Значение <see langword="true" />, если происходит чтение из выражения; значение <see langword="false" />, если чтения из выражения не происходит.</param>
+        <param name="isWritten">Значение <see langword="true" />, если происходит запись в выражение; значение <see langword="false" />, если записи в выражение не происходит.</param>
+        <param name="qualifier">Путь поля или свойства.</param>
+        <summary>При переопределении в производном классе предоставляет сведения о том, как объект использует поля и свойства в типе контекста.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Clone">
+      <MemberSignature Language="C#" Value="public System.CodeDom.CodeExpression Clone ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.CodeDom.CodeExpression Clone() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Workflow.Activities.Rules.IRuleExpression.Clone" />
+      <MemberSignature Language="VB.NET" Value="Public Function Clone () As CodeExpression" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::CodeDom::CodeExpression ^ Clone();" />
+      <MemberSignature Language="F#" Value="abstract member Clone : unit -&gt; System.CodeDom.CodeExpression" Usage="iRuleExpression.Clone " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Workflow.Activities</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.CodeDom.CodeExpression</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>При переопределении в производном классе создает глубокую копию текущего экземпляра <see cref="T:System.CodeDom.CodeExpression" />.</summary>
+        <returns>Глубокая копия текущего экземпляра <see cref="T:System.CodeDom.CodeExpression" />.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Decompile">
+      <MemberSignature Language="C#" Value="public void Decompile (System.Text.StringBuilder stringBuilder, System.CodeDom.CodeExpression parentExpression);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void Decompile(class System.Text.StringBuilder stringBuilder, class System.CodeDom.CodeExpression parentExpression) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Workflow.Activities.Rules.IRuleExpression.Decompile(System.Text.StringBuilder,System.CodeDom.CodeExpression)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Decompile(System::Text::StringBuilder ^ stringBuilder, System::CodeDom::CodeExpression ^ parentExpression);" />
+      <MemberSignature Language="F#" Value="abstract member Decompile : System.Text.StringBuilder * System.CodeDom.CodeExpression -&gt; unit" Usage="iRuleExpression.Decompile (stringBuilder, parentExpression)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Workflow.Activities</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:AvoidTypeNamesInParameters", MessageId="0#")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="stringBuilder" Type="System.Text.StringBuilder" />
+        <Parameter Name="parentExpression" Type="System.CodeDom.CodeExpression" />
+      </Parameters>
+      <Docs>
+        <param name="stringBuilder">Изменяемая строка для декомпилированного выражения. Этот метод должен добавлять декомпилированный синтаксис для данной части выражения.</param>
+        <param name="parentExpression">Родительское кодовое выражение. Его можно использовать для определения приоритета операторов и необходимости заключать часть выражения в скобки.</param>
+        <summary>При переопределении в производном классе декомпилирует пользовательское выражение в формат строки.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Evaluate">
+      <MemberSignature Language="C#" Value="public System.Workflow.Activities.Rules.RuleExpressionResult Evaluate (System.Workflow.Activities.Rules.RuleExecution execution);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Workflow.Activities.Rules.RuleExpressionResult Evaluate(class System.Workflow.Activities.Rules.RuleExecution execution) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Workflow.Activities.Rules.IRuleExpression.Evaluate(System.Workflow.Activities.Rules.RuleExecution)" />
+      <MemberSignature Language="VB.NET" Value="Public Function Evaluate (execution As RuleExecution) As RuleExpressionResult" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Workflow::Activities::Rules::RuleExpressionResult ^ Evaluate(System::Workflow::Activities::Rules::RuleExecution ^ execution);" />
+      <MemberSignature Language="F#" Value="abstract member Evaluate : System.Workflow.Activities.Rules.RuleExecution -&gt; System.Workflow.Activities.Rules.RuleExpressionResult" Usage="iRuleExpression.Evaluate execution" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Workflow.Activities</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Workflow.Activities.Rules.RuleExpressionResult</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="execution" Type="System.Workflow.Activities.Rules.RuleExecution" />
+      </Parameters>
+      <Docs>
+        <param name="execution">Объект <see cref="T:System.Workflow.Activities.Rules.RuleExecution" /> для выполнения выражения.</param>
+        <summary>При переопределении в производном классе вычисляет пользовательское выражение.</summary>
+        <returns>Объект <see cref="T:System.Workflow.Activities.Rules.RuleExpressionResult" />, определяющий результат выполнения правила.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Match">
+      <MemberSignature Language="C#" Value="public bool Match (System.CodeDom.CodeExpression expression);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance bool Match(class System.CodeDom.CodeExpression expression) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Workflow.Activities.Rules.IRuleExpression.Match(System.CodeDom.CodeExpression)" />
+      <MemberSignature Language="VB.NET" Value="Public Function Match (expression As CodeExpression) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; bool Match(System::CodeDom::CodeExpression ^ expression);" />
+      <MemberSignature Language="F#" Value="abstract member Match : System.CodeDom.CodeExpression -&gt; bool" Usage="iRuleExpression.Match expression" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Workflow.Activities</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="expression" Type="System.CodeDom.CodeExpression" />
+      </Parameters>
+      <Docs>
+        <param name="expression">Выражение для сравнение с текущим выражением.</param>
+        <summary>Сравнивает текущее выражение с другим выражением, чтобы определить, равны ли они.</summary>
+        <returns>Значение <see langword="true" />, если выражения равны, в противном случае — значение <see langword="false" />.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Validate">
+      <MemberSignature Language="C#" Value="public System.Workflow.Activities.Rules.RuleExpressionInfo Validate (System.Workflow.Activities.Rules.RuleValidation validation, bool isWritten);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Workflow.Activities.Rules.RuleExpressionInfo Validate(class System.Workflow.Activities.Rules.RuleValidation validation, bool isWritten) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Workflow.Activities.Rules.IRuleExpression.Validate(System.Workflow.Activities.Rules.RuleValidation,System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Public Function Validate (validation As RuleValidation, isWritten As Boolean) As RuleExpressionInfo" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Workflow::Activities::Rules::RuleExpressionInfo ^ Validate(System::Workflow::Activities::Rules::RuleValidation ^ validation, bool isWritten);" />
+      <MemberSignature Language="F#" Value="abstract member Validate : System.Workflow.Activities.Rules.RuleValidation * bool -&gt; System.Workflow.Activities.Rules.RuleExpressionInfo" Usage="iRuleExpression.Validate (validation, isWritten)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Workflow.Activities</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Workflow.Activities.Rules.RuleExpressionInfo</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="validation" Type="System.Workflow.Activities.Rules.RuleValidation" />
+        <Parameter Name="isWritten" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="validation">Объект <see cref="T:System.Workflow.Activities.Rules.RuleValidation" /> для управления процессом проверки.</param>
+        <param name="isWritten">Значение <see langword="true" />, если происходит запись в выражение; значение <see langword="false" />, если записи в выражение не происходит.</param>
+        <summary>При переопределении в производном классе проверяет, что выражение настроено правильно и не содержит ошибок.</summary>
+        <returns>Класс <see cref="T:System.Workflow.Activities.Rules.RuleExpressionInfo" /> для выражения.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

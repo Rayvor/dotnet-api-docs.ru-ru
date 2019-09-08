@@ -1,0 +1,392 @@
+<Type Name="EncoderFallbackBuffer" FullName="System.Text.EncoderFallbackBuffer">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="36d20c01a10df1ac3b8d9349072ea2049fe240af" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70695166" /></Metadata><TypeSignature Language="C#" Value="public abstract class EncoderFallbackBuffer" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract beforefieldinit EncoderFallbackBuffer extends System.Object" />
+  <TypeSignature Language="DocId" Value="T:System.Text.EncoderFallbackBuffer" />
+  <TypeSignature Language="VB.NET" Value="Public MustInherit Class EncoderFallbackBuffer" />
+  <TypeSignature Language="C++ CLI" Value="public ref class EncoderFallbackBuffer abstract" />
+  <TypeSignature Language="F#" Value="type EncoderFallbackBuffer = class" />
+  <AssemblyInfo>
+    <AssemblyName>System.Text.Encoding</AssemblyName>
+    <AssemblyVersion>4.0.10.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>mscorlib</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>2.0.5.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>netstandard</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>System.Runtime</AssemblyName>
+    <AssemblyVersion>4.2.0.0</AssemblyVersion>
+    <AssemblyVersion>4.2.1.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>Предоставляет буфер, который позволяет резервному обработчику возвращать альтернативную строку средству кодирования, если не удается кодировать входной символ.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Кодировка определяет сопоставление между символом Юникода и закодированной последовательностью байтов. Операция кодирования, которая преобразует входной символ в выходную последовательность байтов, завершается ошибкой, если для определенного символа не определено сопоставление.  
+  
+ .NET Framework предоставляет механизм обработки сбоев, называемый откатом, если преобразование не может быть выполнено. Все резервные обработчики кодировщика должны реализовывать следующее:  
+  
+-   Резерв кодировщика, представленный классом, производным от <xref:System.Text.EncoderFallback> класса.  
+  
+-   Резервный буфер кодировщика, представленный типом, производным от <xref:System.Text.EncoderFallbackBuffer> класса, который может возвращать строку в операцию преобразования.  
+  
+ Резервные варианты могут использовать три стратегии для обработки ошибок преобразования:  
+  
+-   Наилучшее сопоставление. Резервный буфер кодировщика может возвращать строку, представляющую близкое приближение к входному символу. .NET Framework не предоставляет общедоступную реализацию наилучшего соответствия <xref:System.Text.EncoderFallbackBuffer> .  
+  
+-   Сказк. Резервный буфер кодировщика может возвращать строку, например вопросительный знак ("?"), которая указывает, что символ не может быть закодирован. В .NET Framework <xref:System.Text.EncoderReplacementFallback> классы и <xref:System.Text.EncoderReplacementFallbackBuffer> предоставляют реализацию закрытого резервного буфера для замены. Конструктор <xref:System.Text.EncoderReplacementFallback> класса позволяет определить строку замены.  
+  
+-   Исключение. <xref:System.Text.EncoderFallbackBuffer> Реализация создает исключение, которое указывает, что символ не может быть закодирован, и завершает операцию кодирования. В этом случае резервный обработчик должен обеспечить <xref:System.Text.EncoderFallbackBuffer> реализацию, хотя он не возвращает строку кодировщику. В .NET Framework <xref:System.Text.EncoderExceptionFallback> классы и <xref:System.Text.EncoderExceptionFallbackBuffer> предоставляют открытую реализацию <xref:System.Text.EncoderFallbackException> резервного исключения, которая создает исключение, если символ не может быть закодирован.  
+  
+ Буфер в <xref:System.Text.EncoderFallbackBuffer> реализации представляет целую строку, возвращаемую кодировщику в ответ на резервный вариант кодировщика. Как правило, реализации также включают в себя сведения о состоянии, например индекс следующего символа, возвращаемого кодировщику, и число оставшихся символов для возврата. Поскольку <xref:System.Text.EncoderFallbackBuffer> является абстрактным классом, он требует, чтобы производные классы реализовали следующие члены как минимум:  
+  
+-   Перегруженный <xref:System.Text.EncoderFallbackBuffer.Fallback%2A> метод, который вызывается кодировщиком при невозможности кодирования символа. Кодировщик передает в реализацию резервного буфера два фрагмента данных: символ или суррогатную пару, которые не удалось закодировать, и индекс символа во входных данных. В резервном обработчике исключений кодировщика в этом методе создается исключение. В противном случае метод `true` возвращает значение, если он предоставляет откат `false` , или значение, если нет.  
+  
+-   Метод, который вызывается повторно кодировщиком, если метод возвращает <xref:System.Text.EncoderFallbackBuffer.Fallback%2A> `true`значение. <xref:System.Text.EncoderFallbackBuffer.GetNextChar%2A> В последовательных вызовах обработчик должен возвращать каждый символ в своем буфере. Когда он возвращает все символы, он должен возвращать U + 0000. Обработчик исключений всегда возвращает U + 0000.  
+  
+-   <xref:System.Text.EncoderFallbackBuffer.MovePrevious%2A> Метод, который пытается переместить указатель на предыдущую точку в буфере и указывает, было ли перемещение успешным. Обработчик исключений всегда возвращает значение `false`.  
+  
+-   <xref:System.Text.EncoderFallbackBuffer.Remaining%2A> Свойство, указывающее количество оставшихся символов, возвращаемых кодировщику. Обработчик отката исключений всегда возвращает ноль.  
+  
+ ]]></format>
+    </remarks>
+    <altmember cref="T:System.Text.EncoderFallback" />
+    <related type="Article" href="~/docs/standard/base-types/character-encoding.md">Кодировки в .NET Framework</related>
+    <related type="ExternalDocumentation" href="https://code.msdn.microsoft.com/Cyrillic-to-Roman-f7e88b29">Пример: служебная программа транслитерации кириллицы для латиницы</related>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="protected EncoderFallbackBuffer ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Text.EncoderFallbackBuffer.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Protected Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; EncoderFallbackBuffer();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Text.Encoding</AssemblyName>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Text.EncoderFallbackBuffer" />.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="Fallback">
+      <AssemblyInfo>
+        <AssemblyName>System.Text.Encoding</AssemblyName>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Указывает, что замещающая строка доступна, если исходная входная последовательность не может быть закодирована или если исходная входная последовательность должна быть проигнорирована.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="Fallback">
+      <MemberSignature Language="C#" Value="public abstract bool Fallback (char charUnknown, int index);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance bool Fallback(char charUnknown, int32 index) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Text.EncoderFallbackBuffer.Fallback(System.Char,System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public MustOverride Function Fallback (charUnknown As Char, index As Integer) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; abstract bool Fallback(char charUnknown, int index);" />
+      <MemberSignature Language="F#" Value="abstract member Fallback : char * int -&gt; bool" Usage="encoderFallbackBuffer.Fallback (charUnknown, index)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Text.Encoding</AssemblyName>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="charUnknown" Type="System.Char" />
+        <Parameter Name="index" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="charUnknown">Входной символ.</param>
+        <param name="index">Позиция индекса символа во входном буфере.</param>
+        <summary>При переопределении в производном классе готовит резервный буфер для обработки указанного входного символа.</summary>
+        <returns><see langword="true" />, если резервный буфер может обработать <paramref name="charUnknown" />; <see langword="false" />, если резервный буфер игнорирует <paramref name="charUnknown" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Методы <xref:System.Text.Encoding.GetBytes%2A?displayProperty=nameWithType> и <xref:System.Text.Encoder.Convert%2A?displayProperty=nameWithType> вызывают <xref:System.Text.DecoderFallbackBuffer.Fallback%28System.Byte%5B%5D%2CSystem.Int32%29>  , если возникают неизвестный входной символ, который не может быть закодирован. Возвращаемое значение `true` указывает, что резервный буфер может обработать входной символ, что приводит к <xref:System.Text.EncoderFallbackBuffer.GetNextChar%2A> вызову метода для получения каждого символа резервного буфера. Поскольку не обрабатывает отдельные символы, <xref:System.Text.EncoderFallbackBuffer.Fallback%2A> метод в обработчике резервного исключения создает исключение.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Fallback">
+      <MemberSignature Language="C#" Value="public abstract bool Fallback (char charUnknownHigh, char charUnknownLow, int index);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance bool Fallback(char charUnknownHigh, char charUnknownLow, int32 index) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Text.EncoderFallbackBuffer.Fallback(System.Char,System.Char,System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public MustOverride Function Fallback (charUnknownHigh As Char, charUnknownLow As Char, index As Integer) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; abstract bool Fallback(char charUnknownHigh, char charUnknownLow, int index);" />
+      <MemberSignature Language="F#" Value="abstract member Fallback : char * char * int -&gt; bool" Usage="encoderFallbackBuffer.Fallback (charUnknownHigh, charUnknownLow, index)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Text.Encoding</AssemblyName>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="charUnknownHigh" Type="System.Char" />
+        <Parameter Name="charUnknownLow" Type="System.Char" />
+        <Parameter Name="index" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="charUnknownHigh">Старший символ-заместитель входной пары.</param>
+        <param name="charUnknownLow">Младший символ-заместитель входной пары.</param>
+        <param name="index">Позиция индекса суррогатной пары во входном буфере.</param>
+        <summary>При переопределении в производном классе готовит резервный буфер для обработки указанной суррогатной пары.</summary>
+        <returns><see langword="true" />, если резервный буфер может обработать <paramref name="charUnknownHigh" /> и <paramref name="charUnknownLow" />, <see langword="false" />, если резервный буфер игнорирует суррогатную пару.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Методы <xref:System.Text.Encoding.GetBytes%2A?displayProperty=nameWithType> и <xref:System.Text.Encoder.Convert%2A?displayProperty=nameWithType> вызывают <xref:System.Text.EncoderFallbackBuffer.Fallback%28System.Char%2CSystem.Char%2CSystem.Int32%29>  , если они обнаруживают суррогатную пару во входных данных. Возвращаемое значение `true` указывает, что резервный буфер может обработать суррогатную пару, что приводит к <xref:System.Text.EncoderFallbackBuffer.GetNextChar%2A> вызову метода для получения каждого символа резервного буфера.  Поскольку не обрабатывает отдельные символы, <xref:System.Text.EncoderFallbackBuffer.Fallback%2A> метод в обработчике резервного исключения создает исключение.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetNextChar">
+      <MemberSignature Language="C#" Value="public abstract char GetNextChar ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance char GetNextChar() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Text.EncoderFallbackBuffer.GetNextChar" />
+      <MemberSignature Language="VB.NET" Value="Public MustOverride Function GetNextChar () As Char" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; abstract char GetNextChar();" />
+      <MemberSignature Language="F#" Value="abstract member GetNextChar : unit -&gt; char" Usage="encoderFallbackBuffer.GetNextChar " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Text.Encoding</AssemblyName>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Char</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>При переопределении в производном классе извлекает следующий символ в резервном буфере.</summary>
+        <returns>Следующий символ в резервном буфере.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Операция кодирования вызывает метод, <xref:System.Text.EncoderFallbackBuffer.Fallback%2A> если операция встречает Неизвестный символ или суррогатную пару во входных данных. Например, в случае резервного варианта замены, если <xref:System.Text.EncoderFallbackBuffer.Fallback%2A> метод возвращает `true`, существует замещающая строка, которая может быть закодирована вместо неизвестных входных данных. Операция кодирования вызывает <xref:System.Text.EncoderFallbackBuffer.GetNextChar%2A> метод многократно и получает строку замены по одному символу за раз. Если все символы в резервном буфере возвращены кодировщику, <xref:System.Text.EncoderFallbackBuffer.GetNextChar%2A> метод должен возвращать U + 0000.  
+  
+ Для обработчика <xref:System.Text.EncoderFallbackBuffer.GetNextChar%2A> резервного исключения метод должен возвращать U + 0000.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="MovePrevious">
+      <MemberSignature Language="C#" Value="public abstract bool MovePrevious ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance bool MovePrevious() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Text.EncoderFallbackBuffer.MovePrevious" />
+      <MemberSignature Language="VB.NET" Value="Public MustOverride Function MovePrevious () As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; abstract bool MovePrevious();" />
+      <MemberSignature Language="F#" Value="abstract member MovePrevious : unit -&gt; bool" Usage="encoderFallbackBuffer.MovePrevious " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Text.Encoding</AssemblyName>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>При переопределении в производный класс становится причиной того, что в следующем вызове метод <see cref="M:System.Text.EncoderFallbackBuffer.GetNextChar" /> получает доступ к позиции символа в буфере данных, предшествующей текущей позиции символа.</summary>
+        <returns>Значение <see langword="true" />, если операция <see cref="M:System.Text.EncoderFallbackBuffer.MovePrevious" /> выполнена успешно; в противном случае — значение <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Обработчик отката исключений должен возвращать `false`.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Remaining">
+      <MemberSignature Language="C#" Value="public abstract int Remaining { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 Remaining" />
+      <MemberSignature Language="DocId" Value="P:System.Text.EncoderFallbackBuffer.Remaining" />
+      <MemberSignature Language="VB.NET" Value="Public MustOverride ReadOnly Property Remaining As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; abstract property int Remaining { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.Remaining : int" Usage="System.Text.EncoderFallbackBuffer.Remaining" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Text.Encoding</AssemblyName>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>При переопределении в производном классе возвращает максимальное число символов в текущем объекте <see cref="T:System.Text.EncoderFallbackBuffer" />, которые остаются для обработки.</summary>
+        <value>Количество символов в текущем резервном буфере, которые еще не были обработаны.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод возвращает `true` , Если <xref:System.Text.EncoderFallbackBuffer.Remaining%2A>  имеет ненулевое значение. <xref:System.Text.EncoderFallbackBuffer.Fallback%2A>  
+  
+ Для обработчика <xref:System.Text.DecoderFallbackBuffer.Remaining%2A> резервного исключения метод должен вернуть ноль.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Reset">
+      <MemberSignature Language="C#" Value="public virtual void Reset ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void Reset() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Text.EncoderFallbackBuffer.Reset" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Sub Reset ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void Reset();" />
+      <MemberSignature Language="F#" Value="abstract member Reset : unit -&gt; unit&#xA;override this.Reset : unit -&gt; unit" Usage="encoderFallbackBuffer.Reset " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Text.Encoding</AssemblyName>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует все данные и сведения о состоянии, относящиеся к этому резервному буферу.</summary>
+        <remarks>To be added.</remarks>
+        <block subset="none" type="overrides"><para><see cref="M:System.Text.EncoderFallbackBuffer.Reset" /> После вызова метода <see cref="P:System.Text.EncoderFallbackBuffer.Remaining" /> свойство <see cref="M:System.Text.EncoderFallbackBuffer.MovePrevious" /> <see langword="false" />должно возвращать значение 0, метод должен возвращать U + 0000, а метод должен возвращать значение. <see cref="M:System.Text.EncoderFallbackBuffer.GetNextChar" /></para></block>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

@@ -1,0 +1,214 @@
+<Type Name="EventParameterType" FullName="System.Speech.Synthesis.TtsEngine.EventParameterType">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="8400458ce175b78e8dd9477c646c184c735c0185" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70436210" /></Metadata><TypeSignature Language="C#" Value="public enum EventParameterType" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi sealed EventParameterType extends System.Enum" />
+  <TypeSignature Language="DocId" Value="T:System.Speech.Synthesis.TtsEngine.EventParameterType" />
+  <TypeSignature Language="VB.NET" Value="Public Enum EventParameterType" />
+  <TypeSignature Language="C++ CLI" Value="public enum class EventParameterType" />
+  <TypeSignature Language="F#" Value="type EventParameterType = " />
+  <AssemblyInfo>
+    <AssemblyName>System.Speech</AssemblyName>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Enum</BaseTypeName>
+  </Base>
+  <Docs>
+    <summary>Перечисляет типы указателей данных, переданных событиям синтеза речи.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks
+
+Перечисление используется при построении <xref:System.Speech.Synthesis.TtsEngine.SpeechEventInfo> объекта. `EventParameterType` <xref:System.IntPtr> `param2` <xref:System.Speech.Synthesis.TtsEngine.SpeechEventInfo> `parameterType` Член перечисления, переданный в качестве аргумента в конструктор, указывает, как интерпретируется аргумент конструктора (который должен быть). `EventParameterType`  
+  
+Выбранный `EventParameterType` тип зависит от типа запрашиваемого события, как указано <xref:System.Speech.Synthesis.TtsEngine.TtsEventId?displayProperty=nameWithType>членом.  
+  
+Подробные сведения об использовании `EventParameterType`см. в документации по<xref:System.Speech.Synthesis.TtsEngine.SpeechEventInfo.EventId%2A>  
+  
+> [!NOTE]
+>  Сейчас экземпляры управляемых синтетических обработчиков речи, написанных с помощью членов <xref:System.Speech.Synthesis> пространства имен, не могут изменить ресурсы после создания.    
+  
+## Examples  
+ Следующий пример является частью пользовательской реализации синтеза речи, наследуемой от <xref:System.Speech.Synthesis.TtsEngine.TtsEngineSsml>, и <xref:System.Speech.Synthesis.TtsEngine.TextFragment>использования функций, <xref:System.Speech.Synthesis.TtsEngine.SpeechEventInfo>, <xref:System.Speech.Synthesis.TtsEngine.FragmentState>и <xref:System.Speech.Synthesis.TtsEngine.TtsEventId>.  
+  
+ Реализация<xref:System.Speech.Synthesis.TtsEngine.TtsEngineSsml.Speak%2A>  
+  
+1.  Получает массив <xref:System.Speech.Synthesis.TtsEngine.TextFragment> экземпляров и создает новый <xref:System.Speech.Synthesis.TtsEngine.TextFragment> массив экземпляров `Speak` для передачи в метод базового механизма синтеза.  
+  
+2.  <xref:System.Speech.Synthesis.TtsEngine.TextFragment> <xref:System.Speech.Synthesis.TtsEngine.FragmentState> <xref:System.Speech.Synthesis.TtsEngine.FragmentState.Action%2A> <xref:System.Speech.Synthesis.TtsEngine.TextFragment.State%2A> <xref:System.Speech.Synthesis.TtsEngine.TtsEngineAction.Speak>Если значение <xref:System.Speech.Synthesis.TtsEngine.TtsEngineAction> перечисления, найденное в свойстве, возвращаемом свойством каждого экземпляра, равно, то реализация  
+  
+    -   Преобразует Американский регион в Бритишисмс текст.  
+  
+    -   Если свойство в интерфейсах, предоставленных <xref:System.Speech.Synthesis.TtsEngine.TtsEventId.WordBoundary> для реализации, поддерживает тип события, то <xref:System.Speech.Synthesis.TtsEngine.SpeechEventInfo> экземпляр используется для создания события для создания счетчика хода выполнения синтезатора. <xref:System.Speech.Synthesis.TtsEngine.ITtsEngineSite> <xref:System.Speech.Synthesis.TtsEngine.ITtsEngineSite.EventInterest%2A>  
+  
+         Параметры в <xref:System.Speech.Synthesis.TtsEngine.SpeechEventInfo>, <xref:System.Speech.Synthesis.TtsEngine.EventParameterType> включая значение элемента, возвращаемое <xref:System.Speech.Synthesis.TtsEngine.SpeechEventInfo.ParameterType%2A>, `LogSpeechEvent` используются для записи в журнал события, созданного с помощью метода.  
+  
+3.  Затем модуль рендеринга речи вызывается с измененным <xref:System.Speech.Synthesis.TtsEngine.TextFragment> массивом.  
+  
+```csharp
+private const int WordBoundaryFlag = 1 << (int)TtsEventId.WordBoundary;  
+private readonly char[] spaces = new char[] { ' ', '\t', '\r', '\n' };  
+internal struct UsVsUk  
+{  
+  internal string UK;  
+  internal string US;  
+}  
+  
+override public void Speak (TextFragment [] frags, IntPtr wfx, ITtsEngineSite site)  
+{  
+  TextFragment [] newFrags=new TextFragment[frags.Length];  
+  
+  for (int i=0;i<frags.Length;i++){  
+    newFrags[i].State=frags[i].State;  
+    //truncate  
+    newFrags[i].TextToSpeak = frags[i].TextToSpeak.Substring(frags[i].TextOffset,  
+                               frags[i].TextLength);  
+    newFrags[i].TextLength = newFrags[i].TextToSpeak.Length;  
+    newFrags[i].TextOffset = 0;  
+    if (newFrags[i].State.Action == TtsEngineAction.Speak) {  
+      //Us to UK conversion  
+      foreach (UsVsUk term in TransList) {  
+      newFrags[i].TextToSpeak.Replace(term.US, term.UK);  
+      }  
+      //Generate progress meter events if supported  
+      if ((site.EventInterest & WordBoundaryFlag) != 0) {  
+      string[] subs = newFrags[i].TextToSpeak.Split(spaces);  
+  
+      foreach (string s in subs) {  
+        int offset = newFrags[i].TextOffset;  
+        SpeechEventInfo spEvent = new SpeechEventInfo((Int16)TtsEventId.WordBoundary,   
+                (Int16)EventParameterType.Undefined,   
+                 s.Length, new IntPtr(offset));  
+         LogSpeechEvent(spEvent.EventId,   
+                        spEvent.ParameterType,   
+                        spEvent.Param1,  
+                        spEvent.Param2);  
+        offset += s.Length;  
+        if (s.Trim().Length > 0) {  
+          SpeechEventInfo[] events = new SpeechEventInfo[1];  
+          events[0] = spEvent;  
+          site.AddEvents(events, 1);  
+        }  
+      }  
+      }  
+    }  
+  }  
+  
+  _baseSynthesize.Speak(newFrags, wfx, site);  
+  
+}  
+```  
+  
+ ]]></format>
+    </remarks>
+    <altmember cref="T:System.Speech.Synthesis.TtsEngine.SpeechEventInfo" />
+  </Docs>
+  <Members>
+    <Member MemberName="Object">
+      <MemberSignature Language="C#" Value="Object" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype System.Speech.Synthesis.TtsEngine.EventParameterType Object = int32(2)" />
+      <MemberSignature Language="DocId" Value="F:System.Speech.Synthesis.TtsEngine.EventParameterType.Object" />
+      <MemberSignature Language="VB.NET" Value="Object" />
+      <MemberSignature Language="C++ CLI" Value="Object" />
+      <MemberSignature Language="F#" Value="Object = 2" Usage="System.Speech.Synthesis.TtsEngine.EventParameterType.Object" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Speech.Synthesis.TtsEngine.EventParameterType</ReturnType>
+      </ReturnValue>
+      <MemberValue>2</MemberValue>
+      <Docs>
+        <summary>В настоящий момент не поддерживается.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Pointer">
+      <MemberSignature Language="C#" Value="Pointer" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype System.Speech.Synthesis.TtsEngine.EventParameterType Pointer = int32(3)" />
+      <MemberSignature Language="DocId" Value="F:System.Speech.Synthesis.TtsEngine.EventParameterType.Pointer" />
+      <MemberSignature Language="VB.NET" Value="Pointer" />
+      <MemberSignature Language="C++ CLI" Value="Pointer" />
+      <MemberSignature Language="F#" Value="Pointer = 3" Usage="System.Speech.Synthesis.TtsEngine.EventParameterType.Pointer" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Speech.Synthesis.TtsEngine.EventParameterType</ReturnType>
+      </ReturnValue>
+      <MemberValue>3</MemberValue>
+      <Docs>
+        <summary>В настоящий момент не поддерживается.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="String">
+      <MemberSignature Language="C#" Value="String" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype System.Speech.Synthesis.TtsEngine.EventParameterType String = int32(4)" />
+      <MemberSignature Language="DocId" Value="F:System.Speech.Synthesis.TtsEngine.EventParameterType.String" />
+      <MemberSignature Language="VB.NET" Value="String" />
+      <MemberSignature Language="C++ CLI" Value="String" />
+      <MemberSignature Language="F#" Value="String = 4" Usage="System.Speech.Synthesis.TtsEngine.EventParameterType.String" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Speech.Synthesis.TtsEngine.EventParameterType</ReturnType>
+      </ReturnValue>
+      <MemberValue>4</MemberValue>
+      <Docs>
+        <summary>Указывает, что аргумент <paramref name="param2" /> к <see cref="T:System.Speech.Synthesis.TtsEngine.SpeechEventInfo" /> является объектом <see langword="System.IntPtr" />, созданным с использованием универсального кода ресурса <see langword="System.Runtime.InteropServices.Marshal.StringToCoTaskMemUni" />, который ссылается на объект <see langword="System.String" />; <paramref name="param1" /> может принимать любое значение.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Token">
+      <MemberSignature Language="C#" Value="Token" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype System.Speech.Synthesis.TtsEngine.EventParameterType Token = int32(1)" />
+      <MemberSignature Language="DocId" Value="F:System.Speech.Synthesis.TtsEngine.EventParameterType.Token" />
+      <MemberSignature Language="VB.NET" Value="Token" />
+      <MemberSignature Language="C++ CLI" Value="Token" />
+      <MemberSignature Language="F#" Value="Token = 1" Usage="System.Speech.Synthesis.TtsEngine.EventParameterType.Token" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Speech.Synthesis.TtsEngine.EventParameterType</ReturnType>
+      </ReturnValue>
+      <MemberValue>1</MemberValue>
+      <Docs>
+        <summary>Указывает, что аргумент <paramref name="param2" /> в <see cref="T:System.Speech.Synthesis.TtsEngine.SpeechEventInfo" /> — это <see cref="T:System.IntPtr" />, созданный с помощью <see cref="Overload:System.Runtime.InteropServices.Marshal.PtrToStructure" />, который ссылается на токен речевой технологии Windows для настольных систем — объект речевой технологии Windows для настольных систем, представляющий ресурс, например голос (<see cref="T:System.Speech.Synthesis.VoiceInfo" />). <paramref name="param1" /> может принимать любое значение.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Undefined">
+      <MemberSignature Language="C#" Value="Undefined" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype System.Speech.Synthesis.TtsEngine.EventParameterType Undefined = int32(0)" />
+      <MemberSignature Language="DocId" Value="F:System.Speech.Synthesis.TtsEngine.EventParameterType.Undefined" />
+      <MemberSignature Language="VB.NET" Value="Undefined" />
+      <MemberSignature Language="C++ CLI" Value="Undefined" />
+      <MemberSignature Language="F#" Value="Undefined = 0" Usage="System.Speech.Synthesis.TtsEngine.EventParameterType.Undefined" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Speech.Synthesis.TtsEngine.EventParameterType</ReturnType>
+      </ReturnValue>
+      <MemberValue>0</MemberValue>
+      <Docs>
+        <summary>Указывает, что аргумент <paramref name="param2" /> к <see cref="T:System.Speech.Synthesis.TtsEngine.SpeechEventInfo" /> не определен. Как правило, <paramref name="param1" /> и <paramref name="param2" /> пропускаются. Однако если <see cref="P:System.Speech.Synthesis.TtsEngine.SpeechEventInfo.EventId" /> имеет значение <see cref="F:System.Speech.Synthesis.TtsEngine.TtsEventId.WordBoundary" />, можно создать событие индикатора выполнения. <paramref name="param1" /> должен быть целым числом, содержащим длину текущего слова, а <paramref name="param2" /> — <see cref="T:System.IntPtr" /> ссылающимся на целое число, содержащее смещение текущего слова.</summary>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

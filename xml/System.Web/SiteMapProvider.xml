@@ -1,0 +1,1245 @@
+<Type Name="SiteMapProvider" FullName="System.Web.SiteMapProvider">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="2186133d49fa475570255bffedfa4f83b045130f" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70505685" /></Metadata><TypeSignature Language="C#" Value="public abstract class SiteMapProvider : System.Configuration.Provider.ProviderBase" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract beforefieldinit SiteMapProvider extends System.Configuration.Provider.ProviderBase" />
+  <TypeSignature Language="DocId" Value="T:System.Web.SiteMapProvider" />
+  <TypeSignature Language="VB.NET" Value="Public MustInherit Class SiteMapProvider&#xA;Inherits ProviderBase" />
+  <TypeSignature Language="C++ CLI" Value="public ref class SiteMapProvider abstract : System::Configuration::Provider::ProviderBase" />
+  <TypeSignature Language="F#" Value="type SiteMapProvider = class&#xA;    inherit ProviderBase" />
+  <AssemblyInfo>
+    <AssemblyName>System.Web</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Configuration.Provider.ProviderBase</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>Представляет общий базовый класс для всех поставщиков данных карты веб-узла, а также предоставляет для разработчиков способ реализации специальных поставщиков данных карт веб-узлов, которых можно использовать с инфраструктурой карты веб-узла ASP.NET в качестве постоянных хранилищ для объектов <see cref="T:System.Web.SiteMap" />.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Классы <xref:System.Web.StaticSiteMapProvider> <xref:System.Web.SiteMapProvider> и <xref:System.Web.XmlSiteMapProvider> представляют реализации абстрактного класса по умолчанию. <xref:System.Web.XmlSiteMapProvider> Использует XML-файл с именем Web. Sitemap для хранения данных карты узла. Дополнительные сведения о файле Web. Sitemap см. в разделе [ASP.NET site Maps](https://msdn.microsoft.com/library/6b85a558-1df8-44cf-bea6-62e61bcc8d20).  
+  
+ Класс поддерживает концепцию иерархии поставщика карт узла путем объявления <xref:System.Web.SiteMapProvider.RootProvider%2A> свойств и  <xref:System.Web.SiteMapProvider.ParentProvider%2A> . <xref:System.Web.SiteMapProvider> <xref:System.Web.SiteMapProvider> Может быть дочерним или родительским для другого поставщика. Это позволяет использовать сценарии, в которых разные области содержимого сайта принадлежат или реализуются различными группами разработки, которые поддерживают собственные карты сайтов и поставщики карт узла.  
+  
+ Все <xref:System.Web.SiteMapProvider> объекты настраиваются в файлах Web. config. Все поставщики карт узла, объявленные в этих файлах конфигурации, загружаются во время выполнения и используются для загрузки и обработки данных навигации по сайту. Объект, который отслеживает все доступные для него поставщики через его <xref:System.Web.SiteMap.Providers%2A> коллекцию свойств, предоставляет программный доступ к данным навигации, которые управляются поставщиками. <xref:System.Web.SiteMap> В следующем примере кода показан формат, используемый для объявления поставщика карт узла в файле Web. config.  
+  
+```  
+<siteMap defaultProvider="<name>">  
+  <providers>  
+    <add  
+      name="<friendly name>"  
+      type="<fully qualified class name>, <assembly name (optional)>"   
+      siteMapFile = "<file name>" />  
+  </providers>  
+</siteMap>  
+```  
+  
+ Данные навигации сайта, загружаемые этими поставщиками, используются другими компонентами инфраструктуры карт узла, такими как <xref:System.Web.UI.WebControls.SiteMapPath> элементы управления и <xref:System.Web.UI.WebControls.TreeView> , для отображения сведений о карте узла для пользователей.  
+  
+ При реализации собственного поставщика карт веб-узла можно поместить исходный файл в каталог App_Code приложения ASP.NET, после чего сборка будет скомпилирована автоматически. Вы также можете разместить собственный поставщик карт узла в глобальном кэше сборок (GAC) и предоставить полную ссылку на него в файле Web. config. Дополнительные сведения о службах компилятора см. [в разделе Работа со сборками и глобальным кэшем сборок](~/docs/framework/app-domains/working-with-assemblies-and-the-gac.md).  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как написать класс, реализующий абстрактный <xref:System.Web.SiteMapProvider> класс. Этот пример включает только образец <xref:System.Web.SiteMapProvider> и текстовый файл, который работает с ним. Для выполнения примера также требуется запись в файле Web. config и странице. aspx. Их можно найти в документации <xref:System.Web.UI.WebControls.SiteMapDataSource.SiteMapProvider%2A?displayProperty=nameWithType> по свойству.  
+  
+ В примере используется файл с разделителями-запятыми, следующий за ожидаемой структурой для загрузки сведений карты сайта. Первая строка файла представляет корневой узел карты сайта, а последующие строки — подузлы. Каждый подузел определяет его родительский узел по URL-адресу. Ниже показан пример файла, удовлетворяющего этим критериям.  
+  
+```  
+default.aspx,Home,MyCompany Home Page,  
+sale.aspx,Now On Sale,Check Out These Great Deals!,default.aspx  
+catalog.aspx,Online Catalog,Browse Our Many Great Items!,default.aspx  
+```  
+  
+ Предоставляет примеры реализации <xref:System.Web.SiteMapProvider> всех свойств и методов. `SimpleTextSiteMapProvider`  
+  
+ [!code-csharp[Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1#1](~/samples/snippets/csharp/VS_Snippets_WebNet/Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1/CS/simpletextsitemapprovider.cs#1)]
+ [!code-vb[Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1#1](~/samples/snippets/visualbasic/VS_Snippets_WebNet/Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1/VB/simpletextsitemapprovider.vb#1)]  
+  
+ ]]></format>
+    </remarks>
+    <block subset="none" type="overrides"><para>При наследовании <see cref="T:System.Web.SiteMapProvider" /> от класса необходимо переопределить следующие члены: <see cref="M:System.Web.SiteMapProvider.FindSiteMapNode(System.String)" /> <see cref="M:System.Web.SiteMapProvider.GetRootNodeCore" />,, <see cref="M:System.Web.SiteMapProvider.GetChildNodes(System.Web.SiteMapNode)" />и <see cref="M:System.Web.SiteMapProvider.GetParentNode(System.Web.SiteMapNode)" />.</para></block>
+    <altmember cref="T:System.Web.SiteMapProvider" />
+    <altmember cref="T:System.Web.XmlSiteMapProvider" />
+    <related type="Article" href="https://msdn.microsoft.com/library/23de8a05-cac3-4693-b508-39f1d4b7053d">Обзор навигации по сайту ASP.NET</related>
+    <related type="Article" href="https://msdn.microsoft.com/library/6b85a558-1df8-44cf-bea6-62e61bcc8d20">Карты сайта ASP.NET</related>
+    <related type="Article" href="https://msdn.microsoft.com/library/4f3ce72a-4fa3-4c3a-94c8-3e2bc4a92d85">Поставщики навигации сайта ASP.NET</related>
+    <related type="Article" href="https://msdn.microsoft.com/library/1686b4cd-435a-42dc-b22d-713d7763f97d">Защита навигации по веб-узлу ASP.NET</related>
+    <related type="Article" href="https://msdn.microsoft.com/library/8a18e5c2-d41d-49ef-abcb-7c27e2469433">Работа со сборками и глобальным кэшем сборок</related>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="protected SiteMapProvider ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SiteMapProvider.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Protected Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; SiteMapProvider();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Web.SiteMapProvider" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+  
+> [!NOTE]
+>  Экземпляр <xref:System.Web.SiteMapProvider> класса не создается напрямую. Конструктор вызывается из конструктора классов, которые являются производными <xref:System.Web.StaticSiteMapProvider> от класса. <xref:System.Web.SiteMapProvider.%23ctor%2A>  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="AddNode">
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Добавляет объект <see cref="T:System.Web.SiteMapNode" /> в коллекцию узлов, которую поддерживает поставщик карты веб-узла.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="AddNode">
+      <MemberSignature Language="C#" Value="protected virtual void AddNode (System.Web.SiteMapNode node);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void AddNode(class System.Web.SiteMapNode node) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SiteMapProvider.AddNode(System.Web.SiteMapNode)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub AddNode (node As SiteMapNode)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void AddNode(System::Web::SiteMapNode ^ node);" />
+      <MemberSignature Language="F#" Value="abstract member AddNode : System.Web.SiteMapNode -&gt; unit&#xA;override this.AddNode : System.Web.SiteMapNode -&gt; unit" Usage="siteMapProvider.AddNode node" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="node" Type="System.Web.SiteMapNode" />
+      </Parameters>
+      <Docs>
+        <param name="node">Объект <see cref="T:System.Web.SiteMapNode" /> для добавления в коллекцию узлов, поддерживаемую поставщиком.</param>
+        <summary>Добавляет объект <see cref="T:System.Web.SiteMapNode" /> в коллекцию узлов, которую поддерживает поставщик карты веб-узла.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Классы, производные от <xref:System.Web.SiteMapProvider> класса, могут <xref:System.Web.SiteMapProvider.AddNode%2A> переопределить метод и <xref:System.Web.SiteMapNode> предоставить логику для добавления объекта в коллекцию узлов, обслуживаемую поставщиком карт веб-узла. Реализация <xref:System.Web.SiteMapProvider.AddNode%2A> метода по умолчанию <xref:System.NotImplementedException> создает исключение.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.Web.SiteMapProvider.AddNode(System.Web.SiteMapNode,System.Web.SiteMapNode)" />
+        <altmember cref="T:System.Web.SiteMapNodeCollection" />
+        <altmember cref="T:System.Web.XmlSiteMapProvider" />
+      </Docs>
+    </Member>
+    <Member MemberName="AddNode">
+      <MemberSignature Language="C#" Value="protected internal virtual void AddNode (System.Web.SiteMapNode node, System.Web.SiteMapNode parentNode);" />
+      <MemberSignature Language="ILAsm" Value=".method familyorassemblyhidebysig newslot virtual instance void AddNode(class System.Web.SiteMapNode node, class System.Web.SiteMapNode parentNode) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SiteMapProvider.AddNode(System.Web.SiteMapNode,System.Web.SiteMapNode)" />
+      <MemberSignature Language="VB.NET" Value="Protected Friend Overridable Sub AddNode (node As SiteMapNode, parentNode As SiteMapNode)" />
+      <MemberSignature Language="C++ CLI" Value="protected public:&#xA; virtual void AddNode(System::Web::SiteMapNode ^ node, System::Web::SiteMapNode ^ parentNode);" />
+      <MemberSignature Language="F#" Value="abstract member AddNode : System.Web.SiteMapNode * System.Web.SiteMapNode -&gt; unit&#xA;override this.AddNode : System.Web.SiteMapNode * System.Web.SiteMapNode -&gt; unit" Usage="siteMapProvider.AddNode (node, parentNode)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="node" Type="System.Web.SiteMapNode" />
+        <Parameter Name="parentNode" Type="System.Web.SiteMapNode" />
+      </Parameters>
+      <Docs>
+        <param name="node">Объект <see cref="T:System.Web.SiteMapNode" /> для добавления в коллекцию узлов, поддерживаемую поставщиком.</param>
+        <param name="parentNode">узел <see cref="T:System.Web.SiteMapNode" />, являющийся родительским узлом <paramref name="node" />.</param>
+        <summary>Добавляет объект <see cref="T:System.Web.SiteMapNode" /> к узлу коллекции, которая поддерживается поставщиками карты веб-узла и указывает родительский объект <see cref="T:System.Web.SiteMapNode" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Классы, производные от <xref:System.Web.SiteMapProvider> класса, могут <xref:System.Web.SiteMapProvider.AddNode%2A> переопределить метод и <xref:System.Web.SiteMapNode> предоставить логику для добавления объекта с указанным родителем в коллекцию узлов, поддерживаемую поставщиком карт веб-узла. Например <xref:System.Web.XmlSiteMapProvider.AddNode%2A?displayProperty=nameWithType> , <xref:System.Web.SiteMapNode> метод <xref:System.Web.SiteMapNode> добавляет <xref:System.Web.SiteMapNodeCollection> `node` объект, заданный <xref:System.Web.XmlSiteMapProvider>  в коллекцию, которая поддерживается объектом, и создает связь типа «родители-потомки» между элементом Объект, заданный `node` и `parentNode`. Реализация <xref:System.Web.SiteMapProvider.AddNode%2A> метода по умолчанию <xref:System.NotImplementedException> создает исключение.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.NotImplementedException">Во всех случаях.</exception>
+        <altmember cref="M:System.Web.SiteMapProvider.AddNode(System.Web.SiteMapNode)" />
+        <altmember cref="T:System.Web.SiteMapNodeCollection" />
+        <altmember cref="T:System.Web.XmlSiteMapProvider" />
+      </Docs>
+    </Member>
+    <Member MemberName="CurrentNode">
+      <MemberSignature Language="C#" Value="public virtual System.Web.SiteMapNode CurrentNode { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Web.SiteMapNode CurrentNode" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SiteMapProvider.CurrentNode" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable ReadOnly Property CurrentNode As SiteMapNode" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::Web::SiteMapNode ^ CurrentNode { System::Web::SiteMapNode ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.CurrentNode : System.Web.SiteMapNode" Usage="System.Web.SiteMapProvider.CurrentNode" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.SiteMapNode</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает объект <see cref="T:System.Web.SiteMapNode" />, представляющий запрашиваемую в данный момент страницу.</summary>
+        <value>Объект <see cref="T:System.Web.SiteMapNode" />, представляющий запрашиваемую в данный момент страницу; в противном случае — значение <see langword="null" />, если объект <see cref="T:System.Web.SiteMapNode" /> не найден или не может быть возвращен для текущего пользователя.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Событие возникает перед попыткой <xref:System.Web.SiteMapNode> получить объект, чтобы позволить подписчикам событий <xref:System.Web.SiteMapNode> возвращать экземпляр класса. <xref:System.Web.SiteMapProvider.SiteMapResolve> Если подписчики на события отсутствуют, <xref:System.Web.SiteMapProvider> класс <xref:System.Web.SiteMapProvider.FindSiteMapNode%2A> вызывает метод, используя текущий контекст HTTP, чтобы получить объект <xref:System.Web.SiteMapNode> , представляющий запрашиваемую в данный момент страницу.  
+  
+ Если запрошенная в данный момент страница не соответствует <xref:System.Web.SiteMapNode>, `null` возвращается значение. Если фильтрация по <xref:System.Web.SiteMapNode>безопасности включена и пользователю не разрешен доступ к, `null` возвращается значение.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как реализовать <xref:System.Web.SiteMapProvider.CurrentNode%2A> свойство в классе, реализующем абстрактный <xref:System.Web.SiteMapProvider> класс.  
+  
+ Этот пример кода является частью большого примера, <xref:System.Web.SiteMapProvider> приведенного для класса.  
+  
+ [!code-csharp[Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1#2](~/samples/snippets/csharp/VS_Snippets_WebNet/Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1/CS/simpletextsitemapprovider.cs#2)]
+ [!code-vb[Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1#2](~/samples/snippets/visualbasic/VS_Snippets_WebNet/Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1/VB/simpletextsitemapprovider.vb#2)]  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.Web.SiteMapProvider.RootNode" />
+        <altmember cref="P:System.Web.SiteMapProvider.SecurityTrimmingEnabled" />
+      </Docs>
+    </Member>
+    <Member MemberName="EnableLocalization">
+      <MemberSignature Language="C#" Value="public bool EnableLocalization { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool EnableLocalization" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SiteMapProvider.EnableLocalization" />
+      <MemberSignature Language="VB.NET" Value="Public Property EnableLocalization As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool EnableLocalization { bool get(); void set(bool value); };" />
+      <MemberSignature Language="F#" Value="member this.EnableLocalization : bool with get, set" Usage="System.Web.SiteMapProvider.EnableLocalization" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>set: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает логическое значение, показывающее, возвращается ли локализованное значение атрибутов <see cref="T:System.Web.SiteMapNode" />.</summary>
+        <value>Значение <see langword="true" />, если возвращается локализованное значение атрибутов <see cref="T:System.Web.SiteMapNode" />; в противном случае — значение <see langword="false" />. Значение по умолчанию — <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.SiteMapNode.Attributes%2A> <xref:System.Web.SiteMapNode.Title%2A> <xref:System.Web.SiteMapNode.Description%2A> Свойство используется для метода доступа Get свойств и <xref:System.Web.SiteMapNode>  , а также для дополнительных свойств объекта. <xref:System.Web.SiteMapProvider.EnableLocalization%2A>  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.Web.SiteMapNode.Title" />
+        <altmember cref="P:System.Web.SiteMapNode.Description" />
+        <altmember cref="P:System.Web.SiteMapNode.Attributes" />
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="FindSiteMapNode">
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Во время переопределения в производном классе получается объект <see cref="T:System.Web.SiteMapNode" />, представляющий страницу.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="FindSiteMapNode">
+      <MemberSignature Language="C#" Value="public abstract System.Web.SiteMapNode FindSiteMapNode (string rawUrl);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Web.SiteMapNode FindSiteMapNode(string rawUrl) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SiteMapProvider.FindSiteMapNode(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public MustOverride Function FindSiteMapNode (rawUrl As String) As SiteMapNode" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; abstract System::Web::SiteMapNode ^ FindSiteMapNode(System::String ^ rawUrl);" />
+      <MemberSignature Language="F#" Value="abstract member FindSiteMapNode : string -&gt; System.Web.SiteMapNode" Usage="siteMapProvider.FindSiteMapNode rawUrl" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.SiteMapNode</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="rawUrl" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="rawUrl">URL-адрес, определяющий страницу, для которой необходимо извлечь <see cref="T:System.Web.SiteMapNode" />.</param>
+        <summary>Во время переопределения в производном классе получается объект <see cref="T:System.Web.SiteMapNode" />, представляющий страницу в указанном URL-адресе.</summary>
+        <returns>Объект <see cref="T:System.Web.SiteMapNode" />, представляющий страницу, определенную объектом <paramref name="rawURL" />; в противном случае — значение <see langword="null" />, если соответствующий объект <see cref="T:System.Web.SiteMapNode" /> не найден или если фильтрация по ролям безопасности разрешена и объект <see cref="T:System.Web.SiteMapNode" /> не может быть возвращен для текущего пользователя.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Классы, производные от <xref:System.Web.SiteMapProvider> класса, должны реализовывать абстрактный <xref:System.Web.SiteMapProvider.FindSiteMapNode%2A> метод.  
+  
+ Указанный URL-адрес может быть виртуальным или абсолютным URL-адресом. Это также может быть URL-адрес, который использует синтаксис, относительный `~/apprelativedirectory`от приложения, например. Убедитесь, что любая реализация <xref:System.Web.SiteMapProvider.FindSiteMapNode%2A> метода анализирует и обрабатывает синтаксис, относительный от приложения.  
+  
+ Класс, который является поставщиком схемы узла по умолчанию для ASP.NET, использует URL-адрес <xref:System.Web.SiteMapNode> объекта в качестве ключа в различных коллекциях, которые поддерживаются классами. <xref:System.Web.XmlSiteMapProvider> Таким образом, если <xref:System.Web.SiteMapNode> предоставляет URL-адрес, он должен быть уникальным в пределах области поставщика карт веб-узла. Если URL-адрес не указан, создается уникальный идентификатор для идентификации <xref:System.Web.SiteMapNode>.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как реализовать <xref:System.Web.SiteMapProvider.FindSiteMapNode%2A> метод в классе, реализующем абстрактный <xref:System.Web.SiteMapProvider> класс. Компонент использует вспомогательный метод с именем `FindUrl`, чтобы получить URL-адрес отображаемой в <xref:System.Web.HttpContext> данный момент страницы из объекта. `SimpleTextSiteMapProvider`  
+  
+ Этот пример кода является частью большого примера, <xref:System.Web.SiteMapProvider> приведенного для класса.  
+  
+ [!code-csharp[Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1#5](~/samples/snippets/csharp/VS_Snippets_WebNet/Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1/CS/simpletextsitemapprovider.cs#5)]
+ [!code-vb[Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1#5](~/samples/snippets/visualbasic/VS_Snippets_WebNet/Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1/VB/simpletextsitemapprovider.vb#5)]  
+  
+ [!code-csharp[Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1#8](~/samples/snippets/csharp/VS_Snippets_WebNet/Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1/CS/simpletextsitemapprovider.cs#8)]
+ [!code-vb[Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1#8](~/samples/snippets/visualbasic/VS_Snippets_WebNet/Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1/VB/simpletextsitemapprovider.vb#8)]  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>При переопределении <see cref="M:System.Web.SiteMapProvider.FindSiteMapNode(System.String)" /> метода в производном классе необходимо расширить поиск до любых дочерних поставщиков, <see cref="T:System.Web.SiteMapNode" /> если объект, соответствующий URL-адресу, не найден поставщиком в текущей карте узла, а поставщик не поддерживает дочерние поставщики.</para></block>
+        <altmember cref="P:System.Web.SiteMapProvider.CurrentNode" />
+        <altmember cref="M:System.Web.SiteMapProvider.FindSiteMapNode(System.Web.HttpContext)" />
+      </Docs>
+    </Member>
+    <Member MemberName="FindSiteMapNode">
+      <MemberSignature Language="C#" Value="public virtual System.Web.SiteMapNode FindSiteMapNode (System.Web.HttpContext context);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Web.SiteMapNode FindSiteMapNode(class System.Web.HttpContext context) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SiteMapProvider.FindSiteMapNode(System.Web.HttpContext)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function FindSiteMapNode (context As HttpContext) As SiteMapNode" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::Web::SiteMapNode ^ FindSiteMapNode(System::Web::HttpContext ^ context);" />
+      <MemberSignature Language="F#" Value="abstract member FindSiteMapNode : System.Web.HttpContext -&gt; System.Web.SiteMapNode&#xA;override this.FindSiteMapNode : System.Web.HttpContext -&gt; System.Web.SiteMapNode" Usage="siteMapProvider.FindSiteMapNode context" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.SiteMapNode</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="context" Type="System.Web.HttpContext" />
+      </Parameters>
+      <Docs>
+        <param name="context">Объект <see cref="T:System.Web.HttpContext" /> используется для сопоставления сведений об узле с URL-адресом запрошенной страницы.</param>
+        <summary>Представляет объект <see cref="T:System.Web.SiteMapNode" />, представляющий запрашиваемую в настоящий момент страницу с использованием указанного объекта <see cref="T:System.Web.HttpContext" />.</summary>
+        <returns>Объект <see cref="T:System.Web.SiteMapNode" />, представляющий запрашиваемую в данный момент страницу; в противном случае — значение <see langword="null" />, если соответствующий объект <see cref="T:System.Web.SiteMapNode" /> не найден в <see cref="T:System.Web.SiteMapNode" /> или если содержимое страницы имеет значение <see langword="null" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод вызывает абстрактный <xref:System.Web.SiteMapProvider.FindSiteMapNode%2A> метод для получения <xref:System.Web.SiteMapNode> объекта для текущей запрошенной страницы на основе необработанного URL-адреса или виртуального пути запроса. <xref:System.Web.SiteMapProvider.FindSiteMapNode%2A> Если соответствующий <xref:System.Web.SiteMapNode> объект <xref:System.Web.SiteMap>не найден в, `null` возвращается значение.  
+  
+ По умолчанию  <xref:System.Web.SiteMapNode> метод не проверяет, доступен ли пользователь. <xref:System.Web.SiteMapProvider.FindSiteMapNode%2A>  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.Web.SiteMapProvider.FindSiteMapNode(System.String)" />
+      </Docs>
+    </Member>
+    <Member MemberName="FindSiteMapNodeFromKey">
+      <MemberSignature Language="C#" Value="public virtual System.Web.SiteMapNode FindSiteMapNodeFromKey (string key);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Web.SiteMapNode FindSiteMapNodeFromKey(string key) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SiteMapProvider.FindSiteMapNodeFromKey(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function FindSiteMapNodeFromKey (key As String) As SiteMapNode" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::Web::SiteMapNode ^ FindSiteMapNodeFromKey(System::String ^ key);" />
+      <MemberSignature Language="F#" Value="abstract member FindSiteMapNodeFromKey : string -&gt; System.Web.SiteMapNode&#xA;override this.FindSiteMapNodeFromKey : string -&gt; System.Web.SiteMapNode" Usage="siteMapProvider.FindSiteMapNodeFromKey key" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Web.SiteMapNode</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="key" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="key">Ключ соответствия, с помощью которого создан объект <see cref="T:System.Web.SiteMapNode" />.</param>
+        <summary>Получает объект <see cref="T:System.Web.SiteMapNode" /> на основе указанного ключа.</summary>
+        <returns>Объект <see cref="T:System.Web.SiteMapNode" />, представляющий страницу, определенную объектом <paramref name="key" />; в противном случае — значение <see langword="null" />, если соответствующий объект <see cref="T:System.Web.SiteMapNode" /> не найден или если фильтрация по ролям безопасности разрешена и объект <see cref="T:System.Web.SiteMapNode" /> не может быть возвращен для текущего пользователя. Значение по умолчанию — <see langword="null" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.SiteMapProvider> Реализация возвращается `null`  во всех случаях. Классы, производные от <xref:System.Web.SiteMapProvider> класса, могут <xref:System.Web.SiteMapProvider.FindSiteMapNodeFromKey%2A> переопределять метод для предоставления функций поиска на основе уникального ключа (вместо URL-адреса, используемого <xref:System.Web.SiteMapProvider.FindSiteMapNode%2A> методом). Реализуйте <xref:System.Web.SiteMapProvider.FindSiteMapNodeFromKey%2A> метод, если реализация поставщика карт сайта <xref:System.Web.SiteMapNode.Key%2A?displayProperty=nameWithType> использует свойство <xref:System.Web.SiteMapNode> объекта в качестве первичного идентификатора в структуре схемы узла.  
+  
+ <xref:System.Web.StaticSiteMapProvider> Класс предоставляет реализацию, которая обрабатывает Поиск узлов карт сайта, которые не определяют URL-адрес.  
+  
+ Класс, который является поставщиком схемы узла по умолчанию для ASP.NET, использует URL-адрес в <xref:System.Web.SiteMapNode> качестве ключа в различных коллекциях, которые поддерживаются классами. <xref:System.Web.XmlSiteMapProvider> Таким образом, если узел предоставляет URL-адрес, он должен быть уникальным в пределах области поставщика карт узла. Если URL-адрес не указан, создается уникальный идентификатор для идентификации <xref:System.Web.SiteMapNode>.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="Overload:System.Web.SiteMapProvider.FindSiteMapNode" />
+      </Docs>
+    </Member>
+    <Member MemberName="GetChildNodes">
+      <MemberSignature Language="C#" Value="public abstract System.Web.SiteMapNodeCollection GetChildNodes (System.Web.SiteMapNode node);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Web.SiteMapNodeCollection GetChildNodes(class System.Web.SiteMapNode node) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SiteMapProvider.GetChildNodes(System.Web.SiteMapNode)" />
+      <MemberSignature Language="VB.NET" Value="Public MustOverride Function GetChildNodes (node As SiteMapNode) As SiteMapNodeCollection" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; abstract System::Web::SiteMapNodeCollection ^ GetChildNodes(System::Web::SiteMapNode ^ node);" />
+      <MemberSignature Language="F#" Value="abstract member GetChildNodes : System.Web.SiteMapNode -&gt; System.Web.SiteMapNodeCollection" Usage="siteMapProvider.GetChildNodes node" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.SiteMapNodeCollection</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="node" Type="System.Web.SiteMapNode" />
+      </Parameters>
+      <Docs>
+        <param name="node">Объект <see cref="T:System.Web.SiteMapNode" />, для которого нужно извлечь все дочерние узлы.</param>
+        <summary>Во время переопределения в производном классе получает дочерние узлы указанного объекта <see cref="T:System.Web.SiteMapNode" />.</summary>
+        <returns>Доступный только для чтения объект <see cref="T:System.Web.SiteMapNodeCollection" />, содержащий непосредственные дочерние узлы указанного объекта <see cref="T:System.Web.SiteMapNode" />; в противном случае — значение <see langword="null" /> или пустая коллекция, если дочерние узлы не существуют.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Классы, производные от <xref:System.Web.SiteMapProvider> класса, должны реализовывать абстрактный <xref:System.Web.SiteMapProvider.GetChildNodes%2A> метод.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как реализовать <xref:System.Web.SiteMapProvider.GetChildNodes%2A> метод в классе, реализующем абстрактный <xref:System.Web.SiteMapProvider> класс. Хранит иерархические связи "родители-потомки" <xref:System.Collections.Hashtable> в одном объекте <xref:System.Web.SiteMapNode> и всех объектах в другом. `SimpleTextSiteMapProvider` Метод выполняет обратный просмотр с помощью обоих <xref:System.Collections.ArrayList> объектов. <xref:System.Web.SiteMapProvider.GetChildNodes%2A>  
+  
+ Этот пример кода является частью большого примера, <xref:System.Web.SiteMapProvider> приведенного для класса.  
+  
+ [!code-csharp[Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1#6](~/samples/snippets/csharp/VS_Snippets_WebNet/Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1/CS/simpletextsitemapprovider.cs#6)]
+ [!code-vb[Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1#6](~/samples/snippets/visualbasic/VS_Snippets_WebNet/Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1/VB/simpletextsitemapprovider.vb#6)]  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>При переопределении <see cref="M:System.Web.SiteMapProvider.GetChildNodes(System.Web.SiteMapNode)" /> метода в производном классе обязательно выполните фильтрацию безопасности на дочерних узлах и убедитесь, что возвращаемая коллекция доступна только для чтения. Коллекция содержит только непосредственные дочерние элементы <paramref name="node" />указанного.</para></block>
+        <altmember cref="M:System.Web.SiteMapProvider.GetParentNode(System.Web.SiteMapNode)" />
+      </Docs>
+    </Member>
+    <Member MemberName="GetCurrentNodeAndHintAncestorNodes">
+      <MemberSignature Language="C#" Value="public virtual System.Web.SiteMapNode GetCurrentNodeAndHintAncestorNodes (int upLevel);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Web.SiteMapNode GetCurrentNodeAndHintAncestorNodes(int32 upLevel) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SiteMapProvider.GetCurrentNodeAndHintAncestorNodes(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function GetCurrentNodeAndHintAncestorNodes (upLevel As Integer) As SiteMapNode" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::Web::SiteMapNode ^ GetCurrentNodeAndHintAncestorNodes(int upLevel);" />
+      <MemberSignature Language="F#" Value="abstract member GetCurrentNodeAndHintAncestorNodes : int -&gt; System.Web.SiteMapNode&#xA;override this.GetCurrentNodeAndHintAncestorNodes : int -&gt; System.Web.SiteMapNode" Usage="siteMapProvider.GetCurrentNodeAndHintAncestorNodes upLevel" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.SiteMapNode</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="upLevel" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="upLevel">Полученное число поколений узлов-предков карты веб-узла. Значение -1 показывает, что все предки могут быть получены и кэшированы поставщиком.</param>
+        <summary>Предоставляет оптимизированный метод просмотра для поставщиков карт веб-узлов во время получения узла для запрашиваемой в настоящее время страницы и извлекает родительские узлы и узлы-предки карт веб-узлов для текущей страницы.</summary>
+        <returns>Объект <see cref="T:System.Web.SiteMapNode" />, представляющий запрашиваемую в данный момент страницу; в противном случае — значение <see langword="null" />, если объект <see cref="T:System.Web.SiteMapNode" /> не найден или не может быть возвращен для текущего пользователя.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация <xref:System.Web.SiteMapProvider.GetCurrentNodeAndHintAncestorNodes%2A> метода по умолчанию <xref:System.Web.SiteMapProvider.CurrentNode%2A> возвращает свойство, однако поставщики <xref:System.Web.SiteMapProvider.GetCurrentNodeAndHintAncestorNodes%2A> карт сайта могут переопределить метод и предоставить оптимизированную реализацию, использующую пользовательские механизмы кэширования для возврата текущей <xref:System.Web.SiteMapNode>, а также родительские и предки родительских узлов.  
+  
+ `upLevel` Параметр используется для указания того, сколько уровней родительского узла и узлов-предков необходимо получить. Если рекомендуется, родительский узел и узлы-предки могут быть <xref:System.Web.SiteMapNode> связаны с объектом, возвращаемым <xref:System.Web.SiteMapProvider.GetCurrentNodeAndHintAncestorNodes%2A> методом, с помощью <xref:System.Web.SiteMapNode.ParentNode%2A> свойства.  
+  
+ Класс, который является поставщиком схемы узла по умолчанию для ASP.NET, кэширует всю карту узла в памяти, что приводит к незначительным или небольшим затратам при запросе <xref:System.Web.XmlSiteMapProvider> для конкретных <xref:System.Web.SiteMapNode> объектов. <xref:System.Web.XmlSiteMapProvider>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentOutOfRangeException">Значение <paramref name="upLevel" /> меньше -1.</exception>
+        <altmember cref="M:System.Web.SiteMapProvider.GetCurrentNodeAndHintNeighborhoodNodes(System.Int32,System.Int32)" />
+      </Docs>
+    </Member>
+    <Member MemberName="GetCurrentNodeAndHintNeighborhoodNodes">
+      <MemberSignature Language="C#" Value="public virtual System.Web.SiteMapNode GetCurrentNodeAndHintNeighborhoodNodes (int upLevel, int downLevel);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Web.SiteMapNode GetCurrentNodeAndHintNeighborhoodNodes(int32 upLevel, int32 downLevel) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SiteMapProvider.GetCurrentNodeAndHintNeighborhoodNodes(System.Int32,System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function GetCurrentNodeAndHintNeighborhoodNodes (upLevel As Integer, downLevel As Integer) As SiteMapNode" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::Web::SiteMapNode ^ GetCurrentNodeAndHintNeighborhoodNodes(int upLevel, int downLevel);" />
+      <MemberSignature Language="F#" Value="abstract member GetCurrentNodeAndHintNeighborhoodNodes : int * int -&gt; System.Web.SiteMapNode&#xA;override this.GetCurrentNodeAndHintNeighborhoodNodes : int * int -&gt; System.Web.SiteMapNode" Usage="siteMapProvider.GetCurrentNodeAndHintNeighborhoodNodes (upLevel, downLevel)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.SiteMapNode</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="upLevel" Type="System.Int32" />
+        <Parameter Name="downLevel" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="upLevel">Количество поколений предков <see cref="T:System.Web.SiteMapNode" /> для выборки. Значение, равное 0 показывает, что узлы-предки не получены, а -1 показывает, что все предки могут быть получены и кэшированы поставщиком.</param>
+        <param name="downLevel">Количество поколений дочерних элементов <see cref="T:System.Web.SiteMapNode" /> для извлечения. Значение, равное 0 показывает, что узлы-потомки не получены, а -1 показывает, что все узлы-потомки могут быть получены и кэшированы поставщиком.</param>
+        <summary>Предоставляет оптимизированный метод просмотра для поставщиков карт веб-узлов во время получения узла для запрашиваемой в настоящее время страницы и извлекает узлы карты веб-узла в пределах текущего узла.</summary>
+        <returns>Объект <see cref="T:System.Web.SiteMapNode" />, представляющий запрашиваемую в данный момент страницу; в противном случае — значение <see langword="null" />, если объект <see cref="T:System.Web.SiteMapNode" /> не найден или не может быть возвращен для текущего пользователя.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация <xref:System.Web.SiteMapProvider.GetCurrentNodeAndHintNeighborhoodNodes%2A> метода по умолчанию <xref:System.Web.SiteMapProvider.CurrentNode%2A> возвращает свойство, однако поставщики <xref:System.Web.SiteMapProvider.GetCurrentNodeAndHintNeighborhoodNodes%2A> карт сайта могут переопределить метод и предоставить оптимизированную реализацию, использующую пользовательские механизмы кэширования для возврата текущей Объект, а <xref:System.Web.SiteMapNode> также объекты, наявляющиеся в близости от текущего <xref:System.Web.SiteMapNode>объекта. <xref:System.Web.SiteMapNode>  
+  
+ `upLevel` Параметр используется для указания того, сколько уровней родительского узла и узлов-предка нужно получить и кэшировать, а также их непосредственные дочерние элементы. Параметр используется для указания того, сколько уровней узлов-потомков из текущего <xref:System.Web.SiteMapNode> объекта необходимо получить. `downLevel` Если предпочтителен, то узлы-предки и потомки могут быть <xref:System.Web.SiteMapNode> связаны с объектом, возвращаемым  
+  
+ <xref:System.Web.SiteMapProvider.GetCurrentNodeAndHintNeighborhoodNodes%2A>с помощью <xref:System.Web.SiteMapNode.ParentNode%2A> свойств и <xref:System.Web.SiteMapNode.ChildNodes%2A> . Если число уровней предка или дочернего узла меньше, чем `upLevel` указано `downLevel`в параметре или, то извлекаются только доступные.  
+  
+ Класс, который является поставщиком схемы узла по умолчанию для ASP.NET, кэширует всю карту узла в памяти, что приводит к незначительным или небольшим затратам при запросе <xref:System.Web.XmlSiteMapProvider> для конкретных <xref:System.Web.SiteMapNode> объектов. <xref:System.Web.XmlSiteMapProvider>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentOutOfRangeException">Значение <paramref name="upLevel" /> или <paramref name="downLevel" /> меньше –1.</exception>
+        <altmember cref="M:System.Web.SiteMapProvider.GetCurrentNodeAndHintAncestorNodes(System.Int32)" />
+      </Docs>
+    </Member>
+    <Member MemberName="GetParentNode">
+      <MemberSignature Language="C#" Value="public abstract System.Web.SiteMapNode GetParentNode (System.Web.SiteMapNode node);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Web.SiteMapNode GetParentNode(class System.Web.SiteMapNode node) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SiteMapProvider.GetParentNode(System.Web.SiteMapNode)" />
+      <MemberSignature Language="VB.NET" Value="Public MustOverride Function GetParentNode (node As SiteMapNode) As SiteMapNode" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; abstract System::Web::SiteMapNode ^ GetParentNode(System::Web::SiteMapNode ^ node);" />
+      <MemberSignature Language="F#" Value="abstract member GetParentNode : System.Web.SiteMapNode -&gt; System.Web.SiteMapNode" Usage="siteMapProvider.GetParentNode node" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.SiteMapNode</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="node" Type="System.Web.SiteMapNode" />
+      </Parameters>
+      <Docs>
+        <param name="node">Объект <see cref="T:System.Web.SiteMapNode" />, для которого извлекается родительский узел.</param>
+        <summary>Во время переопределения в производном классе получает родительский узел указанного объекта <see cref="T:System.Web.SiteMapNode" />.</summary>
+        <returns>Объект <see cref="T:System.Web.SiteMapNode" />, представляющий родительский элемент <paramref name="node" />; в противном случае — значение <see langword="null" />, если объект <see cref="T:System.Web.SiteMapNode" /> не имеет родительского элемента или включена фильтрация по ролям безопасности и родительский узел не доступен для текущего пользователя.  
+  
+ <block subset="none" type="note"><para>Объект <see cref="M:System.Web.SiteMapProvider.GetParentNode(System.Web.SiteMapNode)" /> также может возвращать значение <see langword="null" />, если родительский узел принадлежит другому поставщику. Вместо него в этом случае необходимо использовать свойство <see cref="P:System.Web.SiteMapNode.ParentNode" /> объекта <paramref name="node" />.  
+  
+</para></block></returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Examples  
+ В следующем примере кода показано, как реализовать <xref:System.Web.SiteMapProvider.GetParentNode%2A> метод в классе, реализующем абстрактный <xref:System.Web.SiteMapProvider> класс. Объект хранит иерархические родительские и дочерние связи между <xref:System.Collections.IList> <xref:System.Web.SiteMapNode> объектами в интерфейсе, <xref:System.Collections.ArrayList> например объектом. `SimpleTextSiteMapProvider`  
+  
+ Этот пример кода является частью большого примера, <xref:System.Web.SiteMapProvider> приведенного для класса.  
+  
+ [!code-csharp[Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1#6](~/samples/snippets/csharp/VS_Snippets_WebNet/Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1/CS/simpletextsitemapprovider.cs#6)]
+ [!code-vb[Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1#6](~/samples/snippets/visualbasic/VS_Snippets_WebNet/Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1/VB/simpletextsitemapprovider.vb#6)]  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.Web.SiteMapProvider.GetChildNodes(System.Web.SiteMapNode)" />
+      </Docs>
+    </Member>
+    <Member MemberName="GetParentNodeRelativeToCurrentNodeAndHintDownFromParent">
+      <MemberSignature Language="C#" Value="public virtual System.Web.SiteMapNode GetParentNodeRelativeToCurrentNodeAndHintDownFromParent (int walkupLevels, int relativeDepthFromWalkup);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Web.SiteMapNode GetParentNodeRelativeToCurrentNodeAndHintDownFromParent(int32 walkupLevels, int32 relativeDepthFromWalkup) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SiteMapProvider.GetParentNodeRelativeToCurrentNodeAndHintDownFromParent(System.Int32,System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function GetParentNodeRelativeToCurrentNodeAndHintDownFromParent (walkupLevels As Integer, relativeDepthFromWalkup As Integer) As SiteMapNode" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::Web::SiteMapNode ^ GetParentNodeRelativeToCurrentNodeAndHintDownFromParent(int walkupLevels, int relativeDepthFromWalkup);" />
+      <MemberSignature Language="F#" Value="abstract member GetParentNodeRelativeToCurrentNodeAndHintDownFromParent : int * int -&gt; System.Web.SiteMapNode&#xA;override this.GetParentNodeRelativeToCurrentNodeAndHintDownFromParent : int * int -&gt; System.Web.SiteMapNode" Usage="siteMapProvider.GetParentNodeRelativeToCurrentNodeAndHintDownFromParent (walkupLevels, relativeDepthFromWalkup)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.SiteMapNode</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="walkupLevels" Type="System.Int32" />
+        <Parameter Name="relativeDepthFromWalkup" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="walkupLevels">Количество уровней узлов-предков для прохождения во время получения запрошенного узла-предка.</param>
+        <param name="relativeDepthFromWalkup">Количество уровней узлов-потомков для получения из целевого узла-предка.</param>
+        <summary>Предоставляет оптимизированный метод просмотра для поставщиков карт веб-узлов во время получения узла-предка для запрашиваемой в настоящее время страницы и извлекает узлы-потомки для узла-предка.</summary>
+        <returns>Объект <see cref="T:System.Web.SiteMapNode" />, представляющий узел-предок <see cref="T:System.Web.SiteMapNode" /> запрашиваемой в данный момент страницы; в противном случае — значение <see langword="null" />, если текущий узел или узел-предок <see cref="T:System.Web.SiteMapNode" /> не найден или не может быть возвращен для текущего пользователя.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация <xref:System.Web.SiteMapProvider> класса по умолчанию предоставляет неоптимизированную реализацию <xref:System.Web.SiteMapProvider.GetParentNodeRelativeToCurrentNodeAndHintDownFromParent%2A> метода, вызывая <xref:System.Web.SiteMapProvider.GetCurrentNodeAndHintAncestorNodes%2A> методы и <xref:System.Web.SiteMapProvider.HintNeighborhoodNodes%2A> , однако поставщики карт сайта могут переопределить <xref:System.Web.SiteMapProvider.GetParentNodeRelativeToCurrentNodeAndHintDownFromParent%2A> метод и предоставление оптимизированной реализации, использующей пользовательские механизмы кэширования для возврата узла предка и выполнения оптимизированного поиска других <xref:System.Web.SiteMapNode> объектов.  
+  
+ `walkupLevels` Параметр используется для указания того, сколько уровней родительского узла и узлов-предков следует прохождение при извлечении целевых узлов. Если существует меньшее количество уровней, чем `null` запрошено, возвращается значение. `downLevel` Параметр используется для указания того, сколько уровней узлов-потомков нужно извлечь из целевого узла-предка. Если рекомендуется, то узлы-предки и потомки могут быть <xref:System.Web.SiteMapNode> связаны с <xref:System.Web.SiteMapProvider.GetParentNodeRelativeToCurrentNodeAndHintDownFromParent%2A> объектом, возвращаемым методом, с <xref:System.Web.SiteMapNode.ParentNode%2A> помощью <xref:System.Web.SiteMapNode.ChildNodes%2A> свойств и.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentOutOfRangeException">Значение параметра <paramref name="walkupLevels" /> или <paramref name="relativeDepthFromWalkup" /> меньше 0.</exception>
+        <altmember cref="M:System.Web.SiteMapProvider.GetParentNodeRelativeToNodeAndHintDownFromParent(System.Web.SiteMapNode,System.Int32,System.Int32)" />
+      </Docs>
+    </Member>
+    <Member MemberName="GetParentNodeRelativeToNodeAndHintDownFromParent">
+      <MemberSignature Language="C#" Value="public virtual System.Web.SiteMapNode GetParentNodeRelativeToNodeAndHintDownFromParent (System.Web.SiteMapNode node, int walkupLevels, int relativeDepthFromWalkup);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Web.SiteMapNode GetParentNodeRelativeToNodeAndHintDownFromParent(class System.Web.SiteMapNode node, int32 walkupLevels, int32 relativeDepthFromWalkup) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SiteMapProvider.GetParentNodeRelativeToNodeAndHintDownFromParent(System.Web.SiteMapNode,System.Int32,System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function GetParentNodeRelativeToNodeAndHintDownFromParent (node As SiteMapNode, walkupLevels As Integer, relativeDepthFromWalkup As Integer) As SiteMapNode" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::Web::SiteMapNode ^ GetParentNodeRelativeToNodeAndHintDownFromParent(System::Web::SiteMapNode ^ node, int walkupLevels, int relativeDepthFromWalkup);" />
+      <MemberSignature Language="F#" Value="abstract member GetParentNodeRelativeToNodeAndHintDownFromParent : System.Web.SiteMapNode * int * int -&gt; System.Web.SiteMapNode&#xA;override this.GetParentNodeRelativeToNodeAndHintDownFromParent : System.Web.SiteMapNode * int * int -&gt; System.Web.SiteMapNode" Usage="siteMapProvider.GetParentNodeRelativeToNodeAndHintDownFromParent (node, walkupLevels, relativeDepthFromWalkup)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.SiteMapNode</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="node" Type="System.Web.SiteMapNode" />
+        <Parameter Name="walkupLevels" Type="System.Int32" />
+        <Parameter Name="relativeDepthFromWalkup" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="node">Объект <see cref="T:System.Web.SiteMapNode" />, действующий в качестве опорной точки для объектов <paramref name="walkupLevels" /> и <paramref name="relativeDepthFromWalkup" />.</param>
+        <param name="walkupLevels">Количество уровней узлов-предков для прохождения во время получения запрошенного узла-предка.</param>
+        <param name="relativeDepthFromWalkup">Количество уровней узлов-потомков для получения из целевого узла-предка.</param>
+        <summary>Предоставляет оптимизированный метод просмотра для поставщиков карт веб-узлов во время получения узла-предка для указанного объекта <see cref="T:System.Web.SiteMapNode" /> и извлечения его дочерних узлов.</summary>
+        <returns>Объект <see cref="T:System.Web.SiteMapNode" />, представляющий узел-предок <paramref name="node" />; в противном случае — значение <see langword="null" />, если текущий узел или узел-предок <see cref="T:System.Web.SiteMapNode" /> не найден или не может быть возвращен для текущего пользователя.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация <xref:System.Web.SiteMapProvider> класса по умолчанию предоставляет неоптимизированную реализацию <xref:System.Web.SiteMapProvider.GetParentNodeRelativeToNodeAndHintDownFromParent%2A> метода, вызывая <xref:System.Web.SiteMapProvider.HintAncestorNodes%2A> методы и <xref:System.Web.SiteMapProvider.HintNeighborhoodNodes%2A> , однако поставщики карт сайта могут переопределить <xref:System.Web.SiteMapProvider.GetParentNodeRelativeToNodeAndHintDownFromParent%2A> метод и предоставление оптимизированной реализации, использующей пользовательские механизмы кэширования для возврата узла предка и выполнения оптимизированного поиска других <xref:System.Web.SiteMapNode> объектов.  Метод очень похож <xref:System.Web.SiteMapProvider.GetParentNodeRelativeToCurrentNodeAndHintDownFromParent%2A> на метод. <xref:System.Web.SiteMapProvider.GetParentNodeRelativeToNodeAndHintDownFromParent%2A>  
+  
+ `walkupLevels` Параметр используется для указания того, сколько уровней родительского узла и узлов-предков следует прохождение при извлечении целевых узлов. Если существует меньшее количество уровней, чем `null` запрошено, возвращается значение. `downLevel` Параметр используется для указания того, сколько уровней узлов-потомков нужно извлечь из целевого узла-предка. Если рекомендуется, то узлы-предки и потомки могут быть <xref:System.Web.SiteMapNode> связаны с <xref:System.Web.SiteMapProvider.GetParentNodeRelativeToNodeAndHintDownFromParent%2A> объектом, возвращаемым методом, с <xref:System.Web.SiteMapNode.ParentNode%2A> помощью <xref:System.Web.SiteMapNode.ChildNodes%2A> свойств и. Если число уровней узлов-предков меньше, чем указано `upLevel` параметром `null` , возвращается значение.  Разработчик поставщика решает, как решить ситуацию, когда количество доступных уровней узлов-потомков меньше значения, заданного `downLevel` параметром.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentOutOfRangeException">Заданное значение для <paramref name="walkupLevels" /> или <paramref name="relativeDepthFromWalkup" /> меньше 0.</exception>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="node" /> имеет значение <see langword="null" />.</exception>
+        <altmember cref="M:System.Web.SiteMapProvider.GetParentNodeRelativeToCurrentNodeAndHintDownFromParent(System.Int32,System.Int32)" />
+      </Docs>
+    </Member>
+    <Member MemberName="GetRootNodeCore">
+      <MemberSignature Language="C#" Value="protected internal abstract System.Web.SiteMapNode GetRootNodeCore ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyorassemblyhidebysig newslot virtual instance class System.Web.SiteMapNode GetRootNodeCore() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SiteMapProvider.GetRootNodeCore" />
+      <MemberSignature Language="VB.NET" Value="Protected Friend MustOverride Function GetRootNodeCore () As SiteMapNode" />
+      <MemberSignature Language="C++ CLI" Value="protected public:&#xA; abstract System::Web::SiteMapNode ^ GetRootNodeCore();" />
+      <MemberSignature Language="F#" Value="abstract member GetRootNodeCore : unit -&gt; System.Web.SiteMapNode" Usage="siteMapProvider.GetRootNodeCore " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.SiteMapNode</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Во время переопределения в производном классе получает корневой узел для всех узлов, которыми в настоящее время управляет текущий поставщик.</summary>
+        <returns>Объект <see cref="T:System.Web.SiteMapNode" />, представляющий корневой узел набора узлов, которыми управляет текущий поставщик.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод позволяет родительскому поставщику в иерархии поставщика <xref:System.Web.SiteMapNode> получить объект, который выступает в качестве фрейма ссылки для создания иерархии поставщика, и более крупной иерархии узлов карт узла, которая является суммой данных карт узла, каждая из которых <xref:System.Web.SiteMapProvider.GetRootNodeCore%2A> управляется поставщиком.  
+  
+   
+  
+## Examples  
+ [!code-csharp[Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1#3](~/samples/snippets/csharp/VS_Snippets_WebNet/Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1/CS/simpletextsitemapprovider.cs#3)]
+ [!code-vb[Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1#3](~/samples/snippets/visualbasic/VS_Snippets_WebNet/Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1/VB/simpletextsitemapprovider.vb#3)]  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.Web.SiteMapProvider.GetRootNodeCoreFromProvider(System.Web.SiteMapProvider)" />
+      </Docs>
+    </Member>
+    <Member MemberName="GetRootNodeCoreFromProvider">
+      <MemberSignature Language="C#" Value="protected static System.Web.SiteMapNode GetRootNodeCoreFromProvider (System.Web.SiteMapProvider provider);" />
+      <MemberSignature Language="ILAsm" Value=".method familystatic hidebysig class System.Web.SiteMapNode GetRootNodeCoreFromProvider(class System.Web.SiteMapProvider provider) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SiteMapProvider.GetRootNodeCoreFromProvider(System.Web.SiteMapProvider)" />
+      <MemberSignature Language="VB.NET" Value="Protected Shared Function GetRootNodeCoreFromProvider (provider As SiteMapProvider) As SiteMapNode" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; static System::Web::SiteMapNode ^ GetRootNodeCoreFromProvider(System::Web::SiteMapProvider ^ provider);" />
+      <MemberSignature Language="F#" Value="static member GetRootNodeCoreFromProvider : System.Web.SiteMapProvider -&gt; System.Web.SiteMapNode" Usage="System.Web.SiteMapProvider.GetRootNodeCoreFromProvider provider" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Web.SiteMapNode</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="provider" Type="System.Web.SiteMapProvider" />
+      </Parameters>
+      <Docs>
+        <param name="provider">Поставщик, вызывающий <see cref="M:System.Web.SiteMapProvider.GetRootNodeCore" />.</param>
+        <summary>Получает корневой узел для всех узлов, которыми в настоящий момент управляет указанный поставщик карты веб-узла.</summary>
+        <returns>Объект <see cref="T:System.Web.SiteMapNode" />, представляющий корневой узел набора узлов, которыми управляет <paramref name="provider" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация по умолчанию вызывает абстрактный <xref:System.Web.SiteMapProvider.GetRootNodeCore%2A> метод для указанного. `provider`  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.Web.SiteMapProvider.GetRootNodeCore" />
+      </Docs>
+    </Member>
+    <Member MemberName="HintAncestorNodes">
+      <MemberSignature Language="C#" Value="public virtual void HintAncestorNodes (System.Web.SiteMapNode node, int upLevel);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void HintAncestorNodes(class System.Web.SiteMapNode node, int32 upLevel) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SiteMapProvider.HintAncestorNodes(System.Web.SiteMapNode,System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Sub HintAncestorNodes (node As SiteMapNode, upLevel As Integer)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void HintAncestorNodes(System::Web::SiteMapNode ^ node, int upLevel);" />
+      <MemberSignature Language="F#" Value="abstract member HintAncestorNodes : System.Web.SiteMapNode * int -&gt; unit&#xA;override this.HintAncestorNodes : System.Web.SiteMapNode * int -&gt; unit" Usage="siteMapProvider.HintAncestorNodes (node, upLevel)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="node" Type="System.Web.SiteMapNode" />
+        <Parameter Name="upLevel" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="node">Объект <see cref="T:System.Web.SiteMapNode" />, действующий как опорная точка для объекта <paramref name="upLevel" />.</param>
+        <param name="upLevel">Количество поколений предков <see cref="T:System.Web.SiteMapNode" /> для выборки. Значение, равное 0 показывает, что узлы-предки не получены, а -1 показывает, что все предки могут быть получены и кэшированы.</param>
+        <summary>Предоставляет метод, который поставщики карт веб-узлов могут переопределить для проведения оптимизированного получения одного или нескольких уровней родительских и дочерних узлов, связанных с указанным объектом <see cref="T:System.Web.SiteMapNode" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод по <xref:System.Web.SiteMapProvider.HintAncestorNodes%2A> умолчанию проверяет `upLevel` только параметр, который меньше-1, и `node` параметр, имеющий значение `null`. Поскольку класс кэширует сведения о карте узла в памяти <xref:System.Web.SiteMapProvider.HintAncestorNodes%2A> , метод не используется. <xref:System.Web.XmlSiteMapProvider>  
+  
+ Поставщики карт веб-сайтов могут <xref:System.Web.SiteMapProvider.HintAncestorNodes%2A> переопределить метод для выполнения оптимизированного извлечения родительских и предков узлов указанного <xref:System.Web.SiteMapNode> объекта.  
+  
+ Параметр используется для указания того, сколько уровней родительского узла и узлов-предков следует прохождение от указанного  <xref:System.Web.SiteMapNode> .  `upLevel` Если существует меньшее количество уровней, чем запрошено, все доступные узлы предков возвращаются в пределах указанной границы. Если предпочтительно, родительский узел может быть связан с указанным <xref:System.Web.SiteMapNode> <xref:System.Web.SiteMapNode.ParentNode%2A> с помощью свойства.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentOutOfRangeException">Значение <paramref name="upLevel" /> меньше -1.</exception>
+        <exception cref="T:System.ArgumentNullException"><paramref name="node" /> — <see langword="null" />.</exception>
+        <altmember cref="M:System.Web.SiteMapProvider.HintNeighborhoodNodes(System.Web.SiteMapNode,System.Int32,System.Int32)" />
+      </Docs>
+    </Member>
+    <Member MemberName="HintNeighborhoodNodes">
+      <MemberSignature Language="C#" Value="public virtual void HintNeighborhoodNodes (System.Web.SiteMapNode node, int upLevel, int downLevel);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void HintNeighborhoodNodes(class System.Web.SiteMapNode node, int32 upLevel, int32 downLevel) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SiteMapProvider.HintNeighborhoodNodes(System.Web.SiteMapNode,System.Int32,System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Sub HintNeighborhoodNodes (node As SiteMapNode, upLevel As Integer, downLevel As Integer)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void HintNeighborhoodNodes(System::Web::SiteMapNode ^ node, int upLevel, int downLevel);" />
+      <MemberSignature Language="F#" Value="abstract member HintNeighborhoodNodes : System.Web.SiteMapNode * int * int -&gt; unit&#xA;override this.HintNeighborhoodNodes : System.Web.SiteMapNode * int * int -&gt; unit" Usage="siteMapProvider.HintNeighborhoodNodes (node, upLevel, downLevel)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="node" Type="System.Web.SiteMapNode" />
+        <Parameter Name="upLevel" Type="System.Int32" />
+        <Parameter Name="downLevel" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="node">Объект <see cref="T:System.Web.SiteMapNode" />, действующий как опорная точка для объекта <paramref name="upLevel" />.</param>
+        <param name="upLevel">Количество поколений предков <see cref="T:System.Web.SiteMapNode" /> для выборки. Значение, равное 0 показывает, что узлы-предки не получены, а -1 показывает, что все предки (и их потомки на уровне <paramref name="node" />) могут быть получены и кэшированы поставщиком.</param>
+        <param name="downLevel">Количество поколений узлов-потомков <see cref="T:System.Web.SiteMapNode" /> для извлечения. Значение, равное 0 показывает, что узлы-потомки не получены, а -1 показывает, что все узлы-потомки могут быть получены и кэшированы.</param>
+        <summary>Предоставляет метод, который поставщики карт веб-узлов могут переопределить для проведения оптимизированного получения узлов, найденных в пределах указанного узла.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод по <xref:System.Web.SiteMapProvider.HintNeighborhoodNodes%2A> умолчанию проверяет `upLevel` только параметры и `downLevel` `node` , которые меньше-1, и параметр, имеющий значение `null`. Так как <xref:System.Web.SiteMapProvider.HintNeighborhoodNodes%2A> объект кэширует сведения о карте узла в памяти, метод не используется. <xref:System.Web.XmlSiteMapProvider>  
+  
+ Поставщики карт веб-сайтов могут <xref:System.Web.SiteMapProvider.HintNeighborhoodNodes%2A> переопределить метод для выполнения оптимизированного поиска <xref:System.Web.SiteMapNode> объектов в близком к заданном <xref:System.Web.SiteMapNode>. Параметр используется для указания того, сколько уровней родительского узла и узлов-предков следует прохождение от указанного  <xref:System.Web.SiteMapNode> .  `upLevel` `downLevel` Параметр используется для указания количества уровней дочерних узлов из текущего узла для извлечения. Если рекомендуется, то узлы-предки и потомки могут быть <xref:System.Web.SiteMapNode> связаны с <xref:System.Web.SiteMapProvider.HintNeighborhoodNodes%2A> объектом, возвращаемым методом, с <xref:System.Web.SiteMapNode.ParentNode%2A> помощью <xref:System.Web.SiteMapNode.ChildNodes%2A> свойств и.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentOutOfRangeException">Значение <paramref name="upLevel" /> или <paramref name="downLevel" /> меньше –1.</exception>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="node" /> имеет значение <see langword="null" />.</exception>
+        <altmember cref="M:System.Web.SiteMapProvider.HintAncestorNodes(System.Web.SiteMapNode,System.Int32)" />
+      </Docs>
+    </Member>
+    <Member MemberName="Initialize">
+      <MemberSignature Language="C#" Value="public override void Initialize (string name, System.Collections.Specialized.NameValueCollection attributes);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void Initialize(string name, class System.Collections.Specialized.NameValueCollection attributes) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SiteMapProvider.Initialize(System.String,System.Collections.Specialized.NameValueCollection)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Sub Initialize (name As String, attributes As NameValueCollection)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void Initialize(System::String ^ name, System::Collections::Specialized::NameValueCollection ^ attributes);" />
+      <MemberSignature Language="F#" Value="override this.Initialize : string * System.Collections.Specialized.NameValueCollection -&gt; unit" Usage="siteMapProvider.Initialize (name, attributes)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="name" Type="System.String" />
+        <Parameter Name="attributes" Type="System.Collections.Specialized.NameValueCollection" />
+      </Parameters>
+      <Docs>
+        <param name="name">Объект <see cref="P:System.Configuration.Provider.ProviderBase.Name" /> поставщика, который следует инициализировать.</param>
+        <param name="attributes">Объект <see cref="T:System.Collections.Specialized.NameValueCollection" />, который может содержать дополнительные атрибуты возможности инициализации поставщика. Эти атрибуты считываются из конфигурации поставщика карты веб-узла в файле Web.config.</param>
+        <summary>Выполняет инициализацию реализации <see cref="T:System.Web.SiteMapProvider" />, включающей любые ресурсы, которые необходимы для загрузки данных карты веб-узла из постоянного хранилища.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод на самом деле не создает карту узла, он подготавливает для этого только состояние <xref:System.Web.SiteMapProvider> объекта. <xref:System.Web.SiteMapProvider.Initialize%2A> Реализация по умолчанию инициализирует <xref:System.Web.SiteMapProvider.SecurityTrimmingEnabled%2A> свойство для поставщика карт узла из конфигурации навигации сайта.  
+  
+ Классы, производные от, <xref:System.Web.SiteMapProvider> могут <xref:System.Web.SiteMapProvider.Initialize%2A> переопределять метод для инициализации любого состояния и ресурсов, необходимых для загрузки данных карт веб-узла из постоянного хранилища. Например, если в производном классе используются файлы для хранения данных карт веб-узла, в <xref:System.Web.SiteMapProvider.Initialize%2A> методе можно выполнить инициализацию любых файлов. Если производный класс использует другой тип хранилища данных, например реляционную базу данных, может быть выполнена инициализация подключения к базе данных.  
+  
+ Дополнительные атрибуты, такие как имена файлов или строки подключения, считываются системой конфигурации ASP.NET и передаются <xref:System.Web.SiteMapProvider.Initialize%2A> в метод со своим <xref:System.Collections.Specialized.NameValueCollection> параметром.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как переопределить <xref:System.Web.SiteMapProvider.Initialize%2A> метод для подготовки подключения к базе данных Microsoft Access.  
+  
+ Строка подключения для <xref:System.Data.OleDb.OleDbConnection> объекта передается <xref:System.Collections.Specialized.NameValueCollection> в параметре <xref:System.Web.SiteMapProvider.Initialize%2A> метода. В этом случае строка подключения предоставляется в разделе, зависящем от поставщика, в файле Web. config. `accessSiteMapConnectionString` Здесь содержится строка подключения к базе данных Microsoft Access, в которой размещены данные карт узла.  
+  
+```  
+<siteMap defaultProvider="AccessSiteMapProvider">  
+  <providers>  
+     <add  
+       name="AccessSiteMapProvider"  
+       type="Samples.AspNet.AccessSiteMapProvider,Samples.AspNet"  
+       accessSiteMapConnectionString="PROVIDER=MICROSOFT.JET.OLEDB.4.0;DATA SOURCE=\\SomeUNCShare\\sitemap.mdb"/>  
+  </providers>   
+ </siteMap>  
+```  
+  
+ Этот пример кода является частью большого примера, <xref:System.Web.SiteMapProvider> приведенного для класса.  
+  
+ [!code-cpp[Urtue.Samples.Alexkr.AccessSiteMapProvider_1#2](~/samples/snippets/cpp/VS_Snippets_WebNet/Urtue.Samples.Alexkr.AccessSiteMapProvider_1/CPP/accesssitemapprovider.cpp#2)]
+ [!code-csharp[Urtue.Samples.Alexkr.AccessSiteMapProvider_1#2](~/samples/snippets/csharp/VS_Snippets_WebNet/Urtue.Samples.Alexkr.AccessSiteMapProvider_1/CS/accesssitemapprovider.cs#2)]
+ [!code-vb[Urtue.Samples.Alexkr.AccessSiteMapProvider_1#2](~/samples/snippets/visualbasic/VS_Snippets_WebNet/Urtue.Samples.Alexkr.AccessSiteMapProvider_1/VB/accesssitemapprovider.vb#2)]  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>При переопределении <see cref="M:System.Web.SiteMapProvider.Initialize(System.String,System.Collections.Specialized.NameValueCollection)" /> метода в производном классе сначала необходимо <see cref="M:System.Web.SiteMapProvider.Initialize(System.String,System.Collections.Specialized.NameValueCollection)" /> вызвать метод для базового класса перед выполнением собственных инициализаций.</para></block>
+        <altmember cref="T:System.Configuration.Provider.ProviderBase" />
+        <altmember cref="M:System.Web.StaticSiteMapProvider.BuildSiteMap" />
+        <altmember cref="M:System.Web.StaticSiteMapProvider.Clear" />
+      </Docs>
+    </Member>
+    <Member MemberName="IsAccessibleToUser">
+      <MemberSignature Language="C#" Value="public virtual bool IsAccessibleToUser (System.Web.HttpContext context, System.Web.SiteMapNode node);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance bool IsAccessibleToUser(class System.Web.HttpContext context, class System.Web.SiteMapNode node) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SiteMapProvider.IsAccessibleToUser(System.Web.HttpContext,System.Web.SiteMapNode)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function IsAccessibleToUser (context As HttpContext, node As SiteMapNode) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual bool IsAccessibleToUser(System::Web::HttpContext ^ context, System::Web::SiteMapNode ^ node);" />
+      <MemberSignature Language="F#" Value="abstract member IsAccessibleToUser : System.Web.HttpContext * System.Web.SiteMapNode -&gt; bool&#xA;override this.IsAccessibleToUser : System.Web.HttpContext * System.Web.SiteMapNode -&gt; bool" Usage="siteMapProvider.IsAccessibleToUser (context, node)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="context" Type="System.Web.HttpContext" />
+        <Parameter Name="node" Type="System.Web.SiteMapNode" />
+      </Parameters>
+      <Docs>
+        <param name="context">Объект <see cref="T:System.Web.HttpContext" />, в котором содержатся сведения о пользователе.</param>
+        <param name="node">Объект <see cref="T:System.Web.SiteMapNode" />, запрошенный пользователем.</param>
+        <summary>Возвращает логическое значение, показывающее, может ли пользователь просматривать указанный объект <see cref="T:System.Web.SiteMapNode" /> в заданном контексте.</summary>
+        <returns>Значение <see langword="true" />, если фильтрация по ролям безопасности включена и объект <paramref name="node" /> может быть доступен для просмотра пользователем, или если фильтрация по ролям безопасности отключена; в противном случае — значение <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Поведение по умолчанию, когда включена фильтрация по безопасности, описана в следующей таблице.  
+  
+|Условие|Возвращаемое значение|  
+|---------------|------------------|  
+|Объект <xref:System.Web.SiteMapNode.Roles%2A> существует в `node` , и текущий пользователь имеет по крайней мере одну из указанных ролей.<br /><br /> -или-<br /><br /> Текущий поток имеет связанный `WindowsIdentity` с доступом к файлу запрошенный URL-адрес, а URL-адрес находится в структуре каталогов для приложения.<br /><br /> -или-<br /><br /> Текущий пользователь является полномочным для запрошенного URL-адреса в `authorization` элементе для текущего приложения, а URL-адрес находится в структуре каталогов для приложения.|`true`|  
+|Ни одно из вышеперечисленных условий не выполнено.|`false`|  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="context" /> — <see langword="null" />.  
+  
+-или- 
+ Свойство <paramref name="node" /> имеет значение <see langword="null" />.</exception>
+        <altmember cref="P:System.Web.SiteMapProvider.SecurityTrimmingEnabled" />
+      </Docs>
+    </Member>
+    <Member MemberName="ParentProvider">
+      <MemberSignature Language="C#" Value="public virtual System.Web.SiteMapProvider ParentProvider { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Web.SiteMapProvider ParentProvider" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SiteMapProvider.ParentProvider" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Property ParentProvider As SiteMapProvider" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::Web::SiteMapProvider ^ ParentProvider { System::Web::SiteMapProvider ^ get(); void set(System::Web::SiteMapProvider ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.ParentProvider : System.Web.SiteMapProvider with get, set" Usage="System.Web.SiteMapProvider.ParentProvider" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>set: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Web.SiteMapProvider</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает родительский объект <see cref="T:System.Web.SiteMapProvider" /> текущего поставщика.</summary>
+        <value>Родительский поставщик текущего объекта <see cref="T:System.Web.SiteMapProvider" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Все классы, реализующие абстрактный <xref:System.Web.SiteMapProvider> класс, могут поддерживать концепцию иерархии поставщика карт узла. Любые иерархические связи между поставщиками поддерживаются вне области <xref:System.Web.SiteMapProviderCollection> коллекции самими поставщиками. Пример иерархии функционального поставщика см. в разделе <xref:System.Web.XmlSiteMapProvider>.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как реализовать <xref:System.Web.SiteMapProvider.ParentProvider%2A> свойство в классе, реализующем абстрактный <xref:System.Web.SiteMapProvider> класс.  
+  
+ Этот пример кода является частью большого примера, <xref:System.Web.SiteMapProvider> приведенного для класса.  
+  
+ [!code-csharp[Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1#4](~/samples/snippets/csharp/VS_Snippets_WebNet/Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1/CS/simpletextsitemapprovider.cs#4)]
+ [!code-vb[Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1#4](~/samples/snippets/visualbasic/VS_Snippets_WebNet/Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1/VB/simpletextsitemapprovider.vb#4)]  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.Web.SiteMapProvider.RootProvider" />
+      </Docs>
+    </Member>
+    <Member MemberName="RemoveNode">
+      <MemberSignature Language="C#" Value="protected internal virtual void RemoveNode (System.Web.SiteMapNode node);" />
+      <MemberSignature Language="ILAsm" Value=".method familyorassemblyhidebysig newslot virtual instance void RemoveNode(class System.Web.SiteMapNode node) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SiteMapProvider.RemoveNode(System.Web.SiteMapNode)" />
+      <MemberSignature Language="VB.NET" Value="Protected Friend Overridable Sub RemoveNode (node As SiteMapNode)" />
+      <MemberSignature Language="C++ CLI" Value="protected public:&#xA; virtual void RemoveNode(System::Web::SiteMapNode ^ node);" />
+      <MemberSignature Language="F#" Value="abstract member RemoveNode : System.Web.SiteMapNode -&gt; unit&#xA;override this.RemoveNode : System.Web.SiteMapNode -&gt; unit" Usage="siteMapProvider.RemoveNode node" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="node" Type="System.Web.SiteMapNode" />
+      </Parameters>
+      <Docs>
+        <param name="node">Объект <see cref="T:System.Web.SiteMapNode" /> для удаления из коллекции узлов, поддерживаемой поставщиком.</param>
+        <summary>Удаляет указанный объект <see cref="T:System.Web.SiteMapNode" /> из коллекций узлов, которая поддерживается поставщиком карты веб-узла.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Классы, производные от <xref:System.Web.SiteMapProvider> класса, могут <xref:System.Web.SiteMapProvider.RemoveNode%2A> переопределять метод и предоставлять логику <xref:System.Web.SiteMapNode> для удаления объектов из коллекции узлов, обслуживаемой поставщиком карт веб-узла. Реализация <xref:System.Web.SiteMapProvider.RemoveNode%2A> метода по умолчанию <xref:System.NotImplementedException> создает исключение.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.NotImplementedException">Во всех случаях.</exception>
+        <altmember cref="Overload:System.Web.SiteMapProvider.AddNode" />
+      </Docs>
+    </Member>
+    <Member MemberName="ResolveSiteMapNode">
+      <MemberSignature Language="C#" Value="protected System.Web.SiteMapNode ResolveSiteMapNode (System.Web.HttpContext context);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig instance class System.Web.SiteMapNode ResolveSiteMapNode(class System.Web.HttpContext context) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.SiteMapProvider.ResolveSiteMapNode(System.Web.HttpContext)" />
+      <MemberSignature Language="VB.NET" Value="Protected Function ResolveSiteMapNode (context As HttpContext) As SiteMapNode" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; System::Web::SiteMapNode ^ ResolveSiteMapNode(System::Web::HttpContext ^ context);" />
+      <MemberSignature Language="F#" Value="member this.ResolveSiteMapNode : System.Web.HttpContext -&gt; System.Web.SiteMapNode" Usage="siteMapProvider.ResolveSiteMapNode context" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.SiteMapNode</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="context" Type="System.Web.HttpContext" />
+      </Parameters>
+      <Docs>
+        <param name="context">Объект <see cref="T:System.Web.HttpContext" />, для которого существует карта веб-узла.</param>
+        <summary>Вызывает событие <see cref="E:System.Web.SiteMapProvider.SiteMapResolve" />.</summary>
+        <returns>Объект <see cref="T:System.Web.SiteMapNode" />, предоставленный делегатом обработчика событий, зарегистрированного для обработки события, или, если для обработки события зарегистрировано несколько делегатов, возвращенное событие последнего делегата в цепи делегатов; в противном случае — значение <see langword="null" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Параметр и ссылка на поставщик, который <xref:System.Web.SiteMapProvider.ResolveSiteMapNode%2A> вызвал метод, передается конструктору любого связанного <xref:System.Web.SiteMapResolveEventArgs> объекта. `context`  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="E:System.Web.SiteMapProvider.SiteMapResolve" />
+        <altmember cref="T:System.Web.SiteMapResolveEventArgs" />
+        <altmember cref="T:System.Web.SiteMapResolveEventHandler" />
+      </Docs>
+    </Member>
+    <Member MemberName="ResourceKey">
+      <MemberSignature Language="C#" Value="public string ResourceKey { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string ResourceKey" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SiteMapProvider.ResourceKey" />
+      <MemberSignature Language="VB.NET" Value="Public Property ResourceKey As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ ResourceKey { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.ResourceKey : string with get, set" Usage="System.Web.SiteMapProvider.ResourceKey" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>set: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает ключ ресурса, используемый для локализации атрибутов <see cref="T:System.Web.SiteMapNode" />.</summary>
+        <value>Строка, содержащая имя ключа ресурса.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойство используется <xref:System.Web.SiteMapNode.GetImplicitResourceString%2A> с методом <xref:System.Web.SiteMapNode>  класса. <xref:System.Web.SiteMapProvider.ResourceKey%2A> <xref:System.Web.SiteMapNode> <xref:System.Web.SiteMapNode.Attributes%2A> <xref:System.Web.SiteMapNode.GetImplicitResourceString%2A> <xref:System.Web.SiteMapNode.GetExplicitResourceString%2A> Для свойств и, а также любых дополнительных атрибутов, определенных в коллекции объекта, метод имеет приоритет над, когда <xref:System.Web.SiteMapNode.Title%2A>  <xref:System.Web.SiteMapNode.Description%2A> Локализация включается со свойством, <xref:System.Web.SiteMapProvider.EnableLocalization%2A> для `true`которого задано значение.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.Web.SiteMapNode.Title" />
+        <altmember cref="P:System.Web.SiteMapNode.Description" />
+        <altmember cref="P:System.Web.SiteMapNode.Attributes" />
+        <altmember cref="M:System.Web.SiteMapNode.GetImplicitResourceString(System.String)" />
+        <altmember cref="M:System.Web.SiteMapNode.GetExplicitResourceString(System.String,System.String,System.Boolean)" />
+      </Docs>
+    </Member>
+    <Member MemberName="RootNode">
+      <MemberSignature Language="C#" Value="public virtual System.Web.SiteMapNode RootNode { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Web.SiteMapNode RootNode" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SiteMapProvider.RootNode" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable ReadOnly Property RootNode As SiteMapNode" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::Web::SiteMapNode ^ RootNode { System::Web::SiteMapNode ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.RootNode : System.Web.SiteMapNode" Usage="System.Web.SiteMapProvider.RootNode" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.SiteMapNode</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает корневой объект <see cref="T:System.Web.SiteMapNode" /> данных карты веб-узла, представленных текущим поставщиком.</summary>
+        <value>Корень <see cref="T:System.Web.SiteMapNode" /> текущего поставщика данных карты веб-узла. Реализация, заданная по умолчанию, производит фильтрацию по ролям безопасности возвращенного узла.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация по умолчанию вызывает абстрактный <xref:System.Web.SiteMapProvider.GetRootNodeCore%2A> метод.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как реализовать <xref:System.Web.SiteMapProvider.RootNode%2A> свойство в классе, реализующем абстрактный <xref:System.Web.SiteMapProvider> класс.  
+  
+ Этот пример кода является частью большого примера, <xref:System.Web.SiteMapProvider> приведенного для класса.  
+  
+ [!code-csharp[Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1#2](~/samples/snippets/csharp/VS_Snippets_WebNet/Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1/CS/simpletextsitemapprovider.cs#2)]
+ [!code-vb[Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1#2](~/samples/snippets/visualbasic/VS_Snippets_WebNet/Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1/VB/simpletextsitemapprovider.vb#2)]  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>При переопределении <see cref="P:System.Web.SiteMapProvider.RootNode" /> свойства в производном классе убедитесь, что реализация не выполняет навигацию по иерархии поставщика, если она существует, чтобы найти абсолютный корневой узел сайта.</para></block>
+        <altmember cref="M:System.Web.SiteMapProvider.GetRootNodeCore" />
+        <altmember cref="P:System.Web.SiteMapProvider.CurrentNode" />
+      </Docs>
+    </Member>
+    <Member MemberName="RootProvider">
+      <MemberSignature Language="C#" Value="public virtual System.Web.SiteMapProvider RootProvider { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Web.SiteMapProvider RootProvider" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SiteMapProvider.RootProvider" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable ReadOnly Property RootProvider As SiteMapProvider" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::Web::SiteMapProvider ^ RootProvider { System::Web::SiteMapProvider ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.RootProvider : System.Web.SiteMapProvider" Usage="System.Web.SiteMapProvider.RootProvider" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.SiteMapProvider</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает корневой объект <see cref="T:System.Web.SiteMapProvider" /> в текущую иерархию поставщиков.</summary>
+        <value>Объект <see cref="T:System.Web.SiteMapProvider" />, являющийся главным поставщиком карты веб-узла в иерархии поставщиков, к которой принадлежит текущий поставщик.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Все классы, реализующие <xref:System.Web.SiteMapProvider> класс, могут поддерживать концепцию иерархии поставщика карт узла. Любые иерархические связи между поставщиками поддерживаются вне области <xref:System.Web.SiteMapProviderCollection> коллекции самими поставщиками. Пример иерархии функционального поставщика см. в разделе <xref:System.Web.XmlSiteMapProvider>.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как реализовать <xref:System.Web.SiteMapProvider.RootProvider%2A> свойство в классе, реализующем абстрактный <xref:System.Web.SiteMapProvider> класс. Компонент `SimpleTextSiteMapProvider` использует простую логику для определения того, является ли текущий поставщик частью иерархии поставщиков. Если поставщик является частью иерархии, он использует <xref:System.Web.SiteMapProvider.RootProvider%2A> свойство родительского поставщика в качестве собственного. Если поставщик не является частью иерархии, поставщик является своим собственным поставщиком корневого поставщика.  
+  
+ Этот пример кода является частью большого примера, <xref:System.Web.SiteMapProvider> приведенного для класса.  
+  
+ [!code-csharp[Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1#4](~/samples/snippets/csharp/VS_Snippets_WebNet/Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1/CS/simpletextsitemapprovider.cs#4)]
+ [!code-vb[Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1#4](~/samples/snippets/visualbasic/VS_Snippets_WebNet/Urtue.Samples.Alexkr.SimpleTextSiteMapProvider_1/VB/simpletextsitemapprovider.vb#4)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Существует циклическая ссылка на текущего поставщика карты веб-узла.</exception>
+        <altmember cref="P:System.Web.SiteMapProvider.ParentProvider" />
+      </Docs>
+    </Member>
+    <Member MemberName="SecurityTrimmingEnabled">
+      <MemberSignature Language="C#" Value="public bool SecurityTrimmingEnabled { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool SecurityTrimmingEnabled" />
+      <MemberSignature Language="DocId" Value="P:System.Web.SiteMapProvider.SecurityTrimmingEnabled" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property SecurityTrimmingEnabled As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool SecurityTrimmingEnabled { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.SecurityTrimmingEnabled : bool" Usage="System.Web.SiteMapProvider.SecurityTrimmingEnabled" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает логическое значение, показывающее, фильтрует ли поставщик карты веб-узла узлы карты веб-узла на основе роли пользователя.</summary>
+        <value>Значение <see langword="true" />, если для фильтрации узлов поставщик настроен на основе роли; в противном случае — значение <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Фильтрация по безопасности не может быть задана программно. она задается в конфигурации для поставщика.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.Web.SiteMapProvider.IsAccessibleToUser(System.Web.HttpContext,System.Web.SiteMapNode)" />
+        <related type="Article" href="https://msdn.microsoft.com/library/4028528f-e01c-4ae3-bd8d-bb161718fe61">ASP.NET. Фильтрация по безопасности карт сайта</related>
+      </Docs>
+    </Member>
+    <Member MemberName="SiteMapResolve">
+      <MemberSignature Language="C#" Value="public event System.Web.SiteMapResolveEventHandler SiteMapResolve;" />
+      <MemberSignature Language="ILAsm" Value=".event class System.Web.SiteMapResolveEventHandler SiteMapResolve" />
+      <MemberSignature Language="DocId" Value="E:System.Web.SiteMapProvider.SiteMapResolve" />
+      <MemberSignature Language="VB.NET" Value="Public Event SiteMapResolve As SiteMapResolveEventHandler " />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; event System::Web::SiteMapResolveEventHandler ^ SiteMapResolve;" />
+      <MemberSignature Language="F#" Value="member this.SiteMapResolve : System.Web.SiteMapResolveEventHandler " Usage="member this.SiteMapResolve : System.Web.SiteMapResolveEventHandler " />
+      <MemberType>Event</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.SiteMapResolveEventHandler</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Происходит при вызове свойства <see cref="P:System.Web.SiteMapProvider.CurrentNode" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вы можете создать <xref:System.Web.SiteMapNode> представление текущей запрошенной страницы без реализации пользовательского поставщика карт узла, подписавшись <xref:System.Web.SiteMapProvider.SiteMapResolve> на событие. Подписчики присоединяются <xref:System.Web.SiteMapResolveEventHandler> к объекту для получения уведомлений <xref:System.Web.SiteMapProvider.CurrentNode%2A> при вызове свойства и могут возвращать <xref:System.Web.SiteMapNode> пользовательский объект вместо значения по умолчанию, возвращаемого <xref:System.Web.SiteMapProvider.CurrentNode%2A> свойством.  
+  
+ Дополнительные сведения об обработке событий см. в разделе [обработка и вызов событий](~/docs/standard/events/index.md).  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="E:System.Web.SiteMap.SiteMapResolve" />
+        <altmember cref="T:System.Web.SiteMapResolveEventHandler" />
+        <altmember cref="T:System.Web.SiteMapResolveEventArgs" />
+      </Docs>
+    </Member>
+  </Members>
+</Type>
