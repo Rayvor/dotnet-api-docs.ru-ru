@@ -1,0 +1,2592 @@
+<Type Name="SignedXml" FullName="System.Security.Cryptography.Xml.SignedXml">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="546f0e06ccae6926dd7dfb936ed18c39b9c7c613" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70680936" /></Metadata><TypeSignature Language="C#" Value="public class SignedXml" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit SignedXml extends System.Object" />
+  <TypeSignature Language="DocId" Value="T:System.Security.Cryptography.Xml.SignedXml" />
+  <TypeSignature Language="VB.NET" Value="Public Class SignedXml" />
+  <TypeSignature Language="C++ CLI" Value="public ref class SignedXml" />
+  <TypeSignature Language="F#" Value="type SignedXml = class" />
+  <AssemblyInfo>
+    <AssemblyName>System.Security</AssemblyName>
+    <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.1.0</AssemblyVersion>
+    <AssemblyVersion>4.0.2.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>Представляет оболочку основного объекта подписи XML для упрощения создания подписей XML.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Класс является реализацией .NET [синтаксиса XML-подписи](https://www.w3.org/TR/xmldsig-core/)консорциум W3C (W3C) и спецификации обработки, также известной как XMLDSIG (цифровая подпись XML). <xref:System.Security.Cryptography.Xml.SignedXml> XMLDSIG — это стандартный, совместимый способ подписывания и проверки всего или части XML-документа или других данных, которые можно устранить с помощью универсального кода ресурса (URI).
+  
+ <xref:System.Security.Cryptography.Xml.SignedXml> Используйте класс каждый раз, когда требуется совместное использование подписанных XML-данных между приложениями или организациями обычным способом. Любые данные, подписанные с помощью этого класса, могут быть проверены любой реализацией спецификации консорциума W3C для XMLDSIG.
+  
+ <xref:System.Security.Cryptography.Xml.SignedXml> Класс позволяет создавать следующие три типа цифровых подписей XML:  
+  
+|Тип подписи|Описание|  
+|--------------------|-----------------|  
+|Запечатанная подпись|Подпись содержится в элементе XML, который подписывается.|  
+|Подпись запечатывание|Подписанный XML содержится в `<Signature>` элементе.|  
+|Внутренняя отсоединенная подпись|Подпись и подписанный XML находятся в одном документе, но ни один из элементов не содержит другого.|  
+  
+ Существует также четвертый тип подписи, называемый внешней отсоединенной подписью, то есть когда данные и подпись находятся в разных XML-документах. Внешние отсоединенные подписи не поддерживаются <xref:System.Security.Cryptography.Xml.SignedXml> классом.  
+  
+## <a name="the-structure-of-an-xml-signature"></a>Структура XML-подписи  
+
+XMLDSIG создает `<Signature>` элемент, который содержит цифровую подпись XML-документа или других данных, которые являются адресами из URI. `<Signature>` Элемент может дополнительно содержать сведения о том, где найти ключ, который будет проверять подпись и какой алгоритм шифрования использовался для подписания. Базовая структура выглядит следующим образом:  
+  
+```xml
+<Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">  
+    <SignedInfo>  
+      <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>  
+      <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>  
+      <Reference URI="">  
+        <Transforms>  
+          <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>  
+        </Transforms>  
+        <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>  
+        <DigestValue>Base64EncodedValue==</DigestValue>  
+      </Reference>  
+    </SignedInfo>  
+    <SignatureValue>AnotherBase64EncodedValue===</SignatureValue>  
+</Signature>
+```  
+  
+Основные части этой структуры:  
+  
+- элемент `<CanonicalizationMethod>`;
+
+    Задает правила для перезаписи `Signature` элемента из XML или текста в байты для проверки подписи. Значение по умолчанию в .NET <http://www.w3.org/TR/2001/REC-xml-c14n-20010315>—, которое определяет надежный алгоритм. Этот элемент представлен <xref:System.Security.Cryptography.Xml.SignedInfo.CanonicalizationMethod%2A?displayProperty=nameWithType> свойством.  
+  
+- элемент `<SignatureMethod>`;
+
+   Указывает алгоритм, используемый для создания и проверки подписи, который был применен к `<Signature>` элементу для получения значения в. `<SignatureValue>` В предыдущем примере значение <http://www.w3.org/2000/09/xmldsig#rsa-sha1> идентифицирует подпись RSA PKCS1 SHA-1. Из-за проблем с SHA-1 Корпорация Майкрософт рекомендует использовать модель безопасности на основе SHA-256 или более высокого уровня. Этот элемент представлен <xref:System.Security.Cryptography.Xml.SignedXml.SignatureMethod%2A> свойством.  
+  
+- элемент `<SignatureValue>`;
+
+   Задает криптографическую подпись для `<Signature>` элемента. Если эта подпись не проверяется, то `<Signature>` часть блока была подделана, а документ считается недопустимым. Если `<CanonicalizationMethod>` это значение заслуживает доверия, это значение обеспечивает высокую устойчивость к искажениям. Этот элемент представлен <xref:System.Security.Cryptography.Xml.SignedXml.SignatureValue%2A> свойством.  
+  
+- `URI` Атрибут элемента `<Reference>`  
+
+   Указывает объект данных, используя ссылку URI. Этот атрибут представлен <xref:System.Security.Cryptography.Xml.Reference.Uri%2A?displayProperty=nameWithType> свойством.  
+  
+   - Не указывая `URI` атрибут, то есть при <xref:System.Security.Cryptography.Xml.Reference.Uri%2A?displayProperty=nameWithType> присвоении свойству `null`значения, это означает, что принимающее приложение должно быть осведомлено об удостоверении объекта. В большинстве случаев `null` URI приведет к возникновению исключения. Не используйте `null` универсальный код ресурса (URI), если приложение не взаимосвязано с протоколом, который требует этого.  
+  
+   - Присвоение `URI` атрибуту пустой строки означает, что корневой элемент документа подписывается в виде запечатанной сигнатуры.  
+  
+   - Если значение `URI` атрибута начинается с #, значение должно разрешаться в элемент в текущем документе. Эту форму можно использовать с любыми поддерживаемыми типами сигнатур (запечатанная подпись, подпись запечатывание или внутренняя отсоединенная подпись).  
+  
+   - Все остальное считается отсоединенной подписью внешнего ресурса и не поддерживается <xref:System.Security.Cryptography.Xml.SignedXml> классом.  
+  
+- элемент `<Transforms>`;  
+
+   Содержит упорядоченный список `<Transform>` элементов, описывающих, как подписавший получил объект данных, который был дайджестом. Алгоритм преобразования аналогичен методу канонизации, но вместо перезаписи `<Signature>` элемента он переписывает содержимое, определяемое `URI` атрибутом `<Reference>` элемента. `<Transforms>` Элемент представлен <xref:System.Security.Cryptography.Xml.TransformChain>  классом.  
+  
+   - Каждый алгоритм преобразования определяется как принимающий XML (набор узлов XPath) или байты в качестве входных данных. Если формат текущих данных отличается от требований к входным данным преобразования, применяются правила преобразования.  
+  
+   - Каждый алгоритм преобразования определяется как создающий либо XML, либо байты в качестве выходных данных.  
+  
+   - Если выходные данные последнего алгоритма преобразования не определены в байтах (или не указаны преобразования), то [метод канонизации](https://www.w3.org/TR/2001/REC-xml-c14n-20010315) используется как неявное преобразование (даже если в `<CanonicalizationMethod>` элементе был указан другой алгоритм).  
+  
+   - Значение <http://www.w3.org/2000/09/xmldsig#enveloped-signature> для алгоритма преобразования кодирует правило, которое интерпретируется как `<Signature>` удалить элемент из документа. В противном случае средство проверки запечатанной сигнатуры будет выполнять дайджест документа, включая подпись, но перед применением подписи в нем будет выполнен дайджест документа, что приведет к различным ответам.  
+
+- элемент `<DigestMethod>`;
+ 
+   Определяет метод дайджеста (криптографический хэш), применяемый к преобразованному содержимому, `URI` определяемому атрибутом `<Reference>` элемента. Он представлен <xref:System.Security.Cryptography.Xml.Reference.DigestMethod%2A?displayProperty=nameWithType> свойством.  
+  
+## <a name="choosing-a-canonicalization-method"></a>Выбор метода канонизации  
+ Если не требуется взаимодействие с спецификацией, требующей использования другого значения, рекомендуется использовать метод канонизации .NET по умолчанию, который является алгоритмом XML-C14N 1,0, значение которого равно <http://www.w3.org/TR/2001/REC-xml-c14n-20010315>. Алгоритм XML-C14N 1,0 должен поддерживаться всеми реализациями XMLDSIG, особенно в том случае, если это неявное завершающее преобразование для применения.  
+  
+ Существуют версии алгоритмов канонизации, которые поддерживают сохранение комментариев. Не рекомендуется использовать в комментариях методы канонизации, так как они нарушают принцип подписывания. То есть комментарии в `<Signature>` элементе не изменяют логику обработки для выполнения сигнатуры, а только значение сигнатуры. При объединении с алгоритмом слабых подписей разрешение включения комментариев дает злоумышленнику ненужную свободу при принудительном конфликте хэша, делая несанкционированный документ приемлемым.  В .NET Framework по умолчанию поддерживаются только встроенные каноникализерс. Сведения о поддержке дополнительных или пользовательских каноникализерс см. <xref:System.Security.Cryptography.Xml.SignedXml.SafeCanonicalizationMethods%2A> в описании свойства. Если в документе используется метод канонизации, который не находится в коллекции, представленной <xref:System.Security.Cryptography.Xml.SignedXml.SafeCanonicalizationMethods%2A> свойством, то метод возвратит <xref:System.Security.Cryptography.Xml.SignedXml.CheckSignature%2A> `false`значение.  
+  
+> [!NOTE]
+>  Очень Защитное приложение может удалить все значения, <xref:System.Security.Cryptography.Xml.SignedXml.SafeCanonicalizationMethods%2A> не предполагаемые для использования при входе в коллекцию.  
+  
+## <a name="are-the-reference-values-safe-from-tampering"></a>Являются ли ссылочные значения защищенными от несанкционированного изменения?  
+ Да, `<Reference>` значения могут быть защищены от несанкционированного изменения. Платформа .NET проверяет `<SignatureValue>` вычисление перед обработкой любых `<Reference>` значений и связанных с ними преобразований и будет прерываться раньше, чтобы избежать потенциально вредоносных инструкций по обработке.  
+  
+## <a name="choosing-the-elements-to-sign"></a>Выбор элементов для подписи  
+ Рекомендуется использовать значение "" для `URI` атрибута (или задать для свойства пустую строку), если это <xref:System.Security.Cryptography.Xml.Reference.Uri%2A> возможно. Это означает, что для вычисления дайджеста будет учитываться весь документ. Это означает, что весь документ защищен от несанкционированного изменения.  
+  
+ Очень часто `URI` встречаются значения в виде привязок, таких как #foo, ссылающихся на элемент, атрибут ID которого имеет значение "foo". К сожалению, это легко может быть незаконно, так как включает только содержимое целевого элемента, а не контекст. Злоумышленниками это различие называется переносом XML-подписи (КССВ).  
+  
+ Если приложение считает, что комментарии являются семантическими (что не распространено при работе с XML), следует использовать "#xpointer (/)" вместо "" и "#xpointer (идентификатор (" foo "))" вместо "#foo". #Xpointer версии обрабатываются как содержащие комментарии, а формы «ShortName» — за исключением комментариев.  
+  
+ Если необходимо принять документы, которые защищены только частично, и вы хотите убедиться, что вы читаете содержимое, защищенное подписью, используйте <xref:System.Security.Cryptography.Xml.SignedXml.GetIdElement%2A> метод.  
+  
+## <a name="security-considerations-about-the-keyinfo-element"></a>Вопросы безопасности об элементе KeyInfo  
+ Данные в необязательном `<KeyInfo>` элементе (то есть <xref:System.Security.Cryptography.Xml.SignedXml.KeyInfo%2A> свойство), который содержит ключ для проверки подписи, не должны быть доверенными.  
+  
+ В частности, если <xref:System.Security.Cryptography.Xml.SignedXml.KeyInfo%2A> значение представляет собой пустой открытый ключ RSA, DSA или ECDSA, документ мог быть изменен, несмотря на то <xref:System.Security.Cryptography.Xml.SignedXml.CheckSignature%2A> , что метод сообщает, что подпись допустима.  Это может произойти из-за того, что сущность, выполняющая подмену, должна создать новый ключ и повторно подписать измененный документ новым ключом. Таким образом, если приложение не проверяет, что открытый ключ является ожидаемым значением, документ следует рассматривать так, как будто он был изменен. Для этого приложение должно проверить открытый ключ, внедренный в документ, и проверить его на соответствие списку известных значений для контекста документа. Например, если документ может быть понятен известному пользователю, необходимо проверить ключ по списку известных ключей, используемых этим пользователем.  
+  
+ Можно также проверить ключ после обработки документа с помощью <xref:System.Security.Cryptography.Xml.SignedXml.CheckSignatureReturningKey%2A> метода вместо <xref:System.Security.Cryptography.Xml.SignedXml.CheckSignature%2A> использования метода. Но для обеспечения оптимальной безопасности следует заранее проверить ключ.  
+  
+ Кроме того, попробуйте использовать зарегистрированные открытые ключи пользователя, а не читать содержимое `<KeyInfo>` элемента.  
+  
+## <a name="security-considerations-about-the-x509data-element"></a>Вопросы безопасности об элементе X509Data  
+ Необязательный `<X509Data>` элемент является дочерним `<KeyInfo>` для элемента и содержит один или несколько сертификатов x509 или идентификаторов для сертификатов x509. Данные в `<X509Data>` элементе также не должны быть доверенными по своей природе.  
+  
+ При проверке документа с внедренным `<X509Data>` элементом .NET проверяет только то, что данные разрешаются в сертификат X509, Открытый ключ которого можно успешно использовать для проверки подписи документа. В отличие от вызова <xref:System.Security.Cryptography.Xml.SignedXml.CheckSignature%2A> метода `verifySignatureOnly` с параметром `false`, проверка отзыва не выполняется, доверие к цепочке не проверяется и срок действия не проверяется. Даже если приложение извлекает сам сертификат и передает его <xref:System.Security.Cryptography.Xml.SignedXml.CheckSignature%2A> в метод `verifySignatureOnly` с параметром, для `false`которого задано значение, по-прежнему Недостаточная проверка для предотвращения изменения документа. Сертификат по-прежнему должен быть проверен, если он подходит для подписанного документа.  
+  
+ Использование внедренного сертификата для подписи может предоставить полезные стратегии смены ключей, как в `<X509Data>` разделе, так и в содержимом документа. При использовании этого подхода приложение должно извлечь сертификат вручную и выполнить проверку подобного:  
+  
+-   Сертификат был выдан напрямую или через цепочку центром сертификации (ЦС), Открытый сертификат которого внедрен в приложение.  
+  
+     Использование списка доверия, предоставленного системой, без дополнительных проверок, таких как известное имя субъекта, недостаточно для предотвращения незаконного <xref:System.Security.Cryptography.Xml.SignedXml>изменения.  
+  
+-   Срок действия сертификата истекает во время подписывания документа (или "сейчас" для обработки документов практически в реальном времени).  
+  
+-   Для долгосрочных сертификатов, выданных центром сертификации, который поддерживает отзыв, убедитесь, что сертификат не отозван.  
+  
+-   Субъект сертификата проверен в соответствии с текущим документом.  
+  
+## <a name="choosing-the-transform-algorithm"></a>Выбор алгоритма преобразования  
+ При взаимодействии с спецификацией, в которой указаны определенные значения (например, XrML), необходимо следовать спецификации. При наличии запечатанной подписи (например, при подписании всего документа) необходимо использовать <http://www.w3.org/2000/09/xmldsig#enveloped-signature> (представленные <xref:System.Security.Cryptography.Xml.XmlDsigEnvelopedSignatureTransform> классом). Можно также указать неявное преобразование XML-C14N, но это необязательно.  Для запечатывание или отсоединенной подписи не требуется никаких преобразований. Неявное преобразование XML-C14N позаботится обо всем.  
+  
+ С обновлением безопасности, внесенным в [бюллетень по безопасности Microsoft MS16-035](https://docs.microsoft.com/security-updates/securitybulletins/2016/ms16-035), платформа .NET ограничила возможности использования преобразований в проверке документов по умолчанию с ненадежными преобразованиями <xref:System.Security.Cryptography.Xml.SignedXml.CheckSignature%2A> , приводящими `false`к постоянному возврату. В частности, преобразования, требующие дополнительных входных данных (указанных в виде дочерних элементов в XML), больше не разрешены из-за их уязвимости злоумышленников. Консорциум W3C рекомендует избегать преобразования XPath и XSLT, которые являются двумя основными преобразованиями, затрагиваемыми этими ограничениями.  
+  
+## <a name="the-problem-with-external-references"></a>Проблема с внешними ссылками  
+ Если приложение не проверяет, что внешние ссылки соответствуют текущему контексту, они могут быть нарушены способами, обеспечивающими множество уязвимостей системы безопасности (включая отказ в обслуживании, распределенное отражение с нарушением обслуживания, сведения Раскрытие, обход подписи и удаленное выполнение кода). Даже если приложение должно проверить URI внешней ссылочной ссылки, будет оставаться проблемой загрузки ресурса дважды: один раз, когда приложение считывает его, и один раз при <xref:System.Security.Cryptography.Xml.SignedXml> чтении. Поскольку нет никакой гарантии, что приложение, считывающее и подлинность документа, будет иметь одинаковое содержимое, подпись не обеспечивает надежность.  
+  
+ Учитывая риски внешних ссылок, <xref:System.Security.Cryptography.Xml.SignedXml> вызовет исключение при обнаружении внешней ссылки.  Дополнительные сведения об этой ошибке см. в [статье базы знаний 3148821](https://support.microsoft.com/kb/3148821).  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как подписать и проверить весь XML-документ с помощью запечатанной подписи.  
+  
+ [!code-cpp[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope#1](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope/CPP/exampleenvelope.cpp#1)]
+ [!code-csharp[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope/CS/exampleenvelope.cs#1)]
+ [!code-vb[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope/VB/exampleenvelope.vb#1)]  
+  
+ В следующем примере кода показано, как подписать и проверить отдельный элемент XML-документа с помощью подписи запечатывание.  
+  
+ [!code-cpp[Cryptography.XML.SignVerifyEnvelope - Specify Element#1](~/samples/snippets/cpp/VS_Snippets_CLR/Cryptography.XML.SignVerifyEnvelope - Specify Element/CPP/sample.cpp#1)]
+ [!code-csharp[Cryptography.XML.SignVerifyEnvelope - Specify Element#1](~/samples/snippets/csharp/VS_Snippets_CLR/Cryptography.XML.SignVerifyEnvelope - Specify Element/CS/sample.cs#1)]
+ [!code-vb[Cryptography.XML.SignVerifyEnvelope - Specify Element#1](~/samples/snippets/visualbasic/VS_Snippets_CLR/Cryptography.XML.SignVerifyEnvelope - Specify Element/VB/sample.vb#1)]  
+  
+ ]]></format>
+    </remarks>
+    <related type="ExternalDocumentation" href="https://www.w3.org/TR/xmldsig-bestpractices">Рекомендации по XML-сигнатурам</related>
+  </Docs>
+  <Members>
+    <MemberGroup MemberName=".ctor">
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public SignedXml ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Security.Cryptography.Xml.SignedXml.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; SignedXml();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Examples  
+ В следующем примере кода показано, как подписать и проверить весь XML-документ с помощью запечатанной подписи.  
+  
+ [!code-cpp[Cryptography.XML.Signature - Envelope#1](~/samples/snippets/cpp/VS_Snippets_CLR/Cryptography.XML.Signature - Envelope/CPP/sample.cpp#1)]
+ [!code-csharp[Cryptography.XML.Signature - Envelope#1](~/samples/snippets/csharp/VS_Snippets_CLR/Cryptography.XML.Signature - Envelope/CS/sample.cs#1)]
+ [!code-vb[Cryptography.XML.Signature - Envelope#1](~/samples/snippets/visualbasic/VS_Snippets_CLR/Cryptography.XML.Signature - Envelope/VB/sample.vb#1)]  
+  
+ В следующем примере кода показано, как подписать и проверить объект с адресацией универсального кода ресурса (URI) с помощью отсоединенной подписи.  
+  
+ [!code-cpp[XMLDSIG - Signature - Detached#1](~/samples/snippets/cpp/VS_Snippets_CLR/XMLDSIG - Signature - Detached/CPP/sample.cpp#1)]
+ [!code-csharp[XMLDSIG - Signature - Detached#1](~/samples/snippets/csharp/VS_Snippets_CLR/XMLDSIG - Signature - Detached/CS/sample.cs#1)]
+ [!code-vb[XMLDSIG - Signature - Detached#1](~/samples/snippets/visualbasic/VS_Snippets_CLR/XMLDSIG - Signature - Detached/VB/sample.vb#1)]  
+  
+ В следующем примере кода показано, как подписать и проверить отдельный элемент XML-документа с помощью подписи запечатывание.  
+  
+ [!code-cpp[Cryptography.XML.SignVerifyEnvelope - Specify Element#1](~/samples/snippets/cpp/VS_Snippets_CLR/Cryptography.XML.SignVerifyEnvelope - Specify Element/CPP/sample.cpp#1)]
+ [!code-csharp[Cryptography.XML.SignVerifyEnvelope - Specify Element#1](~/samples/snippets/csharp/VS_Snippets_CLR/Cryptography.XML.SignVerifyEnvelope - Specify Element/CS/sample.cs#1)]
+ [!code-vb[Cryptography.XML.SignVerifyEnvelope - Specify Element#1](~/samples/snippets/visualbasic/VS_Snippets_CLR/Cryptography.XML.SignVerifyEnvelope - Specify Element/VB/sample.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public SignedXml (System.Xml.XmlDocument document);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.Xml.XmlDocument document) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Security.Cryptography.Xml.SignedXml.#ctor(System.Xml.XmlDocument)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (document As XmlDocument)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; SignedXml(System::Xml::XmlDocument ^ document);" />
+      <MemberSignature Language="F#" Value="new System.Security.Cryptography.Xml.SignedXml : System.Xml.XmlDocument -&gt; System.Security.Cryptography.Xml.SignedXml" Usage="new System.Security.Cryptography.Xml.SignedXml document" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="document" Type="System.Xml.XmlDocument" />
+      </Parameters>
+      <Docs>
+        <param name="document">Объект <see cref="T:System.Xml.XmlDocument" />, с помощью которого инициализируется новый экземпляр класса <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Security.Cryptography.Xml.SignedXml" /> на основе заданного XML-документа.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Examples  
+ В следующем примере кода показано, как подписать и проверить весь XML-документ с помощью запечатанной подписи.  
+  
+ [!code-cpp[Cryptography.XML.Signature - Envelope#1](~/samples/snippets/cpp/VS_Snippets_CLR/Cryptography.XML.Signature - Envelope/CPP/sample.cpp#1)]
+ [!code-csharp[Cryptography.XML.Signature - Envelope#1](~/samples/snippets/csharp/VS_Snippets_CLR/Cryptography.XML.Signature - Envelope/CS/sample.cs#1)]
+ [!code-vb[Cryptography.XML.Signature - Envelope#1](~/samples/snippets/visualbasic/VS_Snippets_CLR/Cryptography.XML.Signature - Envelope/VB/sample.vb#1)]  
+  
+ В следующем примере кода показано, как подписать и проверить объект с адресацией универсального кода ресурса (URI) с помощью отсоединенной подписи.  
+  
+ [!code-cpp[XMLDSIG - Signature - Detached#1](~/samples/snippets/cpp/VS_Snippets_CLR/XMLDSIG - Signature - Detached/CPP/sample.cpp#1)]
+ [!code-csharp[XMLDSIG - Signature - Detached#1](~/samples/snippets/csharp/VS_Snippets_CLR/XMLDSIG - Signature - Detached/CS/sample.cs#1)]
+ [!code-vb[XMLDSIG - Signature - Detached#1](~/samples/snippets/visualbasic/VS_Snippets_CLR/XMLDSIG - Signature - Detached/VB/sample.vb#1)]  
+  
+ В следующем примере кода показано, как подписать и проверить отдельный элемент XML-документа с помощью подписи запечатывание.  
+  
+ [!code-cpp[Cryptography.XML.SignVerifyEnvelope - Specify Element#1](~/samples/snippets/cpp/VS_Snippets_CLR/Cryptography.XML.SignVerifyEnvelope - Specify Element/CPP/sample.cpp#1)]
+ [!code-csharp[Cryptography.XML.SignVerifyEnvelope - Specify Element#1](~/samples/snippets/csharp/VS_Snippets_CLR/Cryptography.XML.SignVerifyEnvelope - Specify Element/CS/sample.cs#1)]
+ [!code-vb[Cryptography.XML.SignVerifyEnvelope - Specify Element#1](~/samples/snippets/visualbasic/VS_Snippets_CLR/Cryptography.XML.SignVerifyEnvelope - Specify Element/VB/sample.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Параметр <paramref name="document" /> имеет значение <see langword="null" />.  
+  
+- или - 
+Параметр <paramref name="document" /> содержит свойство <see cref="P:System.Xml.XmlDocument.DocumentElement" /> со значением null.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public SignedXml (System.Xml.XmlElement elem);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.Xml.XmlElement elem) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Security.Cryptography.Xml.SignedXml.#ctor(System.Xml.XmlElement)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (elem As XmlElement)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; SignedXml(System::Xml::XmlElement ^ elem);" />
+      <MemberSignature Language="F#" Value="new System.Security.Cryptography.Xml.SignedXml : System.Xml.XmlElement -&gt; System.Security.Cryptography.Xml.SignedXml" Usage="new System.Security.Cryptography.Xml.SignedXml elem" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="elem" Type="System.Xml.XmlElement" />
+      </Parameters>
+      <Docs>
+        <param name="elem">Объект <see cref="T:System.Xml.XmlElement" />, с помощью которого инициализируется новый экземпляр класса <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Security.Cryptography.Xml.SignedXml" /> на основании указанного объекта <see cref="T:System.Xml.XmlElement" />.</summary>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentNullException">Параметр <paramref name="elem" /> имеет значение <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="AddObject">
+      <MemberSignature Language="C#" Value="public void AddObject (System.Security.Cryptography.Xml.DataObject dataObject);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void AddObject(class System.Security.Cryptography.Xml.DataObject dataObject) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Security.Cryptography.Xml.SignedXml.AddObject(System.Security.Cryptography.Xml.DataObject)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void AddObject(System::Security::Cryptography::Xml::DataObject ^ dataObject);" />
+      <MemberSignature Language="F#" Value="member this.AddObject : System.Security.Cryptography.Xml.DataObject -&gt; unit" Usage="signedXml.AddObject dataObject" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="dataObject" Type="System.Security.Cryptography.Xml.DataObject" />
+      </Parameters>
+      <Docs>
+        <param name="dataObject">Объект <see cref="T:System.Security.Cryptography.Xml.DataObject" />, который добавляется к списку подписываемых объектов.</param>
+        <summary>Добавляет объект <see cref="T:System.Security.Cryptography.Xml.DataObject" /> к списку подписываемых объектов.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод добавляет элемент, представляющий объект, который должен быть подписан `<Signature>` на элемент цифровой подписи XML. `<Object>` <xref:System.Security.Cryptography.Xml.SignedXml.AddObject%2A>  
+  
+ Метод внутренне <xref:System.Security.Cryptography.Xml.Signature.AddObject%2A> вызывает метод <xref:System.Security.Cryptography.Xml.Signature> объекта, инкапсулированного <xref:System.Security.Cryptography.Xml.SignedXml> объектом. <xref:System.Security.Cryptography.Xml.SignedXml.AddObject%2A>  Можно также добавить <xref:System.Security.Cryptography.Xml.DataObject> объект, напрямую <xref:System.Security.Cryptography.Xml.Signature.AddObject%2A> вызвав метод из <xref:System.Security.Cryptography.Xml.SignedXml.Signature%2A> свойства.  
+  
+ Дополнительные сведения о цифровых подписях XML см. в [спецификации XMLDSIG](https://www.w3.org/TR/xmldsig-core/).  
+  
+   
+  
+## Examples  
+ В следующем примере кода вычисляются и XML-подписи.  
+  
+ [!code-cpp[System.Security.Cryptography.XML.SignedXml-AddObject-AddReference#1](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml-AddObject-AddReference/CPP/example.cpp#1)]
+ [!code-csharp[System.Security.Cryptography.XML.SignedXml-AddObject-AddReference#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml-AddObject-AddReference/CS/example.cs#1)]
+ [!code-vb[System.Security.Cryptography.XML.SignedXml-AddObject-AddReference#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml-AddObject-AddReference/VB/example.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="AddReference">
+      <MemberSignature Language="C#" Value="public void AddReference (System.Security.Cryptography.Xml.Reference reference);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void AddReference(class System.Security.Cryptography.Xml.Reference reference) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Security.Cryptography.Xml.SignedXml.AddReference(System.Security.Cryptography.Xml.Reference)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void AddReference(System::Security::Cryptography::Xml::Reference ^ reference);" />
+      <MemberSignature Language="F#" Value="member this.AddReference : System.Security.Cryptography.Xml.Reference -&gt; unit" Usage="signedXml.AddReference reference" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="reference" Type="System.Security.Cryptography.Xml.Reference" />
+      </Parameters>
+      <Docs>
+        <param name="reference">Объект <see cref="T:System.Security.Cryptography.Xml.Reference" />, который определяет метод хэширования, значение хэша и преобразование, с помощью которых создается цифровая подпись XML.</param>
+        <summary>Добавляет объект <see cref="T:System.Security.Cryptography.Xml.Reference" /> к объекту <see cref="T:System.Security.Cryptography.Xml.SignedXml" />, который определяет метод хэширования, значение хэша и преобразование, с помощью которых создается цифровая подпись XML.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод добавляет в <xref:System.Security.Cryptography.Xml.SignedXml>  объект элемент, описывающий метод дайджеста, значение дайджеста и преобразование, используемые для создания цифровой подписи XML. `<Reference>` <xref:System.Security.Cryptography.Xml.SignedXml.AddReference%2A>  Элемент является вложенным элементом `<SignedInfo>` элемента. `<Reference>`  
+  
+ Метод внутренне <xref:System.Security.Cryptography.Xml.SignedInfo.AddReference%2A> вызывает метод <xref:System.Security.Cryptography.Xml.SignedInfo> объекта, инкапсулированного <xref:System.Security.Cryptography.Xml.SignedXml> объектом. <xref:System.Security.Cryptography.Xml.SignedXml.AddReference%2A>  Можно также добавить <xref:System.Security.Cryptography.Xml.Reference> объект, напрямую <xref:System.Security.Cryptography.Xml.SignedInfo.AddReference%2A> вызвав метод из <xref:System.Security.Cryptography.Xml.SignedXml.SignedInfo%2A> свойства.  
+  
+ Дополнительные сведения о цифровых подписях XML см. в [спецификации XMLDSIG](https://www.w3.org/TR/xmldsig-core/).  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как подписать и проверить весь XML-документ с помощью запечатанной подписи.  
+  
+ [!code-cpp[Cryptography.XML.Signature - Envelope#1](~/samples/snippets/cpp/VS_Snippets_CLR/Cryptography.XML.Signature - Envelope/CPP/sample.cpp#1)]
+ [!code-csharp[Cryptography.XML.Signature - Envelope#1](~/samples/snippets/csharp/VS_Snippets_CLR/Cryptography.XML.Signature - Envelope/CS/sample.cs#1)]
+ [!code-vb[Cryptography.XML.Signature - Envelope#1](~/samples/snippets/visualbasic/VS_Snippets_CLR/Cryptography.XML.Signature - Envelope/VB/sample.vb#1)]  
+  
+ В следующем примере кода показано, как подписать и проверить объект с адресацией универсального кода ресурса (URI) с помощью отсоединенной подписи.  
+  
+ [!code-cpp[XMLDSIG - Signature - Detached#1](~/samples/snippets/cpp/VS_Snippets_CLR/XMLDSIG - Signature - Detached/CPP/sample.cpp#1)]
+ [!code-csharp[XMLDSIG - Signature - Detached#1](~/samples/snippets/csharp/VS_Snippets_CLR/XMLDSIG - Signature - Detached/CS/sample.cs#1)]
+ [!code-vb[XMLDSIG - Signature - Detached#1](~/samples/snippets/visualbasic/VS_Snippets_CLR/XMLDSIG - Signature - Detached/VB/sample.vb#1)]  
+  
+ В следующем примере кода показано, как подписать и проверить отдельный элемент XML-документа с помощью подписи запечатывание.  
+  
+ [!code-cpp[Cryptography.XML.SignVerifyEnvelope - Specify Element#1](~/samples/snippets/cpp/VS_Snippets_CLR/Cryptography.XML.SignVerifyEnvelope - Specify Element/CPP/sample.cpp#1)]
+ [!code-csharp[Cryptography.XML.SignVerifyEnvelope - Specify Element#1](~/samples/snippets/csharp/VS_Snippets_CLR/Cryptography.XML.SignVerifyEnvelope - Specify Element/CS/sample.cs#1)]
+ [!code-vb[Cryptography.XML.SignVerifyEnvelope - Specify Element#1](~/samples/snippets/visualbasic/VS_Snippets_CLR/Cryptography.XML.SignVerifyEnvelope - Specify Element/VB/sample.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="CheckSignature">
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Определяет, проверяется ли свойство <see cref="P:System.Security.Cryptography.Xml.SignedXml.Signature" />.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="CheckSignature">
+      <MemberSignature Language="C#" Value="public bool CheckSignature ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance bool CheckSignature() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Security.Cryptography.Xml.SignedXml.CheckSignature" />
+      <MemberSignature Language="VB.NET" Value="Public Function CheckSignature () As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; bool CheckSignature();" />
+      <MemberSignature Language="F#" Value="member this.CheckSignature : unit -&gt; bool" Usage="signedXml.CheckSignature " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Определяет, проверяется ли свойство <see cref="P:System.Security.Cryptography.Xml.SignedXml.Signature" /> с помощью открытого ключа в подписи.</summary>
+        <returns>Значение <see langword="true" />, если свойство <see cref="P:System.Security.Cryptography.Xml.SignedXml.Signature" /> проверяется; в противном случае — значение <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод также выполняет вычисление дайджеста ссылок и значения сигнатуры.  
+  
+ Если XML-документ был подписан с помощью подписи X. 509, <xref:System.Security.Cryptography.Xml.SignedXml.CheckSignature%2A> метод будет искать сертификаты, подходящие для проверки, в хранилище "AddressBook". Например, если на сертификат ссылается идентификатор ключа субъекта (SKI), <xref:System.Security.Cryptography.Xml.SignedXml.CheckSignature%2A> метод выберет сертификаты с этим идентификатором Ski и попытается выполнить его один за другим, пока он не сможет проверить сертификат.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как подписать и проверить весь XML-документ с помощью запечатанной подписи.  
+  
+ [!code-cpp[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope#1](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope/CPP/exampleenvelope.cpp#1)]
+ [!code-csharp[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope/CS/exampleenvelope.cs#1)]
+ [!code-vb[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope/VB/exampleenvelope.vb#1)]  
+  
+ В следующем примере кода показано, как подписать и проверить объект с адресацией универсального кода ресурса (URI) с помощью отсоединенной подписи.  
+  
+ [!code-cpp[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Detached#1](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Detached/CPP/exampledetached.cpp#1)]
+ [!code-csharp[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Detached#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Detached/CS/exampledetached.cs#1)]
+ [!code-vb[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Detached#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Detached/VB/exampledetached.vb#1)]  
+  
+ В следующем примере кода показано, как подписать и проверить отдельный элемент XML-документа с помощью подписи запечатывание.  
+  
+ [!code-cpp[Cryptography.XML.SignVerifyEnvelope - Specify Element#1](~/samples/snippets/cpp/VS_Snippets_CLR/Cryptography.XML.SignVerifyEnvelope - Specify Element/CPP/sample.cpp#1)]
+ [!code-csharp[Cryptography.XML.SignVerifyEnvelope - Specify Element#1](~/samples/snippets/csharp/VS_Snippets_CLR/Cryptography.XML.SignVerifyEnvelope - Specify Element/CS/sample.cs#1)]
+ [!code-vb[Cryptography.XML.SignVerifyEnvelope - Specify Element#1](~/samples/snippets/visualbasic/VS_Snippets_CLR/Cryptography.XML.SignVerifyEnvelope - Specify Element/VB/sample.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Security.Cryptography.CryptographicException">Свойство <see cref="P:System.Security.Cryptography.AsymmetricAlgorithm.SignatureAlgorithm" /> открытого ключа в подписи не совпадает со свойством <see cref="P:System.Security.Cryptography.Xml.SignedXml.SignatureMethod" />.  
+  
+- или - 
+Не удалось создать описание сигнатуры.  
+  
+-или 
+Не удалось создать хэш-алгоритм.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="CheckSignature">
+      <MemberSignature Language="C#" Value="public bool CheckSignature (System.Security.Cryptography.AsymmetricAlgorithm key);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance bool CheckSignature(class System.Security.Cryptography.AsymmetricAlgorithm key) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Security.Cryptography.Xml.SignedXml.CheckSignature(System.Security.Cryptography.AsymmetricAlgorithm)" />
+      <MemberSignature Language="VB.NET" Value="Public Function CheckSignature (key As AsymmetricAlgorithm) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; bool CheckSignature(System::Security::Cryptography::AsymmetricAlgorithm ^ key);" />
+      <MemberSignature Language="F#" Value="member this.CheckSignature : System.Security.Cryptography.AsymmetricAlgorithm -&gt; bool" Usage="signedXml.CheckSignature key" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="key" Type="System.Security.Cryptography.AsymmetricAlgorithm" />
+      </Parameters>
+      <Docs>
+        <param name="key">Реализация свойства <see cref="T:System.Security.Cryptography.AsymmetricAlgorithm" />, которому принадлежит ключ, используемый для проверки свойства <see cref="P:System.Security.Cryptography.Xml.SignedXml.Signature" />.</param>
+        <summary>Определяет, проверяется ли свойство <see cref="P:System.Security.Cryptography.Xml.SignedXml.Signature" /> для указанного ключа.</summary>
+        <returns>Значение <see langword="true" />, если свойство <see cref="P:System.Security.Cryptography.Xml.SignedXml.Signature" /> проверяется для указанного ключа; в противном случае — значение <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Examples  
+ В следующем примере кода показано, как подписать и проверить объект с адресацией универсального кода ресурса (URI) с помощью отсоединенной подписи.  
+  
+ [!code-cpp[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Detached#1](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Detached/CPP/exampledetached.cpp#1)]
+ [!code-csharp[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Detached#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Detached/CS/exampledetached.cs#1)]
+ [!code-vb[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Detached#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Detached/VB/exampledetached.vb#1)]  
+  
+ В следующем примере кода показано, как подписать и проверить весь XML-документ с помощью запечатанной подписи.  
+  
+ [!code-cpp[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope#1](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope/CPP/exampleenvelope.cpp#1)]
+ [!code-csharp[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope/CS/exampleenvelope.cs#1)]
+ [!code-vb[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope/VB/exampleenvelope.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Параметр <paramref name="key" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.Security.Cryptography.CryptographicException">Свойство <see cref="P:System.Security.Cryptography.AsymmetricAlgorithm.SignatureAlgorithm" /> параметра <paramref name="key" /> не совпадает со свойством <see cref="P:System.Security.Cryptography.Xml.SignedXml.SignatureMethod" />.  
+  
+- или - 
+Не удалось создать описание сигнатуры.  
+  
+-или 
+Не удалось создать хэш-алгоритм.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="CheckSignature">
+      <MemberSignature Language="C#" Value="public bool CheckSignature (System.Security.Cryptography.KeyedHashAlgorithm macAlg);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance bool CheckSignature(class System.Security.Cryptography.KeyedHashAlgorithm macAlg) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Security.Cryptography.Xml.SignedXml.CheckSignature(System.Security.Cryptography.KeyedHashAlgorithm)" />
+      <MemberSignature Language="VB.NET" Value="Public Function CheckSignature (macAlg As KeyedHashAlgorithm) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; bool CheckSignature(System::Security::Cryptography::KeyedHashAlgorithm ^ macAlg);" />
+      <MemberSignature Language="F#" Value="member this.CheckSignature : System.Security.Cryptography.KeyedHashAlgorithm -&gt; bool" Usage="signedXml.CheckSignature macAlg" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="macAlg" Type="System.Security.Cryptography.KeyedHashAlgorithm" />
+      </Parameters>
+      <Docs>
+        <param name="macAlg">Реализация объекта <see cref="T:System.Security.Cryptography.KeyedHashAlgorithm" />, который содержит код проверки подлинности сообщения, используемый для проверки свойства <see cref="P:System.Security.Cryptography.Xml.SignedXml.Signature" />.</param>
+        <summary>Определяет, проверяется ли свойство <see cref="P:System.Security.Cryptography.Xml.SignedXml.Signature" /> для указанного алгоритма кода проверки подлинности сообщения.</summary>
+        <returns>Значение <see langword="true" />, если свойство <see cref="P:System.Security.Cryptography.Xml.SignedXml.Signature" /> проверяется для указанного кода проверки подлинности сообщения; в противном случае — значение <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Examples  
+ В следующем примере кода показано, как подписать и проверить объект с адресацией универсального кода ресурса (URI) с помощью отсоединенной подписи.  
+  
+ [!code-cpp[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Detached#1](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Detached/CPP/xmldsigdetachedkeyedhashalg.cpp#1)]
+ [!code-csharp[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Detached#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Detached/CS/xmldsigdetachedkeyedhashalg.cs#1)]
+ [!code-vb[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Detached#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Detached/VB/xmldsigdetachedkeyedhashalg.vb#1)]  
+  
+ В следующем примере кода показано, как подписать и проверить весь XML-документ с помощью подписи запечатывание.  
+  
+ [!code-cpp[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Envelope#1](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Envelope/CPP/xmldsigenvkeyedhashalg.cpp#1)]
+ [!code-csharp[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Envelope#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Envelope/CS/xmldsigenvkeyedhashalg.cs#1)]
+ [!code-vb[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Envelope#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Envelope/VB/xmldsigenvkeyedhashalg.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Параметр <paramref name="macAlg" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.Security.Cryptography.CryptographicException">Свойство <see cref="P:System.Security.Cryptography.HashAlgorithm.HashSize" /> указанного объекта <see cref="T:System.Security.Cryptography.KeyedHashAlgorithm" /> недопустимо.  
+  
+- или - 
+Значение свойства <see cref="P:System.Security.Cryptography.Xml.SignedXml.Signature" /> — <see langword="null" />.  
+  
+-или- 
+Не удалось создать криптографическое преобразование, используемое для проверки подписи.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="CheckSignature">
+      <MemberSignature Language="C#" Value="public bool CheckSignature (System.Security.Cryptography.X509Certificates.X509Certificate2 certificate, bool verifySignatureOnly);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance bool CheckSignature(class System.Security.Cryptography.X509Certificates.X509Certificate2 certificate, bool verifySignatureOnly) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Security.Cryptography.Xml.SignedXml.CheckSignature(System.Security.Cryptography.X509Certificates.X509Certificate2,System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Public Function CheckSignature (certificate As X509Certificate2, verifySignatureOnly As Boolean) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; bool CheckSignature(System::Security::Cryptography::X509Certificates::X509Certificate2 ^ certificate, bool verifySignatureOnly);" />
+      <MemberSignature Language="F#" Value="member this.CheckSignature : System.Security.Cryptography.X509Certificates.X509Certificate2 * bool -&gt; bool" Usage="signedXml.CheckSignature (certificate, verifySignatureOnly)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;xamarinmac-3.0;netframework-4.8">
+          <AttributeName>System.Runtime.InteropServices.ComVisible(false)</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecuritySafeCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="certificate" Type="System.Security.Cryptography.X509Certificates.X509Certificate2" Index="0" FrameworkAlternate="dotnet-plat-ext-2.1;dotnet-plat-ext-2.2;dotnet-plat-ext-3.0;netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;xamarinmac-3.0" />
+        <Parameter Name="verifySignatureOnly" Type="System.Boolean" Index="1" FrameworkAlternate="dotnet-plat-ext-2.1;dotnet-plat-ext-2.2;dotnet-plat-ext-3.0;netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;xamarinmac-3.0" />
+      </Parameters>
+      <Docs>
+        <param name="certificate">Объект <see cref="T:System.Security.Cryptography.X509Certificates.X509Certificate2" />, используемый для проверки свойства <see cref="P:System.Security.Cryptography.Xml.SignedXml.Signature" />.</param>
+        <param name="verifySignatureOnly">Значение <see langword="true" />, чтобы проверять только подпись; значение <see langword="false" />, чтобы проверять подпись и сертификат.</param>
+        <summary>Определяет, проверяется ли свойство <see cref="P:System.Security.Cryptography.Xml.SignedXml.Signature" /> для указанного объекта <see cref="T:System.Security.Cryptography.X509Certificates.X509Certificate2" /> и действителен ли сертификат (необязательно).</summary>
+        <returns>Значение <see langword="true" />, если подпись является допустимой; в противном случае — значение <see langword="false" />.  
+  
+- или - 
+ Значение <see langword="true" />, если подпись и сертификат действительны; в противном случае — значение <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ В версии 1,1 .NET Framework сертификат X. 509 не проверяется.  В версии 2,0 и более поздних сертификат X. 509 проверяется.  
+  
+ В версии 2,0 и более поздних .NET Framework <xref:System.Security.Cryptography.Xml.SignedXml.CheckSignature%2A> метод будет искать сертификаты, подходящие для проверки, в хранилище "AddressBook". Например, если на сертификат ссылается идентификатор ключа субъекта (SKI), <xref:System.Security.Cryptography.Xml.SignedXml.CheckSignature%2A> метод выберет сертификаты с этим идентификатором Ski и попытается выполнить его один за другим, пока он не сможет проверить сертификат.  
+  
+   
+  
+## Examples  
+ В следующем примере кода для подписи и проверки XML-документа используется сертификат X. 509 из хранилища сертификатов.  
+  
+ [!code-csharp[Security.Cryptography.Xml.SignedXml.CheckSignature(X509Certificate2,Boolean)#1](~/samples/snippets/csharp/VS_Snippets_CLR/Security.Cryptography.Xml.SignedXml.CheckSignature/cs/sample.cs#1)]
+ [!code-vb[Security.Cryptography.Xml.SignedXml.CheckSignature(X509Certificate2,Boolean)#1](~/samples/snippets/visualbasic/VS_Snippets_CLR/Security.Cryptography.Xml.SignedXml.CheckSignature/vb/sample.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Параметр <paramref name="certificate" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.Security.Cryptography.CryptographicException">Не удалось создать описание сигнатуры для параметра <paramref name="certificate" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="CheckSignatureReturningKey">
+      <MemberSignature Language="C#" Value="public bool CheckSignatureReturningKey (out System.Security.Cryptography.AsymmetricAlgorithm signingKey);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance bool CheckSignatureReturningKey([out] class System.Security.Cryptography.AsymmetricAlgorithm&amp; signingKey) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Security.Cryptography.Xml.SignedXml.CheckSignatureReturningKey(System.Security.Cryptography.AsymmetricAlgorithm@)" />
+      <MemberSignature Language="VB.NET" Value="Public Function CheckSignatureReturningKey (ByRef signingKey As AsymmetricAlgorithm) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; bool CheckSignatureReturningKey([Runtime::InteropServices::Out] System::Security::Cryptography::AsymmetricAlgorithm ^ % signingKey);" />
+      <MemberSignature Language="F#" Value="member this.CheckSignatureReturningKey :  -&gt; bool" Usage="signedXml.CheckSignatureReturningKey signingKey" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="signingKey" Type="System.Security.Cryptography.AsymmetricAlgorithm" RefType="out" />
+      </Parameters>
+      <Docs>
+        <param name="signingKey">При завершении выполнения этого метода содержит реализацию объекта <see cref="T:System.Security.Cryptography.AsymmetricAlgorithm" />, содержащего открытый ключ в подписи. Этот параметр передается неинициализированным.</param>
+        <summary>Определяет, проверяется ли свойство <see cref="P:System.Security.Cryptography.Xml.SignedXml.Signature" /> с помощью открытого ключа в подписи.</summary>
+        <returns>Значение <see langword="true" />, если свойство <see cref="P:System.Security.Cryptography.Xml.SignedXml.Signature" /> проверяется с помощью открытого ключа в подписи; в противном случае — значение <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Examples  
+ В следующем примере кода показано, как подписать и проверить объект с адресацией универсального кода ресурса (URI) с помощью отсоединенной подписи.  
+  
+ [!code-cpp[System.Security.Cryptography.XML.SignedXML_CheckReturnValue_Detached#1](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXML_CheckReturnValue_Detached/CPP/exampledetached.cpp#1)]
+ [!code-csharp[System.Security.Cryptography.XML.SignedXML_CheckReturnValue_Detached#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXML_CheckReturnValue_Detached/CS/exampledetached.cs#1)]
+ [!code-vb[System.Security.Cryptography.XML.SignedXML_CheckReturnValue_Detached#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXML_CheckReturnValue_Detached/VB/exampledetached.vb#1)]  
+  
+ В следующем примере кода показано, как подписать и проверить весь XML-документ с помощью подписи запечатывание.  
+  
+ [!code-cpp[System.Security.Cryptography.XML.SignedXML_CheckReturnValue_Envelope#1](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXML_CheckReturnValue_Envelope/CPP/exampleenvelope.cpp#1)]
+ [!code-csharp[System.Security.Cryptography.XML.SignedXML_CheckReturnValue_Envelope#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXML_CheckReturnValue_Envelope/CS/exampleenvelope.cs#1)]
+ [!code-vb[System.Security.Cryptography.XML.SignedXML_CheckReturnValue_Envelope#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXML_CheckReturnValue_Envelope/VB/exampleenvelope.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Параметр <paramref name="signingKey" /> имеет значение null.</exception>
+        <exception cref="T:System.Security.Cryptography.CryptographicException">Свойство <see cref="P:System.Security.Cryptography.AsymmetricAlgorithm.SignatureAlgorithm" /> открытого ключа в подписи не совпадает со свойством <see cref="P:System.Security.Cryptography.Xml.SignedXml.SignatureMethod" />.  
+  
+-или- 
+Не удалось создать описание сигнатуры.  
+  
+-или 
+Не удалось создать хэш-алгоритм.</exception>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="ComputeSignature">
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Вычисляет цифровую подпись XML.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="ComputeSignature">
+      <MemberSignature Language="C#" Value="public void ComputeSignature ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void ComputeSignature() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Security.Cryptography.Xml.SignedXml.ComputeSignature" />
+      <MemberSignature Language="VB.NET" Value="Public Sub ComputeSignature ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void ComputeSignature();" />
+      <MemberSignature Language="F#" Value="member this.ComputeSignature : unit -&gt; unit" Usage="signedXml.ComputeSignature " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Вычисляет цифровую подпись XML.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Security.Cryptography.Xml.SignedXml.ComputeSignature%2A> Метод создает цифровую подпись XML и создает множество необходимых XML-элементов.  
+  
+ Перед вызовом этого метода необходимо задать данные, которые <xref:System.Security.Cryptography.Xml.SignedXml.SigningKey%2A> должны быть подписаны, и свойство.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как подписать и проверить объект с адресацией универсального кода ресурса (URI) с помощью отсоединенной подписи.  
+  
+ [!code-cpp[System.Security.Cryptography.XML-XMLDsigDetached#1](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Cryptography.XML-XMLDsigDetached/CPP/xmldsigdetach.cpp#1)]
+ [!code-csharp[System.Security.Cryptography.XML-XMLDsigDetached#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.XML-XMLDsigDetached/CS/xmldsigdetach.cs#1)]
+ [!code-vb[System.Security.Cryptography.XML-XMLDsigDetached#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.XML-XMLDsigDetached/VB/xmldsigdetach.vb#1)]  
+  
+ В следующем примере кода показано, как подписать и проверить весь XML-документ с помощью подписи запечатывание.  
+  
+ [!code-cpp[System.Security.Cryptography.XML-XMLDsigEnvelope#1](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Cryptography.XML-XMLDsigEnvelope/CPP/xmldsigenv.cpp#1)]
+ [!code-csharp[System.Security.Cryptography.XML-XMLDsigEnvelope#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.XML-XMLDsigEnvelope/CS/xmldsigenv.cs#1)]
+ [!code-vb[System.Security.Cryptography.XML-XMLDsigEnvelope#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.XML-XMLDsigEnvelope/VB/xmldsigenv.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Security.Cryptography.CryptographicException">Значение свойства <see cref="P:System.Security.Cryptography.Xml.SignedXml.SigningKey" /> — <see langword="null" />.  
+  
+- или - 
+Свойство <see cref="P:System.Security.Cryptography.Xml.SignedXml.SigningKey" /> не является объектом <see cref="T:System.Security.Cryptography.DSA" /> или объектом <see cref="T:System.Security.Cryptography.RSA" />.  
+  
+- или - 
+Не удалось загрузить ключ.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="ComputeSignature">
+      <MemberSignature Language="C#" Value="public void ComputeSignature (System.Security.Cryptography.KeyedHashAlgorithm macAlg);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void ComputeSignature(class System.Security.Cryptography.KeyedHashAlgorithm macAlg) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Security.Cryptography.Xml.SignedXml.ComputeSignature(System.Security.Cryptography.KeyedHashAlgorithm)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub ComputeSignature (macAlg As KeyedHashAlgorithm)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void ComputeSignature(System::Security::Cryptography::KeyedHashAlgorithm ^ macAlg);" />
+      <MemberSignature Language="F#" Value="member this.ComputeSignature : System.Security.Cryptography.KeyedHashAlgorithm -&gt; unit" Usage="signedXml.ComputeSignature macAlg" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="macAlg" Type="System.Security.Cryptography.KeyedHashAlgorithm" />
+      </Parameters>
+      <Docs>
+        <param name="macAlg">Объект <see cref="T:System.Security.Cryptography.KeyedHashAlgorithm" />, в котором содержится код проверки подлинности сообщения, используемый для вычисления значения свойства <see cref="P:System.Security.Cryptography.Xml.SignedXml.Signature" />.</param>
+        <summary>Вычисляет цифровую подпись XML с помощью указанного алгоритма кода проверки подлинности сообщения.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Security.Cryptography.Xml.SignedXml.ComputeSignature%2A> Метод создает цифровую подпись XML с помощью указанного алгоритма Mac и создает множество необходимых XML-элементов.  
+  
+ Перед вызовом этого метода необходимо задать подписывание данных.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как подписать и проверить объект с адресацией универсального кода ресурса (URI) с помощью отсоединенной подписи.  
+  
+ [!code-cpp[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Detached#1](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Detached/CPP/xmldsigdetachedkeyedhashalg.cpp#1)]
+ [!code-csharp[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Detached#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Detached/CS/xmldsigdetachedkeyedhashalg.cs#1)]
+ [!code-vb[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Detached#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Detached/VB/xmldsigdetachedkeyedhashalg.vb#1)]  
+  
+ В следующем примере кода показано, как подписать и проверить весь XML-документ с помощью подписи запечатывание.  
+  
+ [!code-cpp[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Envelope#1](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Envelope/CPP/xmldsigenvkeyedhashalg.cpp#1)]
+ [!code-csharp[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Envelope#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Envelope/CS/xmldsigenvkeyedhashalg.cs#1)]
+ [!code-vb[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Envelope#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-KeyedHash-Envelope/VB/xmldsigenvkeyedhashalg.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Параметр <paramref name="macAlg" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.Security.Cryptography.CryptographicException">Объект <see cref="T:System.Security.Cryptography.KeyedHashAlgorithm" />, определенный параметром <paramref name="macAlg" /> не является экземпляром <see cref="T:System.Security.Cryptography.HMACSHA1" />.  
+  
+- или - 
+Свойство <see cref="P:System.Security.Cryptography.HashAlgorithm.HashSize" /> указанного объекта <see cref="T:System.Security.Cryptography.KeyedHashAlgorithm" /> недопустимо.  
+  
+-или- 
+Не удалось создать криптографическое преобразование, используемое для проверки подписи.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="EncryptedXml">
+      <MemberSignature Language="C#" Value="public System.Security.Cryptography.Xml.EncryptedXml EncryptedXml { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Security.Cryptography.Xml.EncryptedXml EncryptedXml" />
+      <MemberSignature Language="DocId" Value="P:System.Security.Cryptography.Xml.SignedXml.EncryptedXml" />
+      <MemberSignature Language="VB.NET" Value="Public Property EncryptedXml As EncryptedXml" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Security::Cryptography::Xml::EncryptedXml ^ EncryptedXml { System::Security::Cryptography::Xml::EncryptedXml ^ get(); void set(System::Security::Cryptography::Xml::EncryptedXml ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.EncryptedXml : System.Security.Cryptography.Xml.EncryptedXml with get, set" Usage="System.Security.Cryptography.Xml.SignedXml.EncryptedXml" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;xamarinmac-3.0;netframework-4.8">
+          <AttributeName>System.Runtime.InteropServices.ComVisible(false)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Security.Cryptography.Xml.EncryptedXml</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает объект <see cref="T:System.Security.Cryptography.Xml.EncryptedXml" />, который определяет правила обработки шифрования XML.</summary>
+        <value>Объект <see cref="T:System.Security.Cryptography.Xml.EncryptedXml" />, который определяет правила обработки шифрования XML.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetIdElement">
+      <MemberSignature Language="C#" Value="public virtual System.Xml.XmlElement GetIdElement (System.Xml.XmlDocument document, string idValue);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Xml.XmlElement GetIdElement(class System.Xml.XmlDocument document, string idValue) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Security.Cryptography.Xml.SignedXml.GetIdElement(System.Xml.XmlDocument,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function GetIdElement (document As XmlDocument, idValue As String) As XmlElement" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::Xml::XmlElement ^ GetIdElement(System::Xml::XmlDocument ^ document, System::String ^ idValue);" />
+      <MemberSignature Language="F#" Value="abstract member GetIdElement : System.Xml.XmlDocument * string -&gt; System.Xml.XmlElement&#xA;override this.GetIdElement : System.Xml.XmlDocument * string -&gt; System.Xml.XmlElement" Usage="signedXml.GetIdElement (document, idValue)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Xml.XmlElement</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="document" Type="System.Xml.XmlDocument" />
+        <Parameter Name="idValue" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="document">Объект <see cref="T:System.Xml.XmlDocument" />, из которого извлекается объект <see cref="T:System.Xml.XmlElement" />.</param>
+        <param name="idValue">Идентификатор объекта <see cref="T:System.Xml.XmlElement" />, извлекаемого из объекта <see cref="T:System.Xml.XmlDocument" />.</param>
+        <summary>Возвращает объект <see cref="T:System.Xml.XmlElement" /> с указанным идентификатором из указанного объекта <see cref="T:System.Xml.XmlDocument" />.</summary>
+        <returns>Объект <see cref="T:System.Xml.XmlElement" /> с указанным идентификатором, извлеченный из указанного объекта <see cref="T:System.Xml.XmlDocument" />, или значение <see langword="null" />, если найти такой объект не удалось.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetPublicKey">
+      <MemberSignature Language="C#" Value="protected virtual System.Security.Cryptography.AsymmetricAlgorithm GetPublicKey ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance class System.Security.Cryptography.AsymmetricAlgorithm GetPublicKey() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Security.Cryptography.Xml.SignedXml.GetPublicKey" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Function GetPublicKey () As AsymmetricAlgorithm" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual System::Security::Cryptography::AsymmetricAlgorithm ^ GetPublicKey();" />
+      <MemberSignature Language="F#" Value="abstract member GetPublicKey : unit -&gt; System.Security.Cryptography.AsymmetricAlgorithm&#xA;override this.GetPublicKey : unit -&gt; System.Security.Cryptography.AsymmetricAlgorithm" Usage="signedXml.GetPublicKey " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Security.Cryptography.AsymmetricAlgorithm</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Возвращает открытый ключ подписи.</summary>
+        <returns>Объект <see cref="T:System.Security.Cryptography.AsymmetricAlgorithm" />, содержащий открытый ключ подписи, или значение <see langword="null" />, если найти ключ не удалось.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Security.Cryptography.Xml.SignedXml.GetPublicKey%2A> Метод <xref:System.Security.Cryptography.AsymmetricAlgorithm>  возвращает объект, содержащий открытый ключ, который можно использовать для проверки цифровой подписи XML.  
+  
+ Ключ должен быть либо <xref:System.Security.Cryptography.DSA> <xref:System.Security.Cryptography.RSA> ключом, либо.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Security.Cryptography.CryptographicException">Значение свойства <see cref="P:System.Security.Cryptography.Xml.SignedXml.KeyInfo" /> — <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetXml">
+      <MemberSignature Language="C#" Value="public System.Xml.XmlElement GetXml ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.Xml.XmlElement GetXml() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Security.Cryptography.Xml.SignedXml.GetXml" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetXml () As XmlElement" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Xml::XmlElement ^ GetXml();" />
+      <MemberSignature Language="F#" Value="member this.GetXml : unit -&gt; System.Xml.XmlElement" Usage="signedXml.GetXml " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Xml.XmlElement</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Возвращает XML-представление объекта <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</summary>
+        <returns>XML-представление объекта <see cref="T:System.Security.Cryptography.Xml.Signature" />.</returns>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.Security.Cryptography.CryptographicException">Значение свойства <see cref="P:System.Security.Cryptography.Xml.SignedXml.SignedInfo" /> — <see langword="null" />.  
+  
+-или- 
+Значение свойства <see cref="P:System.Security.Cryptography.Xml.SignedXml.SignatureValue" /> — <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="KeyInfo">
+      <MemberSignature Language="C#" Value="public System.Security.Cryptography.Xml.KeyInfo KeyInfo { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Security.Cryptography.Xml.KeyInfo KeyInfo" />
+      <MemberSignature Language="DocId" Value="P:System.Security.Cryptography.Xml.SignedXml.KeyInfo" />
+      <MemberSignature Language="VB.NET" Value="Public Property KeyInfo As KeyInfo" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Security::Cryptography::Xml::KeyInfo ^ KeyInfo { System::Security::Cryptography::Xml::KeyInfo ^ get(); void set(System::Security::Cryptography::Xml::KeyInfo ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.KeyInfo : System.Security.Cryptography.Xml.KeyInfo with get, set" Usage="System.Security.Cryptography.Xml.SignedXml.KeyInfo" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Security.Cryptography.Xml.KeyInfo</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает объект <see cref="T:System.Security.Cryptography.Xml.KeyInfo" /> текущего объекта <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</summary>
+        <value>Объект <see cref="T:System.Security.Cryptography.Xml.KeyInfo" /> текущего объекта <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойство представляет элемент цифровой подписи XML с помощью <xref:System.Security.Cryptography.Xml.KeyInfo> объекта, содержащегося в свойстве. `<KeyInfo>` <xref:System.Security.Cryptography.Xml.SignedXml.KeyInfo%2A>  Элемент является вложенным элементом `<Signature>` элемента. `<KeyInfo>`  
+  
+ <xref:System.Security.Cryptography.Xml.SignedXml.KeyInfo%2A> Используйте свойство для внедрения сведений, относящихся к ключам, предназначенных для выявления ключа, необходимого для проверки XML-документа.  
+  
+ Дополнительные сведения об `<KeyInfo>` элементе см. в [спецификации XMLDSIG](https://www.w3.org/TR/xmldsig-core/).  
+  
+   
+  
+## Examples  
+ В следующем примере кода используется <xref:System.Security.Cryptography.Xml.KeyInfo> объект при подписывании ресурса, представленного универсальным кодом ресурса (URI).  В этом примере подпись сохраняется в новом файле.  
+  
+ [!code-cpp[System.Security.Cryptography.XML-XMLDsigDetached#1](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Cryptography.XML-XMLDsigDetached/CPP/xmldsigdetach.cpp#1)]
+ [!code-csharp[System.Security.Cryptography.XML-XMLDsigDetached#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.XML-XMLDsigDetached/CS/xmldsigdetach.cs#1)]
+ [!code-vb[System.Security.Cryptography.XML-XMLDsigDetached#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.XML-XMLDsigDetached/VB/xmldsigdetach.vb#1)]  
+  
+ В следующем примере кода используется <xref:System.Security.Cryptography.Xml.KeyInfo> объект при подписывании XML-документа.  В этом примере подпись сохраняется в новом файле.  
+  
+ [!code-cpp[System.Security.Cryptography.XML-XMLDsigEnvelope#1](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Cryptography.XML-XMLDsigEnvelope/CPP/xmldsigenv.cpp#1)]
+ [!code-csharp[System.Security.Cryptography.XML-XMLDsigEnvelope#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.XML-XMLDsigEnvelope/CS/xmldsigenv.cs#1)]
+ [!code-vb[System.Security.Cryptography.XML-XMLDsigEnvelope#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.XML-XMLDsigEnvelope/VB/xmldsigenv.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="LoadXml">
+      <MemberSignature Language="C#" Value="public void LoadXml (System.Xml.XmlElement value);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void LoadXml(class System.Xml.XmlElement value) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Security.Cryptography.Xml.SignedXml.LoadXml(System.Xml.XmlElement)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub LoadXml (value As XmlElement)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void LoadXml(System::Xml::XmlElement ^ value);" />
+      <MemberSignature Language="F#" Value="member this.LoadXml : System.Xml.XmlElement -&gt; unit" Usage="signedXml.LoadXml value" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="value" Type="System.Xml.XmlElement" />
+      </Parameters>
+      <Docs>
+        <param name="value">Элемент XML, из которого загружается состояние <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</param>
+        <summary>Загружает состояние <see cref="T:System.Security.Cryptography.Xml.SignedXml" /> из элемента XML.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Examples  
+ В следующем примере кода показано, как использовать <xref:System.Security.Cryptography.Xml.SignedXml.LoadXml%2A> метод для проверки XML-документа.  
+  
+ [!code-cpp[System.Security.Cryptography.XML-XMLDsigDetached#3](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Cryptography.XML-XMLDsigDetached/CPP/xmldsigdetach.cpp#3)]
+ [!code-csharp[System.Security.Cryptography.XML-XMLDsigDetached#3](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.XML-XMLDsigDetached/CS/xmldsigdetach.cs#3)]
+ [!code-vb[System.Security.Cryptography.XML-XMLDsigDetached#3](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.XML-XMLDsigDetached/VB/xmldsigdetach.vb#3)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Параметр <paramref name="value" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.Security.Cryptography.CryptographicException">Параметр <paramref name="value" /> не содержит допустимое свойство <see cref="P:System.Security.Cryptography.Xml.SignedXml.SignatureValue" />.  
+  
+- или - 
+Параметр <paramref name="value" /> не содержит допустимое свойство <see cref="P:System.Security.Cryptography.Xml.SignedXml.SignedInfo" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="m_signature">
+      <MemberSignature Language="C#" Value="protected System.Security.Cryptography.Xml.Signature m_signature;" />
+      <MemberSignature Language="ILAsm" Value=".field family class System.Security.Cryptography.Xml.Signature m_signature" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.m_signature" />
+      <MemberSignature Language="VB.NET" Value="Protected m_signature As Signature " />
+      <MemberSignature Language="C++ CLI" Value="protected: System::Security::Cryptography::Xml::Signature ^ m_signature;" />
+      <MemberSignature Language="F#" Value="val mutable m_signature : System.Security.Cryptography.Xml.Signature" Usage="System.Security.Cryptography.Xml.SignedXml.m_signature" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Security.Cryptography.Xml.Signature</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет объект <see cref="T:System.Security.Cryptography.Xml.Signature" /> текущего объекта <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="m_strSigningKeyName">
+      <MemberSignature Language="C#" Value="protected string m_strSigningKeyName;" />
+      <MemberSignature Language="ILAsm" Value=".field family string m_strSigningKeyName" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.m_strSigningKeyName" />
+      <MemberSignature Language="VB.NET" Value="Protected m_strSigningKeyName As String " />
+      <MemberSignature Language="C++ CLI" Value="protected: System::String ^ m_strSigningKeyName;" />
+      <MemberSignature Language="F#" Value="val mutable m_strSigningKeyName : string" Usage="System.Security.Cryptography.Xml.SignedXml.m_strSigningKeyName" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет имя установленного ключа, который будет использоваться для подписывания объекта <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Resolver">
+      <MemberSignature Language="C#" Value="public System.Xml.XmlResolver Resolver { set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Xml.XmlResolver Resolver" />
+      <MemberSignature Language="DocId" Value="P:System.Security.Cryptography.Xml.SignedXml.Resolver" />
+      <MemberSignature Language="VB.NET" Value="Public Property Resolver As XmlResolver" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Xml::XmlResolver ^ Resolver {  void set(System::Xml::XmlResolver ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.Resolver : System.Xml.XmlResolver" Usage="System.Security.Cryptography.Xml.SignedXml.Resolver" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-1.1;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;xamarinmac-3.0;netframework-4.8">
+          <AttributeName>System.Runtime.InteropServices.ComVisible(false)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Xml.XmlResolver</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Задает текущий объект <see cref="T:System.Xml.XmlResolver" />.</summary>
+        <value>Текущий объект <see cref="T:System.Xml.XmlResolver" />. Объектом по умолчанию является объект <see cref="T:System.Xml.XmlSecureResolver" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Xml.XmlResolver> Класс разрешает внешние ресурсы XML с именами по универсальному идентификатору ресурса (URI). Если вы не доверяете источнику XML-файла, может быть нежелательно разрешать XML-файлу доступ к ресурсам компьютера с именем, указанным в URI. <xref:System.Security.Cryptography.Xml.SignedXml.Resolver%2A> Свойство можно использовать для управления уровнем доступа XML-файлов к ресурсам компьютера путем указания различных <xref:System.Xml.XmlResolver> объектов. Если вы не хотите разрешать доступ, можно присвоить этому свойству `null` значение (`Nothing` в Visual Basic).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SafeCanonicalizationMethods">
+      <MemberSignature Language="C#" Value="public System.Collections.ObjectModel.Collection&lt;string&gt; SafeCanonicalizationMethods { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Collections.ObjectModel.Collection`1&lt;string&gt; SafeCanonicalizationMethods" />
+      <MemberSignature Language="DocId" Value="P:System.Security.Cryptography.Xml.SignedXml.SafeCanonicalizationMethods" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property SafeCanonicalizationMethods As Collection(Of String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Collections::ObjectModel::Collection&lt;System::String ^&gt; ^ SafeCanonicalizationMethods { System::Collections::ObjectModel::Collection&lt;System::String ^&gt; ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.SafeCanonicalizationMethods : System.Collections.ObjectModel.Collection&lt;string&gt;" Usage="System.Security.Cryptography.Xml.SignedXml.SafeCanonicalizationMethods" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.ObjectModel.Collection&lt;System.String&gt;</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает имена методов, алгоритмы каноничности которых явно разрешены.</summary>
+        <value>Коллекция имен методов, которые безопасно создают канонический XML.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Методы канонизации преобразуют XML-документ в каноническую форму. Дополнительные сведения о каноническом XML-коде см. в разделе [канонический XML](https://www.w3.org/TR/xml-c14n) на веб-сайте W3C.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Signature">
+      <MemberSignature Language="C#" Value="public System.Security.Cryptography.Xml.Signature Signature { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Security.Cryptography.Xml.Signature Signature" />
+      <MemberSignature Language="DocId" Value="P:System.Security.Cryptography.Xml.SignedXml.Signature" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property Signature As Signature" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Security::Cryptography::Xml::Signature ^ Signature { System::Security::Cryptography::Xml::Signature ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Signature : System.Security.Cryptography.Xml.Signature" Usage="System.Security.Cryptography.Xml.SignedXml.Signature" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Security.Cryptography.Xml.Signature</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает объект <see cref="T:System.Security.Cryptography.Xml.Signature" /> текущего объекта <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</summary>
+        <value>Объект <see cref="T:System.Security.Cryptography.Xml.Signature" /> текущего объекта <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойство представляет элемент цифровой подписи XML с помощью <xref:System.Security.Cryptography.Xml.Signature> объекта, содержащегося в свойстве. `<Signature>` <xref:System.Security.Cryptography.Xml.SignedXml.Signature%2A>  `<Signature>` Элемент является корневым элементом, используемым для создания и проверки цифровых подписей XML.  
+  
+ Используйте свойство для <xref:System.Security.Cryptography.Xml.Signature> получения объекта, используемого <xref:System.Security.Cryptography.Xml.SignedXml> объектом. <xref:System.Security.Cryptography.Xml.SignedXml.Signature%2A>  
+  
+ Дополнительные сведения об `<Signature>` элементе см. в [спецификации XMLDSIG](https://www.w3.org/TR/xmldsig-core/).
+  
+   
+  
+## Examples  
+ В следующем примере кода <xref:System.Security.Cryptography.Xml.SignedXml.Signature%2A> свойство используется для подписывания и проверки всего XML-документа с помощью запечатанной сигнатуры.  
+  
+ [!code-cpp[Cryptography.XML.Signature - Envelope#1](~/samples/snippets/cpp/VS_Snippets_CLR/Cryptography.XML.Signature - Envelope/CPP/sample.cpp#1)]
+ [!code-csharp[Cryptography.XML.Signature - Envelope#1](~/samples/snippets/csharp/VS_Snippets_CLR/Cryptography.XML.Signature - Envelope/CS/sample.cs#1)]
+ [!code-vb[Cryptography.XML.Signature - Envelope#1](~/samples/snippets/visualbasic/VS_Snippets_CLR/Cryptography.XML.Signature - Envelope/VB/sample.vb#1)]  
+  
+ В следующем примере кода <xref:System.Security.Cryptography.Xml.SignedXml.Signature%2A> свойство используется для подписания и проверки объекта, использующего универсальный идентификатор ресурса (URI), с помощью отсоединенной подписи.  
+  
+ [!code-cpp[XMLDSIG - Signature - Detached#1](~/samples/snippets/cpp/VS_Snippets_CLR/XMLDSIG - Signature - Detached/CPP/sample.cpp#1)]
+ [!code-csharp[XMLDSIG - Signature - Detached#1](~/samples/snippets/csharp/VS_Snippets_CLR/XMLDSIG - Signature - Detached/CS/sample.cs#1)]
+ [!code-vb[XMLDSIG - Signature - Detached#1](~/samples/snippets/visualbasic/VS_Snippets_CLR/XMLDSIG - Signature - Detached/VB/sample.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SignatureFormatValidator">
+      <MemberSignature Language="C#" Value="public Func&lt;System.Security.Cryptography.Xml.SignedXml,bool&gt; SignatureFormatValidator { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Func`2&lt;class System.Security.Cryptography.Xml.SignedXml, bool&gt; SignatureFormatValidator" />
+      <MemberSignature Language="DocId" Value="P:System.Security.Cryptography.Xml.SignedXml.SignatureFormatValidator" />
+      <MemberSignature Language="VB.NET" Value="Public Property SignatureFormatValidator As Func(Of SignedXml, Boolean)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property Func&lt;System::Security::Cryptography::Xml::SignedXml ^, bool&gt; ^ SignatureFormatValidator { Func&lt;System::Security::Cryptography::Xml::SignedXml ^, bool&gt; ^ get(); void set(Func&lt;System::Security::Cryptography::Xml::SignedXml ^, bool&gt; ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.SignatureFormatValidator : Func&lt;System.Security.Cryptography.Xml.SignedXml, bool&gt; with get, set" Usage="System.Security.Cryptography.Xml.SignedXml.SignatureFormatValidator" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Func&lt;System.Security.Cryptography.Xml.SignedXml,System.Boolean&gt;</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает делегат, который будет вызван для проверки формата (но не криптографической безопасности) XML-сигнатуры.</summary>
+        <value>Значение <see langword="true" />, формат приемлем; в противном случае — значение <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод можно использовать, чтобы убедиться, что используются только определенные преобразования или что сигнатура использует определенный хэш-алгоритм и т. д.  
+  
+ Установка свойства для `null` удаления всех проверок формата сигнатуры <xref:System.Security.Cryptography.Xml.SignedXml> из объекта.  
+  
+ При необходимости можно также прочитать текущий делегат объекта и его цепочку.  
+  
+ Если вы настраиваете проверяющий элемент управления, предоставляемый вами делегат будет принимать в качестве входного <xref:System.Security.Cryptography.Xml.SignedXml> параметра проверяемый объект и возвращает логическое значение — `true` если формат приемлем, `false` если нет. Если делегат возвращает `false` по какой-либо причине <xref:System.Security.Cryptography.Xml.SignedXml> , объект сообщит, что подпись XML недопустима.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SignatureLength">
+      <MemberSignature Language="C#" Value="public string SignatureLength { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string SignatureLength" />
+      <MemberSignature Language="DocId" Value="P:System.Security.Cryptography.Xml.SignedXml.SignatureLength" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property SignatureLength As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ SignatureLength { System::String ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.SignatureLength : string" Usage="System.Security.Cryptography.Xml.SignedXml.SignatureLength" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает длину подписи для текущего объекта <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</summary>
+        <value>Длина подписи для текущего объекта <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SignatureMethod">
+      <MemberSignature Language="C#" Value="public string SignatureMethod { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string SignatureMethod" />
+      <MemberSignature Language="DocId" Value="P:System.Security.Cryptography.Xml.SignedXml.SignatureMethod" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property SignatureMethod As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ SignatureMethod { System::String ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.SignatureMethod : string" Usage="System.Security.Cryptography.Xml.SignedXml.SignatureMethod" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает метод подписи для текущего объекта <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</summary>
+        <value>Метод подписи для текущего объекта <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Security.Cryptography.Xml.SignedXml.SignatureMethod%2A> Свойство `<SignatureMethod>`  представляет элемент цифровой подписи XML, используя строку универсального кода ресурса (URI), содержащуюся в свойстве. Элемент является вложенным элементом `<SignedInfo>` элемента. `<SignatureMethod>`  
+  
+ Используйте свойство для `<SignatureMethod>` получения URI, используемого <xref:System.Security.Cryptography.Xml.SignedXml> объектом. <xref:System.Security.Cryptography.Xml.SignedXml.SignatureMethod%2A> Данное свойство доступно только для чтения. Дополнительные сведения о программном указании URI для `<SignatureMethod>` элемента см. в <xref:System.Security.Cryptography.Xml.SignedInfo.SignatureMethod%2A> описании свойства.  
+  
+ Дополнительные сведения об `<SignatureMethod>` элементе см. в [спецификации XMLDSIG](https://www.w3.org/TR/xmldsig-core/).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SignatureValue">
+      <MemberSignature Language="C#" Value="public byte[] SignatureValue { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance unsigned int8[] SignatureValue" />
+      <MemberSignature Language="DocId" Value="P:System.Security.Cryptography.Xml.SignedXml.SignatureValue" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property SignatureValue As Byte()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property cli::array &lt;System::Byte&gt; ^ SignatureValue { cli::array &lt;System::Byte&gt; ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.SignatureValue : byte[]" Usage="System.Security.Cryptography.Xml.SignedXml.SignatureValue" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Byte[]</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает значение подписи для текущего объекта <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</summary>
+        <value>Массив байтов, содержащий значение подписи текущего объекта <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Security.Cryptography.Xml.SignedXml.SignatureValue%2A> Свойство `<SignatureValue>`  представляет элемент цифровой подписи XML, используя массив байтов, содержащихся в свойстве.  Элемент является вложенным элементом `<Signature>` элемента. `<SignatureValue>`  
+  
+ <xref:System.Security.Cryptography.Xml.SignedXml.SignatureValue%2A> Используйте свойство для получения значения цифровой подписи XML.  Это свойство заполняется автоматически при успешном вызове <xref:System.Security.Cryptography.Xml.SignedXml.ComputeSignature%2A> метода.  
+  
+ Дополнительные сведения об `<SignatureValue>` элементе см. в [спецификации XMLDSIG](https://www.w3.org/TR/xmldsig-core/).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SignedInfo">
+      <MemberSignature Language="C#" Value="public System.Security.Cryptography.Xml.SignedInfo SignedInfo { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Security.Cryptography.Xml.SignedInfo SignedInfo" />
+      <MemberSignature Language="DocId" Value="P:System.Security.Cryptography.Xml.SignedXml.SignedInfo" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property SignedInfo As SignedInfo" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Security::Cryptography::Xml::SignedInfo ^ SignedInfo { System::Security::Cryptography::Xml::SignedInfo ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.SignedInfo : System.Security.Cryptography.Xml.SignedInfo" Usage="System.Security.Cryptography.Xml.SignedXml.SignedInfo" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Security.Cryptography.Xml.SignedInfo</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает объект <see cref="T:System.Security.Cryptography.Xml.SignedInfo" /> текущего объекта <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</summary>
+        <value>Объект <see cref="T:System.Security.Cryptography.Xml.SignedInfo" /> текущего объекта <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Security.Cryptography.Xml.SignedXml.SignedInfo%2A> Свойство `<SignedInfo>`  представляет элемент цифровой подписи XML, используя массив байтов, содержащихся в свойстве.  Элемент является вложенным элементом `<Signature>` элемента. `<SignedInfo>`  
+  
+ Используйте свойство, чтобы <xref:System.Security.Cryptography.Xml.SignedInfo> получить объект <xref:System.Security.Cryptography.Xml.SignedXml> , используемый объектом для создания цифровой подписи XML. <xref:System.Security.Cryptography.Xml.SignedXml.SignedInfo%2A>  
+  
+ Дополнительные сведения об `<SignedInfo>` элементе см. в [спецификации XMLDSIG](https://www.w3.org/TR/xmldsig-core/).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SigningKey">
+      <MemberSignature Language="C#" Value="public System.Security.Cryptography.AsymmetricAlgorithm SigningKey { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Security.Cryptography.AsymmetricAlgorithm SigningKey" />
+      <MemberSignature Language="DocId" Value="P:System.Security.Cryptography.Xml.SignedXml.SigningKey" />
+      <MemberSignature Language="VB.NET" Value="Public Property SigningKey As AsymmetricAlgorithm" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Security::Cryptography::AsymmetricAlgorithm ^ SigningKey { System::Security::Cryptography::AsymmetricAlgorithm ^ get(); void set(System::Security::Cryptography::AsymmetricAlgorithm ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.SigningKey : System.Security.Cryptography.AsymmetricAlgorithm with get, set" Usage="System.Security.Cryptography.Xml.SignedXml.SigningKey" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Security.Cryptography.AsymmetricAlgorithm</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает ключ асимметричного алгоритма, используемого для подписывания объекта <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</summary>
+        <value>Ключ асимметричного алгоритма, используемого для подписывания объекта <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Security.Cryptography.Xml.SignedXml.SigningKey%2A> Используйте свойство, чтобы указать асимметричный ключ, который будет использоваться для создания цифровой подписи XML.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как подписать и проверить весь XML-документ с помощью запечатанной подписи.  
+  
+ [!code-cpp[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope#1](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope/CPP/exampleenvelope.cpp#1)]
+ [!code-csharp[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope/CS/exampleenvelope.cs#1)]
+ [!code-vb[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Envelope/VB/exampleenvelope.vb#1)]  
+  
+ В следующем примере кода показано, как подписать и проверить объект с адресацией универсального кода ресурса (URI) с помощью отсоединенной подписи.  
+  
+ [!code-cpp[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Detached#1](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Detached/CPP/exampledetached.cpp#1)]
+ [!code-csharp[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Detached#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Detached/CS/exampledetached.cs#1)]
+ [!code-vb[System.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Detached#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.XML.SignedXml.ComputeSig-Check-AsymetricAlg-Detached/VB/exampledetached.vb#1)]  
+  
+ В следующем примере кода показано, как подписать и проверить отдельный элемент XML-документа с помощью подписи запечатывание.  
+  
+ [!code-cpp[Cryptography.XML.SignVerifyEnvelope - Specify Element#1](~/samples/snippets/cpp/VS_Snippets_CLR/Cryptography.XML.SignVerifyEnvelope - Specify Element/CPP/sample.cpp#1)]
+ [!code-csharp[Cryptography.XML.SignVerifyEnvelope - Specify Element#1](~/samples/snippets/csharp/VS_Snippets_CLR/Cryptography.XML.SignVerifyEnvelope - Specify Element/CS/sample.cs#1)]
+ [!code-vb[Cryptography.XML.SignVerifyEnvelope - Specify Element#1](~/samples/snippets/visualbasic/VS_Snippets_CLR/Cryptography.XML.SignVerifyEnvelope - Specify Element/VB/sample.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SigningKeyName">
+      <MemberSignature Language="C#" Value="public string SigningKeyName { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string SigningKeyName" />
+      <MemberSignature Language="DocId" Value="P:System.Security.Cryptography.Xml.SignedXml.SigningKeyName" />
+      <MemberSignature Language="VB.NET" Value="Public Property SigningKeyName As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ SigningKeyName { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.SigningKeyName : string with get, set" Usage="System.Security.Cryptography.Xml.SignedXml.SigningKeyName" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает имя установленного ключа, который будет использоваться для подписывания объекта <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</summary>
+        <value>Имя установленного ключа, который будет использоваться для подписывания объекта <see cref="T:System.Security.Cryptography.Xml.SignedXml" />.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDecryptionTransformUrl">
+      <MemberSignature Language="C#" Value="public const string XmlDecryptionTransformUrl;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlDecryptionTransformUrl" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlDecryptionTransformUrl" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlDecryptionTransformUrl As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlDecryptionTransformUrl;" />
+      <MemberSignature Language="F#" Value="val mutable XmlDecryptionTransformUrl : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlDecryptionTransformUrl" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) преобразования шифрования режима XML. Это поле является константой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlDecryptionTransformUrl> поля равно <http://www.w3.org/2002/07/decrypt#XML>.  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Дополнительные сведения см. в [спецификации консорциум W3C (W3C)](https://www.w3.org/2002/07/decrypt#XML).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDsigBase64TransformUrl">
+      <MemberSignature Language="C#" Value="public const string XmlDsigBase64TransformUrl;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlDsigBase64TransformUrl" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlDsigBase64TransformUrl" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlDsigBase64TransformUrl As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlDsigBase64TransformUrl;" />
+      <MemberSignature Language="F#" Value="val mutable XmlDsigBase64TransformUrl : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlDsigBase64TransformUrl" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) преобразования Base64. Это поле является константой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigBase64TransformUrl> поля равно <http://www.w3.org/2000/09/xmldsig#base64>.  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Класс реализует преобразование, описываемое <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigBase64TransformUrl> полем. <xref:System.Security.Cryptography.Xml.XmlDsigBase64Transform>  
+  
+ Дополнительные сведения см. в [схеме консорциум W3C (W3C)](https://www.w3.org/2000/09/xmldsig#base64).  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как использовать члены <xref:System.Security.Cryptography.Xml.XmlDsigBase64Transform> класса.  
+  
+ [!code-cpp[System.Security.Cryptography.Xml.XmlDsigBase64Transform#2](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Cryptography.Xml.XmlDsigBase64Transform/CPP/members.cpp#2)]
+ [!code-csharp[System.Security.Cryptography.Xml.XmlDsigBase64Transform#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.Xml.XmlDsigBase64Transform/CS/members.cs#2)]
+ [!code-vb[System.Security.Cryptography.Xml.XmlDsigBase64Transform#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.Xml.XmlDsigBase64Transform/VB/members.vb#2)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDsigC14NTransformUrl">
+      <MemberSignature Language="C#" Value="public const string XmlDsigC14NTransformUrl;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlDsigC14NTransformUrl" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlDsigC14NTransformUrl" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlDsigC14NTransformUrl As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlDsigC14NTransformUrl;" />
+      <MemberSignature Language="F#" Value="val mutable XmlDsigC14NTransformUrl : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlDsigC14NTransformUrl" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) канонического преобразования XML. Это поле является константой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigC14NTransformUrl> поля равно <http://www.w3.org/TR/2001/REC-xml-c14n-20010315>.  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Класс реализует преобразование, описываемое <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigC14NTransformUrl> полем. <xref:System.Security.Cryptography.Xml.XmlDsigC14NTransform>  
+  
+ Дополнительные сведения см. в [канонической спецификации XML](https://www.w3.org/TR/2001/REC-xml-c14n-20010315) консорциум W3C (W3C).  
+  
+ Это поле имеет то же значение, что <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigCanonicalizationUrl> и поле.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как вызывать члены <xref:System.Security.Cryptography.Xml.XmlDsigC14NTransform> класса.  
+  
+ [!code-cpp[System.Security.Cryptography.XML.XMLDsigC14NTransform#2](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Cryptography.Xml.XmlDsigC14NTransform/CPP/members.cpp#2)]
+ [!code-csharp[System.Security.Cryptography.XML.XMLDsigC14NTransform#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.Xml.XmlDsigC14NTransform/CS/members.cs#2)]
+ [!code-vb[System.Security.Cryptography.XML.XMLDsigC14NTransform#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.Xml.XmlDsigC14NTransform/VB/members.vb#2)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDsigC14NWithCommentsTransformUrl">
+      <MemberSignature Language="C#" Value="public const string XmlDsigC14NWithCommentsTransformUrl;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlDsigC14NWithCommentsTransformUrl" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlDsigC14NWithCommentsTransformUrl" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlDsigC14NWithCommentsTransformUrl As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlDsigC14NWithCommentsTransformUrl;" />
+      <MemberSignature Language="F#" Value="val mutable XmlDsigC14NWithCommentsTransformUrl : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlDsigC14NWithCommentsTransformUrl" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) канонического преобразования XML с комментариями. Это поле является константой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigC14NWithCommentsTransformUrl> поля равно <http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments>.  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Класс реализует преобразование, описываемое <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigC14NWithCommentsTransformUrl> полем. <xref:System.Security.Cryptography.Xml.XmlDsigC14NWithCommentsTransform>  
+  
+ Дополнительные сведения см. в [канонической спецификации XML](https://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments) консорциум W3C (W3C).  
+  
+ Это поле имеет то же значение, что <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigCanonicalizationWithCommentsUrl> и поле.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDsigCanonicalizationUrl">
+      <MemberSignature Language="C#" Value="public const string XmlDsigCanonicalizationUrl;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlDsigCanonicalizationUrl" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlDsigCanonicalizationUrl" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlDsigCanonicalizationUrl As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlDsigCanonicalizationUrl;" />
+      <MemberSignature Language="F#" Value="val mutable XmlDsigCanonicalizationUrl : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlDsigCanonicalizationUrl" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) стандартного алгоритма канонизации для цифровых подписей XML. Это поле является константой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigCanonicalizationUrl> поля равно <http://www.w3.org/TR/2001/REC-xml-c14n-20010315>.  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Класс реализует преобразование, описываемое <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigCanonicalizationUrl> полем. <xref:System.Security.Cryptography.Xml.XmlDsigC14NTransform>  
+  
+ Дополнительные сведения см. в [канонической спецификации XML](https://www.w3.org/TR/2001/REC-xml-c14n-20010315) консорциум W3C (W3C).  
+  
+ Это поле имеет то же значение, что <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigC14NTransformUrl> и поле.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDsigCanonicalizationWithCommentsUrl">
+      <MemberSignature Language="C#" Value="public const string XmlDsigCanonicalizationWithCommentsUrl;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlDsigCanonicalizationWithCommentsUrl" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlDsigCanonicalizationWithCommentsUrl" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlDsigCanonicalizationWithCommentsUrl As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlDsigCanonicalizationWithCommentsUrl;" />
+      <MemberSignature Language="F#" Value="val mutable XmlDsigCanonicalizationWithCommentsUrl : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlDsigCanonicalizationWithCommentsUrl" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) стандартного алгоритма канонизации для цифровых подписей XML и включает комментарии. Это поле является константой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigCanonicalizationWithCommentsUrl> поля равно <http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments>.  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Класс реализует преобразование, описываемое <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigCanonicalizationWithCommentsUrl> полем. <xref:System.Security.Cryptography.Xml.XmlDsigC14NWithCommentsTransform>  
+  
+ Дополнительные сведения см. в [канонической спецификации XML](https://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments) консорциум W3C (W3C).  
+  
+ Это поле имеет то же значение, что <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigC14NWithCommentsTransformUrl> и поле.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDsigDSAUrl">
+      <MemberSignature Language="C#" Value="public const string XmlDsigDSAUrl;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlDsigDSAUrl" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlDsigDSAUrl" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlDsigDSAUrl As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlDsigDSAUrl;" />
+      <MemberSignature Language="F#" Value="val mutable XmlDsigDSAUrl : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlDsigDSAUrl" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) стандартного алгоритма <see cref="T:System.Security.Cryptography.DSA" /> для цифровых подписей XML. Это поле является константой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigDSAUrl> поля равно <http://www.w3.org/2000/09/xmldsig#dsa-sha1>.  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Дополнительные сведения см. в [схеме консорциум W3C (W3C)](https://www.w3.org/2000/09/xmldsig#dsa-sha1).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDsigEnvelopedSignatureTransformUrl">
+      <MemberSignature Language="C#" Value="public const string XmlDsigEnvelopedSignatureTransformUrl;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlDsigEnvelopedSignatureTransformUrl" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlDsigEnvelopedSignatureTransformUrl" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlDsigEnvelopedSignatureTransformUrl As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlDsigEnvelopedSignatureTransformUrl;" />
+      <MemberSignature Language="F#" Value="val mutable XmlDsigEnvelopedSignatureTransformUrl : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlDsigEnvelopedSignatureTransformUrl" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) преобразования запечатанной подписи. Это поле является константой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigEnvelopedSignatureTransformUrl> поля равно <http://www.w3.org/2000/09/xmldsig#enveloped-signature>.  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Класс реализует преобразование, описываемое <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigEnvelopedSignatureTransformUrl> полем. <xref:System.Security.Cryptography.Xml.XmlDsigEnvelopedSignatureTransform>  
+  
+ Дополнительные сведения см. в [схеме консорциум W3C (W3C)](https://www.w3.org/2000/09/xmldsig#enveloped-signature).  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как использовать члены <xref:System.Security.Cryptography.Xml.XmlDsigEnvelopedSignatureTransform> класса.  
+  
+ [!code-cpp[System.Security.Cryptography.Xml.XmlDsigEnvelopedSignatureTransform#2](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Cryptography.Xml.XmlDsigEnvelopedSignatureTransform/cpp/members.cpp#2)]
+ [!code-csharp[System.Security.Cryptography.Xml.XmlDsigEnvelopedSignatureTransform#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.Xml.XmlDsigEnvelopedSignatureTransform/CS/members.cs#2)]
+ [!code-vb[System.Security.Cryptography.Xml.XmlDsigEnvelopedSignatureTransform#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.Xml.XmlDsigEnvelopedSignatureTransform/VB/members.vb#2)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDsigExcC14NTransformUrl">
+      <MemberSignature Language="C#" Value="public const string XmlDsigExcC14NTransformUrl;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlDsigExcC14NTransformUrl" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlDsigExcC14NTransformUrl" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlDsigExcC14NTransformUrl As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlDsigExcC14NTransformUrl;" />
+      <MemberSignature Language="F#" Value="val mutable XmlDsigExcC14NTransformUrl : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlDsigExcC14NTransformUrl" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) исключительной канонизации XML. Это поле является константой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigExcC14NTransformUrl> поля равно <http://www.w3.org/2001/10/xml-exc-c14n#>.  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Класс реализует преобразование, описываемое <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigExcC14NTransformUrl> полем. <xref:System.Security.Cryptography.Xml.XmlDsigExcC14NTransform>  
+  
+ Дополнительные сведения см. в [спецификации консорциум W3C (W3C)](https://www.w3.org/2001/10/xml-exc-c14n).  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как подписать и проверить XML-документ с помощью <xref:System.Security.Cryptography.Xml.XmlDsigExcC14NTransform> класса.  В этом примере создается подпись конверта.  
+  
+ [!code-cpp[Cryptography.Xml.XmlDsigExcC14NTransform#1](~/samples/snippets/cpp/VS_Snippets_CLR/Cryptography.XML.XmlDsigExcC14NTransform/CPP/example.cpp#1)]
+ [!code-csharp[Cryptography.Xml.XmlDsigExcC14NTransform#1](~/samples/snippets/csharp/VS_Snippets_CLR/Cryptography.XML.XmlDsigExcC14NTransform/CS/example.cs#1)]
+ [!code-vb[Cryptography.Xml.XmlDsigExcC14NTransform#1](~/samples/snippets/visualbasic/VS_Snippets_CLR/Cryptography.XML.XmlDsigExcC14NTransform/VB/example.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDsigExcC14NWithCommentsTransformUrl">
+      <MemberSignature Language="C#" Value="public const string XmlDsigExcC14NWithCommentsTransformUrl;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlDsigExcC14NWithCommentsTransformUrl" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlDsigExcC14NWithCommentsTransformUrl" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlDsigExcC14NWithCommentsTransformUrl As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlDsigExcC14NWithCommentsTransformUrl;" />
+      <MemberSignature Language="F#" Value="val mutable XmlDsigExcC14NWithCommentsTransformUrl : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlDsigExcC14NWithCommentsTransformUrl" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) исключительной канонизации XML с комментариями. Это поле является константой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigExcC14NWithCommentsTransformUrl> поля равно <http://www.w3.org/2001/10/xml-exc-c14n#WithComments>.  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Класс реализует преобразование, описываемое <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigExcC14NWithCommentsTransformUrl> полем. <xref:System.Security.Cryptography.Xml.XmlDsigExcC14NWithCommentsTransform>  
+  
+ Дополнительные сведения см. в [спецификации консорциум W3C (W3C)](https://www.w3.org/2001/10/xml-exc-c14n#WithComments).  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как подписать и проверить XML-документ с помощью <xref:System.Security.Cryptography.Xml.XmlDsigExcC14NWithCommentsTransform> класса.  В этом примере создается подпись конверта.  
+  
+ [!code-cpp[Cryptography.Xml.XmlDsigExcC14NWithCommentsTransform#1](~/samples/snippets/cpp/VS_Snippets_CLR/Cryptography.XML.XmlDsigExcC14NWithCommentsTransform/CPP/sample.cpp#1)]
+ [!code-csharp[Cryptography.Xml.XmlDsigExcC14NWithCommentsTransform#1](~/samples/snippets/csharp/VS_Snippets_CLR/Cryptography.XML.XmlDsigExcC14NWithCommentsTransform/CS/sample.cs#1)]
+ [!code-vb[Cryptography.Xml.XmlDsigExcC14NWithCommentsTransform#1](~/samples/snippets/visualbasic/VS_Snippets_CLR/Cryptography.XML.XmlDsigExcC14NWithCommentsTransform/VB/sample.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDsigHMACSHA1Url">
+      <MemberSignature Language="C#" Value="public const string XmlDsigHMACSHA1Url;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlDsigHMACSHA1Url" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlDsigHMACSHA1Url" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlDsigHMACSHA1Url As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlDsigHMACSHA1Url;" />
+      <MemberSignature Language="F#" Value="val mutable XmlDsigHMACSHA1Url : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlDsigHMACSHA1Url" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) стандартного алгоритма <see cref="T:System.Security.Cryptography.HMACSHA1" /> для цифровых подписей XML. Это поле является константой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigHMACSHA1Url> поля равно <http://www.w3.org/2000/09/xmldsig#hmac-sha1>.  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Дополнительные сведения см. в [спецификации консорциум W3C (W3C)](https://www.w3.org/2000/09/xmldsig#hmac-sha1).  
+
+ Из-за проблем с SHA1 корпорация Майкрософт рекомендует использовать модель безопасности на основе SHA256 или более высокого уровня.
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDsigMinimalCanonicalizationUrl">
+      <MemberSignature Language="C#" Value="public const string XmlDsigMinimalCanonicalizationUrl;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlDsigMinimalCanonicalizationUrl" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlDsigMinimalCanonicalizationUrl" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlDsigMinimalCanonicalizationUrl As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlDsigMinimalCanonicalizationUrl;" />
+      <MemberSignature Language="F#" Value="val mutable XmlDsigMinimalCanonicalizationUrl : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlDsigMinimalCanonicalizationUrl" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) стандартного минимального алгоритма канонизации для цифровых подписей XML. Это поле является константой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigMinimalCanonicalizationUrl> поля равно <http://www.w3.org/2000/09/xmldsig#minimal>.  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Дополнительные сведения см. в [спецификации консорциум W3C (W3C)](https://www.w3.org/2000/09/xmldsig#minimal).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDsigNamespaceUrl">
+      <MemberSignature Language="C#" Value="public const string XmlDsigNamespaceUrl;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlDsigNamespaceUrl" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlDsigNamespaceUrl" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlDsigNamespaceUrl As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlDsigNamespaceUrl;" />
+      <MemberSignature Language="F#" Value="val mutable XmlDsigNamespaceUrl : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlDsigNamespaceUrl" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) стандартного пространства имен для цифровых подписей XML. Это поле является константой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigNamespaceUrl> поля равно <http://www.w3.org/2000/09/xmldsig#>.  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Дополнительные сведения см. в [схеме консорциум W3C (W3C)](https://www.w3.org/2000/09/xmldsig).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDsigRSASHA1Url">
+      <MemberSignature Language="C#" Value="public const string XmlDsigRSASHA1Url;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlDsigRSASHA1Url" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlDsigRSASHA1Url" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlDsigRSASHA1Url As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlDsigRSASHA1Url;" />
+      <MemberSignature Language="F#" Value="val mutable XmlDsigRSASHA1Url : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlDsigRSASHA1Url" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) стандартного метода подписи <see cref="T:System.Security.Cryptography.RSA" /> для цифровых подписей XML. Это поле является константой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigRSASHA1Url> поля равно <http://www.w3.org/2000/09/xmldsig#rsa-sha1>.  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Дополнительные сведения см. в [схеме консорциум W3C (W3C)](https://www.w3.org/2000/09/xmldsig#rsa-sha1).  
+
+ Из-за проблем с SHA1 корпорация Майкрософт рекомендует использовать модель безопасности на основе SHA256 или более высокого уровня.
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDsigRSASHA256Url">
+      <MemberSignature Language="C#" Value="public const string XmlDsigRSASHA256Url;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlDsigRSASHA256Url" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlDsigRSASHA256Url" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlDsigRSASHA256Url As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlDsigRSASHA256Url;" />
+      <MemberSignature Language="F#" Value="val mutable XmlDsigRSASHA256Url : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlDsigRSASHA256Url" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) для варианта метода подписи SHA-256 <see cref="T:System.Security.Cryptography.RSA" /> для цифровых подписей XML. Это поле является константой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigRSASHA256Url> поля равно <http://www.w3.org/2001/04/xmldsig-more#rsa-sha256>.  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Дополнительные сведения см. в [спецификации консорциум W3C (W3C)](https://www.w3.org/2001/04/xmldsig-more#rsa-sha256).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDsigRSASHA384Url">
+      <MemberSignature Language="C#" Value="public const string XmlDsigRSASHA384Url;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlDsigRSASHA384Url" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlDsigRSASHA384Url" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlDsigRSASHA384Url As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlDsigRSASHA384Url;" />
+      <MemberSignature Language="F#" Value="val mutable XmlDsigRSASHA384Url : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlDsigRSASHA384Url" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) для варианта метода подписи SHA-384 <see cref="T:System.Security.Cryptography.RSA" /> для цифровых подписей XML. Это поле является константой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigRSASHA384Url> поля равно <http://www.w3.org/2001/04/xmldsig-more#rsa-sha384>.  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Дополнительные сведения см. в [спецификации консорциум W3C (W3C)](https://www.w3.org/2001/04/xmldsig-more#rsa-sha384).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDsigRSASHA512Url">
+      <MemberSignature Language="C#" Value="public const string XmlDsigRSASHA512Url;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlDsigRSASHA512Url" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlDsigRSASHA512Url" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlDsigRSASHA512Url As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlDsigRSASHA512Url;" />
+      <MemberSignature Language="F#" Value="val mutable XmlDsigRSASHA512Url : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlDsigRSASHA512Url" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) для варианта метода подписи SHA-512 <see cref="T:System.Security.Cryptography.RSA" /> для цифровых подписей XML. Это поле является константой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigRSASHA512Url> поля равно <http://www.w3.org/2001/04/xmldsig-more#rsa-sha512>.  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Дополнительные сведения см. в [спецификации консорциум W3C (W3C)](https://www.w3.org/2001/04/xmldsig-more#rsa-sha512).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDsigSHA1Url">
+      <MemberSignature Language="C#" Value="public const string XmlDsigSHA1Url;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlDsigSHA1Url" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlDsigSHA1Url" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlDsigSHA1Url As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlDsigSHA1Url;" />
+      <MemberSignature Language="F#" Value="val mutable XmlDsigSHA1Url : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlDsigSHA1Url" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) для стандартного метода выборки <see cref="T:System.Security.Cryptography.SHA1" /> для цифровых подписей XML. Это поле является константой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigSHA1Url> поля равно <http://www.w3.org/2000/09/xmldsig#sha1>.  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Дополнительные сведения см. в [схеме консорциум W3C (W3C)](https://www.w3.org/2000/09/xmldsig#sha1).  
+
+ Из-за проблем с SHA1 корпорация Майкрософт рекомендует использовать модель безопасности на основе SHA256 или более высокого уровня.
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDsigSHA256Url">
+      <MemberSignature Language="C#" Value="public const string XmlDsigSHA256Url;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlDsigSHA256Url" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlDsigSHA256Url" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlDsigSHA256Url As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlDsigSHA256Url;" />
+      <MemberSignature Language="F#" Value="val mutable XmlDsigSHA256Url : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlDsigSHA256Url" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) для стандартного метода выборки <see cref="T:System.Security.Cryptography.SHA256" /> для цифровых подписей XML. Это поле является константой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigSHA256Url> поля равно <http://www.w3.org/2001/04/xmlenc#sha256>.  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Дополнительные сведения см. в [спецификации консорциум W3C (W3C)](https://www.w3.org/2001/04/xmlenc#sha256).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDsigSHA384Url">
+      <MemberSignature Language="C#" Value="public const string XmlDsigSHA384Url;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlDsigSHA384Url" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlDsigSHA384Url" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlDsigSHA384Url As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlDsigSHA384Url;" />
+      <MemberSignature Language="F#" Value="val mutable XmlDsigSHA384Url : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlDsigSHA384Url" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) для стандартного метода выборки <see cref="T:System.Security.Cryptography.SHA384" /> для цифровых подписей XML. Это поле является константой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigSHA384Url> поля равно <http://www.w3.org/2001/04/xmldsig-more#sha384>.  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Дополнительные сведения см. в [спецификации консорциум W3C (W3C)](https://www.w3.org/2001/04/xmldsig-more#sha384).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDsigSHA512Url">
+      <MemberSignature Language="C#" Value="public const string XmlDsigSHA512Url;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlDsigSHA512Url" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlDsigSHA512Url" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlDsigSHA512Url As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlDsigSHA512Url;" />
+      <MemberSignature Language="F#" Value="val mutable XmlDsigSHA512Url : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlDsigSHA512Url" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) для стандартного метода выборки <see cref="T:System.Security.Cryptography.SHA512" /> для цифровых подписей XML. Это поле является константой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigSHA512Url> поля равно <http://www.w3.org/2001/04/xmlenc#sha512>.  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Дополнительные сведения см. в [спецификации консорциум W3C (W3C)](https://www.w3.org/2001/04/xmlenc#sha512).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDsigXPathTransformUrl">
+      <MemberSignature Language="C#" Value="public const string XmlDsigXPathTransformUrl;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlDsigXPathTransformUrl" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlDsigXPathTransformUrl" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlDsigXPathTransformUrl As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlDsigXPathTransformUrl;" />
+      <MemberSignature Language="F#" Value="val mutable XmlDsigXPathTransformUrl : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlDsigXPathTransformUrl" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) языка XPath (XML Path Language). Это поле является константой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigXPathTransformUrl> поля равно <http://www.w3.org/TR/1999/REC-xpath-19991116>.  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Класс реализует преобразование, описываемое <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigXPathTransformUrl> полем. <xref:System.Security.Cryptography.Xml.XmlDsigXPathTransform>  
+  
+ Дополнительные сведения см. в [спецификации консорциум W3C (W3C)](https://www.w3.org/TR/1999/REC-xpath-19991116).  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как вызывать члены <xref:System.Security.Cryptography.Xml.XmlDsigXPathTransform> класса.  
+  
+ [!code-csharp[System.Security.Cryptography.Xml.XmlDsigXPathTransform#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.Xml.XmlDsigXPathTransform/CS/members.cs#2)]
+ [!code-vb[System.Security.Cryptography.Xml.XmlDsigXPathTransform#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.Xml.XmlDsigXPathTransform/VB/members.vb#2)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDsigXsltTransformUrl">
+      <MemberSignature Language="C#" Value="public const string XmlDsigXsltTransformUrl;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlDsigXsltTransformUrl" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlDsigXsltTransformUrl" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlDsigXsltTransformUrl As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlDsigXsltTransformUrl;" />
+      <MemberSignature Language="F#" Value="val mutable XmlDsigXsltTransformUrl : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlDsigXsltTransformUrl" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) преобразования XSLT. Это поле является константой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigXsltTransformUrl> поля равно <http://www.w3.org/TR/1999/REC-xslt-19991116>.  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Класс реализует преобразование, описываемое <xref:System.Security.Cryptography.Xml.SignedXml.XmlDsigXsltTransformUrl> полем. <xref:System.Security.Cryptography.Xml.XmlDsigXsltTransform>  
+  
+ Дополнительные сведения см. в [спецификации консорциум W3C (W3C)](https://www.w3.org/TR/1999/REC-xslt-19991116).  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как использовать члены <xref:System.Security.Cryptography.Xml.XmlDsigXsltTransform> класса.  
+  
+ [!code-cpp[System.Security.Cryptography.Xml.XmlDsigXsltTransform#2](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Security.Cryptography.Xml.XmlDsigXsltTransform/CPP/members.cpp#2)]
+ [!code-csharp[System.Security.Cryptography.Xml.XmlDsigXsltTransform#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Security.Cryptography.Xml.XmlDsigXsltTransform/CS/members.cs#2)]
+ [!code-vb[System.Security.Cryptography.Xml.XmlDsigXsltTransform#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Security.Cryptography.Xml.XmlDsigXsltTransform/VB/members.vb#2)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlLicenseTransformUrl">
+      <MemberSignature Language="C#" Value="public const string XmlLicenseTransformUrl;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string XmlLicenseTransformUrl" />
+      <MemberSignature Language="DocId" Value="F:System.Security.Cryptography.Xml.SignedXml.XmlLicenseTransformUrl" />
+      <MemberSignature Language="VB.NET" Value="Public Const XmlLicenseTransformUrl As String " />
+      <MemberSignature Language="C++ CLI" Value="public: System::String ^ XmlLicenseTransformUrl;" />
+      <MemberSignature Language="F#" Value="val mutable XmlLicenseTransformUrl : string" Usage="System.Security.Cryptography.Xml.SignedXml.XmlLicenseTransformUrl" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Security</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Cryptography.Xml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет универсальный код ресурса (URI) алгоритма преобразования лицензий, который используется для нормализации лицензий XrML для сигнатур.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Security.Cryptography.Xml.SignedXml.XmlLicenseTransformUrl> поля — "urn: MPEG: mpeg21:2003:01-rel-R-NS: лиценсетрансформ"  
+  
+ Используйте это поле для удобного предоставления значения одному из атрибутов URI элемента, используемого для XMLDSIG.  
+  
+ Класс реализует преобразование, описываемое <xref:System.Security.Cryptography.Xml.SignedXml.XmlLicenseTransformUrl> полем. <xref:System.Security.Cryptography.Xml.XmlLicenseTransform>  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

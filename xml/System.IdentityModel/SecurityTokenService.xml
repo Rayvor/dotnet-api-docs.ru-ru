@@ -1,0 +1,1186 @@
+<Type Name="SecurityTokenService" FullName="System.IdentityModel.SecurityTokenService">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="098f090025956013bb455121d70f70fe58204a7d" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70415460" /></Metadata><TypeSignature Language="C#" Value="public abstract class SecurityTokenService" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract beforefieldinit SecurityTokenService extends System.Object" />
+  <TypeSignature Language="DocId" Value="T:System.IdentityModel.SecurityTokenService" />
+  <TypeSignature Language="VB.NET" Value="Public MustInherit Class SecurityTokenService" />
+  <TypeSignature Language="C++ CLI" Value="public ref class SecurityTokenService abstract" />
+  <TypeSignature Language="F#" Value="type SecurityTokenService = class" />
+  <AssemblyInfo>
+    <AssemblyName>System.IdentityModel</AssemblyName>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>Абстрактный базовый класс, который определяет свойства и методы службы токенов безопасности (STS).</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Чтобы создать STS, необходимо быть производным от <xref:System.IdentityModel.SecurityTokenService> класса. В пользовательском классе, как минимум, необходимо переопределить <xref:System.IdentityModel.SecurityTokenService.GetScope%2A> методы и. <xref:System.IdentityModel.SecurityTokenService.GetOutputClaimsIdentity%2A> С этими переопределениями STS, созданная с помощью реализации по умолчанию всех других методов, определенных в классе, может выдавать маркеры безопасности в ответ на запросы маркеров безопасности (RST). То есть реализуется привязка проблемы, определенная в спецификации WS-Trust. Эта привязка реализована в <xref:System.IdentityModel.SecurityTokenService.Issue%2A> методе. Ни одна из других привязок WS-Trust (продление, отмена и проверка) не реализована в варианте по умолчанию, и соответствующая ошибка возвращается вызывающему объекту, если встречается RST, соответствующий одной из этих привязок. Разумеется, можно переопределить соответствующие методы (<xref:System.IdentityModel.SecurityTokenService.Renew%2A>, <xref:System.IdentityModel.SecurityTokenService.Cancel%2A>и <xref:System.IdentityModel.SecurityTokenService.Validate%2A>) для реализации этих привязок в STS.  
+  
+> [!IMPORTANT]
+>  Реализация STS, готовой к работе, требует тщательного планирования и значительного объема ресурсов для устранения потенциальных угроз безопасности, связанных с предоставлением такой службы. Большинство разработчиков, использующих Windows Identity Foundation (WIF), будут разрабатывать приложения, которые используют для управления удостоверениями службу STS, а не саму службу STS. WIF предоставляет расширение Visual Studio, средство идентификации и доступа для Visual Studio 2012, помогающее разработчикам тестировать решения в среде разработки. Это средство включает службу STS, `LocalSTS`которую можно настроить для обслуживания конкретных утверждений для разрабатываемого приложения. Дополнительные сведения о средстве идентификации и доступа см. в разделе [средство идентификации и доступа для Visual Studio 2012](~/docs/framework/security/identity-and-access-tool-for-vs.md). В некоторых сценариях `LocalSTS` могут не предоставляться функции, необходимые для адекватного тестирования приложения. Например, в сценарии, включающем разработку пользовательского обработчика маркеров для использования приложением. В таких случаях можно <xref:System.IdentityModel.SecurityTokenService> создать один или несколько простых службы маркеров безопасности, которые можно развернуть в среде разработки и использовать для тестирования таких функций в приложении. Оставшаяся часть этого раздела посвящена методам, предоставляемым <xref:System.IdentityModel.SecurityTokenService> классом, который позволяет реализовать простую STS и расширить конвейер выдачи маркеров.  
+  
+ В следующем списке приводится краткий обзор методов, которые являются основными для разработчика для использования в среде тестирования или разработки.  
+  
+-   метод <xref:System.IdentityModel.SecurityTokenService.GetScope%2A> ; Этот метод возвращает <xref:System.IdentityModel.Scope> объект, содержащий сведения о RP. Этот объект используется в оставшейся части конвейера выдачи маркера и включает сведения о подписывании и шифровании учетных данных для использования в ответе, а также `AppliesTo` адреса `ReplyTo` и (при необходимости). Этот метод необходимо переопределить.  
+  
+-   метод <xref:System.IdentityModel.SecurityTokenService.GetOutputClaimsIdentity%2A> ; Этот метод возвращает <xref:System.Security.Claims.ClaimsIdentity> объект, содержащий утверждения для возврата к RP. Этот метод необходимо переопределить.  
+  
+-   метод <xref:System.IdentityModel.SecurityTokenService.Issue%2A> ; Этот метод реализует конвейер запроса маркера, который обрабатывает входящий запрос маркера безопасности (RST) и возвращает ответ (RSTR) вызывающему объекту, который содержит маркер, который можно использовать для проверки подлинности с помощью RP. Многие другие методы, определенные в <xref:System.IdentityModel.SecurityTokenService> классе, вызываются из этого метода, <xref:System.IdentityModel.SecurityTokenService.GetScope%2A> включая методы и <xref:System.IdentityModel.SecurityTokenService.GetOutputClaimsIdentity%2A> . Переопределять этот метод не нужно, но понимание того, какой конвейер запросов маркеров он реализует, может оказаться полезным.  
+  
+ STS настраивается с помощью <xref:System.IdentityModel.Configuration.SecurityTokenServiceConfiguration> класса.  
+  
+   
+  
+## Examples  
+ Примеры кода, используемые в <xref:System.IdentityModel.SecurityTokenService> подразделах, взяты `Custom Token` из примера. Этот пример предоставляет пользовательские классы, которые позволяют обрабатывать простые веб-маркеры (SWT) и включают реализацию пассивной STS, способную обслуживать токен SWT. Пример реализации активной STS можно увидеть в `Federation Metadata` примере. Сведения об этих примерах и других примерах, доступных для WIF, и о месте их загрузки см. в разделе [индекс примера кода WIF](~/docs/framework/security/wif-code-sample-index.md). В следующем коде показана реализация пассивной STS с помощью <xref:System.IdentityModel.SecurityTokenService> класса.  
+  
+ [!code-csharp[WIFCustomTokenSTS#3](~/samples/snippets/csharp/VS_Snippets_Misc/wifcustomtokensts/cs/passivests/customsecuritytokenservice.cs#3)]  
+  
+ В следующем коде показано, как вызвать пользовательскую пассивную STS для обработки запроса WS-Federation путем вызова <xref:System.IdentityModel.Services.FederatedPassiveSecurityTokenServiceOperations.ProcessRequest%28System.Web.HttpRequest%2CSystem.Security.Claims.ClaimsPrincipal%2CSystem.IdentityModel.SecurityTokenService%2CSystem.Web.HttpResponse%29?displayProperty=nameWithType> метода из кода программной части `default.aspx.cs` файла.  
+  
+ [!code-csharp[WIFCustomTokenSTS#1](~/samples/snippets/csharp/VS_Snippets_Misc/wifcustomtokensts/cs/passivests/default.aspx.cs#1)]  
+  
+ ]]></format>
+    </remarks>
+    <block subset="none" type="overrides"><para>Необходимо переопределить <see cref="M:System.IdentityModel.SecurityTokenService.GetScope(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken)" /> <see cref="M:System.IdentityModel.SecurityTokenService.GetOutputClaimsIdentity(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken,System.IdentityModel.Scope)" /> методы и.</para></block>
+    <altmember cref="T:System.IdentityModel.Scope" />
+    <altmember cref="T:System.IdentityModel.Configuration.SecurityTokenServiceConfiguration" />
+    <altmember cref="T:System.IdentityModel.Services.FederatedPassiveSecurityTokenServiceOperations" />
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="protected SecurityTokenService (System.IdentityModel.Configuration.SecurityTokenServiceConfiguration securityTokenServiceConfiguration);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig specialname rtspecialname instance void .ctor(class System.IdentityModel.Configuration.SecurityTokenServiceConfiguration securityTokenServiceConfiguration) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.#ctor(System.IdentityModel.Configuration.SecurityTokenServiceConfiguration)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; SecurityTokenService(System::IdentityModel::Configuration::SecurityTokenServiceConfiguration ^ securityTokenServiceConfiguration);" />
+      <MemberSignature Language="F#" Value="new System.IdentityModel.SecurityTokenService : System.IdentityModel.Configuration.SecurityTokenServiceConfiguration -&gt; System.IdentityModel.SecurityTokenService" Usage="new System.IdentityModel.SecurityTokenService securityTokenServiceConfiguration" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="securityTokenServiceConfiguration" Type="System.IdentityModel.Configuration.SecurityTokenServiceConfiguration" />
+      </Parameters>
+      <Docs>
+        <param name="securityTokenServiceConfiguration">Объект <see cref="T:System.IdentityModel.Configuration.SecurityTokenServiceConfiguration" />, содержащий настройки для STS.</param>
+        <summary>При вызове из производных классов для инициализации класса <see cref="T:System.IdentityModel.SecurityTokenService" />, используя заданные параметры конфигурации.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Используйте этот конструктор для инициализации поставщика области и сертификата издателя маркера.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="securityTokenServiceConfiguration" /> имеет значение <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="BeginCancel">
+      <MemberSignature Language="C#" Value="public virtual IAsyncResult BeginCancel (System.Security.Claims.ClaimsPrincipal principal, System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request, AsyncCallback callback, object state);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.IAsyncResult BeginCancel(class System.Security.Claims.ClaimsPrincipal principal, class System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request, class System.AsyncCallback callback, object state) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.BeginCancel(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken,System.AsyncCallback,System.Object)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function BeginCancel (principal As ClaimsPrincipal, request As RequestSecurityToken, callback As AsyncCallback, state As Object) As IAsyncResult" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual IAsyncResult ^ BeginCancel(System::Security::Claims::ClaimsPrincipal ^ principal, System::IdentityModel::Protocols::WSTrust::RequestSecurityToken ^ request, AsyncCallback ^ callback, System::Object ^ state);" />
+      <MemberSignature Language="F#" Value="abstract member BeginCancel : System.Security.Claims.ClaimsPrincipal * System.IdentityModel.Protocols.WSTrust.RequestSecurityToken * AsyncCallback * obj -&gt; IAsyncResult&#xA;override this.BeginCancel : System.Security.Claims.ClaimsPrincipal * System.IdentityModel.Protocols.WSTrust.RequestSecurityToken * AsyncCallback * obj -&gt; IAsyncResult" Usage="securityTokenService.BeginCancel (principal, request, callback, state)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IAsyncResult</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="principal" Type="System.Security.Claims.ClaimsPrincipal" />
+        <Parameter Name="request" Type="System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />
+        <Parameter Name="callback" Type="System.AsyncCallback" />
+        <Parameter Name="state" Type="System.Object" />
+      </Parameters>
+      <Docs>
+        <param name="principal">Объект <see cref="T:System.Security.Claims.ClaimsPrincipal" />, представляющий удостоверение стороны, запрашивающей токен.</param>
+        <param name="request">Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />, представляющий запрос токена безопасности. Содержит сообщение запроса, а также другую связанную с клиентом информацию, например контекст авторизации.</param>
+        <param name="callback">Делегат <see cref="T:System.AsyncCallback" />, принимающий уведомление о завершении асинхронной операции отмены.</param>
+        <param name="state">Объект, который содержит сведения о состоянии, связанные с асинхронной операцией отмены.</param>
+        <summary>При переопределении в производном классе начинает асинхронный запрос WS-Trust Cancel.</summary>
+        <returns>Объект <see cref="T:System.IAsyncResult" />, который ссылается на асинхронную операцию отмены.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация по умолчанию этого метода создает исключение <xref:System.IdentityModel.Protocols.WSTrust.InvalidRequestException>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="BeginGetOutputClaimsIdentity">
+      <MemberSignature Language="C#" Value="protected virtual IAsyncResult BeginGetOutputClaimsIdentity (System.Security.Claims.ClaimsPrincipal principal, System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request, System.IdentityModel.Scope scope, AsyncCallback callback, object state);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance class System.IAsyncResult BeginGetOutputClaimsIdentity(class System.Security.Claims.ClaimsPrincipal principal, class System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request, class System.IdentityModel.Scope scope, class System.AsyncCallback callback, object state) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.BeginGetOutputClaimsIdentity(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken,System.IdentityModel.Scope,System.AsyncCallback,System.Object)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual IAsyncResult ^ BeginGetOutputClaimsIdentity(System::Security::Claims::ClaimsPrincipal ^ principal, System::IdentityModel::Protocols::WSTrust::RequestSecurityToken ^ request, System::IdentityModel::Scope ^ scope, AsyncCallback ^ callback, System::Object ^ state);" />
+      <MemberSignature Language="F#" Value="abstract member BeginGetOutputClaimsIdentity : System.Security.Claims.ClaimsPrincipal * System.IdentityModel.Protocols.WSTrust.RequestSecurityToken * System.IdentityModel.Scope * AsyncCallback * obj -&gt; IAsyncResult&#xA;override this.BeginGetOutputClaimsIdentity : System.Security.Claims.ClaimsPrincipal * System.IdentityModel.Protocols.WSTrust.RequestSecurityToken * System.IdentityModel.Scope * AsyncCallback * obj -&gt; IAsyncResult" Usage="securityTokenService.BeginGetOutputClaimsIdentity (principal, request, scope, callback, state)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IAsyncResult</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="principal" Type="System.Security.Claims.ClaimsPrincipal" />
+        <Parameter Name="request" Type="System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />
+        <Parameter Name="scope" Type="System.IdentityModel.Scope" />
+        <Parameter Name="callback" Type="System.AsyncCallback" />
+        <Parameter Name="state" Type="System.Object" />
+      </Parameters>
+      <Docs>
+        <param name="principal">Объект <see cref="T:System.Security.Claims.ClaimsPrincipal" />, представляющий удостоверение стороны, запрашивающей токен.</param>
+        <param name="request">Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />, представляющий запрос токена безопасности. Содержит сообщение запроса, а также другую связанную с клиентом информацию, например контекст авторизации.</param>
+        <param name="scope">Объект <see cref="T:System.IdentityModel.Scope" />, содержащий информацию о проверяющей стороне, связанной с данным запросом.</param>
+        <param name="callback">Делегат <see cref="T:System.AsyncCallback" />, принимающий уведомление о завершении асинхронной операции.</param>
+        <param name="state">Объект, который содержит сведения о состоянии, связанные с асинхронной операцией.</param>
+        <summary>При переопределении в производном классе начинает асинхронный вызов метода <see cref="M:System.IdentityModel.SecurityTokenService.GetOutputClaimsIdentity(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken,System.IdentityModel.Scope)" />.</summary>
+        <returns>Объект <see cref="T:System.IAsyncResult" />, который ссылается на асинхронную операцию.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация по умолчанию этого метода создает исключение <xref:System.NotImplementedException>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="BeginGetScope">
+      <MemberSignature Language="C#" Value="protected virtual IAsyncResult BeginGetScope (System.Security.Claims.ClaimsPrincipal principal, System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request, AsyncCallback callback, object state);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance class System.IAsyncResult BeginGetScope(class System.Security.Claims.ClaimsPrincipal principal, class System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request, class System.AsyncCallback callback, object state) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.BeginGetScope(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken,System.AsyncCallback,System.Object)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Function BeginGetScope (principal As ClaimsPrincipal, request As RequestSecurityToken, callback As AsyncCallback, state As Object) As IAsyncResult" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual IAsyncResult ^ BeginGetScope(System::Security::Claims::ClaimsPrincipal ^ principal, System::IdentityModel::Protocols::WSTrust::RequestSecurityToken ^ request, AsyncCallback ^ callback, System::Object ^ state);" />
+      <MemberSignature Language="F#" Value="abstract member BeginGetScope : System.Security.Claims.ClaimsPrincipal * System.IdentityModel.Protocols.WSTrust.RequestSecurityToken * AsyncCallback * obj -&gt; IAsyncResult&#xA;override this.BeginGetScope : System.Security.Claims.ClaimsPrincipal * System.IdentityModel.Protocols.WSTrust.RequestSecurityToken * AsyncCallback * obj -&gt; IAsyncResult" Usage="securityTokenService.BeginGetScope (principal, request, callback, state)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IAsyncResult</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="principal" Type="System.Security.Claims.ClaimsPrincipal" />
+        <Parameter Name="request" Type="System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />
+        <Parameter Name="callback" Type="System.AsyncCallback" />
+        <Parameter Name="state" Type="System.Object" />
+      </Parameters>
+      <Docs>
+        <param name="principal">Объект <see cref="T:System.Security.Claims.ClaimsPrincipal" />, представляющий удостоверение стороны, запрашивающей токен.</param>
+        <param name="request">Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />, представляющий запрос токена безопасности. Содержит сообщение запроса, а также другую связанную с клиентом информацию, например контекст авторизации.</param>
+        <param name="callback">Делегат <see cref="T:System.AsyncCallback" />, принимающий уведомление о завершении асинхронной операции.</param>
+        <param name="state">Объект, который содержит сведения о состоянии, связанные с асинхронной операцией.</param>
+        <summary>При переопределении в производном классе начинает асинхронный вызов метода <see cref="M:System.IdentityModel.SecurityTokenService.GetScope(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken)" />.</summary>
+        <returns>Объект <see cref="T:System.IAsyncResult" />, который ссылается на асинхронную операцию отмены.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация по умолчанию этого метода создает исключение <xref:System.NotImplementedException>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="BeginIssue">
+      <MemberSignature Language="C#" Value="public virtual IAsyncResult BeginIssue (System.Security.Claims.ClaimsPrincipal principal, System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request, AsyncCallback callback, object state);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.IAsyncResult BeginIssue(class System.Security.Claims.ClaimsPrincipal principal, class System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request, class System.AsyncCallback callback, object state) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.BeginIssue(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken,System.AsyncCallback,System.Object)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function BeginIssue (principal As ClaimsPrincipal, request As RequestSecurityToken, callback As AsyncCallback, state As Object) As IAsyncResult" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual IAsyncResult ^ BeginIssue(System::Security::Claims::ClaimsPrincipal ^ principal, System::IdentityModel::Protocols::WSTrust::RequestSecurityToken ^ request, AsyncCallback ^ callback, System::Object ^ state);" />
+      <MemberSignature Language="F#" Value="abstract member BeginIssue : System.Security.Claims.ClaimsPrincipal * System.IdentityModel.Protocols.WSTrust.RequestSecurityToken * AsyncCallback * obj -&gt; IAsyncResult&#xA;override this.BeginIssue : System.Security.Claims.ClaimsPrincipal * System.IdentityModel.Protocols.WSTrust.RequestSecurityToken * AsyncCallback * obj -&gt; IAsyncResult" Usage="securityTokenService.BeginIssue (principal, request, callback, state)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IAsyncResult</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="principal" Type="System.Security.Claims.ClaimsPrincipal" />
+        <Parameter Name="request" Type="System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />
+        <Parameter Name="callback" Type="System.AsyncCallback" />
+        <Parameter Name="state" Type="System.Object" />
+      </Parameters>
+      <Docs>
+        <param name="principal">Объект <see cref="T:System.Security.Claims.ClaimsPrincipal" />, представляющий удостоверение стороны, запрашивающей токен.</param>
+        <param name="request">Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />, представляющий запрос токена безопасности. Содержит сообщение запроса, а также другую связанную с клиентом информацию, например контекст авторизации.</param>
+        <param name="callback">Делегат <see cref="T:System.AsyncCallback" />, принимающий уведомление о завершении асинхронной операции выдачи.</param>
+        <param name="state">Объект, который содержит сведения о состоянии, связанные с асинхронной операцией выдачи.</param>
+        <summary>При переопределении в производном классе начинает асинхронный запрос WS-Trust Issue.</summary>
+        <returns><see cref="T:System.IAsyncResult" />, который ссылается на асинхронную операцию выдачи.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация по умолчанию этого метода создает исключение <xref:System.IdentityModel.Protocols.WSTrust.InvalidRequestException>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="BeginRenew">
+      <MemberSignature Language="C#" Value="public virtual IAsyncResult BeginRenew (System.Security.Claims.ClaimsPrincipal principal, System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request, AsyncCallback callback, object state);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.IAsyncResult BeginRenew(class System.Security.Claims.ClaimsPrincipal principal, class System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request, class System.AsyncCallback callback, object state) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.BeginRenew(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken,System.AsyncCallback,System.Object)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function BeginRenew (principal As ClaimsPrincipal, request As RequestSecurityToken, callback As AsyncCallback, state As Object) As IAsyncResult" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual IAsyncResult ^ BeginRenew(System::Security::Claims::ClaimsPrincipal ^ principal, System::IdentityModel::Protocols::WSTrust::RequestSecurityToken ^ request, AsyncCallback ^ callback, System::Object ^ state);" />
+      <MemberSignature Language="F#" Value="abstract member BeginRenew : System.Security.Claims.ClaimsPrincipal * System.IdentityModel.Protocols.WSTrust.RequestSecurityToken * AsyncCallback * obj -&gt; IAsyncResult&#xA;override this.BeginRenew : System.Security.Claims.ClaimsPrincipal * System.IdentityModel.Protocols.WSTrust.RequestSecurityToken * AsyncCallback * obj -&gt; IAsyncResult" Usage="securityTokenService.BeginRenew (principal, request, callback, state)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IAsyncResult</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="principal" Type="System.Security.Claims.ClaimsPrincipal" />
+        <Parameter Name="request" Type="System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />
+        <Parameter Name="callback" Type="System.AsyncCallback" />
+        <Parameter Name="state" Type="System.Object" />
+      </Parameters>
+      <Docs>
+        <param name="principal">Объект <see cref="T:System.Security.Claims.ClaimsPrincipal" />, представляющий удостоверение стороны, запрашивающей токен.</param>
+        <param name="request">Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />, представляющий запрос токена безопасности. Содержит сообщение запроса, а также другую связанную с клиентом информацию, например контекст авторизации.</param>
+        <param name="callback">Делегат <see cref="T:System.AsyncCallback" />, принимающий уведомление о завершении асинхронной операции обновления.</param>
+        <param name="state">Объект, который содержит сведения о состоянии, связанные с асинхронной операцией обновления.</param>
+        <summary>При переопределении в производном классе начинает асинхронный запрос WS-Trust Renew.</summary>
+        <returns><see cref="T:System.IAsyncResult" />, который ссылается на асинхронную операцию обновления.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация по умолчанию этого метода создает исключение <xref:System.IdentityModel.Protocols.WSTrust.InvalidRequestException>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="BeginValidate">
+      <MemberSignature Language="C#" Value="public virtual IAsyncResult BeginValidate (System.Security.Claims.ClaimsPrincipal principal, System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request, AsyncCallback callback, object state);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.IAsyncResult BeginValidate(class System.Security.Claims.ClaimsPrincipal principal, class System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request, class System.AsyncCallback callback, object state) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.BeginValidate(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken,System.AsyncCallback,System.Object)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function BeginValidate (principal As ClaimsPrincipal, request As RequestSecurityToken, callback As AsyncCallback, state As Object) As IAsyncResult" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual IAsyncResult ^ BeginValidate(System::Security::Claims::ClaimsPrincipal ^ principal, System::IdentityModel::Protocols::WSTrust::RequestSecurityToken ^ request, AsyncCallback ^ callback, System::Object ^ state);" />
+      <MemberSignature Language="F#" Value="abstract member BeginValidate : System.Security.Claims.ClaimsPrincipal * System.IdentityModel.Protocols.WSTrust.RequestSecurityToken * AsyncCallback * obj -&gt; IAsyncResult&#xA;override this.BeginValidate : System.Security.Claims.ClaimsPrincipal * System.IdentityModel.Protocols.WSTrust.RequestSecurityToken * AsyncCallback * obj -&gt; IAsyncResult" Usage="securityTokenService.BeginValidate (principal, request, callback, state)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IAsyncResult</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="principal" Type="System.Security.Claims.ClaimsPrincipal" />
+        <Parameter Name="request" Type="System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />
+        <Parameter Name="callback" Type="System.AsyncCallback" />
+        <Parameter Name="state" Type="System.Object" />
+      </Parameters>
+      <Docs>
+        <param name="principal">Объект <see cref="T:System.Security.Claims.ClaimsPrincipal" />, представляющий удостоверение стороны, запрашивающей токен.</param>
+        <param name="request">Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />, представляющий запрос токена безопасности. Содержит сообщение запроса, а также другую связанную с клиентом информацию, например контекст авторизации.</param>
+        <param name="callback">Делегат <see cref="T:System.AsyncCallback" />, принимающий уведомление о завершении асинхронной операции проверки.</param>
+        <param name="state">Объект, который содержит сведения о состоянии, связанные с асинхронной операцией проверки.</param>
+        <summary>При переопределении в производном классе начинает асинхронный запрос WS-Trust Validate.</summary>
+        <returns><see cref="T:System.IAsyncResult" />, который ссылается на асинхронную операцию проверки.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация по умолчанию этого метода создает исключение <xref:System.IdentityModel.Protocols.WSTrust.InvalidRequestException>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Cancel">
+      <MemberSignature Language="C#" Value="public virtual System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse Cancel (System.Security.Claims.ClaimsPrincipal principal, System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse Cancel(class System.Security.Claims.ClaimsPrincipal principal, class System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.Cancel(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function Cancel (principal As ClaimsPrincipal, request As RequestSecurityToken) As RequestSecurityTokenResponse" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::IdentityModel::Protocols::WSTrust::RequestSecurityTokenResponse ^ Cancel(System::Security::Claims::ClaimsPrincipal ^ principal, System::IdentityModel::Protocols::WSTrust::RequestSecurityToken ^ request);" />
+      <MemberSignature Language="F#" Value="abstract member Cancel : System.Security.Claims.ClaimsPrincipal * System.IdentityModel.Protocols.WSTrust.RequestSecurityToken -&gt; System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse&#xA;override this.Cancel : System.Security.Claims.ClaimsPrincipal * System.IdentityModel.Protocols.WSTrust.RequestSecurityToken -&gt; System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse" Usage="securityTokenService.Cancel (principal, request)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="principal" Type="System.Security.Claims.ClaimsPrincipal" />
+        <Parameter Name="request" Type="System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />
+      </Parameters>
+      <Docs>
+        <param name="principal">Объект <see cref="T:System.Security.Claims.ClaimsPrincipal" />, представляющий удостоверение стороны, запрашивающей токен.</param>
+        <param name="request">Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />, представляющий запрос токена безопасности. Содержит сообщение запроса, а также другую связанную с клиентом информацию, например контекст авторизации.</param>
+        <summary>При переопределении в производном классе обрабатывает запрос WS-Trust Cancel.</summary>
+        <returns>Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse" />, представляющий RSTR, возвращаемый вызывающей стороне.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация по умолчанию этого метода создает исключение <xref:System.IdentityModel.Protocols.WSTrust.InvalidRequestException>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CreateSecurityTokenDescriptor">
+      <MemberSignature Language="C#" Value="protected virtual System.IdentityModel.Tokens.SecurityTokenDescriptor CreateSecurityTokenDescriptor (System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request, System.IdentityModel.Scope scope);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance class System.IdentityModel.Tokens.SecurityTokenDescriptor CreateSecurityTokenDescriptor(class System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request, class System.IdentityModel.Scope scope) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.CreateSecurityTokenDescriptor(System.IdentityModel.Protocols.WSTrust.RequestSecurityToken,System.IdentityModel.Scope)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual System::IdentityModel::Tokens::SecurityTokenDescriptor ^ CreateSecurityTokenDescriptor(System::IdentityModel::Protocols::WSTrust::RequestSecurityToken ^ request, System::IdentityModel::Scope ^ scope);" />
+      <MemberSignature Language="F#" Value="abstract member CreateSecurityTokenDescriptor : System.IdentityModel.Protocols.WSTrust.RequestSecurityToken * System.IdentityModel.Scope -&gt; System.IdentityModel.Tokens.SecurityTokenDescriptor&#xA;override this.CreateSecurityTokenDescriptor : System.IdentityModel.Protocols.WSTrust.RequestSecurityToken * System.IdentityModel.Scope -&gt; System.IdentityModel.Tokens.SecurityTokenDescriptor" Usage="securityTokenService.CreateSecurityTokenDescriptor (request, scope)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Tokens.SecurityTokenDescriptor</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="request" Type="System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />
+        <Parameter Name="scope" Type="System.IdentityModel.Scope" />
+      </Parameters>
+      <Docs>
+        <param name="request">Входящий запрос токена.</param>
+        <param name="scope">Объект <see cref="P:System.IdentityModel.SecurityTokenService.Scope" />, возвращаемый методом <see cref="M:System.IdentityModel.SecurityTokenService.GetScope(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken)" />.</param>
+        <summary>Создает экземпляр класса <see cref="P:System.IdentityModel.SecurityTokenService.SecurityTokenDescriptor" />.</summary>
+        <returns><see cref="P:System.IdentityModel.SecurityTokenService.SecurityTokenDescriptor" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вызывается во время выдачи <xref:System.IdentityModel.SecurityTokenService.GetScope%2A>маркера после.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="request" /> имеет значение <see langword="null" />.  
+  
+-или- 
+ Свойство <paramref name="scope" /> имеет значение <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="EndCancel">
+      <MemberSignature Language="C#" Value="public virtual System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse EndCancel (IAsyncResult result);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse EndCancel(class System.IAsyncResult result) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.EndCancel(System.IAsyncResult)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function EndCancel (result As IAsyncResult) As RequestSecurityTokenResponse" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::IdentityModel::Protocols::WSTrust::RequestSecurityTokenResponse ^ EndCancel(IAsyncResult ^ result);" />
+      <MemberSignature Language="F#" Value="abstract member EndCancel : IAsyncResult -&gt; System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse&#xA;override this.EndCancel : IAsyncResult -&gt; System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse" Usage="securityTokenService.EndCancel result" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="result" Type="System.IAsyncResult" />
+      </Parameters>
+      <Docs>
+        <param name="result">Объект <see cref="T:System.IAsyncResult" />, возвращаемый при вызове метода <see cref="M:System.IdentityModel.SecurityTokenService.BeginCancel(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken,System.AsyncCallback,System.Object)" />.</param>
+        <summary>При переопределении в производном классе завершает асинхронный запрос WS-Trust Cancel.</summary>
+        <returns>Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse" />, представляющий RSTR, возвращаемый вызывающей стороне.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация по умолчанию этого метода создает исключение <xref:System.IdentityModel.Protocols.WSTrust.InvalidRequestException>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="EndGetOutputClaimsIdentity">
+      <MemberSignature Language="C#" Value="protected virtual System.Security.Claims.ClaimsIdentity EndGetOutputClaimsIdentity (IAsyncResult result);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance class System.Security.Claims.ClaimsIdentity EndGetOutputClaimsIdentity(class System.IAsyncResult result) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.EndGetOutputClaimsIdentity(System.IAsyncResult)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Function EndGetOutputClaimsIdentity (result As IAsyncResult) As ClaimsIdentity" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual System::Security::Claims::ClaimsIdentity ^ EndGetOutputClaimsIdentity(IAsyncResult ^ result);" />
+      <MemberSignature Language="F#" Value="abstract member EndGetOutputClaimsIdentity : IAsyncResult -&gt; System.Security.Claims.ClaimsIdentity&#xA;override this.EndGetOutputClaimsIdentity : IAsyncResult -&gt; System.Security.Claims.ClaimsIdentity" Usage="securityTokenService.EndGetOutputClaimsIdentity result" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Security.Claims.ClaimsIdentity</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="result" Type="System.IAsyncResult" />
+      </Parameters>
+      <Docs>
+        <param name="result">Объект <see cref="T:System.IAsyncResult" />, возвращаемый при вызове метода <see cref="M:System.IdentityModel.SecurityTokenService.BeginGetOutputClaimsIdentity(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken,System.IdentityModel.Scope,System.AsyncCallback,System.Object)" />.</param>
+        <summary>При переопределении в производном классе завершает асинхронный вызов метода <see cref="M:System.IdentityModel.SecurityTokenService.BeginGetOutputClaimsIdentity(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken,System.IdentityModel.Scope,System.AsyncCallback,System.Object)" />.</summary>
+        <returns><see cref="T:System.Security.Claims.ClaimsIdentity" />, содержащий коллекцию утверждений, которые будут помещены в выданный токен безопасности.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация по умолчанию этого метода создает исключение <xref:System.NotImplementedException>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="EndGetScope">
+      <MemberSignature Language="C#" Value="protected virtual System.IdentityModel.Scope EndGetScope (IAsyncResult result);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance class System.IdentityModel.Scope EndGetScope(class System.IAsyncResult result) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.EndGetScope(System.IAsyncResult)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Function EndGetScope (result As IAsyncResult) As Scope" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual System::IdentityModel::Scope ^ EndGetScope(IAsyncResult ^ result);" />
+      <MemberSignature Language="F#" Value="abstract member EndGetScope : IAsyncResult -&gt; System.IdentityModel.Scope&#xA;override this.EndGetScope : IAsyncResult -&gt; System.IdentityModel.Scope" Usage="securityTokenService.EndGetScope result" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Scope</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="result" Type="System.IAsyncResult" />
+      </Parameters>
+      <Docs>
+        <param name="result">Объект <see cref="T:System.IAsyncResult" />, возвращаемый при вызове метода <see cref="M:System.IdentityModel.SecurityTokenService.BeginGetScope(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken,System.AsyncCallback,System.Object)" />.</param>
+        <summary>При переопределении в производном классе завершает асинхронный вызов метода <see cref="M:System.IdentityModel.SecurityTokenService.BeginGetScope(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken,System.AsyncCallback,System.Object)" />.</summary>
+        <returns><see cref="T:System.IdentityModel.Scope" />, который инкапсулирует данные проверяющей стороны (RP), связанные с запросом (RST), указанным в вызове метода <see cref="M:System.IdentityModel.SecurityTokenService.BeginGetScope(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken,System.AsyncCallback,System.Object)" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация по умолчанию этого метода создает исключение <xref:System.NotImplementedException>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="EndIssue">
+      <MemberSignature Language="C#" Value="public virtual System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse EndIssue (IAsyncResult result);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse EndIssue(class System.IAsyncResult result) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.EndIssue(System.IAsyncResult)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function EndIssue (result As IAsyncResult) As RequestSecurityTokenResponse" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::IdentityModel::Protocols::WSTrust::RequestSecurityTokenResponse ^ EndIssue(IAsyncResult ^ result);" />
+      <MemberSignature Language="F#" Value="abstract member EndIssue : IAsyncResult -&gt; System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse&#xA;override this.EndIssue : IAsyncResult -&gt; System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse" Usage="securityTokenService.EndIssue result" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="result" Type="System.IAsyncResult" />
+      </Parameters>
+      <Docs>
+        <param name="result">Объект <see cref="T:System.IAsyncResult" />, возвращаемый при вызове метода <see cref="M:System.IdentityModel.SecurityTokenService.BeginIssue(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken,System.AsyncCallback,System.Object)" />.</param>
+        <summary>При переопределении в производном классе завершает асинхронный запрос WS-Trust Issue.</summary>
+        <returns>Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse" />, представляющий RSTR, возвращаемый вызывающей стороне.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация по умолчанию этого метода создает исключение <xref:System.IdentityModel.Protocols.WSTrust.InvalidRequestException>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="EndRenew">
+      <MemberSignature Language="C#" Value="public virtual System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse EndRenew (IAsyncResult result);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse EndRenew(class System.IAsyncResult result) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.EndRenew(System.IAsyncResult)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function EndRenew (result As IAsyncResult) As RequestSecurityTokenResponse" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::IdentityModel::Protocols::WSTrust::RequestSecurityTokenResponse ^ EndRenew(IAsyncResult ^ result);" />
+      <MemberSignature Language="F#" Value="abstract member EndRenew : IAsyncResult -&gt; System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse&#xA;override this.EndRenew : IAsyncResult -&gt; System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse" Usage="securityTokenService.EndRenew result" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="result" Type="System.IAsyncResult" />
+      </Parameters>
+      <Docs>
+        <param name="result">Объект <see cref="T:System.IAsyncResult" />, возвращаемый при вызове метода <see cref="M:System.IdentityModel.SecurityTokenService.BeginRenew(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken,System.AsyncCallback,System.Object)" />.</param>
+        <summary>При переопределении в производном классе завершает асинхронный запрос WS-Trust Renew.</summary>
+        <returns>Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse" />, представляющий RSTR, возвращаемый вызывающей стороне.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация по умолчанию этого метода создает исключение <xref:System.IdentityModel.Protocols.WSTrust.InvalidRequestException>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="EndValidate">
+      <MemberSignature Language="C#" Value="public virtual System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse EndValidate (IAsyncResult result);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse EndValidate(class System.IAsyncResult result) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.EndValidate(System.IAsyncResult)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function EndValidate (result As IAsyncResult) As RequestSecurityTokenResponse" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::IdentityModel::Protocols::WSTrust::RequestSecurityTokenResponse ^ EndValidate(IAsyncResult ^ result);" />
+      <MemberSignature Language="F#" Value="abstract member EndValidate : IAsyncResult -&gt; System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse&#xA;override this.EndValidate : IAsyncResult -&gt; System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse" Usage="securityTokenService.EndValidate result" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="result" Type="System.IAsyncResult" />
+      </Parameters>
+      <Docs>
+        <param name="result">Объект <see cref="T:System.IAsyncResult" />, возвращаемый при вызове метода <see cref="M:System.IdentityModel.SecurityTokenService.BeginValidate(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken,System.AsyncCallback,System.Object)" />.</param>
+        <summary>При переопределении в производном классе завершает асинхронный запрос WS-Trust Validate.</summary>
+        <returns>Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse" />, представляющий RSTR, возвращаемый вызывающей стороне.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация по умолчанию этого метода создает исключение <xref:System.IdentityModel.Protocols.WSTrust.InvalidRequestException>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetIssuerName">
+      <MemberSignature Language="C#" Value="protected virtual string GetIssuerName ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance string GetIssuerName() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.GetIssuerName" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Function GetIssuerName () As String" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual System::String ^ GetIssuerName();" />
+      <MemberSignature Language="F#" Value="abstract member GetIssuerName : unit -&gt; string&#xA;override this.GetIssuerName : unit -&gt; string" Usage="securityTokenService.GetIssuerName " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Получает имя службы токенов безопасности (STS).</summary>
+        <returns>Имя издателя.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод вызывается из конвейера выдачи токена по умолчанию, реализованного в <xref:System.IdentityModel.SecurityTokenService.Issue%2A> методе.  
+  
+ Реализация по умолчанию возвращает <xref:System.IdentityModel.Configuration.SecurityTokenServiceConfiguration.TokenIssuerName%2A> свойство из конфигурации, <xref:System.IdentityModel.SecurityTokenService.SecurityTokenServiceConfiguration%2A> доступ к которому осуществляется через свойство.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.IdentityModel.SecurityTokenService.Issue(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken)" />
+      </Docs>
+    </Member>
+    <Member MemberName="GetOutputClaimsIdentity">
+      <MemberSignature Language="C#" Value="protected abstract System.Security.Claims.ClaimsIdentity GetOutputClaimsIdentity (System.Security.Claims.ClaimsPrincipal principal, System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request, System.IdentityModel.Scope scope);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance class System.Security.Claims.ClaimsIdentity GetOutputClaimsIdentity(class System.Security.Claims.ClaimsPrincipal principal, class System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request, class System.IdentityModel.Scope scope) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.GetOutputClaimsIdentity(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken,System.IdentityModel.Scope)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; abstract System::Security::Claims::ClaimsIdentity ^ GetOutputClaimsIdentity(System::Security::Claims::ClaimsPrincipal ^ principal, System::IdentityModel::Protocols::WSTrust::RequestSecurityToken ^ request, System::IdentityModel::Scope ^ scope);" />
+      <MemberSignature Language="F#" Value="abstract member GetOutputClaimsIdentity : System.Security.Claims.ClaimsPrincipal * System.IdentityModel.Protocols.WSTrust.RequestSecurityToken * System.IdentityModel.Scope -&gt; System.Security.Claims.ClaimsIdentity" Usage="securityTokenService.GetOutputClaimsIdentity (principal, request, scope)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Security.Claims.ClaimsIdentity</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="principal" Type="System.Security.Claims.ClaimsPrincipal" />
+        <Parameter Name="request" Type="System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />
+        <Parameter Name="scope" Type="System.IdentityModel.Scope" />
+      </Parameters>
+      <Docs>
+        <param name="principal">Объект <see cref="T:System.Security.Claims.ClaimsPrincipal" />, представляющий удостоверение стороны, запрашивающей токен.</param>
+        <param name="request">Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />, представляющий запрос токена безопасности. Содержит сообщение запроса, а также другую связанную с клиентом информацию, например контекст авторизации.</param>
+        <param name="scope">Объект <see cref="T:System.IdentityModel.Scope" />, содержащий информацию о проверяющей стороне, связанной с данным запросом. Это объект <see cref="T:System.IdentityModel.Scope" />, возвращенный методом <see cref="M:System.IdentityModel.SecurityTokenService.GetScope(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken)" />.</param>
+        <summary>При переопределении в производном классе этот метод возвращает коллекцию выходных субъектов, которые должны быть включены в выданный токен.</summary>
+        <returns><see cref="T:System.Security.Claims.ClaimsIdentity" />, содержащий коллекцию утверждений, которые будут помещены в выданный токен безопасности.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод вызывается из конвейера выдачи маркера, который реализуется <xref:System.IdentityModel.SecurityTokenService.Issue%2A> методом. <xref:System.IdentityModel.SecurityTokenService.GetOutputClaimsIdentity%2A> Он возвращает объект <xref:System.Security.Claims.ClaimsIdentity> , содержащий утверждения для включения в выданный маркер безопасности на основе запрашивающего маркера `principal` (параметра), входящего RST ( `request` параметра) и проверяющей стороны, для которой предназначен маркер ( `scope` параметр). Логика в этом методе в основном касается ответов на следующие вопросы:  
+  
+-   **Какие типы утверждений должны быть включены в ответ на основе RP, для которого оно предназначено?** Обычно это выбирается для каждой RP на основе списков типов заявок, необходимых для каждой RP, или для каждого запроса путем проверки <xref:System.IdentityModel.Protocols.WSTrust.RequestSecurityToken.Claims%2A> свойства запроса. Однако логика и сведения для определения утверждений, которые должны быть включены в ответ, полностью реализованы в вашей реализации.  
+  
+-   **Какие значения утверждений должны быть назначены заявкам в ответе?** Для поставщика удостоверений (IP-STS) это обычно означает использование одного или нескольких утверждений в запрашивающей стороне <xref:System.Security.Claims.ClaimsPrincipal> (предоставленных `principal` параметром) для доступа к хранилищу (или другой сущности) для возврата значений требуемых типов утверждений. Для поставщика Федерации (R-STS) это обычно означает выполнение некоторой обработки входящих заявок запрашивающей стороны для выполнения запроса. Например, можно выполнить фильтрацию или преобразование для некоторых утверждений, представленных запрашивающей стороной, при передаче других пользователей через неизмененное. Разумеется, как и при принятии решения о том, какие утверждения следует включить в ответ, сведения и логика, определяющие, как определить значения этих утверждений, относятся к вашей реализации.  
+  
+   
+  
+## Examples  
+ Пример кода, используемый в этом разделе, взят из `Custom Token` примера. Этот пример предоставляет пользовательские классы, которые позволяют обрабатывать простые веб-маркеры (SWT) и включают реализацию пассивной STS, способную обслуживать токен SWT. Пример реализации активной STS можно увидеть в `Federation Metadata` примере. Сведения об этих примерах и других примерах, доступных для WIF, и о месте их загрузки см. в разделе [индекс примера кода WIF](~/docs/framework/security/wif-code-sample-index.md). В следующем коде показано, как переопределить <xref:System.IdentityModel.SecurityTokenService.GetOutputClaimsIdentity%2A> метод для возврата утверждений для STS. В этом примере сообщение маркера безопасности запроса (RST) игнорируется, и возвращается коллекция заявок на основе пользователя, прошедшего проверку подлинности в STS.  
+  
+ [!code-csharp[WIFCustomTokenSTS#6](~/samples/snippets/csharp/VS_Snippets_Misc/wifcustomtokensts/cs/passivests/customsecuritytokenservice.cs#6)]  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>Этот метод необходимо переопределить при реализации класса <see cref="T:System.IdentityModel.SecurityTokenService" />.</para></block>
+        <altmember cref="T:System.IdentityModel.Scope" />
+        <altmember cref="M:System.IdentityModel.SecurityTokenService.Issue(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken)" />
+      </Docs>
+    </Member>
+    <Member MemberName="GetProofToken">
+      <MemberSignature Language="C#" Value="protected virtual System.IdentityModel.Tokens.ProofDescriptor GetProofToken (System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request, System.IdentityModel.Scope scope);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance class System.IdentityModel.Tokens.ProofDescriptor GetProofToken(class System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request, class System.IdentityModel.Scope scope) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.GetProofToken(System.IdentityModel.Protocols.WSTrust.RequestSecurityToken,System.IdentityModel.Scope)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual System::IdentityModel::Tokens::ProofDescriptor ^ GetProofToken(System::IdentityModel::Protocols::WSTrust::RequestSecurityToken ^ request, System::IdentityModel::Scope ^ scope);" />
+      <MemberSignature Language="F#" Value="abstract member GetProofToken : System.IdentityModel.Protocols.WSTrust.RequestSecurityToken * System.IdentityModel.Scope -&gt; System.IdentityModel.Tokens.ProofDescriptor&#xA;override this.GetProofToken : System.IdentityModel.Protocols.WSTrust.RequestSecurityToken * System.IdentityModel.Scope -&gt; System.IdentityModel.Tokens.ProofDescriptor" Usage="securityTokenService.GetProofToken (request, scope)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Tokens.ProofDescriptor</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="request" Type="System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />
+        <Parameter Name="scope" Type="System.IdentityModel.Scope" />
+      </Parameters>
+      <Docs>
+        <param name="request">Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />, представляющий входящий запрос токена (RST).</param>
+        <param name="scope">Экземпляр <see cref="T:System.IdentityModel.Scope" />, инкапсулирующий сведения о проверяющей стороне.</param>
+        <summary>Получает токен проверки для включения в отклик (RSTR).</summary>
+        <returns>Объект <see cref="T:System.IdentityModel.Tokens.ProofDescriptor" />, представляющий только что созданный дескриптор проверки. Дескриптор проверки может быть асимметричным дескриптором проверки, симметричным дескриптором проверки или иметь значение <see langword="null" /> в случае токена, не являющегося подтверждающим.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод вызывается из конвейера выдачи токена по умолчанию, реализованного в <xref:System.IdentityModel.SecurityTokenService.Issue%2A> методе.  
+  
+ Реализация по умолчанию возвращает дескриптор подтверждения или создает соответствующее исключение.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="request" /> имеет значение <see langword="null" />.  
+  
+-или- 
+ <paramref name="scope" /> — <see langword="null" />.</exception>
+        <altmember cref="M:System.IdentityModel.SecurityTokenService.Issue(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken)" />
+      </Docs>
+    </Member>
+    <Member MemberName="GetRequestorProofEncryptingCredentials">
+      <MemberSignature Language="C#" Value="protected virtual System.IdentityModel.Tokens.EncryptingCredentials GetRequestorProofEncryptingCredentials (System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance class System.IdentityModel.Tokens.EncryptingCredentials GetRequestorProofEncryptingCredentials(class System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.GetRequestorProofEncryptingCredentials(System.IdentityModel.Protocols.WSTrust.RequestSecurityToken)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Function GetRequestorProofEncryptingCredentials (request As RequestSecurityToken) As EncryptingCredentials" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual System::IdentityModel::Tokens::EncryptingCredentials ^ GetRequestorProofEncryptingCredentials(System::IdentityModel::Protocols::WSTrust::RequestSecurityToken ^ request);" />
+      <MemberSignature Language="F#" Value="abstract member GetRequestorProofEncryptingCredentials : System.IdentityModel.Protocols.WSTrust.RequestSecurityToken -&gt; System.IdentityModel.Tokens.EncryptingCredentials&#xA;override this.GetRequestorProofEncryptingCredentials : System.IdentityModel.Protocols.WSTrust.RequestSecurityToken -&gt; System.IdentityModel.Tokens.EncryptingCredentials" Usage="securityTokenService.GetRequestorProofEncryptingCredentials request" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Tokens.EncryptingCredentials</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="request" Type="System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />
+      </Parameters>
+      <Docs>
+        <param name="request">Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />, представляющий входящий запрос токена (RST).</param>
+        <summary>Получает учетные данные шифрования проверки запрашивающей стороны.</summary>
+        <returns>Объект <see cref="T:System.IdentityModel.Tokens.EncryptingCredentials" />, представляющий учетные данные запрашивающего объекта при шифровании.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод вызывается из <xref:System.IdentityModel.SecurityTokenService.GetProofToken%2A> метода.  
+  
+ Реализация по умолчанию выполняет следующие настройки. Возвращает `null` , если в запросе не указан токен шифрования <xref:System.IdentityModel.Protocols.WSTrust.RequestSecurityToken.ProofEncryption%2A?displayProperty=nameWithType> (свойство имеет `null`значение). В противном случае, если он может получить маркер <xref:System.IdentityModel.Tokens.X509SecurityToken>в виде, он возвращает учетные данные на основе этого маркера. Если не удается разрешить токен как <xref:System.IdentityModel.Tokens.X509SecurityToken> <xref:System.IdentityModel.RequestFailedException> , создается исключение.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="request" /> — <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetResponse">
+      <MemberSignature Language="C#" Value="protected virtual System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse GetResponse (System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request, System.IdentityModel.Tokens.SecurityTokenDescriptor tokenDescriptor);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance class System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse GetResponse(class System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request, class System.IdentityModel.Tokens.SecurityTokenDescriptor tokenDescriptor) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.GetResponse(System.IdentityModel.Protocols.WSTrust.RequestSecurityToken,System.IdentityModel.Tokens.SecurityTokenDescriptor)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Function GetResponse (request As RequestSecurityToken, tokenDescriptor As SecurityTokenDescriptor) As RequestSecurityTokenResponse" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual System::IdentityModel::Protocols::WSTrust::RequestSecurityTokenResponse ^ GetResponse(System::IdentityModel::Protocols::WSTrust::RequestSecurityToken ^ request, System::IdentityModel::Tokens::SecurityTokenDescriptor ^ tokenDescriptor);" />
+      <MemberSignature Language="F#" Value="abstract member GetResponse : System.IdentityModel.Protocols.WSTrust.RequestSecurityToken * System.IdentityModel.Tokens.SecurityTokenDescriptor -&gt; System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse&#xA;override this.GetResponse : System.IdentityModel.Protocols.WSTrust.RequestSecurityToken * System.IdentityModel.Tokens.SecurityTokenDescriptor -&gt; System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse" Usage="securityTokenService.GetResponse (request, tokenDescriptor)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="request" Type="System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />
+        <Parameter Name="tokenDescriptor" Type="System.IdentityModel.Tokens.SecurityTokenDescriptor" />
+      </Parameters>
+      <Docs>
+        <param name="request">RST, в котором содержится запроса токена.</param>
+        <param name="tokenDescriptor">Дескриптор токена, который содержит сведения для использования для выданного токена.</param>
+        <summary>Создает ответ (RSTR), содержащий токен выданный за счет заданного запроса (RST) и токена безопасности.</summary>
+        <returns>Ответ (RSTR) или значение <see langword="null" />, если ответ не может быть создан из указанного дескриптора запроса и токена. В реализации по умолчанию возвращается значение <see langword="null" />, если параметр <paramref name="tokenDescriptor" /> — <see langword="null" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод вызывается как последний шаг из конвейера выдачи маркера, который реализуется <xref:System.IdentityModel.SecurityTokenService.Issue%2A> методом. <xref:System.IdentityModel.SecurityTokenService.GetResponse%2A> Он создает и возвращает ответ (RSTR) с помощью исходного входящего запроса (RST) и дескриптора маркера, который был создан во время предыдущих шагов в конвейере выдачи маркера.  
+  
+ Реализация по умолчанию создает RSTR путем передачи RST, указанного в параметре <xref:System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse.%23ctor%28System.IdentityModel.Protocols.WSTrust.WSTrustMessage%29?displayProperty=nameWithType> Request, в конструктор, вызывая <xref:System.IdentityModel.Tokens.SecurityTokenDescriptor.ApplyTo%2A?displayProperty=nameWithType> метод для дескриптора маркера, переданного <xref:System.IdentityModel.SecurityTokenService.GetResponse%2A> в, чтобы применить его свойства к только что создан RSTR, задано <xref:System.IdentityModel.Protocols.WSTrust.WSTrustMessage.AppliesTo%2A> свойство в RSTR с <xref:System.IdentityModel.Tokens.SecurityTokenDescriptor.AppliesToAddress%2A> помощью свойства в дескрипторе маркера и <xref:System.IdentityModel.Protocols.WSTrust.WSTrustMessage.ReplyTo%2A> , наконец, задано свойство в RSTR согласно следующей таблице:  
+  
+|Свойство`RST.ReplyTo`|Свойство <xref:System.IdentityModel.Tokens.SecurityTokenDescriptor.AppliesToAddress%2A?displayProperty=nameWithType>.|Свойство`RSTR.ReplyTo`|  
+|----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------|  
+|Задать|Не задано|Не задано|  
+|Задать|Задать|<xref:System.IdentityModel.Tokens.SecurityTokenDescriptor.AppliesToAddress%2A?displayProperty=nameWithType>|  
+|Не задано|Задать|Не задано|  
+|Не задано|Не задано|Не задано|  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.IdentityModel.SecurityTokenService.Issue(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken)" />
+      </Docs>
+    </Member>
+    <Member MemberName="GetScope">
+      <MemberSignature Language="C#" Value="protected abstract System.IdentityModel.Scope GetScope (System.Security.Claims.ClaimsPrincipal principal, System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance class System.IdentityModel.Scope GetScope(class System.Security.Claims.ClaimsPrincipal principal, class System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.GetScope(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken)" />
+      <MemberSignature Language="VB.NET" Value="Protected MustOverride Function GetScope (principal As ClaimsPrincipal, request As RequestSecurityToken) As Scope" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; abstract System::IdentityModel::Scope ^ GetScope(System::Security::Claims::ClaimsPrincipal ^ principal, System::IdentityModel::Protocols::WSTrust::RequestSecurityToken ^ request);" />
+      <MemberSignature Language="F#" Value="abstract member GetScope : System.Security.Claims.ClaimsPrincipal * System.IdentityModel.Protocols.WSTrust.RequestSecurityToken -&gt; System.IdentityModel.Scope" Usage="securityTokenService.GetScope (principal, request)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Scope</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="principal" Type="System.Security.Claims.ClaimsPrincipal" />
+        <Parameter Name="request" Type="System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />
+      </Parameters>
+      <Docs>
+        <param name="principal">Объект <see cref="T:System.Security.Claims.ClaimsPrincipal" />, представляющий клиента, производящего запрос.</param>
+        <param name="request">Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />, представляющий входящий запрос (RST).</param>
+        <summary>Получает объект <see cref="T:System.IdentityModel.Scope" />, содержащий информацию о проверяющей стороне (RP), связанной с указанным запросом (RST). Этот метод необходимо переопределить при реализации класса <see cref="T:System.IdentityModel.SecurityTokenService" />.</summary>
+        <returns>Объект <see cref="T:System.IdentityModel.Scope" />, предоставляющий оболочку сведения о PR, связанные с запросом.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод вызывается из конвейера выдачи маркера <xref:System.IdentityModel.SecurityTokenService.ValidateRequest%2A> после <xref:System.IdentityModel.Scope> метода и должен возвращать объект, настроенный для входящего запроса. <xref:System.IdentityModel.SecurityTokenService.GetScope%2A> (Конвейер выдачи маркера реализован в <xref:System.IdentityModel.SecurityTokenService.Issue%2A> методе.) <xref:System.IdentityModel.Scope> Объект инкапсулирует сведения о RP, связанном с запросом маркера безопасности (RST). Сюда входят сведения о шифровании и учетных данных для использования с RP, а также информацию о том, следует ли шифровать выданные и/или симметричные ключи в ответе. Ниже перечислены некоторые типичные задачи <xref:System.IdentityModel.SecurityTokenService.GetScope%2A> , выполняемые в методе.  
+  
+-   Определите, является ли RP, для которого предназначен маркер, распознаваемым RP. Как это делается, зависит от реализации. Если требуемая RP не является допустимым RP для этой STS, метод должен создать исключение <xref:System.IdentityModel.Protocols.WSTrust.InvalidRequestException>.  
+  
+-   Определите учетные данные для подписи, которые будут использоваться в ответе (RSTR) <xref:System.IdentityModel.Scope.SigningCredentials%2A> , и задайте соответствующее свойство.  
+  
+-   Определите, следует ли шифровать ответ и (или) любые включенные симметричные ключи, а также учетные данные, используемые для шифрования. Задайте соответствующие свойства <xref:System.IdentityModel.Scope.SymmetricKeyEncryptionRequired%2A> <xref:System.IdentityModel.Scope.EncryptingCredentials%2A> , и <xref:System.IdentityModel.Scope.TokenEncryptionRequired%2A>.  
+  
+    > [!IMPORTANT]
+    >  По умолчанию свойства <xref:System.IdentityModel.Scope.TokenEncryptionRequired%2A> и <xref:System.IdentityModel.Scope.SymmetricKeyEncryptionRequired%2A> задаются `true` так, чтобы служба STS не выдает токены, которые не являются безопасными. Рекомендуется, чтобы `false` эти свойства не были установлены в рабочей среде.  
+  
+-   Определите адрес, на который должен возвращаться ответ. Задайте соответствующее свойство  <xref:System.IdentityModel.Scope.ReplyToAddress%2A> или. <xref:System.IdentityModel.Scope.AppliesToAddress%2A>  
+  
+   
+  
+## Examples  
+ Пример кода, используемый в этом разделе, взят из `Custom Token` примера. Этот пример предоставляет пользовательские классы, которые позволяют обрабатывать простые веб-маркеры (SWT) и включают реализацию пассивной STS, способную обслуживать токен SWT. Пример реализации активной STS можно увидеть в `Federation Metadata` примере. Сведения об этих примерах и других примерах, доступных для WIF, и о месте их загрузки см. в разделе [индекс примера кода WIF](~/docs/framework/security/wif-code-sample-index.md).  
+  
+ В следующем примере кода показана реализация метода <xref:System.IdentityModel.SecurityTokenService.GetScope%2A>. Эта реализация проверяет, распознает ли RP STS, проверяет <xref:System.IdentityModel.Protocols.WSTrust.WSTrustMessage.ReplyTo%2A> адрес в запросе и <xref:System.IdentityModel.Scope.ReplyToAddress%2A?displayProperty=nameWithType> устанавливает соответствующее свойство, а также устанавливает подписывание и шифрование учетных данных для использования с RP на основе сертификатов, которые жестко запрограммированы в файле.  
+  
+ [!code-csharp[WIFCustomTokenSTS#4](~/samples/snippets/csharp/VS_Snippets_Misc/wifcustomtokensts/cs/passivests/customsecuritytokenservice.cs#4)]  
+[!code-csharp[WIFCustomTokenSTS#5](~/samples/snippets/csharp/VS_Snippets_Misc/wifcustomtokensts/cs/passivests/customsecuritytokenservice.cs#5)]  
+[!code-csharp[WIFCustomTokenSTS#7](~/samples/snippets/csharp/VS_Snippets_Misc/wifcustomtokensts/cs/passivests/customsecuritytokenservice.cs#7)]  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>Этот метод необходимо переопределить при реализации класса <see cref="T:System.IdentityModel.SecurityTokenService" />.</para></block>
+        <altmember cref="T:System.IdentityModel.Scope" />
+        <altmember cref="M:System.IdentityModel.SecurityTokenService.Issue(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken)" />
+      </Docs>
+    </Member>
+    <Member MemberName="GetSecurityTokenHandler">
+      <MemberSignature Language="C#" Value="protected virtual System.IdentityModel.Tokens.SecurityTokenHandler GetSecurityTokenHandler (string requestedTokenType);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance class System.IdentityModel.Tokens.SecurityTokenHandler GetSecurityTokenHandler(string requestedTokenType) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.GetSecurityTokenHandler(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Function GetSecurityTokenHandler (requestedTokenType As String) As SecurityTokenHandler" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual System::IdentityModel::Tokens::SecurityTokenHandler ^ GetSecurityTokenHandler(System::String ^ requestedTokenType);" />
+      <MemberSignature Language="F#" Value="abstract member GetSecurityTokenHandler : string -&gt; System.IdentityModel.Tokens.SecurityTokenHandler&#xA;override this.GetSecurityTokenHandler : string -&gt; System.IdentityModel.Tokens.SecurityTokenHandler" Usage="securityTokenService.GetSecurityTokenHandler requestedTokenType" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Tokens.SecurityTokenHandler</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="requestedTokenType" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="requestedTokenType">Строка, содержащая универсальный код ресурса (URI) типа запрашиваемого токена.</param>
+        <summary>Получает соответствующий обработчик токенов безопасности для создания токена безопасности указанного типа.</summary>
+        <returns><see cref="T:System.IdentityModel.Tokens.SecurityTokenHandler" />, представляющее обработчик токена, используемый для создания выданного токена безопасности. Возвращает значение <see langword="null" />, если не поддерживается запрашиваемый тип токена (никаких обработчиков не настроено для определенного типа токена).</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ В реализации по умолчанию `requestedTokenType` , `null` если имеет значение или является пустой строкой, используется тип токена по умолчанию из конфигурации. Это определяется <xref:System.IdentityModel.SecurityTokenService.SecurityTokenServiceConfiguration%2A> свойством объекта конфигурации STS, доступ к которому осуществляется через свойство. <xref:System.IdentityModel.Configuration.SecurityTokenServiceConfiguration.DefaultTokenType%2A>  
+  
+ Этот метод вызывается из конвейера выдачи токена по умолчанию, реализованного в <xref:System.IdentityModel.SecurityTokenService.Issue%2A> методе.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.IdentityModel.SecurityTokenService.Issue(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken)" />
+      </Docs>
+    </Member>
+    <Member MemberName="GetTokenLifetime">
+      <MemberSignature Language="C#" Value="protected virtual System.IdentityModel.Protocols.WSTrust.Lifetime GetTokenLifetime (System.IdentityModel.Protocols.WSTrust.Lifetime requestLifetime);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance class System.IdentityModel.Protocols.WSTrust.Lifetime GetTokenLifetime(class System.IdentityModel.Protocols.WSTrust.Lifetime requestLifetime) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.GetTokenLifetime(System.IdentityModel.Protocols.WSTrust.Lifetime)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Function GetTokenLifetime (requestLifetime As Lifetime) As Lifetime" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual System::IdentityModel::Protocols::WSTrust::Lifetime ^ GetTokenLifetime(System::IdentityModel::Protocols::WSTrust::Lifetime ^ requestLifetime);" />
+      <MemberSignature Language="F#" Value="abstract member GetTokenLifetime : System.IdentityModel.Protocols.WSTrust.Lifetime -&gt; System.IdentityModel.Protocols.WSTrust.Lifetime&#xA;override this.GetTokenLifetime : System.IdentityModel.Protocols.WSTrust.Lifetime -&gt; System.IdentityModel.Protocols.WSTrust.Lifetime" Usage="securityTokenService.GetTokenLifetime requestLifetime" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Protocols.WSTrust.Lifetime</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="requestLifetime" Type="System.IdentityModel.Protocols.WSTrust.Lifetime" />
+      </Parameters>
+      <Docs>
+        <param name="requestLifetime">Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.Lifetime" />, представляющий запрошенное время жизни.</param>
+        <summary>Получает время жизни выданного токена.</summary>
+        <returns>Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.Lifetime" />, представляющий выданное время жизни.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод обычно вызывается с временем существования, полученным в RST. В реализации по умолчанию время существования маркера вычисляется в соответствии со следующей таблицей.  
+  
+|Создано (в)|Срок действия истекает (в)|Создано (в)|Срок действия истекает (исходящий трафик)|  
+|--------------------|--------------------|--------------------|---------------------|  
+|`null`|`null`|<xref:System.DateTime.UtcNow%2A?displayProperty=nameWithType>|<xref:System.DateTime.UtcNow%2A?displayProperty=nameWithType> + <xref:System.IdentityModel.Configuration.SecurityTokenServiceConfiguration.DefaultTokenLifetime%2A?displayProperty=nameWithType>|  
+|В|`null`|В|C +<xref:System.IdentityModel.Configuration.SecurityTokenServiceConfiguration.DefaultTokenLifetime%2A?displayProperty=nameWithType>|  
+|`null`|E|<xref:System.DateTime.UtcNow%2A?displayProperty=nameWithType>|E|  
+|В|E|В|E|  
+  
+ Этот метод вызывается из конвейера выдачи токена по умолчанию, реализованного в <xref:System.IdentityModel.SecurityTokenService.Issue%2A> методе.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.IdentityModel.SecurityTokenService.Issue(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken)" />
+      </Docs>
+    </Member>
+    <Member MemberName="Issue">
+      <MemberSignature Language="C#" Value="public virtual System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse Issue (System.Security.Claims.ClaimsPrincipal principal, System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse Issue(class System.Security.Claims.ClaimsPrincipal principal, class System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.Issue(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function Issue (principal As ClaimsPrincipal, request As RequestSecurityToken) As RequestSecurityTokenResponse" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::IdentityModel::Protocols::WSTrust::RequestSecurityTokenResponse ^ Issue(System::Security::Claims::ClaimsPrincipal ^ principal, System::IdentityModel::Protocols::WSTrust::RequestSecurityToken ^ request);" />
+      <MemberSignature Language="F#" Value="abstract member Issue : System.Security.Claims.ClaimsPrincipal * System.IdentityModel.Protocols.WSTrust.RequestSecurityToken -&gt; System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse&#xA;override this.Issue : System.Security.Claims.ClaimsPrincipal * System.IdentityModel.Protocols.WSTrust.RequestSecurityToken -&gt; System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse" Usage="securityTokenService.Issue (principal, request)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="principal" Type="System.Security.Claims.ClaimsPrincipal" />
+        <Parameter Name="request" Type="System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />
+      </Parameters>
+      <Docs>
+        <param name="principal">Объект <see cref="T:System.Security.Claims.ClaimsPrincipal" />, представляющий удостоверение стороны, запрашивающей токен.</param>
+        <param name="request">Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />, представляющий запрос токена безопасности. Содержит сообщение запроса, а также другую связанную с клиентом информацию, например контекст авторизации.</param>
+        <summary>Выдает токен безопасности.</summary>
+        <returns>Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse" />, содержащий выданный токен безопасности.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод реализует привязку проблемы, определенную в спецификации WS-Trust. Реализация <xref:System.IdentityModel.SecurityTokenService.Issue%2A> метода по умолчанию обрабатывает входящий запрос (RST) через конвейер выдачи маркера (выдачи заявок) и возвращает либо ответ (RSTR), содержащий маркер безопасности с соответствующими утверждениями для проверки подлинности запрашивающий объект с RP или соответствующим исключением. Конвейер выдачи маркеров в реализации по умолчанию состоит из вызовов следующих методов <xref:System.IdentityModel.SecurityTokenService> класса.  
+  
+1.  <xref:System.IdentityModel.SecurityTokenService.ValidateRequest%2A> Метод для проверки запроса (RST).  
+  
+2.  <xref:System.IdentityModel.SecurityTokenService.GetScope%2A> Метод для <xref:System.IdentityModel.Scope>  получения объекта, содержащего сведения о проверяющей стороне (RP), связанной с запросом. Этот метод необходимо переопределить. Если <xref:System.IdentityModel.SecurityTokenService.GetScope%2A> возвращает `null` , <xref:System.InvalidOperationException>  создается исключение.  
+  
+3.  Метод, возвращающий дескриптор маркера безопасности на основе RST <xref:System.IdentityModel.Scope> и объекта, возвращенного на предыдущем шаге. <xref:System.IdentityModel.SecurityTokenService.CreateSecurityTokenDescriptor%2A> Дескриптор маркера безопасности (<xref:System.IdentityModel.Tokens.SecurityTokenDescriptor>) содержит сведения о запросе в форме, которая может использоваться обработчиком маркеров. Для <xref:System.IdentityModel.SecurityTokenService.SecurityTokenDescriptor%2A?displayProperty=nameWithType> свойства задается дескриптор, возвращенный вызовом. Если `null` возвращается значение или <xref:System.IdentityModel.Tokens.SecurityTokenDescriptor.SigningCredentials%2A> свойство дескриптора имеет `null`значение, <xref:System.InvalidOperationException> создается исключение. Исключение также <xref:System.IdentityModel.Scope.TokenEncryptionRequired%2A?displayProperty=nameWithType> создается, если свойство имеет `true` значение, а <xref:System.IdentityModel.Tokens.SecurityTokenDescriptor.EncryptingCredentials%2A> свойство в возвращаемом дескрипторе имеет `null`значение.  
+  
+4.  <xref:System.IdentityModel.SecurityTokenService.GetSecurityTokenHandler%2A> Метод для получения соответствующего обработчика маркера на основе запрашиваемого типа маркера. Если `null` возвращается <xref:System.NotImplementedException>  , создается исключение.  
+  
+5.  <xref:System.IdentityModel.SecurityTokenService.GetIssuerName%2A> Метод, получающий имя издателя для токена. Создает исключение <xref:System.InvalidOperationException> , если имя является `null` или <xref:System.IdentityModel.Tokens.SecurityTokenDescriptor.TokenIssuerName%2A> пустым; в противном случае устанавливает свойство для дескриптора.  
+  
+6.  Метод для получения времени существования маркера и <xref:System.IdentityModel.Tokens.SecurityTokenDescriptor.Lifetime%2A> задает свойство в дескрипторе. <xref:System.IdentityModel.SecurityTokenService.GetTokenLifetime%2A>  
+  
+7.  Метод, получающий токен подтверждения для включения в выданный маркер и <xref:System.IdentityModel.Tokens.SecurityTokenDescriptor.Proof%2A> устанавливающий свойство в дескрипторе. <xref:System.IdentityModel.SecurityTokenService.GetProofToken%2A>  
+  
+8.  Метод для получения утверждений, включаемых в выданный маркер, и <xref:System.IdentityModel.Tokens.SecurityTokenDescriptor.Subject%2A> задает свойство в дескрипторе. <xref:System.IdentityModel.SecurityTokenService.GetOutputClaimsIdentity%2A> Этот метод необходимо переопределить.  
+  
+9. <xref:System.IdentityModel.SecurityTokenService.GetResponse%2A> Метод для создания ответа (RSTR), содержащего выданный токен.  
+  
+ Можно переопределить <xref:System.IdentityModel.SecurityTokenService.Issue%2A> метод для реализации конвейера выдачи пользовательского маркера, но обычно это необязательно в средах разработки и тестирования, для которых предназначены большинство пользовательских реализаций <xref:System.IdentityModel.SecurityTokenService> класса. Во многих из этих случаев переопределяются <xref:System.IdentityModel.SecurityTokenService.GetOutputClaimsIdentity%2A> методы <xref:System.IdentityModel.SecurityTokenService.GetScope%2A> и, <xref:System.IdentityModel.SecurityTokenService.ValidateRequest%2A> а при необходимости переопределяются метод, чтобы обеспечить службу STS для вашей среды. Если требуется дополнительная настройка, часто ее можно предоставить, переопределив методы, реализующие каждый этап конвейера выдачи токенов по умолчанию, указанного выше.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Principal">
+      <MemberSignature Language="C#" Value="public System.Security.Claims.ClaimsPrincipal Principal { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Security.Claims.ClaimsPrincipal Principal" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.SecurityTokenService.Principal" />
+      <MemberSignature Language="VB.NET" Value="Public Property Principal As ClaimsPrincipal" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Security::Claims::ClaimsPrincipal ^ Principal { System::Security::Claims::ClaimsPrincipal ^ get(); void set(System::Security::Claims::ClaimsPrincipal ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.Principal : System.Security.Claims.ClaimsPrincipal with get, set" Usage="System.IdentityModel.SecurityTokenService.Principal" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Security.Claims.ClaimsPrincipal</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает субъект, связанный с текущим экземпляром.</summary>
+        <value>Объект <see cref="T:System.Security.Claims.ClaimsPrincipal" />, представляющий текущий субъект.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Renew">
+      <MemberSignature Language="C#" Value="public virtual System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse Renew (System.Security.Claims.ClaimsPrincipal principal, System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse Renew(class System.Security.Claims.ClaimsPrincipal principal, class System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.Renew(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function Renew (principal As ClaimsPrincipal, request As RequestSecurityToken) As RequestSecurityTokenResponse" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::IdentityModel::Protocols::WSTrust::RequestSecurityTokenResponse ^ Renew(System::Security::Claims::ClaimsPrincipal ^ principal, System::IdentityModel::Protocols::WSTrust::RequestSecurityToken ^ request);" />
+      <MemberSignature Language="F#" Value="abstract member Renew : System.Security.Claims.ClaimsPrincipal * System.IdentityModel.Protocols.WSTrust.RequestSecurityToken -&gt; System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse&#xA;override this.Renew : System.Security.Claims.ClaimsPrincipal * System.IdentityModel.Protocols.WSTrust.RequestSecurityToken -&gt; System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse" Usage="securityTokenService.Renew (principal, request)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="principal" Type="System.Security.Claims.ClaimsPrincipal" />
+        <Parameter Name="request" Type="System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />
+      </Parameters>
+      <Docs>
+        <param name="principal">Объект <see cref="T:System.Security.Claims.ClaimsPrincipal" />, представляющий удостоверение стороны, запрашивающей токен.</param>
+        <param name="request">Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />, представляющий запрос токена безопасности. Содержит сообщение запроса, а также другую связанную с клиентом информацию, например контекст авторизации.</param>
+        <summary>При переопределении в производном классе обрабатывает запрос WS-Trust Renew.</summary>
+        <returns>Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse" />, представляющий RSTR, возвращаемый вызывающей стороне.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация по умолчанию этого метода создает исключение <xref:System.IdentityModel.Protocols.WSTrust.InvalidRequestException>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Request">
+      <MemberSignature Language="C#" Value="public System.IdentityModel.Protocols.WSTrust.RequestSecurityToken Request { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.IdentityModel.Protocols.WSTrust.RequestSecurityToken Request" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.SecurityTokenService.Request" />
+      <MemberSignature Language="VB.NET" Value="Public Property Request As RequestSecurityToken" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::IdentityModel::Protocols::WSTrust::RequestSecurityToken ^ Request { System::IdentityModel::Protocols::WSTrust::RequestSecurityToken ^ get(); void set(System::IdentityModel::Protocols::WSTrust::RequestSecurityToken ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.Request : System.IdentityModel.Protocols.WSTrust.RequestSecurityToken with get, set" Usage="System.IdentityModel.SecurityTokenService.Request" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Protocols.WSTrust.RequestSecurityToken</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает запрос на токен безопасности (RST), связанный с текущим экземпляром.</summary>
+        <value>Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />, содержащий запрос.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Scope">
+      <MemberSignature Language="C#" Value="public System.IdentityModel.Scope Scope { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.IdentityModel.Scope Scope" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.SecurityTokenService.Scope" />
+      <MemberSignature Language="VB.NET" Value="Public Property Scope As Scope" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::IdentityModel::Scope ^ Scope { System::IdentityModel::Scope ^ get(); void set(System::IdentityModel::Scope ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.Scope : System.IdentityModel.Scope with get, set" Usage="System.IdentityModel.SecurityTokenService.Scope" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Scope</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает область, связанную с текущим экземпляром.</summary>
+        <value><see cref="T:System.IdentityModel.Scope" />, которое представляет конфигурацию для запроса выпуска токена.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SecurityTokenDescriptor">
+      <MemberSignature Language="C#" Value="protected System.IdentityModel.Tokens.SecurityTokenDescriptor SecurityTokenDescriptor { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.IdentityModel.Tokens.SecurityTokenDescriptor SecurityTokenDescriptor" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.SecurityTokenService.SecurityTokenDescriptor" />
+      <MemberSignature Language="VB.NET" Value="Protected Property SecurityTokenDescriptor As SecurityTokenDescriptor" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; property System::IdentityModel::Tokens::SecurityTokenDescriptor ^ SecurityTokenDescriptor { System::IdentityModel::Tokens::SecurityTokenDescriptor ^ get(); void set(System::IdentityModel::Tokens::SecurityTokenDescriptor ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.SecurityTokenDescriptor : System.IdentityModel.Tokens.SecurityTokenDescriptor with get, set" Usage="System.IdentityModel.SecurityTokenService.SecurityTokenDescriptor" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Tokens.SecurityTokenDescriptor</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает <see cref="T:System.IdentityModel.Tokens.SecurityTokenDescriptor" />, связанный с текущим экземпляром.</summary>
+        <value>Дескриптор токена безопасности, связанный с текущим экземпляром.</value>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentNullException">Предпринята попытка задать для свойства значение <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="SecurityTokenServiceConfiguration">
+      <MemberSignature Language="C#" Value="public System.IdentityModel.Configuration.SecurityTokenServiceConfiguration SecurityTokenServiceConfiguration { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.IdentityModel.Configuration.SecurityTokenServiceConfiguration SecurityTokenServiceConfiguration" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.SecurityTokenService.SecurityTokenServiceConfiguration" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property SecurityTokenServiceConfiguration As SecurityTokenServiceConfiguration" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::IdentityModel::Configuration::SecurityTokenServiceConfiguration ^ SecurityTokenServiceConfiguration { System::IdentityModel::Configuration::SecurityTokenServiceConfiguration ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.SecurityTokenServiceConfiguration : System.IdentityModel.Configuration.SecurityTokenServiceConfiguration" Usage="System.IdentityModel.SecurityTokenService.SecurityTokenServiceConfiguration" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Configuration.SecurityTokenServiceConfiguration</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает экземпляр конфигурации владельца.</summary>
+        <value>Объект <see cref="T:System.IdentityModel.Configuration.SecurityTokenServiceConfiguration" />, содержащий конфигурацию для текущего экземпляра.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Validate">
+      <MemberSignature Language="C#" Value="public virtual System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse Validate (System.Security.Claims.ClaimsPrincipal principal, System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse Validate(class System.Security.Claims.ClaimsPrincipal principal, class System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.Validate(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function Validate (principal As ClaimsPrincipal, request As RequestSecurityToken) As RequestSecurityTokenResponse" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::IdentityModel::Protocols::WSTrust::RequestSecurityTokenResponse ^ Validate(System::Security::Claims::ClaimsPrincipal ^ principal, System::IdentityModel::Protocols::WSTrust::RequestSecurityToken ^ request);" />
+      <MemberSignature Language="F#" Value="abstract member Validate : System.Security.Claims.ClaimsPrincipal * System.IdentityModel.Protocols.WSTrust.RequestSecurityToken -&gt; System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse&#xA;override this.Validate : System.Security.Claims.ClaimsPrincipal * System.IdentityModel.Protocols.WSTrust.RequestSecurityToken -&gt; System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse" Usage="securityTokenService.Validate (principal, request)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="principal" Type="System.Security.Claims.ClaimsPrincipal" />
+        <Parameter Name="request" Type="System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />
+      </Parameters>
+      <Docs>
+        <param name="principal">Объект <see cref="T:System.Security.Claims.ClaimsPrincipal" />, представляющий удостоверение стороны, запрашивающей токен.</param>
+        <param name="request">Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />, представляющий запрос токена безопасности. Содержит сообщение запроса, а также другую связанную с клиентом информацию, например контекст авторизации.</param>
+        <summary>При переопределении в производном классе обрабатывает запрос WS-Trust Validate.</summary>
+        <returns>Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityTokenResponse" />, представляющий RSTR, возвращаемый вызывающей стороне.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация по умолчанию этого метода создает исключение <xref:System.IdentityModel.Protocols.WSTrust.InvalidRequestException>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ValidateRequest">
+      <MemberSignature Language="C#" Value="protected virtual void ValidateRequest (System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void ValidateRequest(class System.IdentityModel.Protocols.WSTrust.RequestSecurityToken request) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.SecurityTokenService.ValidateRequest(System.IdentityModel.Protocols.WSTrust.RequestSecurityToken)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub ValidateRequest (request As RequestSecurityToken)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void ValidateRequest(System::IdentityModel::Protocols::WSTrust::RequestSecurityToken ^ request);" />
+      <MemberSignature Language="F#" Value="abstract member ValidateRequest : System.IdentityModel.Protocols.WSTrust.RequestSecurityToken -&gt; unit&#xA;override this.ValidateRequest : System.IdentityModel.Protocols.WSTrust.RequestSecurityToken -&gt; unit" Usage="securityTokenService.ValidateRequest request" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="request" Type="System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />
+      </Parameters>
+      <Docs>
+        <param name="request">Объект <see cref="T:System.IdentityModel.Protocols.WSTrust.RequestSecurityToken" />, представляющий запрос.</param>
+        <summary>Проверяет запрос токена безопасности (RST), инкапсулированный данным экземпляром.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод вызывается из конвейера выдачи маркера <xref:System.IdentityModel.SecurityTokenService.Issue%2A> (метод) для проверки входящего RST. <xref:System.IdentityModel.SecurityTokenService.ValidateRequest%2A> RST проверяется на соответствие требованиям (политике) STS, и если это недопустимо, возникает соответствующее исключение.  
+  
+ Реализация <xref:System.IdentityModel.SecurityTokenService> класса по умолчанию поддерживает только шаблон RST-RSTR и только привязку проблемы спецификации WS-Trust <xref:System.IdentityModel.Protocols.WSTrust.WSTrustMessage.RequestType%2A> (свойство <xref:System.IdentityModel.Protocols.WSTrust.RequestTypes.Issue?displayProperty=nameWithType>запроса должно иметь значение). Реализация по умолчанию этого метода применяет эти требования (и другие, указанные в разделе исключения). Этот метод можно переопределить, если необходимо применить различные требования проверки для пользовательской STS.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.IdentityModel.Protocols.WSTrust.InvalidRequestException">Свойство <paramref name="request" /> имеет значение <see langword="null" />.  
+  
+- или - 
+Для свойства <see cref="P:System.IdentityModel.Protocols.WSTrust.WSTrustMessage.RequestType" /> запроса не задано значение <see cref="F:System.IdentityModel.Protocols.WSTrust.RequestTypes.Issue" />.  
+  
+- или - 
+Свойство <see cref="P:System.IdentityModel.Protocols.WSTrust.WSTrustMessage.KeyType" /> запроса не равно <see langword="null" /> или одной из констант, определенных в классе <see cref="T:System.IdentityModel.Protocols.WSTrust.KeyTypes" />.  
+  
+-или- 
+Свойство <see cref="P:System.IdentityModel.Protocols.WSTrust.WSTrustMessage.KeyType" /> запроса имеет значение <see cref="F:System.IdentityModel.Protocols.WSTrust.KeyTypes.Bearer" />, а элемент <see langword="KeySize" /> присутствует, но его значение не равно нулю.</exception>
+        <exception cref="T:System.IdentityModel.UnsupportedTokenTypeBadRequestException">Служба токенов безопасности не поддерживает тип токена запроса (на основе значения свойства <see cref="P:System.IdentityModel.Protocols.WSTrust.WSTrustMessage.TokenType" /> запроса).</exception>
+        <altmember cref="M:System.IdentityModel.SecurityTokenService.Issue(System.Security.Claims.ClaimsPrincipal,System.IdentityModel.Protocols.WSTrust.RequestSecurityToken)" />
+      </Docs>
+    </Member>
+  </Members>
+</Type>

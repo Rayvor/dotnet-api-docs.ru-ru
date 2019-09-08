@@ -1,0 +1,237 @@
+<Type Name="SecurityState" FullName="System.Security.SecurityState">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="011df8cd5a661c18666906f987afb474f35269bc" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70599125" /></Metadata><TypeSignature Language="C#" Value="public abstract class SecurityState" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract beforefieldinit SecurityState extends System.Object" />
+  <TypeSignature Language="DocId" Value="T:System.Security.SecurityState" />
+  <TypeSignature Language="VB.NET" Value="Public MustInherit Class SecurityState" />
+  <TypeSignature Language="C++ CLI" Value="public ref class SecurityState abstract" />
+  <TypeSignature Language="F#" Value="type SecurityState = class" />
+  <AssemblyInfo>
+    <AssemblyName>mscorlib</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>2.0.5.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>System.Security.Permissions</AssemblyName>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.1.0</AssemblyVersion>
+    <AssemblyVersion>4.0.2.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Attributes>
+    <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+      <AttributeName>System.Security.SecurityCritical</AttributeName>
+    </Attribute>
+  </Attributes>
+  <Docs>
+    <summary>Предоставляет базовый класс для запроса состояния безопасности действия из объекта <see cref="T:System.AppDomainManager" />.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Необходимо наследовать от этого класса, чтобы предоставить класс, включающий в себя свойство, которое указывает действие, зависящее от безопасности, которое необходимо выполнить. Объект, созданный из производного класса, передается <xref:System.AppDomainManager.CheckSecuritySettings%2A?displayProperty=nameWithType> в метод, чтобы определить, разрешает ли узел выполнение этого действия. <xref:System.Security.SecurityState> Реализация <xref:System.AppDomainManager.CheckSecuritySettings%2A> метода по умолчанию всегда возвращает `false`значение.  Метод должен быть переопределен для обнаружения разрешенных действий.  
+  
+ Например, если вы хотите получить доступ к веб-камере в коде библиотеки, создайте `WebcamSecurityState` объект и <xref:System.Security.SecurityState.EnsureState%2A> вызовите метод, чтобы определить, допускает ли узел доступ к веб-камере, как показано в следующем примере.  (Код для `WebcamSecurityState` можно найти в разделе "пример".)  
+  
+```  
+WebcamSecurityState securityState = new WebcamSecurityState("Safe access to Webcam", WebcamSecurityOptions.SafeAccess);  
+try  
+{  
+   securityState.EnsureState();  
+   // Allocate memory.  
+   }  
+catch (ApplicationException e)  
+{  
+    // Handle any exception that is thrown.  
+    System.Diagnostics.Debug.WriteLine(e.Message);  
+}  
+```  
+  
+ Для обработки вызова <xref:System.AppDomainManager> необходимо `WebcamSecurityState` принять во внимание переопределение <xref:System.AppDomainManager.CheckSecuritySettings%2A?displayProperty=nameWithType> метода, как показано в следующем примере.  
+  
+```  
+[SecurityCritical]  
+public override bool CheckSecuritySettings(System.Security.SecurityState securityState)  
+{  
+   switch (securityState.ToString())  
+   {  
+      case "WebcamSecurityState":  
+      {  
+          if ((securityState as WebcamSecurityState).Options == WebcamSecurityOptions.SafeAccess)  
+              return PromptUser((securityState as WebcamSecurityState).Description);  
+           return false;  
+      }  
+   }  
+      return false;  
+}  
+private bool PromptUser(string text)  
+{  
+   // Replace the OpenFileDialog with a custom user prompt.  
+   OpenFileDialog o = new OpenFileDialog();  
+   o.Title = text;  
+   if (o.ShowDialog() == DialogResult.OK)  
+      return true;  
+   else  
+      return false;  
+}  
+  
+```  
+  
+   
+  
+## Examples  
+ В следующем примере показано, <xref:System.Security.SecurityState> как переопределить класс.  
+  
+```  
+[SecurityCritical]  
+public enum WebcamSecurityOptions  
+    {  
+        SafeAccess,  
+        FullAccess  
+    }  
+[SecurityCritical]  
+public class WebcamSecurityState : SecurityState  
+{  
+    public WebcamSecurityState(string description, WebcamSecurityOptions options)  
+    {  
+        Options = options;  
+        Description = description;  
+    }  
+    public WebcamSecurityOptions Options { get; set; }  
+    public string Description { get; set; }  
+    public override void EnsureState()  
+    {  
+       if (!IsStateAvailable())  
+           throw new ApplicationException("WebcamSecurityState not available");  
+    }  
+ }  
+  
+```  
+  
+ ]]></format>
+    </remarks>
+    <permission cref="T:System.Security.SecurityCriticalAttribute">требуется полное доверие для немедленного вызывающего объекта. Этот класс не может использоваться частично доверенным или прозрачным кодом.</permission>
+    <permission cref="F:System.Security.Permissions.SecurityAction.InheritanceDemand">Полный уровень доверия для разработчиков производных классов. Этот класс не может наследоваться частично доверенным кодом.</permission>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="protected SecurityState ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Security.SecurityState.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Protected Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; SecurityState();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Permissions</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Security.SecurityState" />.</summary>
+        <remarks>To be added.</remarks>
+        <permission cref="T:System.Security.SecurityCriticalAttribute">требуется полное доверие для немедленного вызывающего объекта. Этот член не может использоваться частично доверенным или прозрачным кодом.</permission>
+      </Docs>
+    </Member>
+    <Member MemberName="EnsureState">
+      <MemberSignature Language="C#" Value="public abstract void EnsureState ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void EnsureState() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Security.SecurityState.EnsureState" />
+      <MemberSignature Language="VB.NET" Value="Public MustOverride Sub EnsureState ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; abstract void EnsureState();" />
+      <MemberSignature Language="F#" Value="abstract member EnsureState : unit -&gt; unit" Usage="securityState.EnsureState " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Permissions</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>При переопределении в производном классе обеспечивает доступность на узле состояния, представленного объектом <see cref="T:System.Security.SecurityState" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация этого метода должна быть такой же, как в следующем примере.  
+  
+```  
+public override void EnsureState()  
+{  
+    if (!IsStateAvailable())  
+          throw new ApplicationException("WebcamSecurityState not available");  
+}  
+  
+```  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="IsStateAvailable">
+      <MemberSignature Language="C#" Value="public bool IsStateAvailable ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance bool IsStateAvailable() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Security.SecurityState.IsStateAvailable" />
+      <MemberSignature Language="VB.NET" Value="Public Function IsStateAvailable () As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; bool IsStateAvailable();" />
+      <MemberSignature Language="F#" Value="member this.IsStateAvailable : unit -&gt; bool" Usage="securityState.IsStateAvailable " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Security.Permissions</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Получает значение, показывающее, доступно ли состояние данной реализации класса <see cref="T:System.Security.SecurityState" /> на текущем узле.</summary>
+        <returns>Значение <see langword="true" />, если состояние доступно, в противном случае — значение <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Security.SecurityState.IsStateAvailable%2A><xref:System.AppDomainManager.CheckSecuritySettings%2A?displayProperty=nameWithType> вызывает метод, чтобы определить, доступно ли на узле состояние, представленное этим классом.  
+  
+ См. Пример реализации метода в <xref:System.AppDomainManager.CheckSecuritySettings%2A> классе. <xref:System.Security.SecurityState>  
+  
+ ]]></format>
+        </remarks>
+        <permission cref="T:System.Security.SecurityCriticalAttribute">требуется полное доверие для немедленного вызывающего объекта. Этот член не может использоваться частично доверенным или прозрачным кодом.</permission>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

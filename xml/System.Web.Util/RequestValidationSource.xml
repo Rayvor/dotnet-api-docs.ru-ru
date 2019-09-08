@@ -1,0 +1,310 @@
+<Type Name="RequestValidationSource" FullName="System.Web.Util.RequestValidationSource">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="478ffa5993b6ecb9fbd6874f5e7cac44d682af68" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70729639" /></Metadata><TypeSignature Language="C#" Value="public enum RequestValidationSource" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi sealed RequestValidationSource extends System.Enum" />
+  <TypeSignature Language="DocId" Value="T:System.Web.Util.RequestValidationSource" />
+  <TypeSignature Language="VB.NET" Value="Public Enum RequestValidationSource" />
+  <TypeSignature Language="C++ CLI" Value="public enum class RequestValidationSource" />
+  <TypeSignature Language="F#" Value="type RequestValidationSource = " />
+  <AssemblyInfo>
+    <AssemblyName>System.Web</AssemblyName>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Enum</BaseTypeName>
+  </Base>
+  <Docs>
+    <summary>Задает тип данных HTTP-запроса, которые необходимо проверить.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks 
+
+Можно создать настраиваемый тип проверки запроса, реализовав <xref:System.Web.Util.RequestValidator> тип. Когда ASP.NET вызывает <xref:System.Web.Util.RequestValidator.IsValidRequestString%2A> метод для проверки запроса, ASP.NET `requestValidationSource` передает параметр для указания источника проверяемых данных. <xref:System.Web.Util.RequestValidationSource> Перечисление используется для указания источника или вида проверяемых данных запроса. Перечисление указывает тип входных данных HTTP, передаваемый в `value` параметре <xref:System.Web.Util.RequestValidator.IsValidRequestString%2A> метода. Перечисление можно использовать как способ отката к реализации проверки базового запроса для входных данных HTTP, если не нужно проверять с помощью пользовательской логики.  
+
+В следующей таблице показано, `collectionKey` как значение параметра <xref:System.Web.Util.RequestValidator.IsValidRequestString%2A?displayProperty=nameWithType> и `value` метода интерпретируется для каждого члена `RequestValidationSource` перечисления.
+
+|Элемент перечисления|Параметр `collectionKey`|Параметр `value`|
+|--|--|--|
+|`Cookies`|Имя файла cookie в коллекции.|Значение в коллекции.|
+|`Files`|Имя отправленного файла в коллекции.|Значение переданного файла в коллекции.|
+|`Form`|Имя параметра формы в коллекции|Значение параметра формы в коллекции.|
+|`Headers`|Имя заголовка HTTP в коллекции.|Значение заголовка HTTP в коллекции.|
+|`Path`|`null`(`Path` не является коллекцией значений).|Значение поля пути.|
+|`PathInfo`|`null`(`PathInfo` не является коллекцией значений).|Значение поля PathInfo.|
+|`QueryString`|Имя параметра строки запроса в коллекции.|Значение параметра строки запроса в коллекции.|
+|`RawUrl`|`null`(`RawUrl` не является коллекцией значений.)|Значение поля Равурл.|
+  
+## Examples  
+ В следующем примере показано, как создать класс проверяющего элемента управления пользовательского запроса, который допускает только определенную строку для значений строки запроса.  
+  
+```vb
+Imports System.Web  
+Imports System.Web.Util  
+  
+Public Class CustomRequestValidation  
+    Inherits RequestValidator  
+  
+Protected Overloads Overrides Function IsValidRequestString( _  
+        ByVal context As HttpContext, _  
+        ByVal value As String, _  
+        ByVal requestValidationSource__1 As RequestValidationSource, _  
+        ByVal collectionKey As String, _  
+        ByRef validationFailureIndex As Integer) As Boolean  
+    validationFailureIndex = -1  
+    ' Set a default value for the out parameter.  
+    ' This application does not use RawUrl directly, so you can   
+    ' ignore the check for RequestValidationSource.RawUrl.  
+    If requestValidationSource = RequestValidationSource.RawUrl Then  
+        Return True  
+    End If  
+  
+    ' Allow the query-string key "data" to have an XML-like value.  
+    If (requestValidationSource = _  
+            (RequestValidationSource.QueryString) AndAlso _  
+            (collectionKey = "data") Then  
+        ' The querystring value "<example>1234</example>" is allowed.  
+        If value = "<example>1234</example>" Then  
+            validationFailureIndex = -1  
+            Return True  
+        Else  
+            ' Leave any further checks to ASP.NET.  
+            Return MyBase.IsValidRequestString(context, value, _  
+                requestValidationSource__1, collectionKey, _  
+                validationFailureIndex)  
+        End If  
+    Else  
+        ' All other HTTP input checks fall back to   
+        ' the base ASP.NET implementation.  
+        Return MyBase.IsValidRequestString(context, value, _  
+            requestValidationSource__1, collectionKey, _  
+            validationFailureIndex)  
+    End If  
+End Function  
+End Class  
+```  
+  
+```csharp  
+using System;  
+using System.Web;  
+using System.Web.Util;  
+  
+public class CustomRequestValidation : RequestValidator  
+{  
+    public CustomRequestValidation() {}  
+  
+    protected override bool IsValidRequestString(  
+        HttpContext context, string value,   
+        RequestValidationSource requestValidationSource, string collectionKey,   
+        out int validationFailureIndex)  
+    {  
+        //Set a default value for the out parameter.  
+        validationFailureIndex = -1;  
+  
+        // This application does not use RawUrl directly,   
+        // so you can ignore the check for RequestValidationSource.RawUrl.  
+        if (requestValidationSource == RequestValidationSource.RawUrl)  
+            return true;  
+  
+        // Allow the query-string key "data" to have an XML-like value.  
+        if (  
+            (requestValidationSource == RequestValidationSource.QueryString) &&  
+            (collectionKey == "data")  
+           )  
+        {  
+            // The querystring value "<example>1234</example>" is allowed.  
+            if (value == "<example>1234</example>")  
+            {  
+                validationFailureIndex = -1;  
+                return true;  
+            }  
+            else  
+           // Leave any further checks to ASP.NET.  
+                return base.IsValidRequestString(context, value,   
+                requestValidationSource, collectionKey, out   
+                validationFailureIndex);  
+        }  
+        // All other HTTP input checks fall back to   
+        // the base ASP.NET implementation.  
+        else  
+        {  
+            return base.IsValidRequestString(context, value,   
+                requestValidationSource, collectionKey,   
+                out validationFailureIndex);  
+        }  
+    }  
+}  
+```  
+  
+ В следующем примере показано, как настроить ASP.NET для использования пользовательского проверяющего элемента управления.  
+  
+```  
+<httpRuntime requestValidationType="CustomRequestValidation" />  
+```  
+  
+ ]]></format>
+    </remarks>
+    <altmember cref="T:System.Web.Util.RequestValidator" />
+  </Docs>
+  <Members>
+    <Member MemberName="Cookies">
+      <MemberSignature Language="C#" Value="Cookies" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype System.Web.Util.RequestValidationSource Cookies = int32(2)" />
+      <MemberSignature Language="DocId" Value="F:System.Web.Util.RequestValidationSource.Cookies" />
+      <MemberSignature Language="VB.NET" Value="Cookies" />
+      <MemberSignature Language="C++ CLI" Value="Cookies" />
+      <MemberSignature Language="F#" Value="Cookies = 2" Usage="System.Web.Util.RequestValidationSource.Cookies" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Util.RequestValidationSource</ReturnType>
+      </ReturnValue>
+      <MemberValue>2</MemberValue>
+      <Docs>
+        <summary>Файлы cookie запроса.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Files">
+      <MemberSignature Language="C#" Value="Files" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype System.Web.Util.RequestValidationSource Files = int32(3)" />
+      <MemberSignature Language="DocId" Value="F:System.Web.Util.RequestValidationSource.Files" />
+      <MemberSignature Language="VB.NET" Value="Files" />
+      <MemberSignature Language="C++ CLI" Value="Files" />
+      <MemberSignature Language="F#" Value="Files = 3" Usage="System.Web.Util.RequestValidationSource.Files" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Util.RequestValidationSource</ReturnType>
+      </ReturnValue>
+      <MemberValue>3</MemberValue>
+      <Docs>
+        <summary>Загруженные файлы.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Form">
+      <MemberSignature Language="C#" Value="Form" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype System.Web.Util.RequestValidationSource Form = int32(1)" />
+      <MemberSignature Language="DocId" Value="F:System.Web.Util.RequestValidationSource.Form" />
+      <MemberSignature Language="VB.NET" Value="Form" />
+      <MemberSignature Language="C++ CLI" Value="Form" />
+      <MemberSignature Language="F#" Value="Form = 1" Usage="System.Web.Util.RequestValidationSource.Form" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Util.RequestValidationSource</ReturnType>
+      </ReturnValue>
+      <MemberValue>1</MemberValue>
+      <Docs>
+        <summary>Значения формы.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Headers">
+      <MemberSignature Language="C#" Value="Headers" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype System.Web.Util.RequestValidationSource Headers = int32(7)" />
+      <MemberSignature Language="DocId" Value="F:System.Web.Util.RequestValidationSource.Headers" />
+      <MemberSignature Language="VB.NET" Value="Headers" />
+      <MemberSignature Language="C++ CLI" Value="Headers" />
+      <MemberSignature Language="F#" Value="Headers = 7" Usage="System.Web.Util.RequestValidationSource.Headers" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Util.RequestValidationSource</ReturnType>
+      </ReturnValue>
+      <MemberValue>7</MemberValue>
+      <Docs>
+        <summary>Заголовки запроса.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Path">
+      <MemberSignature Language="C#" Value="Path" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype System.Web.Util.RequestValidationSource Path = int32(5)" />
+      <MemberSignature Language="DocId" Value="F:System.Web.Util.RequestValidationSource.Path" />
+      <MemberSignature Language="VB.NET" Value="Path" />
+      <MemberSignature Language="C++ CLI" Value="Path" />
+      <MemberSignature Language="F#" Value="Path = 5" Usage="System.Web.Util.RequestValidationSource.Path" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Util.RequestValidationSource</ReturnType>
+      </ReturnValue>
+      <MemberValue>5</MemberValue>
+      <Docs>
+        <summary>Виртуальный путь.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="PathInfo">
+      <MemberSignature Language="C#" Value="PathInfo" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype System.Web.Util.RequestValidationSource PathInfo = int32(6)" />
+      <MemberSignature Language="DocId" Value="F:System.Web.Util.RequestValidationSource.PathInfo" />
+      <MemberSignature Language="VB.NET" Value="PathInfo" />
+      <MemberSignature Language="C++ CLI" Value="PathInfo" />
+      <MemberSignature Language="F#" Value="PathInfo = 6" Usage="System.Web.Util.RequestValidationSource.PathInfo" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Util.RequestValidationSource</ReturnType>
+      </ReturnValue>
+      <MemberValue>6</MemberValue>
+      <Docs>
+        <summary>Строка HTTP <see cref="P:System.Web.HttpRequest.PathInfo" />, представляющая собой расширение пути URL-адреса.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="QueryString">
+      <MemberSignature Language="C#" Value="QueryString" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype System.Web.Util.RequestValidationSource QueryString = int32(0)" />
+      <MemberSignature Language="DocId" Value="F:System.Web.Util.RequestValidationSource.QueryString" />
+      <MemberSignature Language="VB.NET" Value="QueryString" />
+      <MemberSignature Language="C++ CLI" Value="QueryString" />
+      <MemberSignature Language="F#" Value="QueryString = 0" Usage="System.Web.Util.RequestValidationSource.QueryString" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Util.RequestValidationSource</ReturnType>
+      </ReturnValue>
+      <MemberValue>0</MemberValue>
+      <Docs>
+        <summary>Строка запроса.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="RawUrl">
+      <MemberSignature Language="C#" Value="RawUrl" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype System.Web.Util.RequestValidationSource RawUrl = int32(4)" />
+      <MemberSignature Language="DocId" Value="F:System.Web.Util.RequestValidationSource.RawUrl" />
+      <MemberSignature Language="VB.NET" Value="RawUrl" />
+      <MemberSignature Language="C++ CLI" Value="RawUrl" />
+      <MemberSignature Language="F#" Value="RawUrl = 4" Usage="System.Web.Util.RequestValidationSource.RawUrl" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Util.RequestValidationSource</ReturnType>
+      </ReturnValue>
+      <MemberValue>4</MemberValue>
+      <Docs>
+        <summary>Исходный URL-адрес. (Часть URL-адреса после домена).</summary>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
