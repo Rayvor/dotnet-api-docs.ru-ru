@@ -1,0 +1,561 @@
+<Type Name="XamlXmlWriter" FullName="System.Xaml.XamlXmlWriter">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="4c517484e17b8799fb8895c418c6e2a7e5f7122f" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70406880" /></Metadata><TypeSignature Language="C#" Value="public class XamlXmlWriter : System.Xaml.XamlWriter" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit XamlXmlWriter extends System.Xaml.XamlWriter" />
+  <TypeSignature Language="DocId" Value="T:System.Xaml.XamlXmlWriter" />
+  <TypeSignature Language="VB.NET" Value="Public Class XamlXmlWriter&#xA;Inherits XamlWriter" />
+  <TypeSignature Language="C++ CLI" Value="public ref class XamlXmlWriter : System::Xaml::XamlWriter" />
+  <TypeSignature Language="F#" Value="type XamlXmlWriter = class&#xA;    inherit XamlWriter" />
+  <AssemblyInfo>
+    <AssemblyName>System.Xaml</AssemblyName>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Xaml.XamlWriter</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>Использует класс поддержки <see cref="T:System.IO.TextWriter" /> или <see cref="T:System.Xml.XmlWriter" /> для записи потока узлов XAML в сериализованную форму текста или разметки.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот класс обычно используется в сценариях сериализации.  
+  
+## <a name="how-to-use-xamlxmlwriter"></a>Как использовать Ксамлксмлвритер  
+ <xref:System.Xaml.XamlWriter> API имеет несколько методов, которые записывают различные типы узлов XAML. В совокупности они называются в документации в качестве `Write` методов. <xref:System.Xaml.XamlWriter> <xref:System.Xaml.XamlXmlWriter>использует несколько внутренних классов состояний для определения действий, выполняемых при вызове `Write` одной из его реализаций. `Write` Вызов использует состояния, чтобы определить, может ли быть записан запрошенный элемент, атрибут или значение, или создается исключение. Например, если вызвать <xref:System.Xaml.XamlXmlWriter.WriteEndObject%2A> , а состояние <xref:System.Xaml.XamlXmlWriter> текущего узла находится в значении или в элементе, создается исключение. Как правило, вызывающие объекты <xref:System.Xaml.XamlXmlWriter> API должны знать тип текущего узла XAML, который поступает из средства чтения XAML и потока узлов XAML. На основе этих знаний вызывающие объекты должны избегать вызова `Write` API, которые не относятся к текущему типу узла.  
+  
+## <a name="xaml-namespaces-and-xamlxmlwriter"></a>Пространства имен XAML и Ксамлксмлвритер  
+ Поведение <xref:System.Xaml.XamlXmlWriter> записи пространства имен XAML является сложным и не ограничивается явными <xref:System.Xaml.XamlXmlWriter.WriteNamespace%2A>вызовами. Вместо этого для `Write` других вызовов, таких <xref:System.Xaml.XamlXmlWriter.WriteStartObject%2A>как, может потребоваться, чтобы объявление пространства имен записывалось в определенные моменты структуры узлов. Модуль записи XAML либо создает префикс с помощью собственной логики, либо использует сведения из <xref:System.Xaml.INamespacePrefixLookup> службы для определения предпочтительного префикса. Кроме того, <xref:System.Xaml.XamlXmlWriter.WriteNamespace%2A> явные вызовы могут быть отложены или могут возвращать Nothing, если объявление пространства имен XAML уже применимо и объявлено в других местах.  
+  
+## <a name="write-method-exceptions"></a>Исключения методов записи  
+ Исключения, создаваемые <xref:System.Xaml.XamlXmlWriter> `Write` методами, обычно <xref:System.InvalidOperationException> имеют <xref:System.Xaml.XamlXmlWriterException>значение или.  
+  
+ <xref:System.InvalidOperationException> Часто указывает, что средство чтения XAML передавало недопустимую структуру узлов в поток узлов XAML. В этом случае структура узла является недопустимой по причинам, не связанным с проверкой схемы XAML или контекстом схемы XAML. Вместо этого в базовой форме поток узлов является недопустимым. Например, если неудачная реализация средства чтения XAML создала поток узлов XAML, содержащий два последовательных `StartObject` узла, то попытка вызова второй <xref:System.Xaml.XamlXmlWriter.WriteStartObject%2A> вызывает исключение. <xref:System.InvalidOperationException> Все средства записи XAML рассчитают такую операцию недействительной. Другим примером <xref:System.InvalidOperationException> является то, что сведения о пространстве имен XAML недоступны в контексте схемы XAML, который применяется к текущему положению потока узла.  
+  
+ <xref:System.Xaml.XamlXmlWriterException> Указывает исключение, в котором данная конкретная реализация модуля записи XAML выбирает исключение на основе его предполагаемой функциональности. Может указывать конкретные случаи, когда a <xref:System.Xaml.XamlXmlWriter> нарушает свое собственное состояние или параметры. <xref:System.Xaml.XamlXmlWriterException> Например, <xref:System.Xaml.XamlXmlWriterException> может возникнуть попытка записи сведений о пространстве имен XAML в то расположение <xref:System.Xaml.XamlXmlWriter> , которое не поддерживается и его формат сериализации, или запись повторяющихся <xref:System.Xaml.XamlXmlWriterSettings> элементов, когда экземпляр запрещает его.  
+  
+ ]]></format>
+    </remarks>
+    <altmember cref="M:System.Xaml.XamlServices.Save(System.IO.Stream,System.Object)" />
+    <related type="Article" href="https://msdn.microsoft.com/library/7c11abec-1075-474c-9d9b-778e5dab21c3">Общее представление о понятиях и структурах потока узлов XAML</related>
+  </Docs>
+  <Members>
+    <MemberGroup MemberName=".ctor">
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Xaml.XamlXmlWriter" />.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public XamlXmlWriter (System.IO.Stream stream, System.Xaml.XamlSchemaContext schemaContext);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.IO.Stream stream, class System.Xaml.XamlSchemaContext schemaContext) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Xaml.XamlXmlWriter.#ctor(System.IO.Stream,System.Xaml.XamlSchemaContext)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; XamlXmlWriter(System::IO::Stream ^ stream, System::Xaml::XamlSchemaContext ^ schemaContext);" />
+      <MemberSignature Language="F#" Value="new System.Xaml.XamlXmlWriter : System.IO.Stream * System.Xaml.XamlSchemaContext -&gt; System.Xaml.XamlXmlWriter" Usage="new System.Xaml.XamlXmlWriter (stream, schemaContext)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters>
+        <Parameter Name="stream" Type="System.IO.Stream" />
+        <Parameter Name="schemaContext" Type="System.Xaml.XamlSchemaContext" />
+      </Parameters>
+      <Docs>
+        <param name="stream">Поток для записи.</param>
+        <param name="schemaContext">Контекст схемы XAML для средства записи XAML.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Xaml.XamlXmlWriter" /> из потока.</summary>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="stream" /> имеет значение <see langword="null" />.  
+  
+- или - 
+ Свойство <paramref name="schemaContext" /> имеет значение <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public XamlXmlWriter (System.IO.TextWriter textWriter, System.Xaml.XamlSchemaContext schemaContext);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.IO.TextWriter textWriter, class System.Xaml.XamlSchemaContext schemaContext) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Xaml.XamlXmlWriter.#ctor(System.IO.TextWriter,System.Xaml.XamlSchemaContext)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; XamlXmlWriter(System::IO::TextWriter ^ textWriter, System::Xaml::XamlSchemaContext ^ schemaContext);" />
+      <MemberSignature Language="F#" Value="new System.Xaml.XamlXmlWriter : System.IO.TextWriter * System.Xaml.XamlSchemaContext -&gt; System.Xaml.XamlXmlWriter" Usage="new System.Xaml.XamlXmlWriter (textWriter, schemaContext)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters>
+        <Parameter Name="textWriter" Type="System.IO.TextWriter" />
+        <Parameter Name="schemaContext" Type="System.Xaml.XamlSchemaContext" />
+      </Parameters>
+      <Docs>
+        <param name="textWriter">Объект <see cref="T:System.IO.TextWriter" />, записывающий выходные данные.</param>
+        <param name="schemaContext">Контекст схемы XAML для средства записи XAML.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Xaml.XamlXmlWriter" /> на основе объекта <see cref="T:System.IO.TextWriter" />.</summary>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentNullException">Значение параметра <paramref name="textWriter" /> или <paramref name="schemaContext" /> — <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public XamlXmlWriter (System.Xml.XmlWriter xmlWriter, System.Xaml.XamlSchemaContext schemaContext);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.Xml.XmlWriter xmlWriter, class System.Xaml.XamlSchemaContext schemaContext) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Xaml.XamlXmlWriter.#ctor(System.Xml.XmlWriter,System.Xaml.XamlSchemaContext)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; XamlXmlWriter(System::Xml::XmlWriter ^ xmlWriter, System::Xaml::XamlSchemaContext ^ schemaContext);" />
+      <MemberSignature Language="F#" Value="new System.Xaml.XamlXmlWriter : System.Xml.XmlWriter * System.Xaml.XamlSchemaContext -&gt; System.Xaml.XamlXmlWriter" Usage="new System.Xaml.XamlXmlWriter (xmlWriter, schemaContext)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters>
+        <Parameter Name="xmlWriter" Type="System.Xml.XmlWriter" />
+        <Parameter Name="schemaContext" Type="System.Xaml.XamlSchemaContext" />
+      </Parameters>
+      <Docs>
+        <param name="xmlWriter">Объект <see cref="T:System.Xml.XmlWriter" />, записывающий выходные данные.</param>
+        <param name="schemaContext">Контекст схемы XAML для средства записи XAML.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Xaml.XamlXmlWriter" /> на основе объекта <see cref="T:System.Xml.XmlWriter" />.</summary>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentNullException">Параметр <paramref name="xmlWriter" /> или <paramref name="schemaContext" /> имеет значение <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public XamlXmlWriter (System.IO.Stream stream, System.Xaml.XamlSchemaContext schemaContext, System.Xaml.XamlXmlWriterSettings settings);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.IO.Stream stream, class System.Xaml.XamlSchemaContext schemaContext, class System.Xaml.XamlXmlWriterSettings settings) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Xaml.XamlXmlWriter.#ctor(System.IO.Stream,System.Xaml.XamlSchemaContext,System.Xaml.XamlXmlWriterSettings)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; XamlXmlWriter(System::IO::Stream ^ stream, System::Xaml::XamlSchemaContext ^ schemaContext, System::Xaml::XamlXmlWriterSettings ^ settings);" />
+      <MemberSignature Language="F#" Value="new System.Xaml.XamlXmlWriter : System.IO.Stream * System.Xaml.XamlSchemaContext * System.Xaml.XamlXmlWriterSettings -&gt; System.Xaml.XamlXmlWriter" Usage="new System.Xaml.XamlXmlWriter (stream, schemaContext, settings)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="stream" Type="System.IO.Stream" />
+        <Parameter Name="schemaContext" Type="System.Xaml.XamlSchemaContext" />
+        <Parameter Name="settings" Type="System.Xaml.XamlXmlWriterSettings" />
+      </Parameters>
+      <Docs>
+        <param name="stream">Поток для записи.</param>
+        <param name="schemaContext">Контекст схемы XAML для средства записи XAML.</param>
+        <param name="settings">Экземпляр <see cref="T:System.Xaml.XamlXmlWriterSettings" />, который, как правило, имеет конкретные параметры, отличающиеся от параметров по умолчанию.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Xaml.XamlXmlWriter" /> из потока, используя объект параметров средства записи.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Не изменяйте значения `settings` объекта <xref:System.Xaml.XamlXmlWriter> после создания экземпляра. <xref:System.Xaml.XamlXmlWriter>Невозможно обновить внутренние параметры на основе значений параметров, изменяемых во время выполнения. Параметры должны предоставляться только для инициализации. Параметры можно объединять из активного модуля записи XAML с помощью одной из <xref:System.Xaml.XamlXmlWriterSettings> подписей конструктора. Однако эти параметры необходимо применить к новому экземпляру модуля записи XAML, а не пытаться скорректировать существующий.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Параметр <paramref name="stream" /> или <paramref name="schemaContext" /> имеет значение <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public XamlXmlWriter (System.IO.TextWriter textWriter, System.Xaml.XamlSchemaContext schemaContext, System.Xaml.XamlXmlWriterSettings settings);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.IO.TextWriter textWriter, class System.Xaml.XamlSchemaContext schemaContext, class System.Xaml.XamlXmlWriterSettings settings) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Xaml.XamlXmlWriter.#ctor(System.IO.TextWriter,System.Xaml.XamlSchemaContext,System.Xaml.XamlXmlWriterSettings)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; XamlXmlWriter(System::IO::TextWriter ^ textWriter, System::Xaml::XamlSchemaContext ^ schemaContext, System::Xaml::XamlXmlWriterSettings ^ settings);" />
+      <MemberSignature Language="F#" Value="new System.Xaml.XamlXmlWriter : System.IO.TextWriter * System.Xaml.XamlSchemaContext * System.Xaml.XamlXmlWriterSettings -&gt; System.Xaml.XamlXmlWriter" Usage="new System.Xaml.XamlXmlWriter (textWriter, schemaContext, settings)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="textWriter" Type="System.IO.TextWriter" />
+        <Parameter Name="schemaContext" Type="System.Xaml.XamlSchemaContext" />
+        <Parameter Name="settings" Type="System.Xaml.XamlXmlWriterSettings" />
+      </Parameters>
+      <Docs>
+        <param name="textWriter">Объект <see cref="T:System.IO.TextWriter" />, записывающий выходные данные.</param>
+        <param name="schemaContext">Контекст схемы XAML для средства записи XAML.</param>
+        <param name="settings">Экземпляр <see cref="T:System.Xaml.XamlXmlWriterSettings" />, который, как правило, имеет конкретные параметры, отличающиеся от параметров по умолчанию.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Xaml.XamlXmlWriter" /> на основе объекта <see cref="T:System.IO.TextWriter" />, используя объект параметров.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Не изменяйте значения `settings` объекта <xref:System.Xaml.XamlXmlWriter> после создания экземпляра. <xref:System.Xaml.XamlXmlWriter>Невозможно обновить внутренние параметры на основе значений параметров, изменяемых во время выполнения. Параметры должны предоставляться только для инициализации. Параметры можно объединять из активного модуля записи XAML с помощью одной из <xref:System.Xaml.XamlXmlWriterSettings> подписей конструктора. Однако эти параметры необходимо применить к новому экземпляру модуля записи XAML, а не пытаться скорректировать существующий.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Параметр <paramref name="textWriter" /> или <paramref name="schemaContext" /> имеет значение <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public XamlXmlWriter (System.Xml.XmlWriter xmlWriter, System.Xaml.XamlSchemaContext schemaContext, System.Xaml.XamlXmlWriterSettings settings);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.Xml.XmlWriter xmlWriter, class System.Xaml.XamlSchemaContext schemaContext, class System.Xaml.XamlXmlWriterSettings settings) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Xaml.XamlXmlWriter.#ctor(System.Xml.XmlWriter,System.Xaml.XamlSchemaContext,System.Xaml.XamlXmlWriterSettings)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; XamlXmlWriter(System::Xml::XmlWriter ^ xmlWriter, System::Xaml::XamlSchemaContext ^ schemaContext, System::Xaml::XamlXmlWriterSettings ^ settings);" />
+      <MemberSignature Language="F#" Value="new System.Xaml.XamlXmlWriter : System.Xml.XmlWriter * System.Xaml.XamlSchemaContext * System.Xaml.XamlXmlWriterSettings -&gt; System.Xaml.XamlXmlWriter" Usage="new System.Xaml.XamlXmlWriter (xmlWriter, schemaContext, settings)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="xmlWriter" Type="System.Xml.XmlWriter" />
+        <Parameter Name="schemaContext" Type="System.Xaml.XamlSchemaContext" />
+        <Parameter Name="settings" Type="System.Xaml.XamlXmlWriterSettings" />
+      </Parameters>
+      <Docs>
+        <param name="xmlWriter">Объект <see cref="T:System.Xml.XmlWriter" />, записывающий выходные данные.</param>
+        <param name="schemaContext">Контекст схемы XAML для средства записи XAML.</param>
+        <param name="settings">Экземпляр <see cref="T:System.Xaml.XamlXmlWriterSettings" />, который, как правило, имеет конкретные параметры, отличающиеся от параметров по умолчанию.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Xaml.XamlXmlWriter" /> на основе объекта <see cref="T:System.Xml.XmlWriter" />, используя объект параметров.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Не изменяйте значения `settings` объекта <xref:System.Xaml.XamlXmlWriter> после создания экземпляра. <xref:System.Xaml.XamlXmlWriter>Невозможно обновить внутренние параметры на основе значений параметров, изменяемых во время выполнения. Параметры должны предоставляться только для инициализации. Параметры можно объединять из активного модуля записи XAML с помощью одной из <xref:System.Xaml.XamlXmlWriterSettings> подписей конструктора. Однако эти параметры необходимо применить к новому экземпляру модуля записи XAML, а не пытаться скорректировать существующий.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Параметр <paramref name="xmlWriter" /> или <paramref name="schemaContext" /> имеет значение <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="Dispose">
+      <MemberSignature Language="C#" Value="protected override void Dispose (bool disposing);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void Dispose(bool disposing) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Xaml.XamlXmlWriter.Dispose(System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Sub Dispose (disposing As Boolean)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override void Dispose(bool disposing);" />
+      <MemberSignature Language="F#" Value="override this.Dispose : bool -&gt; unit" Usage="xamlXmlWriter.Dispose disposing" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="disposing" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="disposing">Значение <see langword="true" />, если необходимо освободить неуправляемые ресурсы; в противном случае — значение <see langword="false" />.</param>
+        <summary>Освобождает неуправляемые ресурсы, используемые объектом <see cref="T:System.Xaml.XamlXmlWriter" />, и при необходимости также освобождает управляемые ресурсы.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Эта реализация вызывает `Close` метод в базовом <xref:System.IO.TextWriter> <xref:System.Xml.XmlWriter> или в случаях <xref:System.Xaml.XamlXmlWriterSettings.CloseOutput%2A> , `true` где находится в <xref:System.Xaml.XamlXmlWriterSettings>любой из предоставляемых. В противном случае <xref:System.Xaml.XamlXmlWriter.Flush%2A>он вызывает.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Flush">
+      <MemberSignature Language="C#" Value="public void Flush ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Flush() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Xaml.XamlXmlWriter.Flush" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Flush ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Flush();" />
+      <MemberSignature Language="F#" Value="member this.Flush : unit -&gt; unit" Usage="xamlXmlWriter.Flush " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Вызывает метод <see langword="Flush" /> базового класса <see cref="T:System.Xml.XmlWriter" /> или <see cref="T:System.IO.TextWriter" />, который записывает все данные, содержащиеся в данный момент в буфере, а затем закрывает средство записи.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ На `Dispose` поведение <xref:System.Xaml.XamlXmlWriter> компонента может влиять его параметры <xref:System.Xaml.XamlXmlWriterSettings.CloseOutput%2A?displayProperty=nameWithType> записи, особенно.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SchemaContext">
+      <MemberSignature Language="C#" Value="public override System.Xaml.XamlSchemaContext SchemaContext { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Xaml.XamlSchemaContext SchemaContext" />
+      <MemberSignature Language="DocId" Value="P:System.Xaml.XamlXmlWriter.SchemaContext" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides ReadOnly Property SchemaContext As XamlSchemaContext" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::Xaml::XamlSchemaContext ^ SchemaContext { System::Xaml::XamlSchemaContext ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.SchemaContext : System.Xaml.XamlSchemaContext" Usage="System.Xaml.XamlXmlWriter.SchemaContext" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Xaml.XamlSchemaContext</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает контекст схемы XAML, используемый данным объектом <see cref="T:System.Xaml.XamlXmlWriter" /> для обработки.</summary>
+        <value>Контекст схемы XAML, используемый данным объектом <see cref="T:System.Xaml.XamlXmlWriter" /> для обработки XAML.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Модуль записи XAML обычно получает свой контекст схемы XAML из связанного средства чтения XAML, предоставляющего поток узлов XAML.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Settings">
+      <MemberSignature Language="C#" Value="public System.Xaml.XamlXmlWriterSettings Settings { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Xaml.XamlXmlWriterSettings Settings" />
+      <MemberSignature Language="DocId" Value="P:System.Xaml.XamlXmlWriter.Settings" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property Settings As XamlXmlWriterSettings" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Xaml::XamlXmlWriterSettings ^ Settings { System::Xaml::XamlXmlWriterSettings ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Settings : System.Xaml.XamlXmlWriterSettings" Usage="System.Xaml.XamlXmlWriter.Settings" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Xaml.XamlXmlWriterSettings</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает параметры средства записи, используемые данным объектом <see cref="T:System.Xaml.XamlXmlWriter" /> для обработки XAML.</summary>
+        <value>Параметры средства записи, используемые данным объектом <see cref="T:System.Xaml.XamlXmlWriter" /> для обработки XAML.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение, получаемое из этого свойства, является копией, а не ссылкой. Изменение значений свойств для параметров не влияет на активный <xref:System.Xaml.XamlXmlWriter>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="WriteEndMember">
+      <MemberSignature Language="C#" Value="public override void WriteEndMember ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void WriteEndMember() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Xaml.XamlXmlWriter.WriteEndMember" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Sub WriteEndMember ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void WriteEndMember();" />
+      <MemberSignature Language="F#" Value="override this.WriteEndMember : unit -&gt; unit" Usage="xamlXmlWriter.WriteEndMember " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Записывает узел конечного члена XAML в базовый объект <see cref="T:System.Xml.XmlWriter" /> или <see cref="T:System.IO.TextWriter" />. Создает исключение, если текущая позиция потока узлов XAML не находится внутри члена или если внутреннее состояние средства записи не поддерживает запись в конечный член.</summary>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.InvalidOperationException">Текущая позиция потока узла XAML не находится в пределах члена.</exception>
+        <exception cref="T:System.Xaml.XamlXmlWriterException">Текущее состояние средства записи не поддерживает запись конечного члена.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="WriteEndObject">
+      <MemberSignature Language="C#" Value="public override void WriteEndObject ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void WriteEndObject() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Xaml.XamlXmlWriter.WriteEndObject" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Sub WriteEndObject ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void WriteEndObject();" />
+      <MemberSignature Language="F#" Value="override this.WriteEndObject : unit -&gt; unit" Usage="xamlXmlWriter.WriteEndObject " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Записывает узел конечного объекта XAML в базовый объект <see cref="T:System.Xml.XmlWriter" /> или <see cref="T:System.IO.TextWriter" />. Создает исключение, если текущая позиция обрабатываемого потока узлов XAML несовместима с записью конечного объекта.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ В разметке и текстовых представлениях XAML конечный объект является закрывающим тегом.  
+  
+ Наиболее распространенным случаем <xref:System.InvalidOperationException> , когда вызывается, <xref:System.Xaml.XamlXmlWriter.WriteEndObject%2A> является то, что текущая местоположение потока узлов XAML по-прежнему находится <xref:System.Xaml.XamlXmlWriter.WriteEndObject%2A> внутри элемента и вызывается.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Текущее положение потока узлов XAML находится вне области записи конечного элемента.</exception>
+        <exception cref="T:System.Xaml.XamlXmlWriterException">Текущее состояние средства записи не поддерживает запись конечного объекта.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="WriteGetObject">
+      <MemberSignature Language="C#" Value="public override void WriteGetObject ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void WriteGetObject() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Xaml.XamlXmlWriter.WriteGetObject" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Sub WriteGetObject ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void WriteGetObject();" />
+      <MemberSignature Language="F#" Value="override this.WriteGetObject : unit -&gt; unit" Usage="xamlXmlWriter.WriteGetObject " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Записывает объект для случаев, когда заданный объект является значением по умолчанию или неявным значением свойства, которое записывается в настоящее время, а не задается в виде значения объекта во входном наборе узлов XAML.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="WriteNamespace">
+      <MemberSignature Language="C#" Value="public override void WriteNamespace (System.Xaml.NamespaceDeclaration namespaceDeclaration);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void WriteNamespace(class System.Xaml.NamespaceDeclaration namespaceDeclaration) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Xaml.XamlXmlWriter.WriteNamespace(System.Xaml.NamespaceDeclaration)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void WriteNamespace(System::Xaml::NamespaceDeclaration ^ namespaceDeclaration);" />
+      <MemberSignature Language="F#" Value="override this.WriteNamespace : System.Xaml.NamespaceDeclaration -&gt; unit" Usage="xamlXmlWriter.WriteNamespace namespaceDeclaration" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="namespaceDeclaration" Type="System.Xaml.NamespaceDeclaration" />
+      </Parameters>
+      <Docs>
+        <param name="namespaceDeclaration">Объявление пространства имен XAML для записи.</param>
+        <summary>Записывает сведения о пространстве имен в базовый объект <see cref="T:System.Xml.XmlWriter" /> или <see cref="T:System.IO.TextWriter" />. Может создавать исключения для определенных состояний, но может также и откладывать запись сведений о пространстве имен до тех пор, пока средство записи и обрабатываемый поток узлов XAML не достигнет позиции, позволяющей вставлять объявление пространства имен XAML.</summary>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="namespaceDeclaration" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException"><paramref name="namespaceDeclaration" /> не является допустимым объявлением пространства имен XAML (имеет префикс со значением null или компонент идентификатора с таким же значением).</exception>
+        <exception cref="T:System.Xaml.XamlXmlWriterException">Текущее состояние средства записи не поддерживает запись объявления пространства имен XAML.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="WriteStartMember">
+      <MemberSignature Language="C#" Value="public override void WriteStartMember (System.Xaml.XamlMember property);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void WriteStartMember(class System.Xaml.XamlMember property) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Xaml.XamlXmlWriter.WriteStartMember(System.Xaml.XamlMember)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Sub WriteStartMember (property As XamlMember)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void WriteStartMember(System::Xaml::XamlMember ^ property);" />
+      <MemberSignature Language="F#" Value="override this.WriteStartMember : System.Xaml.XamlMember -&gt; unit" Usage="xamlXmlWriter.WriteStartMember property" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="property" Type="System.Xaml.XamlMember" />
+      </Parameters>
+      <Docs>
+        <param name="property">Идентификатор члена XAML для записываемого члена.</param>
+        <summary>Записывает узел начального члена XAML в базовый объект <see cref="T:System.Xml.XmlWriter" /> или <see cref="T:System.IO.TextWriter" />. Создает исключение, если текущая позиция потока узлов XAML находится внутри другого члена либо не находится в области или состоянии средства записи, в котором возможна запись начального члена.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Внутренняя логика по умолчанию в <xref:System.Xaml.XamlXmlWriter> первой попытке записи элемента в форме атрибута. Если форма атрибутов не поддерживается, так как свойство или его значение не поддерживают текстовый синтаксис, вместо него записывается элемент свойства. Если свойство является свойством содержимого XAML, `GetObject` вариантом или неявным свойством, могут быть записаны другие формы XAML, такие как внутренний текст или дочерний объект, не имеющий промежуточного элемента.  
+  
+ Исключение повторяющегося элемента никогда не возникает, если <xref:System.Xaml.XamlXmlWriterSettings.AssumeValidInput%2A> находится `true` в <xref:System.Xaml.XamlXmlWriterSettings> объекте, который использовался для настройки этого <xref:System.Xaml.XamlXmlWriter>объекта.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="property" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException"><paramref name="property" /> не является допустимым <see cref="T:System.Xaml.XamlMember" />.</exception>
+        <exception cref="T:System.InvalidOperationException">Текущее положение потока узлов XAML недопустимо для записи начального члена.</exception>
+        <exception cref="T:System.Xaml.XamlXmlWriterException">Состояние записи не является допустимым для написания начала элемента.  
+  
+ - или -  
+  
+ Модуль записи XAML попытался произвести запись в повторяющийся элемент. Это исключение может иметь более точное внутреннее исключение.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="WriteStartObject">
+      <MemberSignature Language="C#" Value="public override void WriteStartObject (System.Xaml.XamlType type);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void WriteStartObject(class System.Xaml.XamlType type) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Xaml.XamlXmlWriter.WriteStartObject(System.Xaml.XamlType)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Sub WriteStartObject (type As XamlType)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void WriteStartObject(System::Xaml::XamlType ^ type);" />
+      <MemberSignature Language="F#" Value="override this.WriteStartObject : System.Xaml.XamlType -&gt; unit" Usage="xamlXmlWriter.WriteStartObject type" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="type" Type="System.Xaml.XamlType" />
+      </Parameters>
+      <Docs>
+        <param name="type">Объект <see cref="T:System.Xaml.XamlType" /> (идентификатор типа XAML) для записываемого объекта.</param>
+        <summary>Записывает узел начального объекта XAML в базовый объект <see cref="T:System.Xml.XmlWriter" /> или <see cref="T:System.IO.TextWriter" />. Создает исключение, если текущая позиция потока узлов XAML не находится в области, в которой возможна запись начального объекта, либо средство записи не находится в состоянии, позволяющем записывать начальный объект.</summary>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="type" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException"><paramref name="type" /> не является допустимым <see cref="T:System.Xaml.XamlType" />.</exception>
+        <exception cref="T:System.InvalidOperationException">Текущая позиция потока узла XAML недопустима для записи нового начального объекта.</exception>
+        <exception cref="T:System.Xaml.XamlXmlWriterException">Недопустимое состояние записи XAML для записи нового объекта запуска.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="WriteValue">
+      <MemberSignature Language="C#" Value="public override void WriteValue (object value);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void WriteValue(object value) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Xaml.XamlXmlWriter.WriteValue(System.Object)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Sub WriteValue (value As Object)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void WriteValue(System::Object ^ value);" />
+      <MemberSignature Language="F#" Value="override this.WriteValue : obj -&gt; unit" Usage="xamlXmlWriter.WriteValue value" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Xaml</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="value" Type="System.Object" />
+      </Parameters>
+      <Docs>
+        <param name="value">Сведения о значении для записи.</param>
+        <summary>Записывает узел значения XAML в базовый объект <see cref="T:System.Xml.XmlWriter" /> или <see cref="T:System.IO.TextWriter" />. Создает исключение, если текущая позиция потока узлов XAML является недопустимой для записи значения или средство записи находится в состоянии, в котором невозможно записать значение.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Входные `value` данные могут `null`иметь значение, которое поддерживает явное списание NULL как сериализованного значения. Это поведение использует <xref:System.Xaml.XamlLanguage.Null%2A?displayProperty=nameWithType> определение в качестве <xref:System.Xaml.XamlXmlWriter.WriteStartObject%2A> входных данных, а <xref:System.Xaml.XamlXmlWriter.WriteEndObject%2A>затем сразу же вызывает.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Текущая позиция потока узла XAML недопустима для записи значения.</exception>
+        <exception cref="T:System.Xaml.XamlXmlWriterException">Состояние модуля записи XAML не поддерживает запись значения узла.</exception>
+        <exception cref="T:System.ArgumentException"><paramref name="value" /> задает значение, которое не является NULL или строкой.</exception>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
