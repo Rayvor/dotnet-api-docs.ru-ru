@@ -1,0 +1,1249 @@
+<Type Name="ReaderWriterLock" FullName="System.Threading.ReaderWriterLock">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="edfc6eed7e390687d9d58a733bb641ebef3b9d37" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70616526" /></Metadata><TypeSignature Language="C#" Value="public sealed class ReaderWriterLock : System.Runtime.ConstrainedExecution.CriticalFinalizerObject" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi sealed beforefieldinit ReaderWriterLock extends System.Runtime.ConstrainedExecution.CriticalFinalizerObject" />
+  <TypeSignature Language="DocId" Value="T:System.Threading.ReaderWriterLock" />
+  <TypeSignature Language="VB.NET" Value="Public NotInheritable Class ReaderWriterLock&#xA;Inherits CriticalFinalizerObject" />
+  <TypeSignature Language="C++ CLI" Value="public ref class ReaderWriterLock sealed : System::Runtime::ConstrainedExecution::CriticalFinalizerObject" />
+  <TypeSignature Language="F#" Value="type ReaderWriterLock = class&#xA;    inherit CriticalFinalizerObject" />
+  <AssemblyInfo>
+    <AssemblyName>mscorlib</AssemblyName>
+    <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>2.0.5.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>netstandard</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>System.Threading</AssemblyName>
+    <AssemblyVersion>4.1.0.0</AssemblyVersion>
+    <AssemblyVersion>4.1.1.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Runtime.ConstrainedExecution.CriticalFinalizerObject</BaseTypeName>
+    <BaseTypeName FrameworkAlternate="netframework-1.1">System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Attributes>
+    <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8">
+      <AttributeName>System.Runtime.InteropServices.ComVisible(true)</AttributeName>
+    </Attribute>
+  </Attributes>
+  <Docs>
+    <summary>Определяет блокировку, которая поддерживает один пишущий поток и несколько читающих.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+  
+> [!IMPORTANT]
+>  Класс [!INCLUDE[dnprdnshort](~/includes/dnprdnshort-md.md)] использует две блокировки чтения и записи: <xref:System.Threading.ReaderWriterLockSlim> и <xref:System.Threading.ReaderWriterLock>. Мы рекомендуем применять <xref:System.Threading.ReaderWriterLockSlim> при любых новых разработках. <xref:System.Threading.ReaderWriterLockSlim> действует так же, как и <xref:System.Threading.ReaderWriterLock>, но с более простыми правилами рекурсии и изменения состояния блокировки. <xref:System.Threading.ReaderWriterLockSlim> позволяет избежать многих ситуаций взаимоблокировки. Кроме того, производительность <xref:System.Threading.ReaderWriterLockSlim> значительно выше, чем у <xref:System.Threading.ReaderWriterLock>.  
+  
+ <xref:System.Threading.ReaderWriterLock>используется для синхронизации доступа к ресурсу. В любой момент времени он допускает одновременный доступ на чтение для нескольких потоков или доступ для записи для одного потока. В ситуации, когда ресурс изменяется редко, `ReaderWriterLock` обеспечивает лучшую пропускную способность, чем простая односторонняя блокировка, <xref:System.Threading.Monitor>например.  
+  
+ `ReaderWriterLock`лучше всего подходит для большинства операций чтения, в то время как операции записи происходят редко и имеют короткий промежуток времени. Несколько модулей чтения могут быть альтернативными для одного модуля записи, чтобы ни читатели, ни модули записи не блокировались в течение длительных периодов.  
+  
+> [!NOTE]
+>  Хранение блокировок чтения или записи в течение длительных периодов приведет к нехватки других потоков. Для достижения оптимальной производительности рассмотрите возможность реструктуризации приложения, чтобы максимально сокращать продолжительность операций записи.  
+  
+ Поток может содержать блокировку чтения или пишущую блокировку, но не оба одновременно. Вместо освобождения блокировки чтения для получения блокировки записи можно использовать <xref:System.Threading.ReaderWriterLock.UpgradeToWriterLock%2A> и. <xref:System.Threading.ReaderWriterLock.DowngradeFromWriterLock%2A>  
+  
+ Рекурсивные запросы на блокировку увеличивают счетчик блокировок для блокировки.  
+  
+ Читатели и модули записи помещаются в очередь отдельно. Когда поток освобождает блокировку записи, все потоки, ожидающие в очереди чтения на этом мгновенных, получают блокировки чтения. когда все эти блокировки чтения были освобождены, следующий поток, ожидающий в очереди модуля записи (если таковой имеется), получит блокировку записи и т. д. Другими словами, `ReaderWriterLock` альтернативы между набором читателей и одним модулем записи.  
+  
+ Пока поток в очереди модуля записи ожидает освобождения активных блокировок модуля чтения, потоки, запрашивающие новые блокировки модуля чтения, накапливаются в очереди чтения. Их запросы не предоставляются, несмотря на то, что они могут совместно использовать параллельный доступ с существующими держателями блокировки чтения. Это помогает защитить модули записи от неопределенной блокировки читателями.  
+  
+ Большинство методов для получения блокировок для `ReaderWriterLock` значений времени ожидания принятия. Используйте время ожидания, чтобы избежать взаимоблокировок в приложении. Например, поток может получить блокировку записи на один ресурс, а затем запросить блокировку чтения на втором ресурсе. в то же время другой поток может получить блокировку записи на второй ресурс и запросить блокировку чтения на первом. Если время ожидания не используется, потоки взаимоблокируются.  
+  
+ Если интервал времени ожидания истекает и запрос блокировки не был предоставлен, метод возвращает управление вызывающему потоку, вызывая исключение <xref:System.ApplicationException>. Поток может перехватить это исключение и определить, какое действие следует предпринять далее.  
+  
+ Время ожидания выражается в миллисекундах. При использовании <xref:System.TimeSpan?displayProperty=nameWithType> для указания времени ожидания используется значение, равное общему количеству целых миллисекунд, представленному <xref:System.TimeSpan>. В следующей таблице показаны допустимые значения времени ожидания в миллисекундах.  
+  
+|Значение|Описание|  
+|-----------|-----------------|  
+|-1|Поток ожидает, пока блокировка не будет получена, независимо от того, сколько времени занимает. Для методов, указывающих целочисленное время ожидания, можно <xref:System.Threading.Timeout.Infinite> использовать константу.|  
+|0|Поток не ждет получения блокировки. Если блокировка не может быть получена немедленно, метод возвращает значение.|  
+|>0|Время ожидания в миллисекундах.|  
+  
+ За исключением-1, отрицательные значения времени ожидания не допускаются. Если указать отрицательное целое число, отличное от-1, вместо него будет использоваться нулевое значение времени ожидания. (То есть метод возвращается без ожидания, если блокировка не может быть получена немедленно.) Если указано значение <xref:System.TimeSpan> , представляющее отрицательное число миллисекунд, отличных от-1, <xref:System.ArgumentOutOfRangeException> выдается исключение.  
+  
+   
+  
+## Examples  
+ В следующем примере демонстрируется использование <xref:System.Threading.ReaderWriterLock> для защиты общего ресурса, целочисленного значения с именем `resource`, которое считывается параллельно и записывается в монопольном режиме несколькими потоками. Обратите внимание <xref:System.Threading.ReaderWriterLock> , что объявляется на уровне класса, чтобы он был видим для всех потоков.  
+  
+ [!code-cpp[System.Threading.ReaderWriterLock#1](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#1)]
+ [!code-csharp[System.Threading.ReaderWriterLock#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#1)]
+ [!code-vb[System.Threading.ReaderWriterLock#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#1)]  
+  
+ ]]></format>
+    </remarks>
+    <threadsafe>Данный тип потокобезопасен.</threadsafe>
+    <related type="Article" href="~/docs/standard/threading/index.md">Управляемая поточность</related>
+    <related type="Article" href="~/docs/standard/threading/reader-writer-locks.md">ReaderWriterLock</related>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public ReaderWriterLock ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLock.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; ReaderWriterLock();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecuritySafeCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Threading.ReaderWriterLock" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Examples  
+ В следующем примере кода показано создание нового экземпляра класса <xref:System.Threading.ReaderWriterLock>.  
+  
+ Этот код является частью большого примера, <xref:System.Threading.ReaderWriterLock> приведенного для класса.  
+  
+ [!code-cpp[System.Threading.ReaderWriterLock#2](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#2)]
+ [!code-csharp[System.Threading.ReaderWriterLock#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#2)]
+ [!code-vb[System.Threading.ReaderWriterLock#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#2)]  
+[!code-cpp[System.Threading.ReaderWriterLock#7](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#7)]
+[!code-csharp[System.Threading.ReaderWriterLock#7](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#7)]
+[!code-vb[System.Threading.ReaderWriterLock#7](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#7)]  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="~/docs/standard/threading/index.md">Управляемая поточность</related>
+        <related type="Article" href="~/docs/standard/threading/reader-writer-locks.md">ReaderWriterLock</related>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="AcquireReaderLock">
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Получает блокировку чтения.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="AcquireReaderLock">
+      <MemberSignature Language="C#" Value="public void AcquireReaderLock (int millisecondsTimeout);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void AcquireReaderLock(int32 millisecondsTimeout) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLock.AcquireReaderLock(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub AcquireReaderLock (millisecondsTimeout As Integer)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void AcquireReaderLock(int millisecondsTimeout);" />
+      <MemberSignature Language="F#" Value="member this.AcquireReaderLock : int -&gt; unit" Usage="readerWriterLock.AcquireReaderLock millisecondsTimeout" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecuritySafeCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="millisecondsTimeout" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="millisecondsTimeout">Время ожидания в миллисекундах.</param>
+        <summary>Получает блокировку чтения, используя значение <see cref="T:System.Int32" /> для задания времени ожидания.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Threading.ReaderWriterLock.AcquireReaderLock%2A>блокирует, если другой поток имеет блокировку записи или если хотя бы один поток ожидает блокировки записи.  
+  
+> [!NOTE]
+>  Если текущий поток уже имеет блокировку записи, блокировка модуля чтения не производится. Вместо этого увеличивается число блокировок для блокировки записи. Это предотвращает блокировку потока в собственной блокировке записи. Результат точно такой же, как и при <xref:System.Threading.ReaderWriterLock.AcquireWriterLock%2A>вызове, и при освобождении блокировки записи требуется дополнительный <xref:System.Threading.ReaderWriterLock.ReleaseWriterLock%2A> вызов.  
+  
+ `AcquireReaderLock`поддерживает рекурсивные запросы чтения и блокировки. Это значит, что поток может вызывать Аккуиререадерлокк несколько раз, что увеличивает число блокировок каждый раз. Необходимо вызывать <xref:System.Threading.ReaderWriterLock.ReleaseReaderLock%2A> один раз для каждого вызова `AcquireReaderLock`. Кроме того, можно немедленно <xref:System.Threading.ReaderWriterLock.ReleaseLock%2A> вызвать метод, чтобы сократить число блокировок до нуля.  
+  
+ Рекурсивные запросы на блокировку всегда предоставляются немедленно, без помещения запрашивающего потока в очередь чтения. Используйте рекурсивные блокировки с осторожностью, чтобы не блокировать запросы на блокировку модуля записи в течение длительных периодов.  
+  
+ Допустимые значения времени ожидания см. в <xref:System.Threading.ReaderWriterLock>разделе.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как получить и освободить блокировку чтения, а также как выполнить обработку исключения, возникающего при истечении времени ожидания запроса.  
+  
+ Этот код является частью большого примера, <xref:System.Threading.ReaderWriterLock> приведенного для класса.  
+  
+ [!code-cpp[System.Threading.ReaderWriterLock#2](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#2)]
+ [!code-csharp[System.Threading.ReaderWriterLock#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#2)]
+ [!code-vb[System.Threading.ReaderWriterLock#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#2)]  
+[!code-cpp[System.Threading.ReaderWriterLock#3](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#3)]
+[!code-csharp[System.Threading.ReaderWriterLock#3](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#3)]
+[!code-vb[System.Threading.ReaderWriterLock#3](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#3)]  
+[!code-cpp[System.Threading.ReaderWriterLock#7](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#7)]
+[!code-csharp[System.Threading.ReaderWriterLock#7](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#7)]
+[!code-vb[System.Threading.ReaderWriterLock#7](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#7)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ApplicationException">Время ожидания, заданное параметром <paramref name="millisecondsTimeout" />, истекло до удовлетворения запроса на блокировку.</exception>
+        <related type="Article" href="~/docs/standard/threading/index.md">Управляемая поточность</related>
+        <related type="Article" href="~/docs/standard/threading/reader-writer-locks.md">ReaderWriterLock</related>
+      </Docs>
+    </Member>
+    <Member MemberName="AcquireReaderLock">
+      <MemberSignature Language="C#" Value="public void AcquireReaderLock (TimeSpan timeout);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void AcquireReaderLock(valuetype System.TimeSpan timeout) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLock.AcquireReaderLock(System.TimeSpan)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub AcquireReaderLock (timeout As TimeSpan)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void AcquireReaderLock(TimeSpan timeout);" />
+      <MemberSignature Language="F#" Value="member this.AcquireReaderLock : TimeSpan -&gt; unit" Usage="readerWriterLock.AcquireReaderLock timeout" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecuritySafeCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="timeout" Type="System.TimeSpan" />
+      </Parameters>
+      <Docs>
+        <param name="timeout">Структура <see langword="TimeSpan" />, задающая интервал тайм-аута.</param>
+        <summary>Получает блокировку чтения с указанием времени ожидания значением <see cref="T:System.TimeSpan" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Threading.ReaderWriterLock.AcquireReaderLock%2A>блокирует, если другой поток имеет блокировку записи или если хотя бы один поток ожидает блокировки записи.  
+  
+> [!NOTE]
+>  Если текущий поток уже имеет блокировку записи, блокировка модуля чтения не производится. Вместо этого увеличивается число блокировок для блокировки записи. Это предотвращает блокировку потока в собственной блокировке записи. Результат точно такой же, как и при <xref:System.Threading.ReaderWriterLock.AcquireWriterLock%2A>вызове, и при освобождении блокировки записи требуется дополнительный <xref:System.Threading.ReaderWriterLock.ReleaseWriterLock%2A> вызов.  
+  
+ `AcquireReaderLock`поддерживает рекурсивные запросы чтения и блокировки. Это значит, что поток может вызывать Аккуиререадерлокк несколько раз, что увеличивает число блокировок каждый раз. Необходимо вызывать <xref:System.Threading.ReaderWriterLock.ReleaseReaderLock%2A> один раз для каждого вызова `AcquireReaderLock`. Кроме того, можно немедленно <xref:System.Threading.ReaderWriterLock.ReleaseLock%2A> вызвать метод, чтобы сократить число блокировок до нуля.  
+  
+ Рекурсивные запросы на блокировку всегда предоставляются немедленно, без помещения запрашивающего потока в очередь чтения. Используйте рекурсивные блокировки с осторожностью, чтобы не блокировать запросы на блокировку модуля записи в течение длительных периодов.  
+  
+ Допустимые значения времени ожидания см. в <xref:System.Threading.ReaderWriterLock>разделе.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ApplicationException">Время ожидания, заданное параметром <paramref name="timeout" />, истекло до удовлетворения запроса на блокировку.</exception>
+        <exception cref="T:System.ArgumentOutOfRangeException">Параметр <paramref name="timeout" /> содержит отрицательное значение, отличное от -1.</exception>
+        <related type="Article" href="~/docs/standard/threading/index.md">Управляемая поточность</related>
+        <related type="Article" href="~/docs/standard/threading/reader-writer-locks.md">ReaderWriterLock</related>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="AcquireWriterLock">
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Получает блокировку записи.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="AcquireWriterLock">
+      <MemberSignature Language="C#" Value="public void AcquireWriterLock (int millisecondsTimeout);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void AcquireWriterLock(int32 millisecondsTimeout) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLock.AcquireWriterLock(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub AcquireWriterLock (millisecondsTimeout As Integer)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void AcquireWriterLock(int millisecondsTimeout);" />
+      <MemberSignature Language="F#" Value="member this.AcquireWriterLock : int -&gt; unit" Usage="readerWriterLock.AcquireWriterLock millisecondsTimeout" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecuritySafeCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="millisecondsTimeout" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="millisecondsTimeout">Время ожидания в миллисекундах.</param>
+        <summary>Получает блокировку записи с указанием времени ожидания значением <see cref="T:System.Int32" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод блокируется, если другой поток имеет блокировку чтения или записи. Описание способа блокировки модуля записи с несколькими параллельными блокировками чтения см. в <xref:System.Threading.ReaderWriterLock> разделе класс.  
+  
+ Поток, который уже имеет блокировку чтения, может получить блокировку записи одним из двух способов: путем освобождения блокировки чтения перед вызовом <xref:System.Threading.ReaderWriterLock.AcquireWriterLock%2A>или путем вызова. <xref:System.Threading.ReaderWriterLock.UpgradeToWriterLock%2A>  
+  
+> [!CAUTION]
+>  Если поток `AcquireWriterLock` по-прежнему имеет блокировку чтения, он будет заблокирован для собственной блокировки чтения. Если неограниченное время ожидания задано, поток взаимоблокируется. Чтобы избежать подобных взаимоблокировок, используйте <xref:System.Threading.ReaderWriterLock.IsReaderLockHeld%2A> , чтобы определить, имеет ли текущий поток блокировку чтения.  
+  
+ `AcquireWriterLock`поддерживает рекурсивные запросы на блокировку записи. Это значит, что поток может вызываться `AcquireWriterLock` несколько раз, что увеличивает число блокировок каждый раз. Необходимо вызывать <xref:System.Threading.ReaderWriterLock.ReleaseWriterLock%2A> один раз для каждого вызова `AcquireWriterLock`. Кроме того, можно немедленно <xref:System.Threading.ReaderWriterLock.ReleaseLock%2A> вызвать метод, чтобы сократить число блокировок до нуля.  
+  
+ Рекурсивные запросы на блокировку всегда предоставляются немедленно, без помещения запрашивающего потока в очередь модуля записи.  
+  
+ Допустимые значения времени ожидания см. в <xref:System.Threading.ReaderWriterLock>разделе.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как получить и освободить блокировку записи и как обрабатывалось исключение, возникающее при истечении времени ожидания запроса.  
+  
+ Этот код является частью большого примера, <xref:System.Threading.ReaderWriterLock> приведенного для класса.  
+  
+ [!code-cpp[System.Threading.ReaderWriterLock#2](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#2)]
+ [!code-csharp[System.Threading.ReaderWriterLock#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#2)]
+ [!code-vb[System.Threading.ReaderWriterLock#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#2)]  
+[!code-cpp[System.Threading.ReaderWriterLock#4](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#4)]
+[!code-csharp[System.Threading.ReaderWriterLock#4](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#4)]
+[!code-vb[System.Threading.ReaderWriterLock#4](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#4)]  
+[!code-cpp[System.Threading.ReaderWriterLock#7](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#7)]
+[!code-csharp[System.Threading.ReaderWriterLock#7](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#7)]
+[!code-vb[System.Threading.ReaderWriterLock#7](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#7)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ApplicationException">Время ожидания, заданное параметром <paramref name="timeout" />, истекло до удовлетворения запроса на блокировку.</exception>
+        <related type="Article" href="~/docs/standard/threading/index.md">Управляемая поточность</related>
+        <related type="Article" href="~/docs/standard/threading/reader-writer-locks.md">ReaderWriterLock</related>
+      </Docs>
+    </Member>
+    <Member MemberName="AcquireWriterLock">
+      <MemberSignature Language="C#" Value="public void AcquireWriterLock (TimeSpan timeout);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void AcquireWriterLock(valuetype System.TimeSpan timeout) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLock.AcquireWriterLock(System.TimeSpan)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub AcquireWriterLock (timeout As TimeSpan)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void AcquireWriterLock(TimeSpan timeout);" />
+      <MemberSignature Language="F#" Value="member this.AcquireWriterLock : TimeSpan -&gt; unit" Usage="readerWriterLock.AcquireWriterLock timeout" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecuritySafeCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="timeout" Type="System.TimeSpan" />
+      </Parameters>
+      <Docs>
+        <param name="timeout">Структура <see langword="TimeSpan" />, задающая время ожидания.</param>
+        <summary>Получает блокировку записи с указанием времени ожидания значением <see cref="T:System.TimeSpan" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод блокируется, если другой поток имеет блокировку чтения или записи. Описание способа блокировки модуля записи с несколькими параллельными блокировками чтения см. в <xref:System.Threading.ReaderWriterLock> разделе класс.  
+  
+ Поток, который уже имеет блокировку чтения, может получить блокировку записи одним из двух способов: путем освобождения блокировки чтения перед вызовом <xref:System.Threading.ReaderWriterLock.AcquireWriterLock%2A>или путем вызова. <xref:System.Threading.ReaderWriterLock.UpgradeToWriterLock%2A>  
+  
+> [!CAUTION]
+>  Если поток `AcquireWriterLock` по-прежнему имеет блокировку чтения, он будет заблокирован для собственной блокировки чтения. Если неограниченное время ожидания задано, поток взаимоблокируется. Чтобы избежать подобных взаимоблокировок, используйте <xref:System.Threading.ReaderWriterLock.IsReaderLockHeld%2A> , чтобы определить, имеет ли текущий поток блокировку чтения.  
+  
+ `AcquireWriterLock`поддерживает рекурсивные запросы на блокировку записи. Это значит, что поток может вызываться `AcquireWriterLock` несколько раз, что увеличивает число блокировок каждый раз. Необходимо вызывать <xref:System.Threading.ReaderWriterLock.ReleaseWriterLock%2A> один раз для каждого вызова `AcquireWriterLock`. Кроме того, можно немедленно <xref:System.Threading.ReaderWriterLock.ReleaseLock%2A> вызвать метод, чтобы сократить число блокировок до нуля.  
+  
+ Рекурсивные запросы на блокировку всегда предоставляются немедленно, без помещения запрашивающего потока в очередь модуля записи.  
+  
+ Допустимые значения времени ожидания см. в <xref:System.Threading.ReaderWriterLock>разделе.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ApplicationException">Время ожидания, заданное параметром <paramref name="timeout" />, истекло до удовлетворения запроса на блокировку.</exception>
+        <exception cref="T:System.ArgumentOutOfRangeException">Параметр <paramref name="timeout" /> содержит отрицательное значение, отличное от -1.</exception>
+        <related type="Article" href="~/docs/standard/threading/index.md">Управляемая поточность</related>
+        <related type="Article" href="~/docs/standard/threading/reader-writer-locks.md">ReaderWriterLock</related>
+      </Docs>
+    </Member>
+    <Member MemberName="AnyWritersSince">
+      <MemberSignature Language="C#" Value="public bool AnyWritersSince (int seqNum);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance bool AnyWritersSince(int32 seqNum) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLock.AnyWritersSince(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Function AnyWritersSince (seqNum As Integer) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; bool AnyWritersSince(int seqNum);" />
+      <MemberSignature Language="F#" Value="member this.AnyWritersSince : int -&gt; bool" Usage="readerWriterLock.AnyWritersSince seqNum" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecuritySafeCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="seqNum" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="seqNum">Порядковый номер.</param>
+        <summary>Показывает, была ли предоставлена блокировка записи какому-либо потоку со времени получения последовательного номера.</summary>
+        <returns>Значение <see langword="true" />, если блокировка записи была предоставлена какому-либо потоку с момента получения порядкового номера; в противном случае — значение <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Для повышения производительности <xref:System.Threading.ReaderWriterLock.WriterSeqNum%2A> приложения `AnyWritersSince` можно использовать и. Например, поток может кэшировать сведения, которые он получает, при удержании блокировки чтения. После освобождения и последующего повторного получения блокировки поток может использовать `AnyWritersSince` , чтобы определить, записывались ли другие потоки в ресурс в промежуточном режиме. Если нет, можно использовать кэшированные данные. Эта методика полезна, когда чтение информации, защищенной блокировкой, является дорогостоящей. Например, выполнение запроса к базе данных.  
+  
+ Вызывающий объект должен удерживать блокировку чтения или записи, чтобы порядковый номер был полезен.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как использовать <xref:System.Threading.ReaderWriterLock.AnyWritersSince%2A> метод <xref:System.Threading.ReaderWriterLock.WriterSeqNum%2A> и свойство, чтобы определить, получил ли другой поток блокировку записи на защищенный ресурс, начиная с текущего потока, который последним удерживал блокировку записи.  
+  
+ Этот код является частью большого примера, <xref:System.Threading.ReaderWriterLock> приведенного для класса.  
+  
+ [!code-cpp[System.Threading.ReaderWriterLock#2](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#2)]
+ [!code-csharp[System.Threading.ReaderWriterLock#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#2)]
+ [!code-vb[System.Threading.ReaderWriterLock#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#2)]  
+[!code-cpp[System.Threading.ReaderWriterLock#6](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#6)]
+[!code-csharp[System.Threading.ReaderWriterLock#6](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#6)]
+[!code-vb[System.Threading.ReaderWriterLock#6](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#6)]  
+[!code-cpp[System.Threading.ReaderWriterLock#7](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#7)]
+[!code-csharp[System.Threading.ReaderWriterLock#7](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#7)]
+[!code-vb[System.Threading.ReaderWriterLock#7](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#7)]  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="~/docs/standard/threading/index.md">Управляемая поточность</related>
+        <related type="Article" href="~/docs/standard/threading/reader-writer-locks.md">ReaderWriterLock</related>
+      </Docs>
+    </Member>
+    <Member MemberName="DowngradeFromWriterLock">
+      <MemberSignature Language="C#" Value="public void DowngradeFromWriterLock (ref System.Threading.LockCookie lockCookie);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void DowngradeFromWriterLock(valuetype System.Threading.LockCookie&amp; lockCookie) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLock.DowngradeFromWriterLock(System.Threading.LockCookie@)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub DowngradeFromWriterLock (ByRef lockCookie As LockCookie)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void DowngradeFromWriterLock(System::Threading::LockCookie % lockCookie);" />
+      <MemberSignature Language="F#" Value="member this.DowngradeFromWriterLock :  -&gt; unit" Usage="readerWriterLock.DowngradeFromWriterLock lockCookie" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecuritySafeCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="lockCookie" Type="System.Threading.LockCookie" RefType="ref" />
+      </Parameters>
+      <Docs>
+        <param name="lockCookie">Объект <see cref="T:System.Threading.LockCookie" />, возвращаемый методом <see cref="M:System.Threading.ReaderWriterLock.UpgradeToWriterLock(System.Int32)" />.</param>
+        <summary>Возвращает состояние блокировки потока к тому, которое было до вызова метода <see cref="M:System.Threading.ReaderWriterLock.UpgradeToWriterLock(System.Int32)" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Threading.ReaderWriterLock.DowngradeFromWriterLock%2A>освобождает блокировку записи, независимо от счетчика рекурсивных блокировок, и восстанавливает читающую блокировку, удерживаемую потоком перед обновлением до блокировки записи. Восстанавливается счетчик блокировок для блокировки чтения.  
+  
+> [!NOTE]
+>  `DowngradeFromWriterLock`принимает объект <xref:System.Threading.LockCookie> , полученный <xref:System.Threading.ReaderWriterLock.UpgradeToWriterLock%2A>путем вызова метода. Не используйте объект `LockCookie` , <xref:System.Threading.ReaderWriterLock.ReleaseLock%2A>возвращенный.  
+  
+ Поток не блокируется при понижении уровня блокировки записи, даже если другие потоки ожидают блокировку записи, так как все запросы на блокировку чтения предоставляются при освобождении блокировки записи.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как запросить блокировку чтения, обновить блокировку чтения до блокировки записи и вернуться к блокировке чтения снова.  
+  
+ Этот код является частью большого примера, <xref:System.Threading.ReaderWriterLock> приведенного для класса.  
+  
+ [!code-cpp[System.Threading.ReaderWriterLock#2](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#2)]
+ [!code-csharp[System.Threading.ReaderWriterLock#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#2)]
+ [!code-vb[System.Threading.ReaderWriterLock#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#2)]  
+[!code-cpp[System.Threading.ReaderWriterLock#5](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#5)]
+[!code-csharp[System.Threading.ReaderWriterLock#5](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#5)]
+[!code-vb[System.Threading.ReaderWriterLock#5](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#5)]  
+[!code-cpp[System.Threading.ReaderWriterLock#7](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#7)]
+[!code-csharp[System.Threading.ReaderWriterLock#7](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#7)]
+[!code-vb[System.Threading.ReaderWriterLock#7](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#7)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ApplicationException">Поток не владеет блокировкой записи.</exception>
+        <exception cref="T:System.NullReferenceException">Адрес <paramref name="lockCookie" /> является пустым указателем.</exception>
+        <related type="Article" href="~/docs/standard/threading/index.md">Управляемая поточность</related>
+        <related type="Article" href="~/docs/standard/threading/reader-writer-locks.md">ReaderWriterLock</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Finalize">
+      <MemberSignature Language="C#" Value="~ReaderWriterLock ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void Finalize() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLock.Finalize" />
+      <MemberSignature Language="VB.NET" Value="Finalize ()" />
+      <MemberSignature Language="C++ CLI" Value="!ReaderWriterLock ()" />
+      <MemberSignature Language="F#" Value="override this.Finalize : unit -&gt; unit" Usage="readerWriterLock.Finalize " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecuritySafeCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Обеспечивает освобождение ресурсов и выполнение других завершающих операций, когда сборщик мусора восстанавливает объект <see cref="T:System.Threading.ReaderWriterLock" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Сборщик мусора вызывает <xref:System.Threading.ReaderWriterLock.Finalize%2A> , когда текущий <xref:System.Threading.ReaderWriterLock> объект готов к завершению.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="IsReaderLockHeld">
+      <MemberSignature Language="C#" Value="public bool IsReaderLockHeld { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool IsReaderLockHeld" />
+      <MemberSignature Language="DocId" Value="P:System.Threading.ReaderWriterLock.IsReaderLockHeld" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property IsReaderLockHeld As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool IsReaderLockHeld { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.IsReaderLockHeld : bool" Usage="System.Threading.ReaderWriterLock.IsReaderLockHeld" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8">
+          <AttributeName>get: System.Runtime.ConstrainedExecution.ReliabilityContract(System.Runtime.ConstrainedExecution.Consistency.WillNotCorruptState, System.Runtime.ConstrainedExecution.Cer.Success)</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>get: System.Security.SecuritySafeCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, указывающее, владеет ли текущий поток блокировкой чтения.</summary>
+        <value>Значение <see langword="true" />, если текущий поток владеет блокировкой чтения; в противном случае — <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Examples  
+ В следующем примере кода показано, как использовать `IsReaderLockHeld` , чтобы избежать взаимоблокировок.  
+  
+ [!code-cpp[System.Threading.ReaderWriterLock.IsWriterLockHeld#1](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock.IsWriterLockHeld/CPP/source.cpp#1)]
+ [!code-csharp[System.Threading.ReaderWriterLock.IsWriterLockHeld#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock.IsWriterLockHeld/CS/source.cs#1)]
+ [!code-vb[System.Threading.ReaderWriterLock.IsWriterLockHeld#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock.IsWriterLockHeld/VB/source.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="~/docs/standard/threading/index.md">Управляемая поточность</related>
+        <related type="Article" href="~/docs/standard/threading/reader-writer-locks.md">ReaderWriterLock</related>
+      </Docs>
+    </Member>
+    <Member MemberName="IsWriterLockHeld">
+      <MemberSignature Language="C#" Value="public bool IsWriterLockHeld { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool IsWriterLockHeld" />
+      <MemberSignature Language="DocId" Value="P:System.Threading.ReaderWriterLock.IsWriterLockHeld" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property IsWriterLockHeld As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool IsWriterLockHeld { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.IsWriterLockHeld : bool" Usage="System.Threading.ReaderWriterLock.IsWriterLockHeld" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8">
+          <AttributeName>get: System.Runtime.ConstrainedExecution.ReliabilityContract(System.Runtime.ConstrainedExecution.Consistency.WillNotCorruptState, System.Runtime.ConstrainedExecution.Cer.Success)</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>get: System.Security.SecuritySafeCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, указывающее, владеет ли текущий поток блокировкой записи.</summary>
+        <value>Значение <see langword="true" />, если текущий поток владеет блокировкой записи; в противном случае — <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Examples  
+ В следующем примере кода показано, что при попытке получить блокировку чтения для потока, который имеет блокировку записи, не предоставляет блокировку чтения `ReaderWriterLock` , а вместо этого увеличивает счетчик блокировок для блокировки записи.  
+  
+ [!code-cpp[System.Threading.ReaderWriterLock.IsWriterLockHeld#1](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock.IsWriterLockHeld/CPP/source.cpp#1)]
+ [!code-csharp[System.Threading.ReaderWriterLock.IsWriterLockHeld#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock.IsWriterLockHeld/CS/source.cs#1)]
+ [!code-vb[System.Threading.ReaderWriterLock.IsWriterLockHeld#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock.IsWriterLockHeld/VB/source.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="~/docs/standard/threading/index.md">Управляемая поточность</related>
+        <related type="Article" href="~/docs/standard/threading/reader-writer-locks.md">ReaderWriterLock</related>
+      </Docs>
+    </Member>
+    <Member MemberName="ReleaseLock">
+      <MemberSignature Language="C#" Value="public System.Threading.LockCookie ReleaseLock ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance valuetype System.Threading.LockCookie ReleaseLock() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLock.ReleaseLock" />
+      <MemberSignature Language="VB.NET" Value="Public Function ReleaseLock () As LockCookie" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Threading::LockCookie ReleaseLock();" />
+      <MemberSignature Language="F#" Value="member this.ReleaseLock : unit -&gt; System.Threading.LockCookie" Usage="readerWriterLock.ReleaseLock " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecuritySafeCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Threading.LockCookie</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Освобождает блокировку, независимо от количества ее получений потоком.</summary>
+        <returns>Объект <see cref="T:System.Threading.LockCookie" />, представляющий освобождаемую блокировку.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Threading.ReaderWriterLock.ReleaseLock%2A>освобождает блокировку чтения или записи, независимо от счетчика рекурсивных блокировок. Чтобы восстановить состояние блокировки, включая счетчик блокировок, передайте <xref:System.Threading.LockCookie> <xref:System.Threading.ReaderWriterLock.RestoreLock%2A>в.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как использовать <xref:System.Threading.ReaderWriterLock.ReleaseLock%2A> метод для освобождения блокировки, независимо от того, сколько раз она была получена потоком, а также как восстановить состояние блокировки позже.  
+  
+ Этот код является частью большого примера, <xref:System.Threading.ReaderWriterLock> приведенного для класса.  
+  
+ [!code-cpp[System.Threading.ReaderWriterLock#2](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#2)]
+ [!code-csharp[System.Threading.ReaderWriterLock#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#2)]
+ [!code-vb[System.Threading.ReaderWriterLock#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#2)]  
+[!code-cpp[System.Threading.ReaderWriterLock#6](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#6)]
+[!code-csharp[System.Threading.ReaderWriterLock#6](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#6)]
+[!code-vb[System.Threading.ReaderWriterLock#6](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#6)]  
+[!code-cpp[System.Threading.ReaderWriterLock#7](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#7)]
+[!code-csharp[System.Threading.ReaderWriterLock#7](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#7)]
+[!code-vb[System.Threading.ReaderWriterLock#7](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#7)]  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="~/docs/standard/threading/index.md">Управляемая поточность</related>
+        <related type="Article" href="~/docs/standard/threading/reader-writer-locks.md">ReaderWriterLock</related>
+      </Docs>
+    </Member>
+    <Member MemberName="ReleaseReaderLock">
+      <MemberSignature Language="C#" Value="public void ReleaseReaderLock ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void ReleaseReaderLock() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLock.ReleaseReaderLock" />
+      <MemberSignature Language="VB.NET" Value="Public Sub ReleaseReaderLock ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void ReleaseReaderLock();" />
+      <MemberSignature Language="F#" Value="member this.ReleaseReaderLock : unit -&gt; unit" Usage="readerWriterLock.ReleaseReaderLock " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8">
+          <AttributeName>System.Runtime.ConstrainedExecution.ReliabilityContract(System.Runtime.ConstrainedExecution.Consistency.WillNotCorruptState, System.Runtime.ConstrainedExecution.Cer.Success)</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecuritySafeCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Уменьшает на единицу счетчик блокировок.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Threading.ReaderWriterLock.ReleaseReaderLock%2A>уменьшает счетчик блокировок. Когда счетчик достигнет нуля, блокировка снимается.  
+  
+> [!NOTE]
+>  Если поток имеет блокировку записи, вызов `ReleaseReaderLock` имеет тот же результат, что и вызов. <xref:System.Threading.ReaderWriterLock.ReleaseWriterLock%2A> Если поток не имеет блокировок, при вызове `ReleaseReaderLock` <xref:System.ApplicationException>вызывается исключение.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как получить и освободить блокировку чтения, а также как выполнить обработку исключения, возникающего при истечении времени ожидания запроса.  
+  
+ Этот код является частью большого примера, <xref:System.Threading.ReaderWriterLock> приведенного для класса.  
+  
+ [!code-cpp[System.Threading.ReaderWriterLock#2](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#2)]
+ [!code-csharp[System.Threading.ReaderWriterLock#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#2)]
+ [!code-vb[System.Threading.ReaderWriterLock#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#2)]  
+[!code-cpp[System.Threading.ReaderWriterLock#3](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#3)]
+[!code-csharp[System.Threading.ReaderWriterLock#3](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#3)]
+[!code-vb[System.Threading.ReaderWriterLock#3](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#3)]  
+[!code-cpp[System.Threading.ReaderWriterLock#7](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#7)]
+[!code-csharp[System.Threading.ReaderWriterLock#7](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#7)]
+[!code-vb[System.Threading.ReaderWriterLock#7](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#7)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ApplicationException">Поток не владеет блокировкой чтения или записи.</exception>
+        <related type="Article" href="~/docs/standard/threading/index.md">Управляемая поточность</related>
+        <related type="Article" href="~/docs/standard/threading/reader-writer-locks.md">ReaderWriterLock</related>
+      </Docs>
+    </Member>
+    <Member MemberName="ReleaseWriterLock">
+      <MemberSignature Language="C#" Value="public void ReleaseWriterLock ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void ReleaseWriterLock() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLock.ReleaseWriterLock" />
+      <MemberSignature Language="VB.NET" Value="Public Sub ReleaseWriterLock ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void ReleaseWriterLock();" />
+      <MemberSignature Language="F#" Value="member this.ReleaseWriterLock : unit -&gt; unit" Usage="readerWriterLock.ReleaseWriterLock " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8">
+          <AttributeName>System.Runtime.ConstrainedExecution.ReliabilityContract(System.Runtime.ConstrainedExecution.Consistency.WillNotCorruptState, System.Runtime.ConstrainedExecution.Cer.Success)</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecuritySafeCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Уменьшает на единицу счетчик блокировок данной блокировки записи.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Threading.ReaderWriterLock.ReleaseWriterLock%2A>уменьшает число блокировок модуля записи. Когда счетчик достигнет нуля, блокировка записи освобождается.  
+  
+> [!NOTE]
+>  Если поток имеет блокировку чтения или не блокируется, вызов `ReleaseWriterLock` <xref:System.ApplicationException>создает исключение.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как получить и освободить блокировку записи и как обрабатывалось исключение, возникающее при истечении времени ожидания запроса.  
+  
+ Этот код является частью большого примера, <xref:System.Threading.ReaderWriterLock> приведенного для класса.  
+  
+ [!code-cpp[System.Threading.ReaderWriterLock#2](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#2)]
+ [!code-csharp[System.Threading.ReaderWriterLock#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#2)]
+ [!code-vb[System.Threading.ReaderWriterLock#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#2)]  
+[!code-cpp[System.Threading.ReaderWriterLock#4](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#4)]
+[!code-csharp[System.Threading.ReaderWriterLock#4](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#4)]
+[!code-vb[System.Threading.ReaderWriterLock#4](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#4)]  
+[!code-cpp[System.Threading.ReaderWriterLock#7](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#7)]
+[!code-csharp[System.Threading.ReaderWriterLock#7](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#7)]
+[!code-vb[System.Threading.ReaderWriterLock#7](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#7)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ApplicationException">Поток не владеет блокировкой записи.</exception>
+        <related type="Article" href="~/docs/standard/threading/index.md">Управляемая поточность</related>
+        <related type="Article" href="~/docs/standard/threading/reader-writer-locks.md">ReaderWriterLock</related>
+      </Docs>
+    </Member>
+    <Member MemberName="RestoreLock">
+      <MemberSignature Language="C#" Value="public void RestoreLock (ref System.Threading.LockCookie lockCookie);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void RestoreLock(valuetype System.Threading.LockCookie&amp; lockCookie) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLock.RestoreLock(System.Threading.LockCookie@)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub RestoreLock (ByRef lockCookie As LockCookie)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void RestoreLock(System::Threading::LockCookie % lockCookie);" />
+      <MemberSignature Language="F#" Value="member this.RestoreLock :  -&gt; unit" Usage="readerWriterLock.RestoreLock lockCookie" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecuritySafeCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="lockCookie" Type="System.Threading.LockCookie" RefType="ref" />
+      </Parameters>
+      <Docs>
+        <param name="lockCookie">Объект <see cref="T:System.Threading.LockCookie" />, возвращаемый методом <see cref="M:System.Threading.ReaderWriterLock.ReleaseLock" />.</param>
+        <summary>Возвращает состояние блокировки потока к тому, которое было до вызова метода <see cref="M:System.Threading.ReaderWriterLock.ReleaseLock" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Состояние, восстановленное `RestoreLock` с помощью, включает счетчик рекурсивных блокировок.  
+  
+ Поток блокируется, если пытается восстановить блокировку модуля чтения после того, как другой поток получит блокировку записи, или если она попытается восстановить блокировку записи после того, как другой поток получит блокировку чтения или записи. Поскольку `RestoreLock` не принимает время ожидания, следует избегать возможных взаимоблокировок.  
+  
+> [!CAUTION]
+>  Перед вызовом `RestoreLock`убедитесь, что были освобождены все блокировки, полученные с момента <xref:System.Threading.ReaderWriterLock.ReleaseLock%2A>вызова. Например, поток взаимоблокируется, если он получает блокировку чтения, а затем пытается восстановить более раннюю блокировку записи. Используйте <xref:System.Threading.ReaderWriterLock.IsReaderLockHeld%2A> и <xref:System.Threading.ReaderWriterLock.IsWriterLockHeld%2A>  для обнаружения таких дополнительных блокировок.  
+  
+ Не используйте значение, <xref:System.Threading.LockCookie> возвращенное <xref:System.Threading.ReaderWriterLock.UpgradeToWriterLock%2A>из.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как использовать <xref:System.Threading.ReaderWriterLock.ReleaseLock%2A> метод для освобождения блокировки, независимо от того, сколько раз она была получена потоком, а также как восстановить состояние блокировки позже.  
+  
+ Этот код является частью большого примера, <xref:System.Threading.ReaderWriterLock> приведенного для класса.  
+  
+ [!code-cpp[System.Threading.ReaderWriterLock#2](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#2)]
+ [!code-csharp[System.Threading.ReaderWriterLock#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#2)]
+ [!code-vb[System.Threading.ReaderWriterLock#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#2)]  
+[!code-cpp[System.Threading.ReaderWriterLock#6](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#6)]
+[!code-csharp[System.Threading.ReaderWriterLock#6](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#6)]
+[!code-vb[System.Threading.ReaderWriterLock#6](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#6)]  
+[!code-cpp[System.Threading.ReaderWriterLock#7](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#7)]
+[!code-csharp[System.Threading.ReaderWriterLock#7](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#7)]
+[!code-vb[System.Threading.ReaderWriterLock#7](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#7)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.NullReferenceException">Адрес <paramref name="lockCookie" /> является пустым указателем.</exception>
+        <related type="Article" href="~/docs/standard/threading/index.md">Управляемая поточность</related>
+        <related type="Article" href="~/docs/standard/threading/reader-writer-locks.md">ReaderWriterLock</related>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="UpgradeToWriterLock">
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Повышает уровень блокировки чтения до блокировки записи.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="UpgradeToWriterLock">
+      <MemberSignature Language="C#" Value="public System.Threading.LockCookie UpgradeToWriterLock (int millisecondsTimeout);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance valuetype System.Threading.LockCookie UpgradeToWriterLock(int32 millisecondsTimeout) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLock.UpgradeToWriterLock(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Function UpgradeToWriterLock (millisecondsTimeout As Integer) As LockCookie" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Threading::LockCookie UpgradeToWriterLock(int millisecondsTimeout);" />
+      <MemberSignature Language="F#" Value="member this.UpgradeToWriterLock : int -&gt; System.Threading.LockCookie" Usage="readerWriterLock.UpgradeToWriterLock millisecondsTimeout" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecuritySafeCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Threading.LockCookie</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="millisecondsTimeout" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="millisecondsTimeout">Время ожидания в миллисекундах.</param>
+        <summary>Повышает уровень блокировки чтения до блокировки записи с указанием времени ожидания значением <see langword="Int32" />.</summary>
+        <returns>Значение <see cref="T:System.Threading.LockCookie" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Когда поток вызывает `UpgradeToWriterLock` блокировку чтения, она освобождается независимо от счетчика блокировок, и поток переходит в конец очереди для блокировки записи. Таким же, другие потоки могут записывать данные в ресурс до того, как поток, запрашивающий обновление, получит блокировку записи.  
+  
+> [!IMPORTANT]
+>  Исключение времени ожидания не создается, пока поток, вызвавший <xref:System.Threading.ReaderWriterLock.UpgradeToWriterLock%2A> метод, не сможет повторно получить блокировку чтения. Если других потоков, ожидающих блокировки записи, нет, это происходит немедленно. Однако если другой поток помещается в очередь для блокировки записи, то поток, вызвавший <xref:System.Threading.ReaderWriterLock.UpgradeToWriterLock%2A> метод, не может повторно получить блокировку чтения, пока все текущие модули чтения не освободят свои блокировки, а один поток получил и освободил блокировку записи. Это справедливо, даже если другой поток, запрашивающий блокировку записи, запросил его после текущего потока, который <xref:System.Threading.ReaderWriterLock.UpgradeToWriterLock%2A> вызвал метод.  
+  
+ Чтобы восстановить состояние блокировки, вызовите <xref:System.Threading.ReaderWriterLock.DowngradeFromWriterLock%2A> метод с <xref:System.Threading.LockCookie> помощью метода `UpgradeToWriterLock`, возвращенного. Не используйте его `LockCookie` вместе с <xref:System.Threading.ReaderWriterLock.RestoreLock%2A>.  
+  
+ Если поток не имеет блокировки чтения, не используйте `UpgradeToWriterLock`. Взамен рекомендуется использовать <xref:System.Threading.ReaderWriterLock.AcquireWriterLock%2A>.  
+  
+ Допустимые значения времени ожидания см. в <xref:System.Threading.ReaderWriterLock>разделе.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как запросить блокировку чтения, обновить блокировку чтения до блокировки записи и вернуться к блокировке чтения снова.  
+  
+ Этот код является частью большого примера, <xref:System.Threading.ReaderWriterLock> приведенного для класса.  
+  
+ [!code-cpp[System.Threading.ReaderWriterLock#2](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#2)]
+ [!code-csharp[System.Threading.ReaderWriterLock#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#2)]
+ [!code-vb[System.Threading.ReaderWriterLock#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#2)]  
+[!code-cpp[System.Threading.ReaderWriterLock#5](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#5)]
+[!code-csharp[System.Threading.ReaderWriterLock#5](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#5)]
+[!code-vb[System.Threading.ReaderWriterLock#5](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#5)]  
+[!code-cpp[System.Threading.ReaderWriterLock#7](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#7)]
+[!code-csharp[System.Threading.ReaderWriterLock#7](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#7)]
+[!code-vb[System.Threading.ReaderWriterLock#7](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#7)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ApplicationException">Время ожидания, заданное параметром <paramref name="millisecondsTimeout" />, истекло до удовлетворения запроса на блокировку.</exception>
+        <related type="Article" href="~/docs/standard/threading/index.md">Управляемая поточность</related>
+        <related type="Article" href="~/docs/standard/threading/reader-writer-locks.md">ReaderWriterLock</related>
+      </Docs>
+    </Member>
+    <Member MemberName="UpgradeToWriterLock">
+      <MemberSignature Language="C#" Value="public System.Threading.LockCookie UpgradeToWriterLock (TimeSpan timeout);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance valuetype System.Threading.LockCookie UpgradeToWriterLock(valuetype System.TimeSpan timeout) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLock.UpgradeToWriterLock(System.TimeSpan)" />
+      <MemberSignature Language="VB.NET" Value="Public Function UpgradeToWriterLock (timeout As TimeSpan) As LockCookie" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Threading::LockCookie UpgradeToWriterLock(TimeSpan timeout);" />
+      <MemberSignature Language="F#" Value="member this.UpgradeToWriterLock : TimeSpan -&gt; System.Threading.LockCookie" Usage="readerWriterLock.UpgradeToWriterLock timeout" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Threading.LockCookie</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="timeout" Type="System.TimeSpan" />
+      </Parameters>
+      <Docs>
+        <param name="timeout">Структура <see langword="TimeSpan" />, задающая время ожидания.</param>
+        <summary>Повышает уровень блокировки чтения до блокировки записи с указанием времени ожидания значением <see langword="TimeSpan" />.</summary>
+        <returns>Значение <see cref="T:System.Threading.LockCookie" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Когда поток вызывает `UpgradeToWriterLock` блокировку чтения, она освобождается независимо от счетчика блокировок, и поток переходит в конец очереди для блокировки записи. Таким же, другие потоки могут записывать данные в ресурс до того, как поток, запрашивающий обновление, получит блокировку записи.  
+  
+> [!IMPORTANT]
+>  Исключение времени ожидания не создается, пока поток, вызвавший <xref:System.Threading.ReaderWriterLock.UpgradeToWriterLock%2A> метод, не сможет повторно получить блокировку чтения. Если других потоков, ожидающих блокировки записи, нет, это происходит немедленно. Однако если другой поток помещается в очередь для блокировки записи, то поток, вызвавший <xref:System.Threading.ReaderWriterLock.UpgradeToWriterLock%2A> метод, не может повторно получить блокировку чтения, пока все текущие модули чтения не освободят свои блокировки, а один поток получил и освободил блокировку записи. Это справедливо, даже если другой поток, запрашивающий блокировку записи, запросил его после текущего потока, который <xref:System.Threading.ReaderWriterLock.UpgradeToWriterLock%2A> вызвал метод.  
+  
+ Чтобы восстановить состояние блокировки, вызовите <xref:System.Threading.ReaderWriterLock.DowngradeFromWriterLock%2A> метод с <xref:System.Threading.LockCookie> помощью метода `UpgradeToWriterLock`, возвращенного. Не используйте его `LockCookie` вместе с <xref:System.Threading.ReaderWriterLock.RestoreLock%2A>.  
+  
+ Если поток не имеет блокировки чтения, не используйте `UpgradeToWriterLock`. Взамен рекомендуется использовать <xref:System.Threading.ReaderWriterLock.AcquireWriterLock%2A>.  
+  
+ Допустимые значения времени ожидания см. в <xref:System.Threading.ReaderWriterLock>разделе.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ApplicationException">Время ожидания, заданное параметром <paramref name="timeout" />, истекло до удовлетворения запроса на блокировку.</exception>
+        <exception cref="T:System.ArgumentOutOfRangeException">Параметр <paramref name="timeout" /> содержит отрицательное значение, отличное от -1.</exception>
+        <related type="Article" href="~/docs/standard/threading/index.md">Управляемая поточность</related>
+        <related type="Article" href="~/docs/standard/threading/reader-writer-locks.md">ReaderWriterLock</related>
+      </Docs>
+    </Member>
+    <Member MemberName="WriterSeqNum">
+      <MemberSignature Language="C#" Value="public int WriterSeqNum { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 WriterSeqNum" />
+      <MemberSignature Language="DocId" Value="P:System.Threading.ReaderWriterLock.WriterSeqNum" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property WriterSeqNum As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int WriterSeqNum { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.WriterSeqNum : int" Usage="System.Threading.ReaderWriterLock.WriterSeqNum" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>get: System.Security.SecuritySafeCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает текущий последовательный номер.</summary>
+        <value>Текущий последовательный номер.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Порядковый номер увеличивается каждый раз, когда поток получает блокировку записи. Вы можете сохранить порядковый номер и передать его <xref:System.Threading.ReaderWriterLock.AnyWritersSince%2A> в другое время, если хотите определить, получали ли другие потоки блокировку записи.  
+  
+ Для повышения производительности `WriterSeqNum` приложения можно использовать. Например, поток может кэшировать сведения, которые он получает, при удержании блокировки чтения. После освобождения и последующего повторного получения блокировки поток может определить, были ли другие потоки записаны в ресурс путем вызова `AnyWritersSince`. Если нет, можно использовать кэшированные данные. Этот метод полезен при чтении информации, защищенной блокировкой, дорогостоящей; Например, выполнение запроса к базе данных.  
+  
+ Вызывающий объект должен удерживать блокировку чтения или записи, чтобы порядковый номер был полезен.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как использовать <xref:System.Threading.ReaderWriterLock.WriterSeqNum%2A> свойство <xref:System.Threading.ReaderWriterLock.AnyWritersSince%2A> и метод, чтобы определить, получил ли другой поток блокировку записи для защищенного ресурса, начиная с текущего потока, который последним удерживал блокировку записи.  
+  
+ Этот код является частью большого примера, <xref:System.Threading.ReaderWriterLock> приведенного для класса.  
+  
+ [!code-cpp[System.Threading.ReaderWriterLock#2](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#2)]
+ [!code-csharp[System.Threading.ReaderWriterLock#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#2)]
+ [!code-vb[System.Threading.ReaderWriterLock#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#2)]  
+[!code-cpp[System.Threading.ReaderWriterLock#6](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#6)]
+[!code-csharp[System.Threading.ReaderWriterLock#6](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#6)]
+[!code-vb[System.Threading.ReaderWriterLock#6](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#6)]  
+[!code-cpp[System.Threading.ReaderWriterLock#7](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CPP/source.cpp#7)]
+[!code-csharp[System.Threading.ReaderWriterLock#7](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/CS/source.cs#7)]
+[!code-vb[System.Threading.ReaderWriterLock#7](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLock/VB/source.vb#7)]  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="~/docs/standard/threading/index.md">Управляемая поточность</related>
+        <related type="Article" href="~/docs/standard/threading/reader-writer-locks.md">ReaderWriterLock</related>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
