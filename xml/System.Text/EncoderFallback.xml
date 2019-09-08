@@ -1,0 +1,275 @@
+<Type Name="EncoderFallback" FullName="System.Text.EncoderFallback">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="e694bb6e74b76274afe163c73b121890a2814dca" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70695176" /></Metadata><TypeSignature Language="C#" Value="public abstract class EncoderFallback" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract serializable beforefieldinit EncoderFallback extends System.Object" />
+  <TypeSignature Language="DocId" Value="T:System.Text.EncoderFallback" />
+  <TypeSignature Language="VB.NET" Value="Public MustInherit Class EncoderFallback" />
+  <TypeSignature Language="C++ CLI" Value="public ref class EncoderFallback abstract" />
+  <TypeSignature Language="F#" Value="type EncoderFallback = class" />
+  <AssemblyInfo>
+    <AssemblyName>System.Text.Encoding</AssemblyName>
+    <AssemblyVersion>4.0.10.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>mscorlib</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>2.0.5.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>netstandard</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>System.Runtime</AssemblyName>
+    <AssemblyVersion>4.2.0.0</AssemblyVersion>
+    <AssemblyVersion>4.2.1.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Attributes>
+    <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0">
+      <AttributeName>System.Serializable</AttributeName>
+    </Attribute>
+  </Attributes>
+  <Docs>
+    <summary>Предоставляет механизм обработки ошибок, называемый резервным вариантом, для входного символа, который не может быть преобразован в выходную последовательность закодированных байтов.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Кодировка сопоставляет символ Юникода с закодированной последовательностью байтов. Определенная кодировка представляется типом, производным от <xref:System.Text.Encoding> класса. В частности, символ кодируется в последовательность байтов путем вызова <xref:System.Text.Encoding.GetBytes%2A?displayProperty=nameWithType> метода типа кодировки, а последовательность байтов декодируется в массив символов или строку путем <xref:System.Text.Encoding.GetChars%2A?displayProperty=nameWithType> вызова метода или <xref:System.Text.Encoding.GetString%2A?displayProperty=nameWithType> .  
+  
+ Операция кодирования может завершиться ошибкой, если входной символ не может быть представлен в кодировке. Например, <xref:System.Text.ASCIIEncoding> объект не может кодировать символ, значение кодовой точки Юникода которого выходит за пределы диапазона от u + 0000 до u + 007F.  
+  
+ Если преобразование кодировки не может быть выполнено, .NET Framework предоставляет механизм обработки сбоев, называемый откатом. Приложение может использовать предопределенные резервные .NET Framework кодировщиков или создать настраиваемый откат кодировщика, производный от <xref:System.Text.EncoderFallback> классов <xref:System.Text.EncoderFallbackBuffer> и.  
+  
+ <xref:System.Text.EncoderFallback>и <xref:System.Text.EncoderFallbackBuffer> являются базовыми классами для всех обработчиков резервного кодирования в .NET Framework. Они поддерживают следующие три типа механизмов обработки резервных копий:  
+  
+-   Стратегия наилучшего соответствия, которая сопоставляет допустимые символы Юникода, которые не могут быть закодированы в приблизительный эквивалент. Например, резервный обработчик наилучшего соответствия для <xref:System.Text.ASCIIEncoding> класса может сопоставлять Æ (u + 00C6) с AE (u + 0041 + U + 0045). Для того, чтобы использовать один алфавит (например, Latin или Roman), можно применить резервный обработчик наилучшего соответствия. .NET Framework не предоставляет никаких открытых резервных реализаций наилучшего соответствия.  
+  
+-   Замена резервирования, которая заменяет каждый символ, который не может быть закодирован с помощью предопределенной строки. .NET Framework предоставляет предопределенный резервный обработчик замены. <xref:System.Text.EncoderReplacementFallback> Класс заменяет каждую последовательность байтов, которую нельзя декодировать символом вопросительного знака ("?" или U + 003F), или символом замены (u + FFFD). Строку замены можно настроить, указав подстановку в вызове <xref:System.Text.EncoderReplacementFallback.%23ctor%28System.String%29?displayProperty=nameWithType> конструктора. После выпуска строки замены операция кодирования продолжит преобразование оставшейся части входных данных.  
+  
+-   Откат исключения, который вызывает исключение, если символ не может быть закодирован. .NET Framework предоставляет предопределенный обработчик резервных исключений. <xref:System.Text.EncoderExceptionFallback> Класс создает исключение при обнаружении недопустимого символа, а <xref:System.Text.EncoderFallbackException>  операция кодирования завершается.  
+  
+ Если вы решили реализовать пользовательское решение, необходимо переопределить следующие абстрактные члены <xref:System.Text.EncoderFallback> класса:  
+  
+-   Метод, возвращающий экземпляр класса, производный  <xref:System.Text.EncoderFallbackBuffer> от.  <xref:System.Text.EncoderFallback.CreateFallbackBuffer%2A> В зависимости от типа разрабатываемого <xref:System.Text.EncoderFallbackBuffer> резервного обработчика, реализация отвечает за выполнение сопоставления или замены, а также за создание исключения.  
+  
+-   <xref:System.Text.EncoderFallback.MaxCharCount%2A> Свойство, возвращающее максимальное число символов, которое может возвращать резервная реализация. Для обработчика резервного исключения его значение должно быть равно нулю.  
+  
+ Дополнительные сведения о кодировании, декодировании и резервных стратегиях см. [в разделе кодировка символов в .NET Framework](~/docs/standard/base-types/character-encoding.md).  
+  
+ ]]></format>
+    </remarks>
+    <altmember cref="T:System.Text.EncoderFallbackBuffer" />
+    <altmember cref="T:System.Text.EncoderReplacementFallback" />
+    <altmember cref="T:System.Text.EncoderExceptionFallback" />
+    <related type="Article" href="~/docs/standard/base-types/character-encoding.md">Кодировки в .NET Framework</related>
+    <related type="ExternalDocumentation" href="https://code.msdn.microsoft.com/Cyrillic-to-Roman-f7e88b29">Пример: служебная программа транслитерации кириллицы для латиницы</related>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="protected EncoderFallback ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Text.EncoderFallback.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Protected Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; EncoderFallback();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Text.Encoding</AssemblyName>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Text.EncoderFallback" />.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CreateFallbackBuffer">
+      <MemberSignature Language="C#" Value="public abstract System.Text.EncoderFallbackBuffer CreateFallbackBuffer ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Text.EncoderFallbackBuffer CreateFallbackBuffer() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Text.EncoderFallback.CreateFallbackBuffer" />
+      <MemberSignature Language="VB.NET" Value="Public MustOverride Function CreateFallbackBuffer () As EncoderFallbackBuffer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; abstract System::Text::EncoderFallbackBuffer ^ CreateFallbackBuffer();" />
+      <MemberSignature Language="F#" Value="abstract member CreateFallbackBuffer : unit -&gt; System.Text.EncoderFallbackBuffer" Usage="encoderFallback.CreateFallbackBuffer " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Text.Encoding</AssemblyName>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Text.EncoderFallbackBuffer</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>При переопределении в производном классе инициализирует новый экземпляр класса <see cref="T:System.Text.EncoderFallbackBuffer" />.</summary>
+        <returns>Объект, предоставляющий резервный буфер для кодировщика.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод возвращает объект, производный <xref:System.Text.EncoderFallbackBuffer> от, который отвечает за выполнение резервной операции. Например, из <xref:System.Text.EncoderFallback> предопределенных реализаций в .NET Framework <xref:System.Text.EncoderReplacementFallback.CreateFallbackBuffer%2A?displayProperty=nameWithType> метод возвращает <xref:System.Text.EncoderReplacementFallbackBuffer> объект, а <xref:System.Text.EncoderExceptionFallback.CreateFallbackBuffer%2A?displayProperty=nameWithType> метод возвращает <xref:System.Text.EncoderExceptionFallbackBuffer> объект.  
+  
+ <xref:System.Text.EncoderFallback.CreateFallbackBuffer%2A> Метод вызывается кодировщиком при обнаружении первого символа, который не удается закодировать. <xref:System.Text.EncoderFallbackBuffer> Объект, возвращаемый этим методом, предоставляет резервную реализацию и отвечает за возврат массива байтов, который заменяет символ или символы, которые не удалось закодировать.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.Text.DecoderFallbackBuffer" />
+        <related type="Article" href="~/docs/standard/base-types/character-encoding.md">Кодировки в .NET Framework</related>
+      </Docs>
+    </Member>
+    <Member MemberName="ExceptionFallback">
+      <MemberSignature Language="C#" Value="public static System.Text.EncoderFallback ExceptionFallback { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property class System.Text.EncoderFallback ExceptionFallback" />
+      <MemberSignature Language="DocId" Value="P:System.Text.EncoderFallback.ExceptionFallback" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property ExceptionFallback As EncoderFallback" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property System::Text::EncoderFallback ^ ExceptionFallback { System::Text::EncoderFallback ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.ExceptionFallback : System.Text.EncoderFallback" Usage="System.Text.EncoderFallback.ExceptionFallback" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Text.Encoding</AssemblyName>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Text.EncoderFallback</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает объект, который создает исключение, если входной символ не может быть закодирован.</summary>
+        <value>Тип, производный от класса <see cref="T:System.Text.EncoderFallback" />. Значение объекта по умолчанию равно <see cref="T:System.Text.EncoderExceptionFallback" />.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="MaxCharCount">
+      <MemberSignature Language="C#" Value="public abstract int MaxCharCount { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 MaxCharCount" />
+      <MemberSignature Language="DocId" Value="P:System.Text.EncoderFallback.MaxCharCount" />
+      <MemberSignature Language="VB.NET" Value="Public MustOverride ReadOnly Property MaxCharCount As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; abstract property int MaxCharCount { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.MaxCharCount : int" Usage="System.Text.EncoderFallback.MaxCharCount" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Text.Encoding</AssemblyName>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>При переопределении в производном классе возвращает максимальное число символов, которые могут быть возвращены текущим объектом <see cref="T:System.Text.EncoderFallback" />.</summary>
+        <value>Максимальное число символов, которые может вернуть текущий объект <see cref="T:System.Text.EncoderFallback" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Для обработчика резервного исключения это свойство должно возвращать ноль.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ReplacementFallback">
+      <MemberSignature Language="C#" Value="public static System.Text.EncoderFallback ReplacementFallback { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property class System.Text.EncoderFallback ReplacementFallback" />
+      <MemberSignature Language="DocId" Value="P:System.Text.EncoderFallback.ReplacementFallback" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property ReplacementFallback As EncoderFallback" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property System::Text::EncoderFallback ^ ReplacementFallback { System::Text::EncoderFallback ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.ReplacementFallback : System.Text.EncoderFallback" Usage="System.Text.EncoderFallback.ReplacementFallback" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Text.Encoding</AssemblyName>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Text.EncoderFallback</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает объект, выводящий замещающую строку вместо входного символа, который не может быть закодирован.</summary>
+        <value>Тип, производный от класса <see cref="T:System.Text.EncoderFallback" />. Значением по умолчанию является объект <see cref="T:System.Text.EncoderReplacementFallback" />, замещающий неизвестные входные символы символом ЗНАКА ВОПРОСА ("?", U+003F).</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
