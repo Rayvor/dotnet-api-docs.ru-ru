@@ -1,0 +1,1011 @@
+<Type Name="D3DImage" FullName="System.Windows.Interop.D3DImage">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="567efaf4215fbce1c4cbe8f4e48b7b00f9bdfe91" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70655606" /></Metadata><TypeSignature Language="C#" Value="public class D3DImage : System.Windows.Media.ImageSource" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi D3DImage extends System.Windows.Media.ImageSource" />
+  <TypeSignature Language="DocId" Value="T:System.Windows.Interop.D3DImage" />
+  <TypeSignature Language="VB.NET" Value="Public Class D3DImage&#xA;Inherits ImageSource" />
+  <TypeSignature Language="C++ CLI" Value="public ref class D3DImage : System::Windows::Media::ImageSource" />
+  <TypeSignature Language="F#" Value="type D3DImage = class&#xA;    inherit ImageSource" />
+  <AssemblyInfo>
+    <AssemblyName>PresentationCore</AssemblyName>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Windows.Media.ImageSource</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>Объект <see cref="T:System.Windows.Media.ImageSource" />, который отображает созданную пользователем поверхность Direct3D.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Windows.Interop.D3DImage> Используйте класс для размещения содержимого Direct3D в приложении Windows Presentation Foundation (WPF).  
+  
+ Вызовите <xref:System.Windows.Interop.D3DImage>метод, чтобы изменить содержимое Direct3D, отображаемое. <xref:System.Windows.Interop.D3DImage.Lock%2A> Вызовите <xref:System.Windows.Interop.D3DImage>метод, чтобы назначить поверхность Direct3D для. <xref:System.Windows.Interop.D3DImage.SetBackBuffer%2A> Вызовите <xref:System.Windows.Interop.D3DImage.AddDirtyRect%2A> метод для отслеживания обновлений на поверхности Direct3D. Вызовите <xref:System.Windows.Interop.D3DImage.Unlock%2A> метод, чтобы отобразить измененные области.  
+  
+ Класс управляет двумя буферами вывода, которые называются *задним* и передним буфером. ** <xref:System.Windows.Interop.D3DImage> Задний буфер — это поверхность Direct3D.  Изменения заднего буфера копируются прямо в передний буфер при вызове <xref:System.Windows.Interop.D3DImage.Unlock%2A> метода, где он отображается на оборудовании. Иногда передний буфер становится недоступным. Отсутствие доступности может быть вызвано блокировкой экрана, полноэкранным эксклюзивным приложением Direct3D, переключением пользователей или другими системными действиями. В этом случае приложение WPF будет уведомлено, обрабатывая <xref:System.Windows.Interop.D3DImage.IsFrontBufferAvailableChanged> событие.  То, как приложение реагирует на передний план, становится недоступным, зависит от того, включена ли платформа WPF для возврата к отрисовке программного обеспечения. <xref:System.Windows.Interop.D3DImage.SetBackBuffer%2A> Метод имеет перегрузку, которая принимает параметр, указывающий, возвращается ли WPF к отрисовке программного обеспечения.  
+  
+## <a name="responding-to-an-unavailable-front-buffer-when-wpf-does-not-fall-back-to-software-rendering"></a>Реагирование на недоступный передний буфер, когда WPF не возвращается к отрисовке программного обеспечения  
+ При вызове <xref:System.Windows.Interop.D3DImage.SetBackBuffer%28System.Windows.Interop.D3DResourceType%2CSystem.IntPtr%29> перегрузки или <xref:System.Windows.Interop.D3DImage.SetBackBuffer%28System.Windows.Interop.D3DResourceType%2CSystem.IntPtr%2CSystem.Boolean%29> вызове перегрузки с `enableSoftwareFallback` параметром, для `false`которого задано значение, система отрисовки освобождает ссылку на задний буфер, когда передний буфер становится недоступным и ничего не отображаем. Когда передний буфер снова становится доступным, система отрисовки вызывает <xref:System.Windows.Interop.D3DImage.IsFrontBufferAvailableChanged> событие для уведомления приложения WPF.  Можно создать обработчик событий для <xref:System.Windows.Interop.D3DImage.IsFrontBufferAvailableChanged> события, чтобы снова перезапустить отрисовку с допустимой поверхностью Direct3D. Чтобы перезапустить подготовку к просмотру <xref:System.Windows.Interop.D3DImage.SetBackBuffer%2A>, необходимо вызвать.  
+  
+## <a name="responding-to-an-unavailable-front-buffer-when-wpf-falls-back-to-software-rendering"></a>Реагирование на недоступный передний буфер, когда WPF возвращается к визуализации программного обеспечения  
+ При вызове <xref:System.Windows.Interop.D3DImage.SetBackBuffer%28System.Windows.Interop.D3DResourceType%2CSystem.IntPtr%2CSystem.Boolean%29> перегрузки `enableSoftwareFallback` с параметром, `true`для которого в качестве параметра задано значение, система отрисовки оставляет ссылку на задний буфер, когда передний буфер становится недоступным, поэтому нет необходимости вызывать метод <xref:System.Windows.Interop.D3DImage.SetBackBuffer%2A> , когда передний план буфер снова становится доступным.  Возможны ситуации, когда устройство пользователя становится недоступным.  В этом случае вызовите <xref:System.Windows.Interop.D3DImage.SetBackBuffer%2A> ссылку на выпуск платформы WPF для заднего буфера.  Если необходимо сбросить <xref:System.Windows.Interop.D3DImage.SetBackBuffer%2A> устройство, вызовите с параметром, для `null`которого `backBuffer` задано значение, а <xref:System.Windows.Interop.D3DImage.SetBackBuffer%2A> затем снова `backBuffer` вызовите, указав в качестве допустимой поверхности Direct3D.  
+  
+> [!NOTE]
+>  Производительность значительно зависит от параметров поверхности Direct3D. Дополнительные сведения см. в разделе [вопросы производительности для совместимости с Direct3D9 и WPF](~/docs/framework/wpf/advanced/performance-considerations-for-direct3d9-and-wpf-interoperability.md).  
+  
+> [!NOTE]
+>  Класс не отображает содержимое Direct3D при отрисовке WPF в программном обеспечении, например при соединении с удаленный рабочий стол, если только <xref:System.Windows.Interop.D3DImage.SetBackBuffer%28System.Windows.Interop.D3DResourceType%2CSystem.IntPtr%2CSystem.Boolean%29> не вызван `true` метод и `enableSoftwareFallback` не указан параметр. <xref:System.Windows.Interop.D3DImage>  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, <xref:System.Windows.Interop.D3DImage> как объявить в XAML. Необходимо соотнести <xref:System.Windows.Interop> пространство имен, так как оно не включено в пространства имен XAML по умолчанию. Дополнительные сведения см. [в разделе Пошаговое руководство. размещение содержимого Direct3D9 в WPF](~/docs/framework/wpf/advanced/walkthrough-hosting-direct3d9-content-in-wpf.md).  
+  
+ [!code-xaml[System.Windows.Interop.D3DImage#10](~/samples/snippets/csharp/VS_Snippets_Wpf/System.Windows.Interop.D3DImage/CS/window1.xaml#10)]  
+  
+ ]]></format>
+    </remarks>
+    <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.InheritanceDemand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+  </Docs>
+  <Members>
+    <MemberGroup MemberName=".ctor">
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Windows.Interop.D3DImage" />.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public D3DImage ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Interop.D3DImage.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; D3DImage();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Windows.Interop.D3DImage" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Разрешение экрана по умолчанию — 1/1/96 дюйма.  
+  
+ ]]></format>
+        </remarks>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public D3DImage (double dpiX, double dpiY);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(float64 dpiX, float64 dpiY) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Interop.D3DImage.#ctor(System.Double,System.Double)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (dpiX As Double, dpiY As Double)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; D3DImage(double dpiX, double dpiY);" />
+      <MemberSignature Language="F#" Value="new System.Windows.Interop.D3DImage : double * double -&gt; System.Windows.Interop.D3DImage" Usage="new System.Windows.Interop.D3DImage (dpiX, dpiY)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters>
+        <Parameter Name="dpiX" Type="System.Double" />
+        <Parameter Name="dpiY" Type="System.Double" />
+      </Parameters>
+      <Docs>
+        <param name="dpiX">Разрешение монитора по оси Х.</param>
+        <param name="dpiY">Разрешение монитора по оси Y.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Windows.Interop.D3DImage" /> с заданным разрешением монитора.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Разрешение экрана по умолчанию — 1/1/96 дюйма.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentOutOfRangeException">Значение параметра <paramref name="dpiX" /> или <paramref name="dpiY" /> меньше нуля.</exception>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <altmember cref="P:System.Windows.Interop.D3DImage.Height" />
+        <altmember cref="P:System.Windows.Interop.D3DImage.Width" />
+      </Docs>
+    </Member>
+    <Member MemberName="AddDirtyRect">
+      <MemberSignature Language="C#" Value="public void AddDirtyRect (System.Windows.Int32Rect dirtyRect);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void AddDirtyRect(valuetype System.Windows.Int32Rect dirtyRect) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Interop.D3DImage.AddDirtyRect(System.Windows.Int32Rect)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub AddDirtyRect (dirtyRect As Int32Rect)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void AddDirtyRect(System::Windows::Int32Rect dirtyRect);" />
+      <MemberSignature Language="F#" Value="member this.AddDirtyRect : System.Windows.Int32Rect -&gt; unit" Usage="d3DImage.AddDirtyRect dirtyRect" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="dirtyRect" Type="System.Windows.Int32Rect" />
+      </Parameters>
+      <Docs>
+        <param name="dirtyRect">Объект <see cref="T:System.Windows.Int32Rect" />, представляющий измененную область.</param>
+        <summary>Указывает измененную область заднего буфера.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вызовите <xref:System.Windows.Interop.D3DImage.AddDirtyRect%2A> метод, чтобы указать изменения, внесенные кодом в задний буфер. Для отображения измененной области в буфере заднего буфера должна быть соответствующая измененная область <xref:System.Windows.Interop.D3DImage>в.  
+  
+ Вызовите методы <xref:System.Windows.Interop.D3DImage.Lock%2A> <xref:System.Windows.Interop.D3DImage.AddDirtyRect%2A> и перед вызовом метода. <xref:System.Windows.Interop.D3DImage.SetBackBuffer%2A>  
+  
+ Вызовите <xref:System.Windows.Interop.D3DImage.Unlock%2A> метод, чтобы скопировать измененные области в передний буфер.  
+  
+> [!NOTE]
+>  После нескольких вызовов <xref:System.Windows.Interop.D3DImage.AddDirtyRect%2A> метода измененные области объединяются в одну область. Это означает, что необходимо иметь допустимые данные за пределами измененных областей.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как вызвать <xref:System.Windows.Interop.D3DImage.AddDirtyRect%2A> метод, чтобы указать измененную область в обратном буфере. Дополнительные сведения см. [в разделе Пошаговое руководство. размещение содержимого Direct3D9 в WPF](~/docs/framework/wpf/advanced/walkthrough-hosting-direct3d9-content-in-wpf.md).  
+  
+ [!code-csharp[System.Windows.Interop.D3DImage#3](~/samples/snippets/csharp/VS_Snippets_Wpf/System.Windows.Interop.D3DImage/CS/window1.xaml.cs#3)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Растровое изображение не было заблокировано вызовом метода <see cref="M:System.Windows.Interop.D3DImage.Lock" /> или <see cref="M:System.Windows.Interop.D3DImage.TryLock(System.Windows.Duration)" />.  
+  
+-или- 
+Задний буфер не был назначен вызовом метода <see cref="M:System.Windows.Interop.D3DImage.SetBackBuffer(System.Windows.Interop.D3DResourceType,System.IntPtr)" />.</exception>
+        <exception cref="T:System.ArgumentOutOfRangeException">Одно или несколько из следующих условий истинно.  
+  
+ <paramref name="dirtyRect.X" /> &lt; 0 
+ <paramref name="dirtyRect.Y" /> &lt; 0 
+ <paramref name="dirtyRect.Width" /> &lt; 0 или <paramref name="dirtyRect.Width" /> &gt; <see cref="P:System.Windows.Interop.D3DImage.PixelWidth" /><paramref name="dirtyRect.Height" /> &lt; 0 или <paramref name="dirtyRect.Height" /> &gt; <see cref="P:System.Windows.Interop.D3DImage.PixelHeight" /></exception>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <altmember cref="M:System.Windows.Interop.D3DImage.Unlock" />
+        <altmember cref="M:System.Windows.Interop.D3DImage.SetBackBuffer(System.Windows.Interop.D3DResourceType,System.IntPtr)" />
+      </Docs>
+    </Member>
+    <Member MemberName="Clone">
+      <MemberSignature Language="C#" Value="public System.Windows.Interop.D3DImage Clone ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.Windows.Interop.D3DImage Clone() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Interop.D3DImage.Clone" />
+      <MemberSignature Language="VB.NET" Value="Public Function Clone () As D3DImage" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Windows::Interop::D3DImage ^ Clone();" />
+      <MemberSignature Language="F#" Value="override this.Clone : unit -&gt; System.Windows.Interop.D3DImage" Usage="d3DImage.Clone " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Windows.Interop.D3DImage</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Создает изменяемый клон данного объекта <see cref="T:System.Windows.Interop.D3DImage" />, делая глубокие копии значений этого объекта. При копировании свойств зависимостей этот метод копирует ссылки на ресурсы и привязки данных (которые могут уже не быть разрешимыми), но не копирует анимации и их текущие значения.</summary>
+        <returns>Изменяемая копия текущего объекта. Свойство <see cref="P:System.Windows.Freezable.IsFrozen" /> клонированного объекта будет содержать значение <see langword="false" />, даже если свойство <see cref="P:System.Windows.Freezable.IsFrozen" /> исходного объекта содержало значение <see langword="true." />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод используется для создания изменяемых копий замороженных <xref:System.Windows.Freezable> объектов (или любого <xref:System.Windows.Freezable> объекта). Для удобства этот метод затеняет унаследованную версию с реализацией со строгой типизацией.  
+  
+ Для получения дополнительной информации см. <xref:System.Windows.Freezable.Clone%2A?displayProperty=nameWithType>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CloneCore">
+      <MemberSignature Language="C#" Value="protected override void CloneCore (System.Windows.Freezable sourceFreezable);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void CloneCore(class System.Windows.Freezable sourceFreezable) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Interop.D3DImage.CloneCore(System.Windows.Freezable)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Sub CloneCore (sourceFreezable As Freezable)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override void CloneCore(System::Windows::Freezable ^ sourceFreezable);" />
+      <MemberSignature Language="F#" Value="override this.CloneCore : System.Windows.Freezable -&gt; unit" Usage="d3DImage.CloneCore sourceFreezable" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="sourceFreezable" Type="System.Windows.Freezable" />
+      </Parameters>
+      <Docs>
+        <param name="sourceFreezable">Объект, используемый для клонирования.</param>
+        <summary>Делает экземпляр клоном (глубокой копией) указанного объекта <see cref="T:System.Windows.Freezable" />, используя базовые (без анимации) значения свойств.</summary>
+        <remarks>To be added.</remarks>
+        <altmember cref="M:System.Windows.Freezable.CloneCore(System.Windows.Freezable)" />
+      </Docs>
+    </Member>
+    <Member MemberName="CloneCurrentValue">
+      <MemberSignature Language="C#" Value="public System.Windows.Interop.D3DImage CloneCurrentValue ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.Windows.Interop.D3DImage CloneCurrentValue() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Interop.D3DImage.CloneCurrentValue" />
+      <MemberSignature Language="VB.NET" Value="Public Function CloneCurrentValue () As D3DImage" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Windows::Interop::D3DImage ^ CloneCurrentValue();" />
+      <MemberSignature Language="F#" Value="override this.CloneCurrentValue : unit -&gt; System.Windows.Interop.D3DImage" Usage="d3DImage.CloneCurrentValue " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Windows.Interop.D3DImage</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Создает модифицируемый клон данного объекта <see cref="T:System.Windows.Interop.D3DImage" />, делая глубокие копии текущих значений этого объекта. Ссылки на ресурсы, привязки данных и анимации не копируются, в отличие от их текущих значений.</summary>
+        <returns>Изменяемая копия текущего объекта. Свойство <see cref="P:System.Windows.Freezable.IsFrozen" /> клонированного объекта будет содержать значение <see langword="false" />, даже если свойство <see cref="P:System.Windows.Freezable.IsFrozen" /> исходного объекта содержало значение <see langword="true" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод используется для создания изменяемых копий замороженных <xref:System.Windows.Freezable> объектов (или любого <xref:System.Windows.Freezable> объекта). Для удобства этот метод затеняет унаследованную версию с реализацией со строгой типизацией.  
+  
+ Для получения дополнительной информации см. <xref:System.Windows.Freezable.CloneCurrentValue%2A?displayProperty=nameWithType>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CloneCurrentValueCore">
+      <MemberSignature Language="C#" Value="protected override void CloneCurrentValueCore (System.Windows.Freezable sourceFreezable);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void CloneCurrentValueCore(class System.Windows.Freezable sourceFreezable) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Interop.D3DImage.CloneCurrentValueCore(System.Windows.Freezable)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Sub CloneCurrentValueCore (sourceFreezable As Freezable)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override void CloneCurrentValueCore(System::Windows::Freezable ^ sourceFreezable);" />
+      <MemberSignature Language="F#" Value="override this.CloneCurrentValueCore : System.Windows.Freezable -&gt; unit" Usage="d3DImage.CloneCurrentValueCore sourceFreezable" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="sourceFreezable" Type="System.Windows.Freezable" />
+      </Parameters>
+      <Docs>
+        <param name="sourceFreezable">Элемент привязки <see cref="T:System.Windows.Freezable" />, точную копию которого необходимо создать.</param>
+        <summary>Создает экземпляр редактируемой копии (глубокой копии) заданного объекта <see cref="T:System.Windows.Freezable" />, используя текущие значения свойства.</summary>
+        <remarks>To be added.</remarks>
+        <altmember cref="M:System.Windows.Freezable.CloneCurrentValueCore(System.Windows.Freezable)" />
+      </Docs>
+    </Member>
+    <Member MemberName="CopyBackBuffer">
+      <MemberSignature Language="C#" Value="protected internal virtual System.Windows.Media.Imaging.BitmapSource CopyBackBuffer ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyorassemblyhidebysig newslot virtual instance class System.Windows.Media.Imaging.BitmapSource CopyBackBuffer() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Interop.D3DImage.CopyBackBuffer" />
+      <MemberSignature Language="VB.NET" Value="Protected Friend Overridable Function CopyBackBuffer () As BitmapSource" />
+      <MemberSignature Language="C++ CLI" Value="protected public:&#xA; virtual System::Windows::Media::Imaging::BitmapSource ^ CopyBackBuffer();" />
+      <MemberSignature Language="F#" Value="abstract member CopyBackBuffer : unit -&gt; System.Windows.Media.Imaging.BitmapSource&#xA;override this.CopyBackBuffer : unit -&gt; System.Windows.Media.Imaging.BitmapSource" Usage="d3DImage.CopyBackBuffer " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityTreatAsSafe</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Windows.Media.Imaging.BitmapSource</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Создает программную копию объекта <see cref="T:System.Windows.Interop.D3DImage" />.</summary>
+        <returns>Объект <see cref="T:System.Windows.Media.Imaging.BitmapSource" />, который является программной копией текущего состояния заднего буфера; в противном случае — значение <see langword="null" />, если не удается прочитать задний буфер.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод вызывается клиентами, такими как система печати <xref:System.Windows.Media.Imaging.RenderTargetBitmap> и класс. <xref:System.Windows.Interop.D3DImage.CopyBackBuffer%2A>  
+  
+ При необходимости переопределите <xref:System.Windows.Interop.D3DImage.CopyBackBuffer%2A> метод для реализации пользовательской логики и возвращайте <xref:System.Windows.Media.Imaging.BitmapSource>другой. Например, можно вернуть заполнитель <xref:System.Windows.Media.Imaging.BitmapSource> , если реализация по умолчанию <xref:System.Windows.Interop.D3DImage.CopyBackBuffer%2A> возвращает `null`.  
+  
+ ]]></format>
+        </remarks>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <altmember cref="T:System.Windows.Media.Imaging.BitmapSource" />
+      </Docs>
+    </Member>
+    <Member MemberName="CreateInstanceCore">
+      <MemberSignature Language="C#" Value="protected override System.Windows.Freezable CreateInstanceCore ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance class System.Windows.Freezable CreateInstanceCore() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Interop.D3DImage.CreateInstanceCore" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Function CreateInstanceCore () As Freezable" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override System::Windows::Freezable ^ CreateInstanceCore();" />
+      <MemberSignature Language="F#" Value="override this.CreateInstanceCore : unit -&gt; System.Windows.Freezable" Usage="d3DImage.CreateInstanceCore " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Windows.Freezable</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Если реализуется в производном классе, создает новый экземпляр производного класса <see cref="T:System.Windows.Interop.D3DImage" />.</summary>
+        <returns>Новый экземпляр.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если вы наследуете от <xref:System.Windows.Interop.D3DImage> класса, необходимо <xref:System.Windows.Interop.D3DImage.CreateInstanceCore%2A> переопределить метод, чтобы обеспечить правильное клонирование. Реализация по умолчанию выполняет `return new D3DImage()`объект, который не будет правильным, если экземпляр является другим классом.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Finalize">
+      <MemberSignature Language="C#" Value="~D3DImage ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void Finalize() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Interop.D3DImage.Finalize" />
+      <MemberSignature Language="VB.NET" Value="Finalize ()" />
+      <MemberSignature Language="C++ CLI" Value="!D3DImage ()" />
+      <MemberSignature Language="F#" Value="override this.Finalize : unit -&gt; unit" Usage="d3DImage.Finalize " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityTreatAsSafe</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Освобождает ресурсы и выполняет другие операции очистки, перед тем как объект <see cref="T:System.Windows.Interop.D3DImage" /> будет удален при сборке мусора.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод переопределяет метод <xref:System.Object.Finalize%2A>. Код приложения не должен вызывать этот метод; `Finalize` метод объекта автоматически вызывается во время сборки мусора, если окончательное завершение сборщика мусора не было отключено вызовом <xref:System.GC.SuppressFinalize%2A> метода.  
+  
+ Дополнительные сведения см. в статьях [методы Finalize и деструкторы](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/0s71x931(v%3dvs.100)), [Очистка неуправляемых ресурсов](~/docs/standard/garbage-collection/unmanaged.md)и [Переопределение метода Finalize](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/ddae83kx(v=vs.100)).  
+  
+ ]]></format>
+        </remarks>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+      </Docs>
+    </Member>
+    <Member MemberName="FreezeCore">
+      <MemberSignature Language="C#" Value="protected override sealed bool FreezeCore (bool isChecking);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance bool FreezeCore(bool isChecking) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Interop.D3DImage.FreezeCore(System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides NotOverridable Function FreezeCore (isChecking As Boolean) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override bool FreezeCore(bool isChecking);" />
+      <MemberSignature Language="F#" Value="override this.FreezeCore : bool -&gt; bool" Usage="d3DImage.FreezeCore isChecking" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="isChecking" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="isChecking">Не оказывает влияния.</param>
+        <summary>Делает объект <see cref="T:System.Windows.Interop.D3DImage" /> неизменяемым или определяет, может ли он быть сделан неизменяемым.</summary>
+        <returns>Значение <see langword="false" /> во всех случаях.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Windows.Interop.D3DImage> Класс не допускает замораживания, так как они всегда возможны из-за доступности переднего буфера.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.Windows.Interop.D3DImage.IsFrontBufferAvailable" />
+      </Docs>
+    </Member>
+    <Member MemberName="GetAsFrozenCore">
+      <MemberSignature Language="C#" Value="protected override void GetAsFrozenCore (System.Windows.Freezable sourceFreezable);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void GetAsFrozenCore(class System.Windows.Freezable sourceFreezable) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Interop.D3DImage.GetAsFrozenCore(System.Windows.Freezable)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Sub GetAsFrozenCore (sourceFreezable As Freezable)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override void GetAsFrozenCore(System::Windows::Freezable ^ sourceFreezable);" />
+      <MemberSignature Language="F#" Value="override this.GetAsFrozenCore : System.Windows.Freezable -&gt; unit" Usage="d3DImage.GetAsFrozenCore sourceFreezable" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="sourceFreezable" Type="System.Windows.Freezable" />
+      </Parameters>
+      <Docs>
+        <param name="sourceFreezable">Экземпляр, который копируется.</param>
+        <summary>Создает экземпляр фиксированной копии заданного объекта <see cref="T:System.Windows.Freezable" />, используя базовые (не анимационные) значения свойства.</summary>
+        <remarks>To be added.</remarks>
+        <altmember cref="M:System.Windows.Freezable.GetAsFrozenCore(System.Windows.Freezable)" />
+      </Docs>
+    </Member>
+    <Member MemberName="GetCurrentValueAsFrozenCore">
+      <MemberSignature Language="C#" Value="protected override void GetCurrentValueAsFrozenCore (System.Windows.Freezable sourceFreezable);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void GetCurrentValueAsFrozenCore(class System.Windows.Freezable sourceFreezable) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Interop.D3DImage.GetCurrentValueAsFrozenCore(System.Windows.Freezable)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Sub GetCurrentValueAsFrozenCore (sourceFreezable As Freezable)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override void GetCurrentValueAsFrozenCore(System::Windows::Freezable ^ sourceFreezable);" />
+      <MemberSignature Language="F#" Value="override this.GetCurrentValueAsFrozenCore : System.Windows.Freezable -&gt; unit" Usage="d3DImage.GetCurrentValueAsFrozenCore sourceFreezable" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="sourceFreezable" Type="System.Windows.Freezable" />
+      </Parameters>
+      <Docs>
+        <param name="sourceFreezable">Объект <see cref="T:System.Windows.Freezable" />, который необходимо скопировать и заморозить.</param>
+        <summary>Создает текущий экземпляр замороженной копии указанного объекта <see cref="T:System.Windows.Freezable" />. Если объект имеет анимированные свойства зависимостей, копируются их текущие анимированные значения.</summary>
+        <remarks>To be added.</remarks>
+        <altmember cref="M:System.Windows.Freezable.GetCurrentValueAsFrozenCore(System.Windows.Freezable)" />
+      </Docs>
+    </Member>
+    <Member MemberName="Height">
+      <MemberSignature Language="C#" Value="public override sealed double Height { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance float64 Height" />
+      <MemberSignature Language="DocId" Value="P:System.Windows.Interop.D3DImage.Height" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides NotOverridable ReadOnly Property Height As Double" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property double Height { double get(); };" />
+      <MemberSignature Language="F#" Value="member this.Height : double" Usage="System.Windows.Interop.D3DImage.Height" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Double</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает высоту объекта <see cref="T:System.Windows.Interop.D3DImage" />.</summary>
+        <value>Высота объекта <see cref="T:System.Windows.Interop.D3DImage" /> в единицах измерения. Единица измерения — 1/96 дюйма.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Windows.Interop.D3DImage.Height%2A> может измениться, когда новый задний буфер назначается вызовом <xref:System.Windows.Interop.D3DImage.SetBackBuffer%2A> метода.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.Windows.Interop.D3DImage.Width" />
+        <altmember cref="M:System.Windows.Interop.D3DImage.SetBackBuffer(System.Windows.Interop.D3DResourceType,System.IntPtr)" />
+      </Docs>
+    </Member>
+    <Member MemberName="IsFrontBufferAvailable">
+      <MemberSignature Language="C#" Value="public bool IsFrontBufferAvailable { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool IsFrontBufferAvailable" />
+      <MemberSignature Language="DocId" Value="P:System.Windows.Interop.D3DImage.IsFrontBufferAvailable" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property IsFrontBufferAvailable As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool IsFrontBufferAvailable { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.IsFrontBufferAvailable : bool" Usage="System.Windows.Interop.D3DImage.IsFrontBufferAvailable" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, указывающее, существует ли передний буфер.</summary>
+        <value>Значение <see langword="true" />, если передний буфер существует; в противном случае — значение <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Иногда передний буфер становится недоступным. Отсутствие доступности может быть вызвано блокировкой экрана, полноэкранным эксклюзивным приложением Direct3D, переключением пользователей или другими системными действиями. В этом случае приложение WPF будет уведомлено, обрабатывая <xref:System.Windows.Interop.D3DImage.IsFrontBufferAvailableChanged> событие.  То, как приложение реагирует на передний план, становится недоступным, зависит от того, включена ли платформа WPF для возврата к отрисовке программного обеспечения. <xref:System.Windows.Interop.D3DImage.SetBackBuffer%2A> Метод имеет перегрузку, которая принимает параметр, указывающий, возвращается ли WPF к отрисовке программного обеспечения. Дополнительные сведения см. в разделе Примечания в <xref:System.Windows.Interop.D3DImage> классе.  
+  
+<a name="dependencyPropertyInfo_IsFrontBufferAvailable"></a>   
+## <a name="dependency-property-information"></a>Сведения о свойстве зависимостей  
+  
+|||  
+|-|-|  
+|Поле идентификатора|<xref:System.Windows.Interop.D3DImage.IsFrontBufferAvailableProperty>|  
+|Свойства метаданных, для которых задано значение`true`|Нет|  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, <xref:System.Windows.Interop.D3DImage.IsFrontBufferAvailable%2A> как проверить свойство при отрисовке целевого объекта композиции. Дополнительные сведения см. [в разделе Пошаговое руководство. размещение содержимого Direct3D9 в WPF](~/docs/framework/wpf/advanced/walkthrough-hosting-direct3d9-content-in-wpf.md).  
+  
+ [!code-csharp[System.Windows.Interop.D3DImage#2](~/samples/snippets/csharp/VS_Snippets_Wpf/System.Windows.Interop.D3DImage/CS/window1.xaml.cs#2)]  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.Windows.Interop.D3DImage.SetBackBuffer(System.Windows.Interop.D3DResourceType,System.IntPtr)" />
+        <altmember cref="E:System.Windows.Interop.D3DImage.IsFrontBufferAvailableChanged" />
+      </Docs>
+    </Member>
+    <Member MemberName="IsFrontBufferAvailableChanged">
+      <MemberSignature Language="C#" Value="public event System.Windows.DependencyPropertyChangedEventHandler IsFrontBufferAvailableChanged;" />
+      <MemberSignature Language="ILAsm" Value=".event class System.Windows.DependencyPropertyChangedEventHandler IsFrontBufferAvailableChanged" />
+      <MemberSignature Language="DocId" Value="E:System.Windows.Interop.D3DImage.IsFrontBufferAvailableChanged" />
+      <MemberSignature Language="VB.NET" Value="Public Custom Event IsFrontBufferAvailableChanged As DependencyPropertyChangedEventHandler " />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; event System::Windows::DependencyPropertyChangedEventHandler ^ IsFrontBufferAvailableChanged;" />
+      <MemberSignature Language="F#" Value="member this.IsFrontBufferAvailableChanged : System.Windows.DependencyPropertyChangedEventHandler " Usage="member this.IsFrontBufferAvailableChanged : System.Windows.DependencyPropertyChangedEventHandler " />
+      <MemberType>Event</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Windows.DependencyPropertyChangedEventHandler</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Происходит при изменении свойства <see cref="P:System.Windows.Interop.D3DImage.IsFrontBufferAvailable" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Обрабатывает объект <xref:System.Windows.Interop.D3DImage.IsFrontBufferAvailableChanged> , чтобы получать уведомления при изменении состояния переднего буфера. То, как приложение реагирует на передний план, становится недоступным, зависит от того, включена ли платформа WPF для возврата к отрисовке программного обеспечения. <xref:System.Windows.Interop.D3DImage.SetBackBuffer%2A> Метод имеет перегрузку, которая принимает параметр, указывающий, возвращается ли WPF к отрисовке программного обеспечения. Дополнительные сведения см. в разделе Примечания в <xref:System.Windows.Interop.D3DImage> классе.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.Windows.Interop.D3DImage.IsFrontBufferAvailable" />
+        <altmember cref="M:System.Windows.Interop.D3DImage.SetBackBuffer(System.Windows.Interop.D3DResourceType,System.IntPtr)" />
+      </Docs>
+    </Member>
+    <Member MemberName="IsFrontBufferAvailableProperty">
+      <MemberSignature Language="C#" Value="public static readonly System.Windows.DependencyProperty IsFrontBufferAvailableProperty;" />
+      <MemberSignature Language="ILAsm" Value=".field public static initonly class System.Windows.DependencyProperty IsFrontBufferAvailableProperty" />
+      <MemberSignature Language="DocId" Value="F:System.Windows.Interop.D3DImage.IsFrontBufferAvailableProperty" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly IsFrontBufferAvailableProperty As DependencyProperty " />
+      <MemberSignature Language="C++ CLI" Value="public: static initonly System::Windows::DependencyProperty ^ IsFrontBufferAvailableProperty;" />
+      <MemberSignature Language="F#" Value=" staticval mutable IsFrontBufferAvailableProperty : System.Windows.DependencyProperty" Usage="System.Windows.Interop.D3DImage.IsFrontBufferAvailableProperty" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Windows.DependencyProperty</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Идентифицирует свойство зависимостей <see cref="P:System.Windows.Interop.D3DImage.IsFrontBufferAvailable" />.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Lock">
+      <MemberSignature Language="C#" Value="public void Lock ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Lock() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Interop.D3DImage.Lock" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Lock ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Lock();" />
+      <MemberSignature Language="F#" Value="member this.Lock : unit -&gt; unit" Usage="d3DImage.Lock " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Блокирует объект <see cref="T:System.Windows.Interop.D3DImage" /> и делает возможными операции с задним буфером.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Windows.Interop.D3DImage.AddDirtyRect%2A> <xref:System.Windows.Interop.D3DImage.SetBackBuffer%2A> Вызовите <xref:System.Windows.Interop.D3DImage.Lock%2A> метод, чтобы изменить задний буфер, вызвав методы и. Пока объект <xref:System.Windows.Interop.D3DImage> заблокирован, приложение также может быть отображено на поверхность Direct3D, назначенная обратному буферу.  
+  
+> [!NOTE]
+>  <xref:System.Windows.Interop.D3DImage.Lock%2A> Метод блокируется, когда система отрисовки считывает задний буфер для обновления внешнего буфера. <xref:System.Windows.Interop.D3DImage.TryLock%2A> Используйте метод, чтобы избежать блокировки в течение неограниченного времени.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как вызвать <xref:System.Windows.Interop.D3DImage.Lock%2A> метод, чтобы включить обновления в обратном буфере. Дополнительные сведения см. [в разделе Пошаговое руководство. размещение содержимого Direct3D9 в WPF](~/docs/framework/wpf/advanced/walkthrough-hosting-direct3d9-content-in-wpf.md).  
+  
+ [!code-csharp[System.Windows.Interop.D3DImage#3](~/samples/snippets/csharp/VS_Snippets_Wpf/System.Windows.Interop.D3DImage/CS/window1.xaml.cs#3)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Количество блокировок равно <see cref="F:System.UInt32.MaxValue" />.</exception>
+        <altmember cref="M:System.Windows.Interop.D3DImage.TryLock(System.Windows.Duration)" />
+        <altmember cref="M:System.Windows.Interop.D3DImage.Unlock" />
+      </Docs>
+    </Member>
+    <Member MemberName="Metadata">
+      <MemberSignature Language="C#" Value="public override sealed System.Windows.Media.ImageMetadata Metadata { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Windows.Media.ImageMetadata Metadata" />
+      <MemberSignature Language="DocId" Value="P:System.Windows.Interop.D3DImage.Metadata" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides NotOverridable ReadOnly Property Metadata As ImageMetadata" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Windows::Media::ImageMetadata ^ Metadata { System::Windows::Media::ImageMetadata ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Metadata : System.Windows.Media.ImageMetadata" Usage="System.Windows.Interop.D3DImage.Metadata" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Windows.Media.ImageMetadata</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает метаданные, связанные с источником изображения.</summary>
+        <value>Значение <see langword="null" /> во всех случаях.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="PixelHeight">
+      <MemberSignature Language="C#" Value="public int PixelHeight { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 PixelHeight" />
+      <MemberSignature Language="DocId" Value="P:System.Windows.Interop.D3DImage.PixelHeight" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property PixelHeight As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int PixelHeight { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.PixelHeight : int" Usage="System.Windows.Interop.D3DImage.PixelHeight" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает высоту объекта <see cref="T:System.Windows.Interop.D3DImage" /> в пикселях.</summary>
+        <value>Высота объекта <see cref="T:System.Windows.Interop.D3DImage" /> в пикселях.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Windows.Interop.D3DImage.PixelHeight%2A> может измениться, когда новый задний буфер назначается вызовом <xref:System.Windows.Interop.D3DImage.SetBackBuffer%2A> метода.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как использовать <xref:System.Windows.Interop.D3DImage.PixelHeight%2A> свойство для указания измененной области в обратном буфере. Дополнительные сведения см. [в разделе Пошаговое руководство. размещение содержимого Direct3D9 в WPF](~/docs/framework/wpf/advanced/walkthrough-hosting-direct3d9-content-in-wpf.md).  
+  
+ [!code-csharp[System.Windows.Interop.D3DImage#3](~/samples/snippets/csharp/VS_Snippets_Wpf/System.Windows.Interop.D3DImage/CS/window1.xaml.cs#3)]  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.Windows.Interop.D3DImage.PixelWidth" />
+        <altmember cref="M:System.Windows.Interop.D3DImage.SetBackBuffer(System.Windows.Interop.D3DResourceType,System.IntPtr)" />
+      </Docs>
+    </Member>
+    <Member MemberName="PixelWidth">
+      <MemberSignature Language="C#" Value="public int PixelWidth { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 PixelWidth" />
+      <MemberSignature Language="DocId" Value="P:System.Windows.Interop.D3DImage.PixelWidth" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property PixelWidth As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int PixelWidth { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.PixelWidth : int" Usage="System.Windows.Interop.D3DImage.PixelWidth" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает ширину объекта <see cref="T:System.Windows.Interop.D3DImage" /> в пикселях.</summary>
+        <value>Ширина <see cref="T:System.Windows.Interop.D3DImage" /> (в пикселях).</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Windows.Interop.D3DImage.PixelWidth%2A> может измениться, когда новый задний буфер назначается вызовом <xref:System.Windows.Interop.D3DImage.SetBackBuffer%2A> метода.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как использовать <xref:System.Windows.Interop.D3DImage.PixelWidth%2A> свойство для указания измененной области в обратном буфере. Дополнительные сведения см. [в разделе Пошаговое руководство. размещение содержимого Direct3D9 в WPF](~/docs/framework/wpf/advanced/walkthrough-hosting-direct3d9-content-in-wpf.md).  
+  
+ [!code-csharp[System.Windows.Interop.D3DImage#3](~/samples/snippets/csharp/VS_Snippets_Wpf/System.Windows.Interop.D3DImage/CS/window1.xaml.cs#3)]  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.Windows.Interop.D3DImage.PixelHeight" />
+        <altmember cref="M:System.Windows.Interop.D3DImage.SetBackBuffer(System.Windows.Interop.D3DResourceType,System.IntPtr)" />
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="SetBackBuffer">
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Назначает поверхность Direct3D источником заднего буфера.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="SetBackBuffer">
+      <MemberSignature Language="C#" Value="public void SetBackBuffer (System.Windows.Interop.D3DResourceType backBufferType, IntPtr backBuffer);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void SetBackBuffer(valuetype System.Windows.Interop.D3DResourceType backBufferType, native int backBuffer) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Interop.D3DImage.SetBackBuffer(System.Windows.Interop.D3DResourceType,System.IntPtr)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub SetBackBuffer (backBufferType As D3DResourceType, backBuffer As IntPtr)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void SetBackBuffer(System::Windows::Interop::D3DResourceType backBufferType, IntPtr backBuffer);" />
+      <MemberSignature Language="F#" Value="member this.SetBackBuffer : System.Windows.Interop.D3DResourceType * nativeint -&gt; unit" Usage="d3DImage.SetBackBuffer (backBufferType, backBuffer)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0">
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="backBufferType" Type="System.Windows.Interop.D3DResourceType" />
+        <Parameter Name="backBuffer" Type="System.IntPtr" />
+      </Parameters>
+      <Docs>
+        <param name="backBufferType">Тип поверхности Direct3D. Должен являться допустимым типом <see cref="T:System.Windows.Interop.D3DResourceType" />.</param>
+        <param name="backBuffer">Поверхность Direct3D, которую необходимо назначить задним буфером.</param>
+        <summary>Назначает поверхность Direct3D источником заднего буфера.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вызовите <xref:System.Windows.Interop.D3DImage.SetBackBuffer%2A> метод, чтобы назначить поверхность Direct3D в задний буфер.  
+  
+> [!NOTE]
+>  Производительность значительно зависит от параметров поверхности Direct3D. Дополнительные сведения см. в разделе [вопросы производительности для совместимости с Direct3D9 и WPF](~/docs/framework/wpf/advanced/performance-considerations-for-direct3d9-and-wpf-interoperability.md).  
+  
+ Вызов перегрузки идентичен <xref:System.Windows.Interop.D3DImage.SetBackBuffer%28System.Windows.Interop.D3DResourceType%2CSystem.IntPtr%2CSystem.Boolean%29> вызову перегрузки с `enableSoftwareFallback` параметром, `false`для которого задано значение. <xref:System.Windows.Interop.D3DImage.SetBackBuffer%28System.Windows.Interop.D3DResourceType%2CSystem.IntPtr%29> При вызове <xref:System.Windows.Interop.D3DImage.SetBackBuffer%28System.Windows.Interop.D3DResourceType%2CSystem.IntPtr%29> или вызове <xref:System.Windows.Interop.D3DImage.SetBackBuffer%28System.Windows.Interop.D3DResourceType%2CSystem.IntPtr%2CSystem.Boolean%29> с `enableSoftwareFallback` параметром, `false`для которого задано значение, система отрисовки освобождает ссылку на задний буфер, когда интерфейсный буфер становится недоступным и ничего не отображается. Когда передний буфер снова становится доступным, система отрисовки вызывает <xref:System.Windows.Interop.D3DImage.IsFrontBufferAvailableChanged> событие для уведомления приложения WPF.  Можно создать обработчик событий для <xref:System.Windows.Interop.D3DImage.IsFrontBufferAvailableChanged> события, чтобы снова перезапустить отрисовку с допустимой поверхностью Direct3D. Чтобы перезапустить подготовку к просмотру <xref:System.Windows.Interop.D3DImage.SetBackBuffer%2A>, необходимо вызвать.  
+  
+ В следующем списке приведены необходимые параметры заднего буфера для `IDirect3DSurface9` типа.  
+  
+-   `D3DFMT_A8R8G8B8` или `D3DFMT_X8R8G8B8`  
+  
+-   `D3DUSAGE_RENDERTARGET`  
+  
+-   `D3DPOOL_DEFAULT`  
+  
+ Множественная выборка разрешена только для `IDirect3DSurface9Ex` поверхностей.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как вызвать <xref:System.Windows.Interop.D3DImage.SetBackBuffer%2A> метод для назначения поверхности Direct3D. Дополнительные сведения см. [в разделе Пошаговое руководство. размещение содержимого Direct3D9 в WPF](~/docs/framework/wpf/advanced/walkthrough-hosting-direct3d9-content-in-wpf.md).  
+  
+ [!code-csharp[System.Windows.Interop.D3DImage#3](~/samples/snippets/csharp/VS_Snippets_Wpf/System.Windows.Interop.D3DImage/CS/window1.xaml.cs#3)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Объект <see cref="T:System.Windows.Interop.D3DImage" /> не был заблокирован вызовом метода <see cref="M:System.Windows.Interop.D3DImage.Lock" /> или <see cref="M:System.Windows.Interop.D3DImage.TryLock(System.Windows.Duration)" />.</exception>
+        <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="backBufferType" /> не является допустимым <see cref="T:System.Windows.Interop.D3DResourceType" />.</exception>
+        <exception cref="T:System.ArgumentException">Параметры создания для <paramref name="backBuffer" /> не соответствуют требованиям для <paramref name="backBufferType" />, или устройство <paramref name="backBuffer" /> является недопустимым.</exception>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемым ресурсам. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <altmember cref="M:System.Windows.Interop.D3DImage.Lock" />
+        <altmember cref="M:System.Windows.Interop.D3DImage.Unlock" />
+      </Docs>
+    </Member>
+    <Member MemberName="SetBackBuffer">
+      <MemberSignature Language="C#" Value="public void SetBackBuffer (System.Windows.Interop.D3DResourceType backBufferType, IntPtr backBuffer, bool enableSoftwareFallback);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void SetBackBuffer(valuetype System.Windows.Interop.D3DResourceType backBufferType, native int backBuffer, bool enableSoftwareFallback) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Interop.D3DImage.SetBackBuffer(System.Windows.Interop.D3DResourceType,System.IntPtr,System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub SetBackBuffer (backBufferType As D3DResourceType, backBuffer As IntPtr, enableSoftwareFallback As Boolean)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void SetBackBuffer(System::Windows::Interop::D3DResourceType backBufferType, IntPtr backBuffer, bool enableSoftwareFallback);" />
+      <MemberSignature Language="F#" Value="member this.SetBackBuffer : System.Windows.Interop.D3DResourceType * nativeint * bool -&gt; unit" Usage="d3DImage.SetBackBuffer (backBufferType, backBuffer, enableSoftwareFallback)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="backBufferType" Type="System.Windows.Interop.D3DResourceType" Index="0" FrameworkAlternate="netcore-3.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+        <Parameter Name="backBuffer" Type="System.IntPtr" Index="1" FrameworkAlternate="netcore-3.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+        <Parameter Name="enableSoftwareFallback" Type="System.Boolean" Index="2" FrameworkAlternate="netcore-3.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      </Parameters>
+      <Docs>
+        <param name="backBufferType">Тип поверхности Direct3D. Должен являться допустимым типом <see cref="T:System.Windows.Interop.D3DResourceType" />.</param>
+        <param name="backBuffer">Поверхность Direct3D, которую необходимо назначить задним буфером.</param>
+        <param name="enableSoftwareFallback">Значение <see langword="true" /> для возврата к программной отрисовке; в противном случае — значение <see langword="false" />.</param>
+        <summary>Назначает поверхность Direct3D источником заднего буфера.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ При вызове <xref:System.Windows.Interop.D3DImage.SetBackBuffer%28System.Windows.Interop.D3DResourceType%2CSystem.IntPtr%29> перегрузки или <xref:System.Windows.Interop.D3DImage.SetBackBuffer%28System.Windows.Interop.D3DResourceType%2CSystem.IntPtr%2CSystem.Boolean%29> вызове перегрузки с `enableSoftwareFallback` параметром, для `false`которого задано значение, система отрисовки освобождает ссылку на задний буфер, когда передний буфер становится недоступным и ничего не отображаем. Когда передний буфер снова становится доступным, система отрисовки вызывает <xref:System.Windows.Interop.D3DImage.IsFrontBufferAvailableChanged> событие для уведомления приложения WPF.  Можно создать обработчик событий для <xref:System.Windows.Interop.D3DImage.IsFrontBufferAvailableChanged> события, чтобы снова перезапустить отрисовку с допустимой поверхностью Direct3D. Чтобы перезапустить подготовку к просмотру <xref:System.Windows.Interop.D3DImage.SetBackBuffer%2A>, необходимо вызвать.  
+  
+ При вызове <xref:System.Windows.Interop.D3DImage.SetBackBuffer%28System.Windows.Interop.D3DResourceType%2CSystem.IntPtr%2CSystem.Boolean%29> `enableSoftwareFallback` с параметром, для `true`которого задано значение, система отрисовки оставляет ссылку на задний буфер, когда передний буфер становится недоступным, поэтому нет <xref:System.Windows.Interop.D3DImage.SetBackBuffer%2A> необходимости вызывать, когда передний буфер доступно снова.  Возможны ситуации, когда устройство пользователя становится недоступным.  В этом случае вызовите <xref:System.Windows.Interop.D3DImage.SetBackBuffer%2A> ссылку на выпуск платформы WPF для заднего буфера.  Если необходимо <xref:System.Windows.Interop.D3DImage.SetBackBuffer%2A> сбросить устройство, вызовите с параметром с `backBuffer` параметром `null`, а затем <xref:System.Windows.Interop.D3DImage.SetBackBuffer%2A> снова вызовите, указав `backBuffer` в качестве допустимой поверхности Direct3D.  
+  
+ В следующем списке приведены необходимые параметры заднего буфера для `IDirect3DSurface9` типа.  
+  
+-   `D3DFMT_A8R8G8B8` или `D3DFMT_X8R8G8B8`  
+  
+-   `D3DUSAGE_RENDERTARGET`  
+  
+-   `D3DPOOL_DEFAULT`  
+  
+ Множественная выборка разрешена только для `IDirect3DSurface9Ex` поверхностей.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="TryLock">
+      <MemberSignature Language="C#" Value="public bool TryLock (System.Windows.Duration timeout);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance bool TryLock(valuetype System.Windows.Duration timeout) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Interop.D3DImage.TryLock(System.Windows.Duration)" />
+      <MemberSignature Language="VB.NET" Value="Public Function TryLock (timeout As Duration) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; bool TryLock(System::Windows::Duration timeout);" />
+      <MemberSignature Language="F#" Value="member this.TryLock : System.Windows.Duration -&gt; bool" Usage="d3DImage.TryLock timeout" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="timeout" Type="System.Windows.Duration" />
+      </Parameters>
+      <Docs>
+        <param name="timeout">Период ожидания блокировки.</param>
+        <summary>Пытается заблокировать объект <see cref="T:System.Windows.Interop.D3DImage" /> и ожидает в течение заданного периода времени.</summary>
+        <returns>Значение <see langword="true" />, если блокировка выполнена; в противном случае — значение <see langword="false" />.</returns>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentOutOfRangeException">Параметру <paramref name="timeout" /> задается значение <see cref="P:System.Windows.Duration.Automatic" />.</exception>
+        <exception cref="T:System.InvalidOperationException">Количество блокировок равно <see cref="F:System.UInt32.MaxValue" />.</exception>
+        <altmember cref="M:System.Windows.Interop.D3DImage.Lock" />
+        <altmember cref="M:System.Windows.Interop.D3DImage.Unlock" />
+      </Docs>
+    </Member>
+    <Member MemberName="Unlock">
+      <MemberSignature Language="C#" Value="public void Unlock ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Unlock() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Interop.D3DImage.Unlock" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Unlock ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Unlock();" />
+      <MemberSignature Language="F#" Value="member this.Unlock : unit -&gt; unit" Usage="d3DImage.Unlock " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Уменьшает количество блокировок для объекта <see cref="T:System.Windows.Interop.D3DImage" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Когда счетчик <xref:System.Windows.Interop.D3DImage> блокировок достигает нуля <xref:System.Windows.Interop.D3DImage> , полностью разблокируется. Атрибут помечается для подготовки к просмотру, если в изображении были изменены области, заданные предыдущими вызовами <xref:System.Windows.Interop.D3DImage.AddDirtyRect%2A> метода. <xref:System.Windows.Interop.D3DImage>  
+  
+ Когда изменения фиксируются и выполняется подготовка к <xref:System.Windows.Interop.D3DImage.Lock%2A> просмотру, дополнительные вызовы блока метода до тех пор, пока поток прорисовки не скопирует содержимое заднего буфера в передний буфер. Эта синхронизация позволяет избежать таких артефактов, как разрыв.  
+  
+> [!NOTE]
+>  Не обновляйте поверхность Direct3D, пока <xref:System.Windows.Interop.D3DImage> разблокируется.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как вызвать <xref:System.Windows.Interop.D3DImage.Unlock%2A> метод, чтобы скопировать обновленный задний буфер в передний буфер. Дополнительные сведения см. [в разделе Пошаговое руководство. размещение содержимого Direct3D9 в WPF](~/docs/framework/wpf/advanced/walkthrough-hosting-direct3d9-content-in-wpf.md).  
+  
+ [!code-csharp[System.Windows.Interop.D3DImage#3](~/samples/snippets/csharp/VS_Snippets_Wpf/System.Windows.Interop.D3DImage/CS/window1.xaml.cs#3)]  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.Windows.Interop.D3DImage.Lock" />
+        <altmember cref="M:System.Windows.Interop.D3DImage.TryLock(System.Windows.Duration)" />
+      </Docs>
+    </Member>
+    <Member MemberName="Width">
+      <MemberSignature Language="C#" Value="public override sealed double Width { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance float64 Width" />
+      <MemberSignature Language="DocId" Value="P:System.Windows.Interop.D3DImage.Width" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides NotOverridable ReadOnly Property Width As Double" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property double Width { double get(); };" />
+      <MemberSignature Language="F#" Value="member this.Width : double" Usage="System.Windows.Interop.D3DImage.Width" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Double</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает ширину объекта <see cref="T:System.Windows.Interop.D3DImage" />.</summary>
+        <value>Ширина объекта <see cref="T:System.Windows.Interop.D3DImage" /> в единицах измерения. Единица измерения — 1/96 дюйма.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Windows.Interop.D3DImage.Width%2A> может измениться, когда новый задний буфер назначается вызовом <xref:System.Windows.Interop.D3DImage.SetBackBuffer%2A> метода.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.Windows.Interop.D3DImage.Height" />
+        <altmember cref="M:System.Windows.Interop.D3DImage.SetBackBuffer(System.Windows.Interop.D3DResourceType,System.IntPtr)" />
+      </Docs>
+    </Member>
+  </Members>
+</Type>

@@ -1,0 +1,1531 @@
+<Type Name="ComponentDesigner" FullName="System.ComponentModel.Design.ComponentDesigner">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="bacaac6b965d4255a0d0ded3326f195fa0821212" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70691846" /></Metadata><TypeSignature Language="C#" Value="public class ComponentDesigner : IDisposable, System.ComponentModel.Design.IComponentInitializer, System.ComponentModel.Design.IDesignerFilter, System.ComponentModel.Design.ITreeDesigner" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit ComponentDesigner extends System.Object implements class System.ComponentModel.Design.IComponentInitializer, class System.ComponentModel.Design.IDesigner, class System.ComponentModel.Design.IDesignerFilter, class System.ComponentModel.Design.ITreeDesigner, class System.IDisposable" />
+  <TypeSignature Language="DocId" Value="T:System.ComponentModel.Design.ComponentDesigner" />
+  <TypeSignature Language="VB.NET" Value="Public Class ComponentDesigner&#xA;Implements IComponentInitializer, IDesignerFilter, IDisposable, ITreeDesigner" />
+  <TypeSignature Language="C++ CLI" Value="public ref class ComponentDesigner : IDisposable, System::ComponentModel::Design::IComponentInitializer, System::ComponentModel::Design::IDesignerFilter, System::ComponentModel::Design::ITreeDesigner" />
+  <TypeSignature Language="F#" Value="type ComponentDesigner = class&#xA;    interface ITreeDesigner&#xA;    interface IDesigner&#xA;    interface IDisposable&#xA;    interface IDesignerFilter&#xA;    interface IComponentInitializer" />
+  <AssemblyInfo>
+    <AssemblyName>System.Design</AssemblyName>
+    <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces>
+    <Interface>
+      <InterfaceName>System.ComponentModel.Design.IComponentInitializer</InterfaceName>
+    </Interface>
+    <Interface>
+      <InterfaceName>System.ComponentModel.Design.IDesigner</InterfaceName>
+    </Interface>
+    <Interface>
+      <InterfaceName>System.ComponentModel.Design.IDesignerFilter</InterfaceName>
+    </Interface>
+    <Interface>
+      <InterfaceName>System.ComponentModel.Design.ITreeDesigner</InterfaceName>
+    </Interface>
+    <Interface>
+      <InterfaceName>System.IDisposable</InterfaceName>
+    </Interface>
+  </Interfaces>
+  <Docs>
+    <summary>Расширяет поведение компонента в режиме разработки.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.ComponentModel.Design.ComponentDesigner> Базовый класс конструктора предоставляет простой конструктор, который может расширить поведение связанного компонента в режиме конструктора.  
+  
+ <xref:System.ComponentModel.Design.ComponentDesigner>Предоставляет пустую <xref:System.ComponentModel.Design.IDesignerFilter> реализацию интерфейса, методы которой можно переопределить для настройки атрибутов, свойств и событий связанного компонента во время разработки.  
+  
+ Конструктор можно связать с типом с помощью <xref:System.ComponentModel.DesignerAttribute>. Общие сведения о настройке поведения во время разработки см. в разделе [расширение поддержки времени](https://docs.microsoft.com/previous-versions/visualstudio/visual-studio-2010/37899azc(v=vs.100))разработки.  
+  
+ <xref:System.ComponentModel.Design.ComponentDesigner> Класс реализует особое поведение дескрипторов свойств наследуемых компонентов. Внутренний тип с именем `InheritedPropertyDescriptor` используется реализацией по умолчанию <xref:System.ComponentModel.Design.ComponentDesigner> для использования в для свойств, унаследованных от базового класса. Существуют два случая, в которых добавляются эти дескрипторы свойств.  
+  
+1.  На сам корневой объект, который возвращается <xref:System.ComponentModel.Design.IDesignerHost.RootComponent%2A?displayProperty=nameWithType> свойством, так как вы наследуете от его базового класса.  
+  
+2.  К полям, найденным в базовом классе корневого объекта. Открытые и защищенные поля базового класса добавляются в конструктор, чтобы ими можно было управлять с помощью пользователя.  
+  
+ `InheritedPropertyDescriptor` Класс изменяет значение свойства по умолчанию, чтобы значение по умолчанию было текущим значением при создании экземпляра объекта. Это обусловлено тем, что свойство наследуется от другого экземпляра. Конструктор определяет сброс значения свойства как присвоив ему значение, заданное унаследованным классом. Это значение может отличаться от значения по умолчанию, хранящегося в метаданных.  
+  
+   
+  
+## Examples  
+ В следующем примере кода приведен пример <xref:System.ComponentModel.Design.ComponentDesigner> реализации и пример компонента, связанного с конструктором. <xref:System.ComponentModel.Design.ComponentDesigner.Initialize%2A> Конструктор реализует переопределение метода, который вызывает базовый <xref:System.ComponentModel.Design.ComponentDesigner.DoDefaultAction%2A> `Initialize` метод, переопределение метода, который отображает, <xref:System.Windows.Forms.MessageBox> когда дважды щелкнул компонент, и переопределение <xref:System.ComponentModel.Design.ComponentDesigner.Verbs%2A> метод доступа к свойству, <xref:System.ComponentModel.Design.DesignerVerb> который предоставляет контекстному меню для компонента пользовательскую команду меню.  
+  
+ [!code-cpp[ComponentDesignerExample#1](~/samples/snippets/cpp/VS_Snippets_Winforms/ComponentDesignerExample/CPP/examplecomponent.cpp#1)]
+ [!code-csharp[ComponentDesignerExample#1](~/samples/snippets/csharp/VS_Snippets_Winforms/ComponentDesignerExample/CS/examplecomponent.cs#1)]
+ [!code-vb[ComponentDesignerExample#1](~/samples/snippets/visualbasic/VS_Snippets_Winforms/ComponentDesignerExample/VB/examplecomponent.vb#1)]  
+  
+ ]]></format>
+    </remarks>
+    <altmember cref="T:System.ComponentModel.Design.IDesigner" />
+    <altmember cref="T:System.ComponentModel.Design.IDesignerFilter" />
+    <altmember cref="T:System.ComponentModel.DesignerAttribute" />
+    <related type="Article" href="https://docs.microsoft.com/previous-versions/visualstudio/visual-studio-2010/37899azc(v=vs.100)">Расширение поддержки времени разработки</related>
+    <related type="Article" href="https://msdn.microsoft.com/library/c186c4b6-076c-438d-9ed3-f13da29c8c1f">Руководство. доступ к службам времени разработки</related>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public ComponentDesigner ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; ComponentDesigner();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.ComponentModel.Design.ComponentDesigner" />.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ActionLists">
+      <MemberSignature Language="C#" Value="public virtual System.ComponentModel.Design.DesignerActionListCollection ActionLists { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.ComponentModel.Design.DesignerActionListCollection ActionLists" />
+      <MemberSignature Language="DocId" Value="P:System.ComponentModel.Design.ComponentDesigner.ActionLists" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable ReadOnly Property ActionLists As DesignerActionListCollection" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::ComponentModel::Design::DesignerActionListCollection ^ ActionLists { System::ComponentModel::Design::DesignerActionListCollection ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.ActionLists : System.ComponentModel.Design.DesignerActionListCollection" Usage="System.ComponentModel.Design.ComponentDesigner.ActionLists" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.ComponentModel.Design.DesignerActionListCollection</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает списки действий времени разработки, поддерживаемые компонентом, сопоставленным конструктору.</summary>
+        <value>Списки действий времени разработки, поддерживаемые компонентом, сопоставленным конструктору.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="AssociatedComponents">
+      <MemberSignature Language="C#" Value="public virtual System.Collections.ICollection AssociatedComponents { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Collections.ICollection AssociatedComponents" />
+      <MemberSignature Language="DocId" Value="P:System.ComponentModel.Design.ComponentDesigner.AssociatedComponents" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable ReadOnly Property AssociatedComponents As ICollection" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::Collections::ICollection ^ AssociatedComponents { System::Collections::ICollection ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.AssociatedComponents : System.Collections.ICollection" Usage="System.ComponentModel.Design.ComponentDesigner.AssociatedComponents" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.ICollection</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает коллекцию компонентов, сопоставленных компоненту, который управляется конструктором.</summary>
+        <value>Компоненты, сопоставленные компоненту, который управляется конструктором.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Это свойство указывает, какие компоненты следует копировать или перемещать вместе с компонентом, управляемым конструктором, во время операции копирования, перетаскивания или перемещения.  
+  
+ Если эта коллекция содержит ссылки на другие компоненты в текущем документе режима разработки, эти компоненты будут скопированы вместе с компонентом, управляемым конструктором во время операции копирования.  
+  
+ При выборе компонента, управляемого конструктором, эта коллекция заполняется всеми вложенными элементами управления. Эта коллекция также может включать другие компоненты, например кнопки панели инструментов.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Component">
+      <MemberSignature Language="C#" Value="public System.ComponentModel.IComponent Component { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.ComponentModel.IComponent Component" />
+      <MemberSignature Language="DocId" Value="P:System.ComponentModel.Design.ComponentDesigner.Component" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property Component As IComponent" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::ComponentModel::IComponent ^ Component { System::ComponentModel::IComponent ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Component : System.ComponentModel.IComponent" Usage="System.ComponentModel.Design.ComponentDesigner.Component" />
+      <MemberType>Property</MemberType>
+      <Implements>
+        <InterfaceMember>P:System.ComponentModel.Design.IDesigner.Component</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.ComponentModel.IComponent</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает основной компонент, создаваемый данным конструктором.</summary>
+        <value>Компонент, управляемый конструктором.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.ComponentModel.Design.ComponentDesigner.Initialize%2A> Метод <xref:System.ComponentModel.Design.ComponentDesigner>  задает это свойство.  
+  
+> [!NOTE]
+>  При переопределении <xref:System.ComponentModel.Design.ComponentDesigner.Initialize%2A> метода обязательно вызовите метод базового класса <xref:System.ComponentModel.Design.ComponentDesigner.Initialize%2A> перед использованием этого свойства.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.ComponentModel.Design.ComponentDesigner.Initialize(System.ComponentModel.IComponent)" />
+        <altmember cref="T:System.ComponentModel.Design.IDesigner" />
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="Dispose">
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Освобождает ресурсы, используемые объектом <see cref="T:System.ComponentModel.Design.ComponentDesigner" />.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="Dispose">
+      <MemberSignature Language="C#" Value="public void Dispose ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void Dispose() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.Dispose" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Dispose ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void Dispose();" />
+      <MemberSignature Language="F#" Value="abstract member Dispose : unit -&gt; unit&#xA;override this.Dispose : unit -&gt; unit" Usage="componentDesigner.Dispose " />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.IDisposable.Dispose</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Освобождает все ресурсы, занятые модулем <see cref="T:System.ComponentModel.Design.ComponentDesigner" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вызовите метод <xref:System.ComponentModel.Design.ComponentDesigner.Dispose%2A> по окончании использования класса <xref:System.ComponentModel.Design.ComponentDesigner>. Метод <xref:System.ComponentModel.Design.ComponentDesigner.Dispose%2A> оставляет класс <xref:System.ComponentModel.Design.ComponentDesigner> в непригодном для использования состоянии. После вызова <xref:System.ComponentModel.Design.ComponentDesigner.Dispose%2A>необходимо освободить все ссылки <xref:System.ComponentModel.Design.ComponentDesigner> на, чтобы сборщик мусора мог освободить память, которую <xref:System.ComponentModel.Design.ComponentDesigner> занимают. Дополнительные сведения см. в разделе [Очистка неуправляемых ресурсов](~/docs/standard/garbage-collection/unmanaged.md) и [Реализация метода Dispose](~/docs/standard/garbage-collection/implementing-dispose.md).  
+  
+> [!NOTE]
+>  Всегда вызывайте метод <xref:System.ComponentModel.Design.ComponentDesigner.Dispose%2A> перед освобождением последней ссылки на класс <xref:System.ComponentModel.Design.ComponentDesigner>. В противном случае используемые им ресурсы не будут освобождены до тех пор, пока сборщик мусора не вызовет для объекта <xref:System.ComponentModel.Design.ComponentDesigner> метод `Finalize`.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Dispose">
+      <MemberSignature Language="C#" Value="protected virtual void Dispose (bool disposing);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void Dispose(bool disposing) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.Dispose(System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub Dispose (disposing As Boolean)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void Dispose(bool disposing);" />
+      <MemberSignature Language="F#" Value="abstract member Dispose : bool -&gt; unit&#xA;override this.Dispose : bool -&gt; unit" Usage="componentDesigner.Dispose disposing" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="disposing" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="disposing">Значение <see langword="true" /> позволяет освободить как управляемые, так и неуправляемые ресурсы; значение <see langword="false" /> освобождает только неуправляемые ресурсы.</param>
+        <summary>Освобождает неуправляемые ресурсы, используемые объектом <see cref="T:System.ComponentModel.Design.ComponentDesigner" />, а при необходимости освобождает также управляемые ресурсы.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод вызывается открытым `Dispose()` методом <xref:System.Object.Finalize%2A> и методом. `Dispose()`вызывает защищенный `Dispose(Boolean)` метод с параметром `disposing` , для `true`которого задано значение. <xref:System.Object.Finalize%2A>вызывает метод `disposing` `false`с параметром, равным. `Dispose`  
+  
+ Если параметр имеет значение true, этот метод освобождает все ресурсы, удерживаемые всеми управляемыми объектами <xref:System.ComponentModel.Design.ComponentDesigner> , на которые ссылается эта ссылка. `disposing` Этот метод вызывает метод `Dispose()` каждого объекта, на который есть ссылка.  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>Метод 
+            <see langword="Dispose" /> может вызываться несколько раз другими объектами. При переопределении <see langword="Dispose(Boolean)" /> следует избегать ссылок на объекты, которые были удалены ранее при предыдущем <see langword="Dispose" />вызове метода. Дополнительные сведения о реализации <see langword="Dispose(Boolean)" />см. в разделе [Реализация метода Dispose](~/docs/standard/garbage-collection/implementing-dispose.md).  
+  
+<see langword="Dispose" /> Дополнительные сведения о <see cref="M:System.Object.Finalize" />и см. в разделе [Очистка неуправляемых ресурсов](~/docs/standard/garbage-collection/unmanaged.md) и [Переопределение метода Finalize](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/ddae83kx(v=vs.100)).</para></block>
+      </Docs>
+    </Member>
+    <Member MemberName="DoDefaultAction">
+      <MemberSignature Language="C#" Value="public virtual void DoDefaultAction ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void DoDefaultAction() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.DoDefaultAction" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Sub DoDefaultAction ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void DoDefaultAction();" />
+      <MemberSignature Language="F#" Value="abstract member DoDefaultAction : unit -&gt; unit&#xA;override this.DoDefaultAction : unit -&gt; unit" Usage="componentDesigner.DoDefaultAction " />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.ComponentModel.Design.IDesigner.DoDefaultAction</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Создает в файле с исходным кодом подпись метода для события по умолчанию для компонента и устанавливает курсор в позицию, где была создана эта подпись.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ В Windows Forms и конструкторах веб-форм этот метод вызывается, когда пользователь дважды щелкает компонент.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ComponentModel.Design.CheckoutException">Попытка извлечь файл, возвращенный в программу управления исходным кодом, не удалась.</exception>
+        <altmember cref="T:System.ComponentModel.Design.IDesigner" />
+      </Docs>
+    </Member>
+    <Member MemberName="Finalize">
+      <MemberSignature Language="C#" Value="~ComponentDesigner ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void Finalize() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.Finalize" />
+      <MemberSignature Language="VB.NET" Value="Finalize ()" />
+      <MemberSignature Language="C++ CLI" Value="!ComponentDesigner ()" />
+      <MemberSignature Language="F#" Value="override this.Finalize : unit -&gt; unit" Usage="componentDesigner.Finalize " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Пытается освободить ресурсы путем вызова метода <see langword="Dispose(false)" /> перед уничтожением объекта во время сборки мусора.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод переопределяет <xref:System.Object.Finalize%2A?displayProperty=nameWithType> и очищает ресурсы путем вызова `Dispose(false)`. Переопределите метод `Dispose(Boolean)`, чтобы настроить очистку.  
+  
+ Код приложения не должен вызывать этот метод; `Finalize` метод объекта автоматически вызывается во время сборки мусора, если окончательное завершение сборщика мусора не было отключено вызовом <xref:System.GC.SuppressFinalize%2A?displayProperty=nameWithType> метода.  
+  
+ Дополнительные сведения см. в статьях [методы Finalize и деструкторы](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/0s71x931(v%3dvs.100)), [Очистка неуправляемых ресурсов](~/docs/standard/garbage-collection/unmanaged.md)и [Переопределение метода Finalize](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/ddae83kx(v=vs.100)).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetService">
+      <MemberSignature Language="C#" Value="protected virtual object GetService (Type serviceType);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance object GetService(class System.Type serviceType) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.GetService(System.Type)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Function GetService (serviceType As Type) As Object" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual System::Object ^ GetService(Type ^ serviceType);" />
+      <MemberSignature Language="F#" Value="abstract member GetService : Type -&gt; obj&#xA;override this.GetService : Type -&gt; obj" Usage="componentDesigner.GetService serviceType" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Object</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="serviceType" Type="System.Type" />
+      </Parameters>
+      <Docs>
+        <param name="serviceType">Тип запрашиваемой службы.</param>
+        <summary>Пытается извлечь службу заданного типа с узла режима разработки компонента конструктора.</summary>
+        <returns>Объект, реализующий запрошенную службу, либо значение <see langword="null" />, если служба не может быть реализована.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация по умолчанию этого метода запрашивает службу с сайта компонента.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано использование <xref:System.ComponentModel.Design.ComponentDesigner.GetService%2A> метода для доступа к службам конструктора.  
+  
+ [!code-csharp[System.ComponentModel.Design.DesignerServices#7](~/samples/snippets/csharp/VS_Snippets_Winforms/System.ComponentModel.Design.DesignerServices/CS/Form1.cs#7)]
+ [!code-vb[System.ComponentModel.Design.DesignerServices#7](~/samples/snippets/visualbasic/VS_Snippets_Winforms/System.ComponentModel.Design.DesignerServices/VB/Form1.vb#7)]  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/c186c4b6-076c-438d-9ed3-f13da29c8c1f">Руководство. доступ к службам времени разработки</related>
+      </Docs>
+    </Member>
+    <Member MemberName="InheritanceAttribute">
+      <MemberSignature Language="C#" Value="protected virtual System.ComponentModel.InheritanceAttribute InheritanceAttribute { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.ComponentModel.InheritanceAttribute InheritanceAttribute" />
+      <MemberSignature Language="DocId" Value="P:System.ComponentModel.Design.ComponentDesigner.InheritanceAttribute" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable ReadOnly Property InheritanceAttribute As InheritanceAttribute" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual property System::ComponentModel::InheritanceAttribute ^ InheritanceAttribute { System::ComponentModel::InheritanceAttribute ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.InheritanceAttribute : System.ComponentModel.InheritanceAttribute" Usage="System.ComponentModel.Design.ComponentDesigner.InheritanceAttribute" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.ComponentModel.InheritanceAttribute</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает атрибут, обозначающий тип наследования связанного компонента.</summary>
+        <value>Атрибут <see cref="T:System.ComponentModel.InheritanceAttribute" /> связанного компонента.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Inherited">
+      <MemberSignature Language="C#" Value="protected bool Inherited { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool Inherited" />
+      <MemberSignature Language="DocId" Value="P:System.ComponentModel.Design.ComponentDesigner.Inherited" />
+      <MemberSignature Language="VB.NET" Value="Protected ReadOnly Property Inherited As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; property bool Inherited { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.Inherited : bool" Usage="System.ComponentModel.Design.ComponentDesigner.Inherited" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, определяющее, наследуется ли этот компонент или нет.</summary>
+        <value>Значение <see langword="true" />, если компонент наследуется; в противном случае — <see langword="false" />.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Initialize">
+      <MemberSignature Language="C#" Value="public virtual void Initialize (System.ComponentModel.IComponent component);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void Initialize(class System.ComponentModel.IComponent component) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.Initialize(System.ComponentModel.IComponent)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Sub Initialize (component As IComponent)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void Initialize(System::ComponentModel::IComponent ^ component);" />
+      <MemberSignature Language="F#" Value="abstract member Initialize : System.ComponentModel.IComponent -&gt; unit&#xA;override this.Initialize : System.ComponentModel.IComponent -&gt; unit" Usage="componentDesigner.Initialize component" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.ComponentModel.Design.IDesigner.Initialize(System.ComponentModel.IComponent)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="component" Type="System.ComponentModel.IComponent" />
+      </Parameters>
+      <Docs>
+        <param name="component">Компонент для данного конструктора.</param>
+        <summary>Подготавливает конструктор к просмотру, редактированию или разработке заданного компонента.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Узел конструктора вызывает этот метод, когда он готов к использованию конструктора.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.ComponentModel.Design.IDesigner" />
+        <altmember cref="T:System.ComponentModel.Design.IDesignerHost" />
+      </Docs>
+    </Member>
+    <Member MemberName="InitializeExistingComponent">
+      <MemberSignature Language="C#" Value="public virtual void InitializeExistingComponent (System.Collections.IDictionary defaultValues);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void InitializeExistingComponent(class System.Collections.IDictionary defaultValues) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.InitializeExistingComponent(System.Collections.IDictionary)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Sub InitializeExistingComponent (defaultValues As IDictionary)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void InitializeExistingComponent(System::Collections::IDictionary ^ defaultValues);" />
+      <MemberSignature Language="F#" Value="abstract member InitializeExistingComponent : System.Collections.IDictionary -&gt; unit&#xA;override this.InitializeExistingComponent : System.Collections.IDictionary -&gt; unit" Usage="componentDesigner.InitializeExistingComponent defaultValues" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.ComponentModel.Design.IComponentInitializer.InitializeExistingComponent(System.Collections.IDictionary)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="defaultValues" Type="System.Collections.IDictionary" Index="0" FrameworkAlternate="netcore-3.0;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      </Parameters>
+      <Docs>
+        <param name="defaultValues">Словарь значений по умолчанию в виде имя/значение, которые будут применены к свойствам. Может быть значением <see langword="null" />, если значения по умолчанию не указаны.</param>
+        <summary>Выполняет повторную инициализацию существующего компонента.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.ComponentModel.Design.ComponentDesigner.InitializeExistingComponent%2A> Метод вызывается при повторной инициализации существующего компонента. Например, это может произойти после того, как пользователь перетаскивает компонент в другой контейнер.  
+  
+ Вы можете использовать `defaultValues` словарь для применения рекомендуемых значений по умолчанию к свойствам, однако не следует изменять свойства компонентов, кроме тех, которые хранятся в словаре, поскольку для этого существующего компонента уже могут быть заданы свойства.  
+  
+ Реализация по умолчанию этого метода не выполняет никаких действий.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="InitializeNewComponent">
+      <MemberSignature Language="C#" Value="public virtual void InitializeNewComponent (System.Collections.IDictionary defaultValues);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void InitializeNewComponent(class System.Collections.IDictionary defaultValues) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.InitializeNewComponent(System.Collections.IDictionary)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Sub InitializeNewComponent (defaultValues As IDictionary)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void InitializeNewComponent(System::Collections::IDictionary ^ defaultValues);" />
+      <MemberSignature Language="F#" Value="abstract member InitializeNewComponent : System.Collections.IDictionary -&gt; unit&#xA;override this.InitializeNewComponent : System.Collections.IDictionary -&gt; unit" Usage="componentDesigner.InitializeNewComponent defaultValues" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.ComponentModel.Design.IComponentInitializer.InitializeNewComponent(System.Collections.IDictionary)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="defaultValues" Type="System.Collections.IDictionary" Index="0" FrameworkAlternate="netcore-3.0;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      </Parameters>
+      <Docs>
+        <param name="defaultValues">Словарь значений по умолчанию в виде имя/значение, которые будут применены к свойствам. Может быть значением <see langword="null" />, если значения по умолчанию не указаны.</param>
+        <summary>Инициализирует только что созданный компонент.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.ComponentModel.Design.ComponentDesigner.InitializeNewComponent%2A> Метод вызывается при первой инициализации компонента, как правило, после его первого добавления в область конструктора.  
+  
+ Вы можете выполнить любую необходимую инициализацию этого компонента, и вы можете полностью проигнорировать `defaultValues` словарь.  
+  
+ Реализация по умолчанию этого метода не выполняет никаких действий.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="InitializeNonDefault">
+      <MemberSignature Language="C#" Value="public virtual void InitializeNonDefault ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void InitializeNonDefault() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.InitializeNonDefault" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Sub InitializeNonDefault ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void InitializeNonDefault();" />
+      <MemberSignature Language="F#" Value="abstract member InitializeNonDefault : unit -&gt; unit&#xA;override this.InitializeNonDefault : unit -&gt; unit" Usage="componentDesigner.InitializeNonDefault " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netcore-3.0">
+          <AttributeName>System.Obsolete("This method has been deprecated. Use InitializeExistingComponent instead.  http://go.microsoft.com/fwlink/?linkid=14202")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует параметры импортированного компонента, параметры которого уже были инициализированы с использованием параметров, отличных от заданных по умолчанию.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод вызывается, когда конструктор связан с элементом управления, который не находится в состоянии по умолчанию, например в элементе управления, который вставляется или перемещается с помощью операции перетаскивания в конструктор. Этот метод предоставляет разработчикам возможность изменять или скрывать свойства компонента, а не инициализировать свойства компонента до значений по умолчанию. Этот метод вызывается после других функций инициализации.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="InvokeGetInheritanceAttribute">
+      <MemberSignature Language="C#" Value="protected System.ComponentModel.InheritanceAttribute InvokeGetInheritanceAttribute (System.ComponentModel.Design.ComponentDesigner toInvoke);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig instance class System.ComponentModel.InheritanceAttribute InvokeGetInheritanceAttribute(class System.ComponentModel.Design.ComponentDesigner toInvoke) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.InvokeGetInheritanceAttribute(System.ComponentModel.Design.ComponentDesigner)" />
+      <MemberSignature Language="VB.NET" Value="Protected Function InvokeGetInheritanceAttribute (toInvoke As ComponentDesigner) As InheritanceAttribute" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; System::ComponentModel::InheritanceAttribute ^ InvokeGetInheritanceAttribute(System::ComponentModel::Design::ComponentDesigner ^ toInvoke);" />
+      <MemberSignature Language="F#" Value="member this.InvokeGetInheritanceAttribute : System.ComponentModel.Design.ComponentDesigner -&gt; System.ComponentModel.InheritanceAttribute" Usage="componentDesigner.InvokeGetInheritanceAttribute toInvoke" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.ComponentModel.InheritanceAttribute</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="toInvoke" Type="System.ComponentModel.Design.ComponentDesigner" />
+      </Parameters>
+      <Docs>
+        <param name="toInvoke">Объект <see cref="T:System.ComponentModel.Design.ComponentDesigner" />, атрибут наследования которого должен быть извлечен.</param>
+        <summary>Возвращает атрибут <see cref="T:System.ComponentModel.InheritanceAttribute" /> заданного объекта <see cref="T:System.ComponentModel.Design.ComponentDesigner" />.</summary>
+        <returns>Атрибут <see cref="T:System.ComponentModel.InheritanceAttribute" /> заданного конструктора.</returns>
+        <remarks>To be added.</remarks>
+        <altmember cref="T:System.ComponentModel.TypeDescriptor" />
+        <altmember cref="T:System.ComponentModel.Design.IDesignerFilter" />
+      </Docs>
+    </Member>
+    <Member MemberName="OnSetComponentDefaults">
+      <MemberSignature Language="C#" Value="public virtual void OnSetComponentDefaults ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void OnSetComponentDefaults() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.OnSetComponentDefaults" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Sub OnSetComponentDefaults ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void OnSetComponentDefaults();" />
+      <MemberSignature Language="F#" Value="abstract member OnSetComponentDefaults : unit -&gt; unit&#xA;override this.OnSetComponentDefaults : unit -&gt; unit" Usage="componentDesigner.OnSetComponentDefaults " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netcore-3.0">
+          <AttributeName>System.Obsolete("This method has been deprecated. Use InitializeNewComponent instead.  http://go.microsoft.com/fwlink/?linkid=14202")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Задает для компонента свойства по умолчанию.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.ComponentModel.Design.ComponentDesigner.OnSetComponentDefaults%2A>вызывается при инициализации конструктора. Это позволяет конструктору предоставлять значения по умолчанию для базового компонента.  
+  
+ Этот метод вызывается только один раз: при первом создании компонента путем его перетаскивания из панели элементов в область конструктора. Последующие инициализации конструктора не вызывают этот метод.  
+  
+ Реализация по умолчанию этого метода задает для свойства компонента по умолчанию имя компонента, если свойство по умолчанию — строка, а свойство еще не задано. Этот метод можно реализовать в производном классе для настройки инициализации компонента, разрабатываемого этим конструктором.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ParentComponent">
+      <MemberSignature Language="C#" Value="protected virtual System.ComponentModel.IComponent ParentComponent { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.ComponentModel.IComponent ParentComponent" />
+      <MemberSignature Language="DocId" Value="P:System.ComponentModel.Design.ComponentDesigner.ParentComponent" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable ReadOnly Property ParentComponent As IComponent" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual property System::ComponentModel::IComponent ^ ParentComponent { System::ComponentModel::IComponent ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.ParentComponent : System.ComponentModel.IComponent" Usage="System.ComponentModel.Design.ComponentDesigner.ParentComponent" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.ComponentModel.IComponent</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает родительский компонент этого конструктора.</summary>
+        <value>Родительский компонент этого конструктора либо значение <see langword="null" />, если этот конструктор является корневым компонентом.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Это свойство предоставляет универсальный механизм для обнаружения родительских связей в конструкторах и используется <xref:System.ComponentModel.Design.ComponentDesigner> реализацией <xref:System.ComponentModel.Design.ITreeDesigner> интерфейса объекта. Это свойство должно возвращать `null` , только если этот конструктор является корневым компонентом. Реализация по умолчанию этого свойства возвращает корневой компонент для всех компонентов, которые не являются корневым компонентом, и `null` возвращается для корневого компонента.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="PostFilterAttributes">
+      <MemberSignature Language="C#" Value="protected virtual void PostFilterAttributes (System.Collections.IDictionary attributes);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void PostFilterAttributes(class System.Collections.IDictionary attributes) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.PostFilterAttributes(System.Collections.IDictionary)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub PostFilterAttributes (attributes As IDictionary)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void PostFilterAttributes(System::Collections::IDictionary ^ attributes);" />
+      <MemberSignature Language="F#" Value="abstract member PostFilterAttributes : System.Collections.IDictionary -&gt; unit&#xA;override this.PostFilterAttributes : System.Collections.IDictionary -&gt; unit" Usage="componentDesigner.PostFilterAttributes attributes" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.ComponentModel.Design.IDesignerFilter.PostFilterAttributes(System.Collections.IDictionary)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="attributes" Type="System.Collections.IDictionary" />
+      </Parameters>
+      <Docs>
+        <param name="attributes">Атрибуты класса компонента.</param>
+        <summary>Позволяет конструктору изменять или удалять элементы из набора атрибутов, предоставленных через класс <see cref="T:System.ComponentModel.TypeDescriptor" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод предоставляет способ изменения или удаления элементов в словаре атрибутов, предоставляемых через <xref:System.ComponentModel.TypeDescriptor>.  
+  
+ Ключи в словаре атрибутов являются идентификаторами типов атрибутов, как указано значением их <xref:System.Attribute.TypeId%2A> свойства. Объекты имеют тип <xref:System.ComponentModel.PropertyDescriptor>. Этот метод вызывается сразу после <xref:System.ComponentModel.Design.ComponentDesigner.PreFilterAttributes%2A> метода.  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>Можно напрямую отфильтровать словарь, доступный через <paramref name="attributes" /> параметр, или оставить его без изменений. При переопределении этого метода вызовите базовую реализацию после выполнения собственной фильтрации. Кроме того, не следует удалять элементы в <see cref="M:System.ComponentModel.Design.ComponentDesigner.PostFilterAttributes(System.Collections.IDictionary)" /> методе. Вместо этого измените атрибуты, чтобы скрыть элементы. Вы также можете удалить элементы в <see cref="M:System.ComponentModel.Design.ComponentDesigner.PreFilterAttributes(System.Collections.IDictionary)" /> методе.</para></block>
+        <altmember cref="T:System.ComponentModel.TypeDescriptor" />
+        <altmember cref="T:System.ComponentModel.Design.IDesignerFilter" />
+      </Docs>
+    </Member>
+    <Member MemberName="PostFilterEvents">
+      <MemberSignature Language="C#" Value="protected virtual void PostFilterEvents (System.Collections.IDictionary events);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void PostFilterEvents(class System.Collections.IDictionary events) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.PostFilterEvents(System.Collections.IDictionary)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub PostFilterEvents (events As IDictionary)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void PostFilterEvents(System::Collections::IDictionary ^ events);" />
+      <MemberSignature Language="F#" Value="abstract member PostFilterEvents : System.Collections.IDictionary -&gt; unit&#xA;override this.PostFilterEvents : System.Collections.IDictionary -&gt; unit" Usage="componentDesigner.PostFilterEvents events" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.ComponentModel.Design.IDesignerFilter.PostFilterEvents(System.Collections.IDictionary)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="events" Type="System.Collections.IDictionary" />
+      </Parameters>
+      <Docs>
+        <param name="events">События класса компонента.</param>
+        <summary>Позволяет конструктору изменять или удалять элементы из набора событий, предоставленных через класс <see cref="T:System.ComponentModel.TypeDescriptor" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод предоставляет способ изменения или удаления элементов в словаре событий, предоставляемых через <xref:System.ComponentModel.TypeDescriptor>.  
+  
+ Ключи в словаре событий представляют собой имена событий. Объекты имеют тип <xref:System.ComponentModel.PropertyDescriptor>. Этот метод вызывается сразу после <xref:System.ComponentModel.Design.ComponentDesigner.PreFilterEvents%2A> метода.  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>Можно напрямую отфильтровать словарь, доступный через <paramref name="events" /> параметр, или оставить его без изменений. При переопределении этого метода вызовите базовую реализацию после выполнения собственной фильтрации. Кроме того, не следует удалять элементы в <see cref="M:System.ComponentModel.Design.ComponentDesigner.PostFilterEvents(System.Collections.IDictionary)" /> методе. Вместо этого измените атрибуты, чтобы скрыть элементы. Вы также можете удалить элементы в <see cref="M:System.ComponentModel.Design.ComponentDesigner.PreFilterEvents(System.Collections.IDictionary)" /> методе.</para></block>
+        <altmember cref="T:System.ComponentModel.TypeDescriptor" />
+        <altmember cref="T:System.ComponentModel.Design.IDesignerFilter" />
+      </Docs>
+    </Member>
+    <Member MemberName="PostFilterProperties">
+      <MemberSignature Language="C#" Value="protected virtual void PostFilterProperties (System.Collections.IDictionary properties);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void PostFilterProperties(class System.Collections.IDictionary properties) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.PostFilterProperties(System.Collections.IDictionary)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub PostFilterProperties (properties As IDictionary)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void PostFilterProperties(System::Collections::IDictionary ^ properties);" />
+      <MemberSignature Language="F#" Value="abstract member PostFilterProperties : System.Collections.IDictionary -&gt; unit&#xA;override this.PostFilterProperties : System.Collections.IDictionary -&gt; unit" Usage="componentDesigner.PostFilterProperties properties" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.ComponentModel.Design.IDesignerFilter.PostFilterProperties(System.Collections.IDictionary)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="properties" Type="System.Collections.IDictionary" />
+      </Parameters>
+      <Docs>
+        <param name="properties">Свойства класса компонента.</param>
+        <summary>Позволяет конструктору изменять или удалять элементы из набора свойств, предоставленных с использованием класса <see cref="T:System.ComponentModel.TypeDescriptor" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод предоставляет способ изменения или удаления элементов в словаре свойств, предоставляемых через <xref:System.ComponentModel.TypeDescriptor>.  
+  
+ Ключи в словаре свойств являются именами свойств. Объекты имеют тип <xref:System.ComponentModel.PropertyDescriptor>. Этот метод вызывается сразу после <xref:System.ComponentModel.Design.ComponentDesigner.PreFilterProperties%2A> метода.  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>Можно напрямую отфильтровать словарь, доступный через <paramref name="properties" /> параметр, или оставить его без изменений. При переопределении этого метода вызовите базовую реализацию после выполнения собственной фильтрации. Кроме того, не следует удалять элементы в <see cref="M:System.ComponentModel.Design.ComponentDesigner.PostFilterProperties(System.Collections.IDictionary)" /> методе. Вместо этого измените атрибуты, чтобы скрыть элементы. Вы также можете удалить элементы в <see cref="M:System.ComponentModel.Design.ComponentDesigner.PreFilterProperties(System.Collections.IDictionary)" /> методе.</para></block>
+        <altmember cref="T:System.ComponentModel.TypeDescriptor" />
+        <altmember cref="T:System.ComponentModel.Design.IDesignerFilter" />
+        <altmember cref="T:System.ComponentModel.Design.IDesigner" />
+      </Docs>
+    </Member>
+    <Member MemberName="PreFilterAttributes">
+      <MemberSignature Language="C#" Value="protected virtual void PreFilterAttributes (System.Collections.IDictionary attributes);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void PreFilterAttributes(class System.Collections.IDictionary attributes) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.PreFilterAttributes(System.Collections.IDictionary)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub PreFilterAttributes (attributes As IDictionary)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void PreFilterAttributes(System::Collections::IDictionary ^ attributes);" />
+      <MemberSignature Language="F#" Value="abstract member PreFilterAttributes : System.Collections.IDictionary -&gt; unit&#xA;override this.PreFilterAttributes : System.Collections.IDictionary -&gt; unit" Usage="componentDesigner.PreFilterAttributes attributes" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.ComponentModel.Design.IDesignerFilter.PreFilterAttributes(System.Collections.IDictionary)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="attributes" Type="System.Collections.IDictionary" />
+      </Parameters>
+      <Docs>
+        <param name="attributes">Атрибуты класса компонента.</param>
+        <summary>Позволяет конструктору добавлять элементы к набору атрибутов, предоставленному с использованием класса <see cref="T:System.ComponentModel.TypeDescriptor" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод предоставляет способ добавления элементов в словарь атрибутов, предоставляемых конструктором через <xref:System.ComponentModel.TypeDescriptor>.  
+  
+ Ключи в словаре атрибутов являются идентификаторами типов атрибутов, как указано значением их <xref:System.Attribute.TypeId%2A> свойства. Объекты имеют тип <xref:System.ComponentModel.PropertyDescriptor>. Этот метод вызывается непосредственно перед <xref:System.ComponentModel.Design.ComponentDesigner.PostFilterAttributes%2A> методом.  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>Можно напрямую изменить словарь, доступный через <paramref name="attributes" /> параметр, или оставить его без изменений. При переопределении этого метода вызовите базовую реализацию, прежде чем выполнять собственную фильтрацию.</para></block>
+        <altmember cref="T:System.ComponentModel.TypeDescriptor" />
+        <altmember cref="T:System.ComponentModel.Design.IDesignerFilter" />
+      </Docs>
+    </Member>
+    <Member MemberName="PreFilterEvents">
+      <MemberSignature Language="C#" Value="protected virtual void PreFilterEvents (System.Collections.IDictionary events);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void PreFilterEvents(class System.Collections.IDictionary events) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.PreFilterEvents(System.Collections.IDictionary)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub PreFilterEvents (events As IDictionary)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void PreFilterEvents(System::Collections::IDictionary ^ events);" />
+      <MemberSignature Language="F#" Value="abstract member PreFilterEvents : System.Collections.IDictionary -&gt; unit&#xA;override this.PreFilterEvents : System.Collections.IDictionary -&gt; unit" Usage="componentDesigner.PreFilterEvents events" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.ComponentModel.Design.IDesignerFilter.PreFilterEvents(System.Collections.IDictionary)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="events" Type="System.Collections.IDictionary" />
+      </Parameters>
+      <Docs>
+        <param name="events">События класса компонента.</param>
+        <summary>Позволяет конструктору добавлять элементы к набору событий, предоставленных с использованием класса <see cref="T:System.ComponentModel.TypeDescriptor" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод предоставляет способ добавления элементов в словарь событий, предоставляемых конструктором через <xref:System.ComponentModel.TypeDescriptor>.  
+  
+ Ключи в словаре событий представляют собой имена событий. Объекты имеют тип <xref:System.ComponentModel.PropertyDescriptor>. Этот метод вызывается непосредственно перед <xref:System.ComponentModel.Design.ComponentDesigner.PostFilterEvents%2A> методом.  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>Можно напрямую изменить словарь, доступный через <paramref name="events" /> параметр, или оставить его без изменений. При переопределении этого метода вызовите базовую реализацию, прежде чем выполнять собственную фильтрацию.</para></block>
+        <altmember cref="T:System.ComponentModel.TypeDescriptor" />
+        <altmember cref="T:System.ComponentModel.Design.IDesignerFilter" />
+      </Docs>
+    </Member>
+    <Member MemberName="PreFilterProperties">
+      <MemberSignature Language="C#" Value="protected virtual void PreFilterProperties (System.Collections.IDictionary properties);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void PreFilterProperties(class System.Collections.IDictionary properties) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.PreFilterProperties(System.Collections.IDictionary)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub PreFilterProperties (properties As IDictionary)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void PreFilterProperties(System::Collections::IDictionary ^ properties);" />
+      <MemberSignature Language="F#" Value="abstract member PreFilterProperties : System.Collections.IDictionary -&gt; unit&#xA;override this.PreFilterProperties : System.Collections.IDictionary -&gt; unit" Usage="componentDesigner.PreFilterProperties properties" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.ComponentModel.Design.IDesignerFilter.PreFilterProperties(System.Collections.IDictionary)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="properties" Type="System.Collections.IDictionary" />
+      </Parameters>
+      <Docs>
+        <param name="properties">Свойства класса компонента.</param>
+        <summary>Позволяет конструктору добавлять элементы к набору свойств, предоставленному с использованием класса <see cref="T:System.ComponentModel.TypeDescriptor" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод предоставляет способ добавления элементов в словарь свойств, предоставляемых конструктором через <xref:System.ComponentModel.TypeDescriptor>.  
+  
+ Ключи в словаре свойств являются именами свойств. Объекты имеют тип <xref:System.ComponentModel.PropertyDescriptor>. Этот метод вызывается непосредственно перед <xref:System.ComponentModel.Design.ComponentDesigner.PostFilterProperties%2A> методом.  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>Можно напрямую изменить словарь, доступный через <paramref name="properties" /> параметр, или оставить его без изменений. При переопределении этого метода вызовите базовую реализацию, прежде чем выполнять собственную фильтрацию.</para></block>
+        <altmember cref="T:System.ComponentModel.TypeDescriptor" />
+        <altmember cref="T:System.ComponentModel.Design.IDesignerFilter" />
+      </Docs>
+    </Member>
+    <Member MemberName="RaiseComponentChanged">
+      <MemberSignature Language="C#" Value="protected void RaiseComponentChanged (System.ComponentModel.MemberDescriptor member, object oldValue, object newValue);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig instance void RaiseComponentChanged(class System.ComponentModel.MemberDescriptor member, object oldValue, object newValue) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.RaiseComponentChanged(System.ComponentModel.MemberDescriptor,System.Object,System.Object)" />
+      <MemberSignature Language="VB.NET" Value="Protected Sub RaiseComponentChanged (member As MemberDescriptor, oldValue As Object, newValue As Object)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; void RaiseComponentChanged(System::ComponentModel::MemberDescriptor ^ member, System::Object ^ oldValue, System::Object ^ newValue);" />
+      <MemberSignature Language="F#" Value="member this.RaiseComponentChanged : System.ComponentModel.MemberDescriptor * obj * obj -&gt; unit" Usage="componentDesigner.RaiseComponentChanged (member, oldValue, newValue)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="member" Type="System.ComponentModel.MemberDescriptor" />
+        <Parameter Name="oldValue" Type="System.Object" />
+        <Parameter Name="newValue" Type="System.Object" />
+      </Parameters>
+      <Docs>
+        <param name="member">Идентификатор <see cref="T:System.ComponentModel.MemberDescriptor" />, обозначающий измененный элемент.</param>
+        <param name="oldValue">Прежнее значение элемента.</param>
+        <param name="newValue">Новое значение элемента.</param>
+        <summary>Уведомляет службу <see cref="T:System.ComponentModel.Design.IComponentChangeService" /> о том, что данный компонент был изменен.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод следует вызывать только в том случае, если вы влияет на свойства компонента напрямую, а <xref:System.ComponentModel.MemberDescriptor>не через методы доступа, предоставляемые.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.ComponentModel.Design.IComponentChangeService" />
+        <altmember cref="T:System.ComponentModel.MemberDescriptor" />
+      </Docs>
+    </Member>
+    <Member MemberName="RaiseComponentChanging">
+      <MemberSignature Language="C#" Value="protected void RaiseComponentChanging (System.ComponentModel.MemberDescriptor member);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig instance void RaiseComponentChanging(class System.ComponentModel.MemberDescriptor member) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.RaiseComponentChanging(System.ComponentModel.MemberDescriptor)" />
+      <MemberSignature Language="VB.NET" Value="Protected Sub RaiseComponentChanging (member As MemberDescriptor)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; void RaiseComponentChanging(System::ComponentModel::MemberDescriptor ^ member);" />
+      <MemberSignature Language="F#" Value="member this.RaiseComponentChanging : System.ComponentModel.MemberDescriptor -&gt; unit" Usage="componentDesigner.RaiseComponentChanging member" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="member" Type="System.ComponentModel.MemberDescriptor" />
+      </Parameters>
+      <Docs>
+        <param name="member">Идентификатор <see cref="T:System.ComponentModel.MemberDescriptor" />, который обозначает изменяемый элемент.</param>
+        <summary>Уведомляет службу <see cref="T:System.ComponentModel.Design.IComponentChangeService" /> о том, что компонент будет изменен.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод следует вызывать только в том случае, если вы изменяете свойства компонента напрямую, <xref:System.ComponentModel.MemberDescriptor>а не через методы доступа, предоставляемые.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.ComponentModel.Design.IComponentChangeService" />
+        <altmember cref="T:System.ComponentModel.MemberDescriptor" />
+      </Docs>
+    </Member>
+    <Member MemberName="ShadowProperties">
+      <MemberSignature Language="C#" Value="protected System.ComponentModel.Design.ComponentDesigner.ShadowPropertyCollection ShadowProperties { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.ComponentModel.Design.ComponentDesigner/ShadowPropertyCollection ShadowProperties" />
+      <MemberSignature Language="DocId" Value="P:System.ComponentModel.Design.ComponentDesigner.ShadowProperties" />
+      <MemberSignature Language="VB.NET" Value="Protected ReadOnly Property ShadowProperties As ComponentDesigner.ShadowPropertyCollection" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; property System::ComponentModel::Design::ComponentDesigner::ShadowPropertyCollection ^ ShadowProperties { System::ComponentModel::Design::ComponentDesigner::ShadowPropertyCollection ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.ShadowProperties : System.ComponentModel.Design.ComponentDesigner.ShadowPropertyCollection" Usage="System.ComponentModel.Design.ComponentDesigner.ShadowProperties" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.ComponentModel.Design.ComponentDesigner+ShadowPropertyCollection</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает коллекцию значений свойств, переопределяющих параметры пользователя.</summary>
+        <value>Коллекция <see cref="T:System.ComponentModel.Design.ComponentDesigner.ShadowPropertyCollection" />, содержащая теневые свойства документа проекта.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="System.ComponentModel.Design.IDesignerFilter.PostFilterAttributes">
+      <MemberSignature Language="C#" Value="void IDesignerFilter.PostFilterAttributes (System.Collections.IDictionary attributes);" />
+      <MemberSignature Language="ILAsm" Value=".method hidebysig newslot virtual instance void System.ComponentModel.Design.IDesignerFilter.PostFilterAttributes(class System.Collections.IDictionary attributes) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.System#ComponentModel#Design#IDesignerFilter#PostFilterAttributes(System.Collections.IDictionary)" />
+      <MemberSignature Language="VB.NET" Value="Sub PostFilterAttributes (attributes As IDictionary) Implements IDesignerFilter.PostFilterAttributes" />
+      <MemberSignature Language="C++ CLI" Value=" virtual void System.ComponentModel.Design.IDesignerFilter.PostFilterAttributes(System::Collections::IDictionary ^ attributes) = System::ComponentModel::Design::IDesignerFilter::PostFilterAttributes;" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.ComponentModel.Design.IDesignerFilter.PostFilterAttributes(System.Collections.IDictionary)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="attributes" Type="System.Collections.IDictionary" />
+      </Parameters>
+      <Docs>
+        <param name="attributes">Объекты <see cref="T:System.Attribute" /> класса компонента. Ключи в словаре атрибутов являются значениями <see cref="P:System.Attribute.TypeId" /> атрибутов.</param>
+        <summary>Описание этого элемента содержится в методе <see cref="M:System.ComponentModel.Design.IDesignerFilter.PostFilterAttributes(System.Collections.IDictionary)" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот член представляет собой явную реализацию члена интерфейса. Он может использоваться, только если экземпляр <xref:System.ComponentModel.Design.ComponentDesigner> приведен к типу интерфейса <xref:System.ComponentModel.Design.IDesignerFilter>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="System.ComponentModel.Design.IDesignerFilter.PostFilterEvents">
+      <MemberSignature Language="C#" Value="void IDesignerFilter.PostFilterEvents (System.Collections.IDictionary events);" />
+      <MemberSignature Language="ILAsm" Value=".method hidebysig newslot virtual instance void System.ComponentModel.Design.IDesignerFilter.PostFilterEvents(class System.Collections.IDictionary events) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.System#ComponentModel#Design#IDesignerFilter#PostFilterEvents(System.Collections.IDictionary)" />
+      <MemberSignature Language="VB.NET" Value="Sub PostFilterEvents (events As IDictionary) Implements IDesignerFilter.PostFilterEvents" />
+      <MemberSignature Language="C++ CLI" Value=" virtual void System.ComponentModel.Design.IDesignerFilter.PostFilterEvents(System::Collections::IDictionary ^ events) = System::ComponentModel::Design::IDesignerFilter::PostFilterEvents;" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.ComponentModel.Design.IDesignerFilter.PostFilterEvents(System.Collections.IDictionary)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="events" Type="System.Collections.IDictionary" />
+      </Parameters>
+      <Docs>
+        <param name="events">Объекты <see cref="T:System.ComponentModel.EventDescriptor" />, представляющие события класса компонента. Ключи в словаре событий являются именами событий.</param>
+        <summary>Описание этого элемента содержится в методе <see cref="M:System.ComponentModel.Design.IDesignerFilter.PostFilterEvents(System.Collections.IDictionary)" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот член представляет собой явную реализацию члена интерфейса. Он может использоваться, только если экземпляр <xref:System.ComponentModel.Design.ComponentDesigner> приведен к типу интерфейса <xref:System.ComponentModel.Design.IDesignerFilter>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="System.ComponentModel.Design.IDesignerFilter.PostFilterProperties">
+      <MemberSignature Language="C#" Value="void IDesignerFilter.PostFilterProperties (System.Collections.IDictionary properties);" />
+      <MemberSignature Language="ILAsm" Value=".method hidebysig newslot virtual instance void System.ComponentModel.Design.IDesignerFilter.PostFilterProperties(class System.Collections.IDictionary properties) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.System#ComponentModel#Design#IDesignerFilter#PostFilterProperties(System.Collections.IDictionary)" />
+      <MemberSignature Language="VB.NET" Value="Sub PostFilterProperties (properties As IDictionary) Implements IDesignerFilter.PostFilterProperties" />
+      <MemberSignature Language="C++ CLI" Value=" virtual void System.ComponentModel.Design.IDesignerFilter.PostFilterProperties(System::Collections::IDictionary ^ properties) = System::ComponentModel::Design::IDesignerFilter::PostFilterProperties;" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.ComponentModel.Design.IDesignerFilter.PostFilterProperties(System.Collections.IDictionary)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="properties" Type="System.Collections.IDictionary" />
+      </Parameters>
+      <Docs>
+        <param name="properties">Объекты <see cref="T:System.ComponentModel.PropertyDescriptor" />, представляющие свойства класса компонента. Ключи в словаре свойств являются именами свойств.</param>
+        <summary>Описание этого элемента содержится в методе <see cref="M:System.ComponentModel.Design.IDesignerFilter.PostFilterProperties(System.Collections.IDictionary)" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот член представляет собой явную реализацию члена интерфейса. Он может использоваться, только если экземпляр <xref:System.ComponentModel.Design.ComponentDesigner> приведен к типу интерфейса <xref:System.ComponentModel.Design.IDesignerFilter>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="System.ComponentModel.Design.IDesignerFilter.PreFilterAttributes">
+      <MemberSignature Language="C#" Value="void IDesignerFilter.PreFilterAttributes (System.Collections.IDictionary attributes);" />
+      <MemberSignature Language="ILAsm" Value=".method hidebysig newslot virtual instance void System.ComponentModel.Design.IDesignerFilter.PreFilterAttributes(class System.Collections.IDictionary attributes) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.System#ComponentModel#Design#IDesignerFilter#PreFilterAttributes(System.Collections.IDictionary)" />
+      <MemberSignature Language="VB.NET" Value="Sub PreFilterAttributes (attributes As IDictionary) Implements IDesignerFilter.PreFilterAttributes" />
+      <MemberSignature Language="C++ CLI" Value=" virtual void System.ComponentModel.Design.IDesignerFilter.PreFilterAttributes(System::Collections::IDictionary ^ attributes) = System::ComponentModel::Design::IDesignerFilter::PreFilterAttributes;" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.ComponentModel.Design.IDesignerFilter.PreFilterAttributes(System.Collections.IDictionary)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="attributes" Type="System.Collections.IDictionary" />
+      </Parameters>
+      <Docs>
+        <param name="attributes">Объекты <see cref="T:System.Attribute" /> класса компонента. Ключи в словаре атрибутов являются значениями <see cref="P:System.Attribute.TypeId" /> атрибутов.</param>
+        <summary>Описание этого элемента содержится в методе <see cref="M:System.ComponentModel.Design.IDesignerFilter.PreFilterAttributes(System.Collections.IDictionary)" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот член представляет собой явную реализацию члена интерфейса. Он может использоваться, только если экземпляр <xref:System.ComponentModel.Design.ComponentDesigner> приведен к типу интерфейса <xref:System.ComponentModel.Design.IDesignerFilter>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="System.ComponentModel.Design.IDesignerFilter.PreFilterEvents">
+      <MemberSignature Language="C#" Value="void IDesignerFilter.PreFilterEvents (System.Collections.IDictionary events);" />
+      <MemberSignature Language="ILAsm" Value=".method hidebysig newslot virtual instance void System.ComponentModel.Design.IDesignerFilter.PreFilterEvents(class System.Collections.IDictionary events) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.System#ComponentModel#Design#IDesignerFilter#PreFilterEvents(System.Collections.IDictionary)" />
+      <MemberSignature Language="VB.NET" Value="Sub PreFilterEvents (events As IDictionary) Implements IDesignerFilter.PreFilterEvents" />
+      <MemberSignature Language="C++ CLI" Value=" virtual void System.ComponentModel.Design.IDesignerFilter.PreFilterEvents(System::Collections::IDictionary ^ events) = System::ComponentModel::Design::IDesignerFilter::PreFilterEvents;" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.ComponentModel.Design.IDesignerFilter.PreFilterEvents(System.Collections.IDictionary)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="events" Type="System.Collections.IDictionary" />
+      </Parameters>
+      <Docs>
+        <param name="events">Объекты <see cref="T:System.ComponentModel.EventDescriptor" />, представляющие события класса компонента. Ключи в словаре событий являются именами событий.</param>
+        <summary>Описание этого элемента содержится в методе <see cref="M:System.ComponentModel.Design.IDesignerFilter.PreFilterEvents(System.Collections.IDictionary)" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот член представляет собой явную реализацию члена интерфейса. Он может использоваться, только если экземпляр <xref:System.ComponentModel.Design.ComponentDesigner> приведен к типу интерфейса <xref:System.ComponentModel.Design.IDesignerFilter>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="System.ComponentModel.Design.IDesignerFilter.PreFilterProperties">
+      <MemberSignature Language="C#" Value="void IDesignerFilter.PreFilterProperties (System.Collections.IDictionary properties);" />
+      <MemberSignature Language="ILAsm" Value=".method hidebysig newslot virtual instance void System.ComponentModel.Design.IDesignerFilter.PreFilterProperties(class System.Collections.IDictionary properties) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.ComponentDesigner.System#ComponentModel#Design#IDesignerFilter#PreFilterProperties(System.Collections.IDictionary)" />
+      <MemberSignature Language="VB.NET" Value="Sub PreFilterProperties (properties As IDictionary) Implements IDesignerFilter.PreFilterProperties" />
+      <MemberSignature Language="C++ CLI" Value=" virtual void System.ComponentModel.Design.IDesignerFilter.PreFilterProperties(System::Collections::IDictionary ^ properties) = System::ComponentModel::Design::IDesignerFilter::PreFilterProperties;" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.ComponentModel.Design.IDesignerFilter.PreFilterProperties(System.Collections.IDictionary)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="properties" Type="System.Collections.IDictionary" />
+      </Parameters>
+      <Docs>
+        <param name="properties">Объекты <see cref="T:System.ComponentModel.PropertyDescriptor" />, представляющие свойства класса компонента. Ключи в словаре свойств являются именами свойств.</param>
+        <summary>Описание этого элемента содержится в методе <see cref="M:System.ComponentModel.Design.IDesignerFilter.PreFilterProperties(System.Collections.IDictionary)" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот член представляет собой явную реализацию члена интерфейса. Он может использоваться, только если экземпляр <xref:System.ComponentModel.Design.ComponentDesigner> приведен к типу интерфейса <xref:System.ComponentModel.Design.IDesignerFilter>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="System.ComponentModel.Design.ITreeDesigner.Children">
+      <MemberSignature Language="C#" Value="System.Collections.ICollection System.ComponentModel.Design.ITreeDesigner.Children { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Collections.ICollection System.ComponentModel.Design.ITreeDesigner.Children" />
+      <MemberSignature Language="DocId" Value="P:System.ComponentModel.Design.ComponentDesigner.System#ComponentModel#Design#ITreeDesigner#Children" />
+      <MemberSignature Language="VB.NET" Value=" ReadOnly Property Children As ICollection Implements ITreeDesigner.Children" />
+      <MemberSignature Language="C++ CLI" Value="property System::Collections::ICollection ^ System::ComponentModel::Design::ITreeDesigner::Children { System::Collections::ICollection ^ get(); };" />
+      <MemberSignature Language="F#" Usage="System.ComponentModel.Design.ITreeDesigner.Children" />
+      <MemberType>Property</MemberType>
+      <Implements>
+        <InterfaceMember>P:System.ComponentModel.Design.ITreeDesigner.Children</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.ICollection</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Описание этого элемента см. в свойстве <see cref="P:System.ComponentModel.Design.ITreeDesigner.Children" />.</summary>
+        <value>Коллекция <see cref="T:System.Collections.ICollection" />, содержащая коллекцию конструкторов <see cref="T:System.ComponentModel.Design.IDesigner" />, включенных в текущий родительский конструктор.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот член представляет собой явную реализацию члена интерфейса. Он может использоваться, только если экземпляр <xref:System.ComponentModel.Design.ComponentDesigner> приведен к типу интерфейса <xref:System.ComponentModel.Design.ITreeDesigner>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="System.ComponentModel.Design.ITreeDesigner.Parent">
+      <MemberSignature Language="C#" Value="System.ComponentModel.Design.IDesigner System.ComponentModel.Design.ITreeDesigner.Parent { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.ComponentModel.Design.IDesigner System.ComponentModel.Design.ITreeDesigner.Parent" />
+      <MemberSignature Language="DocId" Value="P:System.ComponentModel.Design.ComponentDesigner.System#ComponentModel#Design#ITreeDesigner#Parent" />
+      <MemberSignature Language="VB.NET" Value=" ReadOnly Property Parent As IDesigner Implements ITreeDesigner.Parent" />
+      <MemberSignature Language="C++ CLI" Value="property System::ComponentModel::Design::IDesigner ^ System::ComponentModel::Design::ITreeDesigner::Parent { System::ComponentModel::Design::IDesigner ^ get(); };" />
+      <MemberSignature Language="F#" Usage="System.ComponentModel.Design.ITreeDesigner.Parent" />
+      <MemberType>Property</MemberType>
+      <Implements>
+        <InterfaceMember>P:System.ComponentModel.Design.ITreeDesigner.Parent</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.ComponentModel.Design.IDesigner</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Описание этого элемента см. в свойстве <see cref="P:System.ComponentModel.Design.ITreeDesigner.Parent" />.</summary>
+        <value>Интерфейс <see cref="T:System.ComponentModel.Design.IDesigner" />, представляющий родительский интерфейс, либо интерфейс <see langword="null" />, если родительский объект отсутствует.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот член представляет собой явную реализацию члена интерфейса. Он может использоваться, только если экземпляр <xref:System.ComponentModel.Design.ComponentDesigner> приведен к типу интерфейса <xref:System.ComponentModel.Design.ITreeDesigner>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Verbs">
+      <MemberSignature Language="C#" Value="public virtual System.ComponentModel.Design.DesignerVerbCollection Verbs { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.ComponentModel.Design.DesignerVerbCollection Verbs" />
+      <MemberSignature Language="DocId" Value="P:System.ComponentModel.Design.ComponentDesigner.Verbs" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable ReadOnly Property Verbs As DesignerVerbCollection" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::ComponentModel::Design::DesignerVerbCollection ^ Verbs { System::ComponentModel::Design::DesignerVerbCollection ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Verbs : System.ComponentModel.Design.DesignerVerbCollection" Usage="System.ComponentModel.Design.ComponentDesigner.Verbs" />
+      <MemberType>Property</MemberType>
+      <Implements>
+        <InterfaceMember>P:System.ComponentModel.Design.IDesigner.Verbs</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.ComponentModel.Design.DesignerVerbCollection</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает команды в режиме конструктора, поддерживаемые компонентом, связанным с конструктором.</summary>
+        <value>Коллекция <see cref="T:System.ComponentModel.Design.DesignerVerbCollection" /> объектов <see cref="T:System.ComponentModel.Design.DesignerVerb" /> или значение <see langword="null" />, если команды конструктора недоступны. Данная реализация по умолчанию всегда возвращает значение <see langword="null" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод возвращает `null` значение, если компонент не имеет команд времени разработки.  
+  
+ Среда времени разработки, как правило, отображает команды, возвращаемые этим методом, в контекстное меню (щелчок правой кнопкой мыши). Когда пользователь выбирает одну из команд, <xref:System.ComponentModel.Design.MenuCommand.Invoke%2A> вызывается метод соответствующего <xref:System.ComponentModel.Design.DesignerVerb> метода.  
+  
+> [!NOTE]
+>  Среда времени разработки обычно предоставляет команду **Свойства** в контекстном меню компонента. Поэтому не включайте такую запись в коллекцию команд, заданных конструктором.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.ComponentModel.Design.IDesigner" />
+      </Docs>
+    </Member>
+  </Members>
+</Type>
