@@ -1,0 +1,1762 @@
+<Type Name="ReaderWriterLockSlim" FullName="System.Threading.ReaderWriterLockSlim">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="bccb975feff4e3305b575f6d69439f620330aec9" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70567445" /></Metadata><TypeSignature Language="C#" Value="public class ReaderWriterLockSlim : IDisposable" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit ReaderWriterLockSlim extends System.Object implements class System.IDisposable" />
+  <TypeSignature Language="DocId" Value="T:System.Threading.ReaderWriterLockSlim" />
+  <TypeSignature Language="VB.NET" Value="Public Class ReaderWriterLockSlim&#xA;Implements IDisposable" />
+  <TypeSignature Language="C++ CLI" Value="public ref class ReaderWriterLockSlim : IDisposable" />
+  <TypeSignature Language="F#" Value="type ReaderWriterLockSlim = class&#xA;    interface IDisposable" />
+  <AssemblyInfo>
+    <AssemblyName>System.Threading</AssemblyName>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.10.0</AssemblyVersion>
+    <AssemblyVersion>4.1.0.0</AssemblyVersion>
+    <AssemblyVersion>4.1.1.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>System.Core</AssemblyName>
+    <AssemblyVersion>2.0.5.0</AssemblyVersion>
+    <AssemblyVersion>3.5.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>netstandard</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces>
+    <Interface>
+      <InterfaceName>System.IDisposable</InterfaceName>
+    </Interface>
+  </Interfaces>
+  <Docs>
+    <summary>Представляет блокировку, используемую для управления доступом к ресурсу, которая позволяет нескольким потокам производить считывание или получать монопольный доступ на запись.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Используется <xref:System.Threading.ReaderWriterLockSlim> для защиты ресурса, который считывается несколькими потоками и записывается в один поток за раз. <xref:System.Threading.ReaderWriterLockSlim>позволяет нескольким потокам находиться в режиме чтения, что позволяет одному потоку находиться в режиме записи с монопольным владельцем блокировки, а также допускает, чтобы один поток с доступом на чтение набыть в обновляемом режиме чтения, из которого поток может обновиться до режима записи, не требуя его необходимости. доступ на чтение к ресурсу.  
+  
+> [!NOTE]
+>  <xref:System.Threading.ReaderWriterLockSlim> действует так же, как и <xref:System.Threading.ReaderWriterLock>, но с более простыми правилами рекурсии и изменения состояния блокировки. <xref:System.Threading.ReaderWriterLockSlim> позволяет избежать многих ситуаций взаимоблокировки. Кроме того, производительность <xref:System.Threading.ReaderWriterLockSlim> значительно выше, чем у <xref:System.Threading.ReaderWriterLock>. Мы рекомендуем применять <xref:System.Threading.ReaderWriterLockSlim> при любых новых разработках.  
+  
+ По умолчанию новые экземпляры <xref:System.Threading.ReaderWriterLockSlim> создаются <xref:System.Threading.LockRecursionPolicy.NoRecursion?displayProperty=nameWithType> с флагом и не допускают рекурсии. Эта политика по умолчанию рекомендуется для всех новых приложений, так как рекурсия вносит ненужные сложности и делает код более подверженным взаимоблокировкам. Чтобы упростить миграцию из существующих проектов, <xref:System.Threading.Monitor> использующих <xref:System.Threading.LockRecursionPolicy.SupportsRecursion?displayProperty=nameWithType> или <xref:System.Threading.ReaderWriterLock>, можно использовать флаг для создания экземпляров <xref:System.Threading.ReaderWriterLockSlim> , разрешающих рекурсию.  
+  
+ Поток может войти в блокировку в трех режимах: режим чтения, режим записи и обновляемый режим чтения. (В оставшейся части этого раздела «обновляемый режим чтения» называется "обновляемым режимом", а фраза "режим ввода `x` " используется в качестве предпочтений более длинной фразе "введите блокировку в `x` режиме".)  
+  
+ Независимо от политики рекурсии в любое время может находиться только один поток в режиме записи. Если поток находится в режиме записи, никакой другой поток не может войти в блокировку в любом режиме. В любой момент времени в обновляемом режиме может находиться только один поток. Любое количество потоков может находиться в режиме чтения, и в обновляемом режиме может быть один поток, а другие потоки находятся в режиме чтения.  
+  
+> [!IMPORTANT]
+>  Этот тип реализует интерфейс <xref:System.IDisposable>. По окончании использования выдаленную ему память следует прямо или косвенно освободить. Чтобы сделать это прямо, вызовите его метод <xref:System.IDisposable.Dispose%2A> в блоке `try`/`catch`. Чтобы сделать это косвенно, используйте языковые конструкции, такие как `using` (в C#) или `Using` (в Visual Basic). Дополнительные сведения см. в разделе "Использование объекта, реализующего IDisposable" в статье об интерфейсе <xref:System.IDisposable>.  
+  
+ <xref:System.Threading.ReaderWriterLockSlim>имеет сходство управляемого потока; то есть каждый <xref:System.Threading.Thread> объект должен выполнять собственные вызовы методов для входа и выхода из режимов блокировки. Ни один поток не может изменить режим другого потока.  
+  
+ <xref:System.Threading.ReaderWriterLockSlim> Если не допускает рекурсии, поток, пытающийся войти в блокировку, может блокироваться по нескольким причинам:  
+  
+-   Поток, пытающийся войти в блоки режима чтения, если есть потоки, ожидающие входа в режим записи или выполняющие один поток в режиме записи.  
+  
+    > [!NOTE]
+    >  Блокирование новых читателей, когда модули записи помещаются в очередь, — это политика равноправия блокировок, которая дает предпочтение модулям записи. Текущая политика равноправия равномерно распределяется между модулями чтения и записи, чтобы повысить пропускную способность в самых распространенных сценариях. В [!INCLUDE[dnprdnshort](~/includes/dnprdnshort-md.md)] будущих версиях служб могут приникать новые политики равноправия.  
+  
+-   Поток, пытающийся войти в блоки обновляемого режима, если в обновляемом режиме уже имеется поток, если имеются потоки, ожидающие входа в режим записи, или если в режиме записи имеется один поток.  
+  
+-   Поток, который пытается войти в режим записи, блокируется, если имеется поток в любом из трех режимов.  
+  
+## <a name="upgrading-and-downgrading-locks"></a>Обновление и понижение уровня блокировки  
+ Обновляемый режим предназначен для случаев, когда поток обычно считывает данные из защищенного ресурса, но при выполнении какого-либо условия может потребоваться запись в него. Поток, который вошел <xref:System.Threading.ReaderWriterLockSlim> в обновляемый режим, имеет доступ на чтение к защищенному ресурсу и может обновить его до режима записи, <xref:System.Threading.ReaderWriterLockSlim.EnterWriteLock%2A> вызвав методы или. <xref:System.Threading.ReaderWriterLockSlim.TryEnterWriteLock%2A> Так как в обновляемом режиме может быть только один поток, обновление до режима записи не может быть взаимоблокировками, если рекурсия не разрешена, что является политикой по умолчанию.  
+  
+> [!IMPORTANT]
+>  Независимо от политики рекурсии потоку, который изначально перешел в режим чтения, запрещено обновление до обновляемого режима или режима записи, поскольку этот шаблон создает строгую вероятность взаимоблокировок. Например, если два потока в режиме чтения пытаются войти в режим записи, они будут взаимоблокировками. Обновляемый режим предназначен для предотвращения подобных взаимоблокировок.  
+  
+ Если в режиме чтения есть другие потоки, то поток, который выполняет обновление, блокируется. Пока поток заблокирован, другие потоки, пытающиеся войти в режим чтения, блокируются. Когда все потоки вышли из режима чтения, заблокированный обновляемый поток переходит в режим записи. Если существуют другие потоки, ожидающие входа в режим записи, они остаются заблокированными, так как один поток, находящихся в обновляемом режиме, не позволяет им получить монопольный доступ к ресурсу.  
+  
+ Когда поток в обновляемом режиме выходит из режима записи, другие потоки, ожидающие входа в режим чтения, могут сделать это, если нет потоков, ожидающих входа в режим записи. Поток в обновляемом режиме может обновляться и переходить на более раннюю версию неограниченно, пока это единственный поток, записывающий данные в защищенный ресурс.  
+  
+> [!IMPORTANT]
+>  Если разрешить нескольким потокам переход в режим записи или обновляемый режим, то не следует разрешать одному потоку монопольно использовать обновляемый режим. В противном случае потоки, которые пытаются войти в режим записи напрямую, будут заблокированы на неопределенное время, и пока они будут заблокированы, другие потоки не смогут войти в режим чтения.  
+  
+ Поток в обновляемом режиме можно понизить до режима чтения, сначала вызвав <xref:System.Threading.ReaderWriterLockSlim.EnterReadLock%2A> метод, а затем <xref:System.Threading.ReaderWriterLockSlim.ExitUpgradeableReadLock%2A> вызвав метод. Этот шаблон перехода на более раннюю версию разрешен для всех политик рекурсии блокировки <xref:System.Threading.LockRecursionPolicy.NoRecursion>, даже.  
+  
+ После перехода в режим чтения поток не может повторно войти в обновляемый режим, пока он не завершит работу из режима чтения.  
+  
+## <a name="entering-the-lock-recursively"></a>Рекурсивный вход в блокировку  
+ Можно создать <xref:System.Threading.ReaderWriterLockSlim> , поддерживающий запись рекурсивной блокировки с <xref:System.Threading.ReaderWriterLockSlim.%23ctor%28System.Threading.LockRecursionPolicy%29> помощью конструктора, определяющего политику блокировки, и указав <xref:System.Threading.LockRecursionPolicy.SupportsRecursion?displayProperty=nameWithType>.  
+  
+> [!NOTE]
+>  Использование рекурсии не рекомендуется для новых разработок, поскольку оно создает ненужные сложности и делает код более подверженным взаимоблокировкам.  
+  
+ <xref:System.Threading.ReaderWriterLockSlim> Для, допускающего рекурсию, можно сказать о режимах, которые поток может ввести:  
+  
+-   Поток в режиме чтения может войти в режим чтения рекурсивно, но не может войти в режим записи или обновляемый режим. При попытке сделать это <xref:System.Threading.LockRecursionException> возникает исключение. Переход в режим чтения и переход в режим записи или обновляемый режим — это шаблон с высокой вероятностью взаимоблокировок, поэтому он не разрешен. Как обсуждалось ранее, обновляемый режим предоставляется для случаев, когда требуется обновить блокировку.  
+  
+-   Поток в обновляемом режиме может входить в режим записи или чтения, а также может вводить любой из трех режимов рекурсивно. Однако попытка входа в режим записи блокируется, если в режиме чтения есть другие потоки.  
+  
+-   Поток в режиме записи может входить в режим чтения и (или) обновляемый режим, а также может вводить любой из трех режимов рекурсивно.  
+  
+-   Поток, который не вошел в блокировку, может войти в любой режим. Эта попытка может блокироваться по тем же причинам, что и попытка входа в нерекурсивную блокировку.  
+  
+ Поток может выйти из режимов, которые он указал в любом порядке, при условии, что каждый режим завершается точно так же, как если бы он был указан в этом режиме. Если поток пытается выйти из режима слишком много раз или выйти из режима, который он не указал, <xref:System.Threading.SynchronizationLockException> создается исключение.  
+  
+## <a name="lock-states"></a>Состояния блокировки  
+ Может оказаться полезным рассматривать блокировку с точки зрения ее состояний. <xref:System.Threading.ReaderWriterLockSlim> Может находиться в одном из четырех состояний: не указано, чтение, обновление и запись.  
+  
+-   Не введено. в этом состоянии потоки не вошел в блокировку (или все потоки вышли из блокировки).  
+  
+-   Read: в этом состоянии один или несколько потоков перешли в блокировку на доступ для чтения к защищенному ресурсу.  
+  
+    > [!NOTE]
+    >  Поток может войти в блокировку в режиме чтения с помощью <xref:System.Threading.ReaderWriterLockSlim.EnterReadLock%2A> методов или <xref:System.Threading.ReaderWriterLockSlim.TryEnterReadLock%2A> или перехода на более раннюю версию из обновляемого режима.  
+  
+-   Обновление. в этом состоянии один поток вошел в блокировку для доступа на чтение с возможностью обновления до доступа на запись (то есть в обновляемом режиме), а ноль или более потоков вошел в блокировку для доступа на чтение. Ни один поток за раз может войти в блокировку с возможностью обновления. дополнительные потоки, пытающиеся войти в обновляемый режим, блокируются.  
+  
+-   Запись: в этом состоянии один поток вошел в блокировку для доступа на запись к защищенному ресурсу. Этот поток монопольно владеет блокировкой. Любой другой поток, пытающийся войти в блокировку по любой причине, блокируется.  
+  
+ В следующей таблице описаны переходы между состояниями блокировки для блокировок, которые не допускают рекурсии, когда `t` поток выполняет действие, описанное в крайнем левом столбце. В то время, когда действие выполняется, `t` не имеет режима. (Особый случай, когда `t` находится в обновляемом режиме, описывается в сносках таблицы.) В верхней строке описывается начальное состояние блокировки. Ячейки описывают, что происходит с потоком, и отображают изменения состояния блокировки в круглых скобках.  
+  
+||Не задано (N)|Чтение (R)|Обновление (U)|Запись (W)|  
+|-|-----------------------|----------------|-------------------|-----------------|  
+|`t`переходит в режим чтения|`t`вводит (R).|`t`блокируется, если потоки ожидают режима записи; в противном случае вводит. `t`|`t`блокируется, если потоки ожидают режима записи; в противном случае вводит. `t` <sup> 1</sup>|`t`блоков.|  
+|`t`переходит в обновляемый режим|`t`вводит (U).|`t`блокируется, если потоки ожидают режима записи или обновления. в противном случае вводит (U). `t`|`t`блоков.|`t`блоков.|  
+|`t`входит в режим записи|`t`вводит (W).|`t`блоков.|`t`блоков. <sup>2</sup>|`t`блоков.|  
+  
+ <sup>1</sup> если `t` запускается в обновляемом режиме, он переходит в режим чтения. Это действие никогда не блокируется. Состояние блокировки не изменяется. (Поток может выполнить переход на более раннюю версию в режиме чтения путем выхода из обновляемого режима.)  
+  
+ <sup>2</sup> если `t` запускается в обновляемом режиме, он блокируется при наличии потоков в режиме чтения. В противном случае он обновляется до режима записи. Изменение состояния блокировки на запись (W). Если `t` блоки блокируются из-за наличия потоков в режиме чтения, он переходит в режим записи, как только последний поток выходит из режима чтения, даже если имеются потоки, ожидающие входа в режим записи.  
+  
+ Когда происходит изменение состояния, поскольку поток завершает блокировку, следующий поток для пробуждения выбирается следующим образом:  
+  
+-   Во-первых, поток, который ожидает режима записи и уже находится в обновляемом режиме (может существовать не более одного такого потока).  
+  
+-   Сбой этого потока, ожидающего режима записи.  
+  
+-   Сбой этого потока, ожидающего обновляемого режима.  
+  
+-   В таком случае все потоки ожидают режима чтения.  
+  
+ Последующее состояние блокировки всегда пишется (W) в первых двух случаях и обновляется (U) в третьем случае, независимо от состояния блокировки, когда поток выхода инициировал изменение состояния. В последнем случае состояние блокировки — Upgrade (U), если после изменения состояния поток находится в обновляемом режиме, а в противном случае — Read (R), независимо от предыдущего состояния.  
+  
+   
+  
+## Examples  
+ В следующем примере показан простой синхронизированный кэш, содержащий строки с целочисленными ключами. Экземпляр <xref:System.Threading.ReaderWriterLockSlim> используется для синхронизации доступа <xref:System.Collections.Generic.Dictionary%602> к, который служит внутренним кэшем.  
+  
+ Пример включает простые методы для добавления в кэш, удаления из кэша и чтения из кэша. Чтобы продемонстрировать время ожидания, пример включает метод, который добавляет в кэш только в том случае, если это возможно в течение заданного времени ожидания.  
+  
+ Чтобы продемонстрировать обновляемый режим, в примере используется метод, который получает значение, связанное с ключом, и сравнивает его с новым значением. Если значение не изменилось, метод возвращает состояние, указывающее на отсутствие изменений. Если для ключа не найдено значение, вставляется пара ключ/значение. Если значение изменилось, оно обновляется. Обновляемый режим позволяет потоку обновить доступ на чтение для записи при необходимости без риска взаимоблокировок.  
+  
+ Пример включает вложенное перечисление, которое указывает возвращаемые значения для метода, который демонстрирует обновляемый режим.  
+  
+ В примере используется конструктор без параметров для создания блокировки, поэтому рекурсия не разрешена. Программирование на <xref:System.Threading.ReaderWriterLockSlim> является более простым и менее подверженным ошибкам, если блокировка не допускает рекурсии.  
+  
+ [!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#11](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/classexample1.cs#11)]
+ [!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#11](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/classexample1.vb#11)]  
+[!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#12](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/classexample1.cs#12)]
+[!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#12](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/classexample1.vb#12)]  
+  
+ Следующий код использует `SynchronizedCache` объект для хранения словаря имен овощ. Он создает три задачи. Первый объект записывает имена овощей, хранящиеся в массиве, `SynchronizedCache` в экземпляр. Вторая и третья задачи отображают имена овощей, первый в возрастающем порядке (от нижнего индекса до верхнего индекса), второй в убывающем порядке. Последняя задача выполняет поиск строки "Cucumber" и при ее обнаружении вызывает <xref:System.Threading.ReaderWriterLockSlim.EnterUpgradeableReadLock%2A> метод для замены строки "Green Bean".  
+  
+ [!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#11](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/classexample1.cs#11)]
+ [!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#11](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/classexample1.vb#11)]  
+[!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#13](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/classexample1.cs#13)]
+[!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#13](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/classexample1.vb#13)]  
+  
+ ]]></format>
+    </remarks>
+    <threadsafe>Данный тип потокобезопасен.</threadsafe>
+  </Docs>
+  <Members>
+    <MemberGroup MemberName=".ctor">
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Threading.ReaderWriterLockSlim" />.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public ReaderWriterLockSlim ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLockSlim.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; ReaderWriterLockSlim();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Threading.ReaderWriterLockSlim" /> значениями свойств по умолчанию.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Объект <xref:System.Threading.ReaderWriterLockSlim> , инициализируемый с помощью этого конструктора, не допускает рекурсии. То есть свойство <xref:System.Threading.ReaderWriterLockSlim.RecursionPolicy%2A> возвращает значение <xref:System.Threading.LockRecursionPolicy.NoRecursion?displayProperty=nameWithType>.  
+  
+ Дополнительные сведения о политике рекурсии и ее эффектах см. в <xref:System.Threading.LockRecursionPolicy> разделе Перечисление <xref:System.Threading.ReaderWriterLockSlim> и класс.  
+  
+   
+  
+## Examples  
+ В следующем примере показан простой синхронизированный кэш, содержащий строки с целочисленными ключами. Экземпляр <xref:System.Threading.ReaderWriterLockSlim> используется для синхронизации доступа <xref:System.Collections.Generic.Dictionary%602> к, который служит внутренним кэшем. Конструктор без параметров используется для создания блокировки.  
+  
+ Пример включает простые методы для добавления в кэш, удаления из кэша и чтения из кэша. Чтобы продемонстрировать время ожидания, пример включает метод, который добавляет в кэш только в том случае, если это возможно в течение заданного времени ожидания.  
+  
+ Чтобы продемонстрировать обновляемый режим, в примере используется метод, который получает значение, связанное с ключом, и сравнивает его с новым значением. Если значение не изменилось, метод возвращает состояние, указывающее на отсутствие изменений. Если для ключа не найдено значение, вставляется пара ключ/значение. Если значение изменилось, оно обновляется. Обновляемый режим позволяет потоку обновить доступ на чтение для записи при необходимости без риска взаимоблокировок.  
+  
+ Пример включает вложенное перечисление, которое указывает возвращаемые значения для метода, который демонстрирует обновляемый режим.  
+  
+ В примере используется конструктор без параметров для создания блокировки, поэтому рекурсия не разрешена. Программирование на <xref:System.Threading.ReaderWriterLockSlim> является более простым и менее подверженным ошибкам, если блокировка не допускает рекурсии.  
+  
+ [!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#11](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/classexample1.cs#11)]
+ [!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#11](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/classexample1.vb#11)]  
+[!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#12](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/classexample1.cs#12)]
+[!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#12](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/classexample1.vb#12)]  
+  
+ Следующий код использует `SynchronizedCache` объект для хранения словаря имен овощ. Он создает три задачи. Первый объект записывает имена овощей, хранящиеся в массиве, `SynchronizedCache` в экземпляр. Вторая и третья задачи отображают имена овощей, первый в возрастающем порядке (от нижнего индекса до верхнего индекса), второй в убывающем порядке. Последняя задача выполняет поиск строки "Cucumber" и при ее обнаружении вызывает <xref:System.Threading.ReaderWriterLockSlim.EnterUpgradeableReadLock%2A> метод для замены строки "Green Bean".  
+  
+ [!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#11](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/classexample1.cs#11)]
+ [!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#11](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/classexample1.vb#11)]  
+[!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#13](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/classexample1.cs#13)]
+[!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#13](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/classexample1.vb#13)]  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.Threading.LockRecursionPolicy" />
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public ReaderWriterLockSlim (System.Threading.LockRecursionPolicy recursionPolicy);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(valuetype System.Threading.LockRecursionPolicy recursionPolicy) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLockSlim.#ctor(System.Threading.LockRecursionPolicy)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (recursionPolicy As LockRecursionPolicy)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; ReaderWriterLockSlim(System::Threading::LockRecursionPolicy recursionPolicy);" />
+      <MemberSignature Language="F#" Value="new System.Threading.ReaderWriterLockSlim : System.Threading.LockRecursionPolicy -&gt; System.Threading.ReaderWriterLockSlim" Usage="new System.Threading.ReaderWriterLockSlim recursionPolicy" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="recursionPolicy" Type="System.Threading.LockRecursionPolicy" />
+      </Parameters>
+      <Docs>
+        <param name="recursionPolicy">Одно из значений перечисления, определяющее политику рекурсии блокировки.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Threading.ReaderWriterLockSlim" /> с указанием политики рекурсии блокировки.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Политика рекурсии определяет ограничения для потоков, которые вводят блокировку несколько раз. Например, если блокировка была создана с помощью <xref:System.Threading.LockRecursionPolicy.NoRecursion?displayProperty=nameWithType> и поток вошел в блокировку в режиме чтения, возникает исключение, <xref:System.Threading.LockRecursionException> если поток пытается повторно войти в блокировку в режиме чтения. Аналогично, если поток вошел в блокировку в режиме записи, возникает <xref:System.Threading.LockRecursionException> исключение, если поток пытается повторно войти в блокировку в любом режиме.  
+  
+> [!NOTE]
+>  Поток в обновляемом режиме может обновиться до режима записи или перехода на более раннюю версию в режиме чтения независимо от параметра политики рекурсии блокировки.  
+  
+ Независимо от политики рекурсии потоку, который изначально перешел в режим чтения, запрещено обновление до обновляемого режима или режима записи, поскольку этот шаблон создает строгую вероятность взаимоблокировок.  
+  
+ Дополнительные сведения о политике рекурсии и ее эффектах см. в <xref:System.Threading.LockRecursionPolicy> разделе Перечисление <xref:System.Threading.ReaderWriterLockSlim> и класс.  
+  
+   
+  
+## Examples  
+ В следующем примере показаны два сценария исключений, один из которых зависит <xref:System.Threading.LockRecursionPolicy> от параметра, а другой — нет.  
+  
+ В первом сценарии поток переходит в режим чтения, а затем пытается войти в режим чтения рекурсивно. Если объект <xref:System.Threading.ReaderWriterLockSlim> создается с помощью конструктора без параметров, который устанавливает политику рекурсии в <xref:System.Threading.LockRecursionPolicy.NoRecursion?displayProperty=nameWithType>, создается исключение. Если <xref:System.Threading.LockRecursionPolicy.SupportsRecursion?displayProperty=nameWithType> используется для <xref:System.Threading.ReaderWriterLockSlim>создания, исключение не создается.  
+  
+ Во втором сценарии поток переходит в режим чтения, а затем пытается войти в режим записи. <xref:System.Threading.LockRecursionException>создается независимо от политики рекурсии блокировки.  
+  
+[!code-csharp[System.Threading.LockRecursionPolicy#11](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.LockRecursionPolicy/cs/ClassExample1.cs#11)] 
+[!code-vb[System.Threading.LockRecursionPolicy#11](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.LockRecursionPolicy/vb/ClassExample1.vb#11)]   
+[!code-csharp[System.Threading.LockRecursionPolicy#12](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.LockRecursionPolicy/cs/ClassExample1.cs#12)] 
+[!code-vb[System.Threading.LockRecursionPolicy#12](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.LockRecursionPolicy/vb/ClassExample1.vb#12)]  
+  
+ Следующий код использует `SynchronizedCache` объект для хранения словаря имен овощ. Он создает три задачи. Первый объект записывает имена овощей, хранящиеся в массиве, `SynchronizedCache` в экземпляр. Вторая и третья задачи отображают имена овощей, первый в возрастающем порядке (от нижнего индекса до верхнего индекса), второй в убывающем порядке. Последняя задача выполняет поиск строки "Cucumber" и при ее обнаружении вызывает <xref:System.Threading.ReaderWriterLockSlim.EnterUpgradeableReadLock%2A> метод для замены строки "Green Bean".  
+  
+[!code-csharp[System.Threading.LockRecursionPolicy#11](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.LockRecursionPolicy/cs/ClassExample1.cs#11)] 
+[!code-vb[System.Threading.LockRecursionPolicy#11](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.LockRecursionPolicy/vb/ClassExample1.vb#11)]   
+[!code-csharp[System.Threading.LockRecursionPolicy#13](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.LockRecursionPolicy/cs/ClassExample1.cs#13)] 
+[!code-vb[System.Threading.LockRecursionPolicy#13](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.LockRecursionPolicy/vb/ClassExample1.vb#13)]  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.Threading.LockRecursionPolicy" />
+        <altmember cref="P:System.Threading.ReaderWriterLockSlim.RecursionPolicy" />
+      </Docs>
+    </Member>
+    <Member MemberName="CurrentReadCount">
+      <MemberSignature Language="C#" Value="public int CurrentReadCount { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 CurrentReadCount" />
+      <MemberSignature Language="DocId" Value="P:System.Threading.ReaderWriterLockSlim.CurrentReadCount" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property CurrentReadCount As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int CurrentReadCount { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.CurrentReadCount : int" Usage="System.Threading.ReaderWriterLockSlim.CurrentReadCount" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает общее количество уникальных потоков, вошедших в блокировку в режиме чтения.</summary>
+        <value>Количество уникальных потоков, вошедших в блокировку в режиме чтения.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Поток учитывается только один раз, даже если блокировка допускает рекурсию и поток перешел в режим чтения несколько раз.  
+  
+ Это свойство используется только для отладки, профилирования и ведения журнала, а не для управления поведением алгоритма. Результаты могут измениться, как только они будут вычислены. Поэтому не рекомендуется принимать решения на основе этого свойства.  
+  
+   
+  
+## Examples  
+ В следующем примере показано, как использовать <xref:System.Threading.ReaderWriterLockSlim.CurrentReadCount%2A> свойство для создания записи в журнале событий, если число потоков в режиме чтения превышает пороговое значение.  
+  
+ [!code-csharp[System.Threading.ReaderWriterLockSlim_Aux#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/cs/source.cs#1)]
+ [!code-vb[System.Threading.ReaderWriterLockSlim_Aux#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/vb/source.vb#1)]  
+[!code-csharp[System.Threading.ReaderWriterLockSlim_Aux#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/cs/source.cs#2)]
+[!code-vb[System.Threading.ReaderWriterLockSlim_Aux#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/vb/source.vb#2)]  
+[!code-csharp[System.Threading.ReaderWriterLockSlim_Aux#11](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/cs/source.cs#11)]
+[!code-vb[System.Threading.ReaderWriterLockSlim_Aux#11](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/vb/source.vb#11)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Dispose">
+      <MemberSignature Language="C#" Value="public void Dispose ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void Dispose() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLockSlim.Dispose" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Dispose ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void Dispose();" />
+      <MemberSignature Language="F#" Value="abstract member Dispose : unit -&gt; unit&#xA;override this.Dispose : unit -&gt; unit" Usage="readerWriterLockSlim.Dispose " />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.IDisposable.Dispose</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Освобождает все ресурсы, используемые текущим экземпляром класса <see cref="T:System.Threading.ReaderWriterLockSlim" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вызовите метод <xref:System.Threading.ReaderWriterLockSlim.Dispose%2A> по окончании использования класса <xref:System.Threading.ReaderWriterLockSlim>. Метод <xref:System.Threading.ReaderWriterLockSlim.Dispose%2A> оставляет класс <xref:System.Threading.ReaderWriterLockSlim> в непригодном для использования состоянии. После вызова <xref:System.Threading.ReaderWriterLockSlim.Dispose%2A>необходимо освободить все ссылки <xref:System.Threading.ReaderWriterLockSlim> на, чтобы сборщик мусора мог освободить память, которую <xref:System.Threading.ReaderWriterLockSlim> занимают. Дополнительные сведения см. в разделе [Очистка неуправляемых ресурсов](~/docs/standard/garbage-collection/unmanaged.md) и [Реализация метода Dispose](~/docs/standard/garbage-collection/implementing-dispose.md).  
+  
+> [!NOTE]
+>  Всегда вызывайте <xref:System.Threading.ReaderWriterLockSlim.Dispose%2A> перед освобождением последней ссылки <xref:System.Threading.ReaderWriterLockSlim> на объект.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Threading.SynchronizationLockException">Значение параметра <see cref="P:System.Threading.ReaderWriterLockSlim.WaitingReadCount" /> больше нуля.  
+  
+- или - 
+ Значение параметра <see cref="P:System.Threading.ReaderWriterLockSlim.WaitingUpgradeCount" /> больше нуля.  
+  
+- или - 
+ Значение параметра <see cref="P:System.Threading.ReaderWriterLockSlim.WaitingWriteCount" /> больше нуля.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="EnterReadLock">
+      <MemberSignature Language="C#" Value="public void EnterReadLock ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void EnterReadLock() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLockSlim.EnterReadLock" />
+      <MemberSignature Language="VB.NET" Value="Public Sub EnterReadLock ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void EnterReadLock();" />
+      <MemberSignature Language="F#" Value="member this.EnterReadLock : unit -&gt; unit" Usage="readerWriterLockSlim.EnterReadLock " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Пытается выполнить вход в блокировку в режиме чтения.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод блокируется до тех пор, пока вызывающий поток не введет блокировку и, следовательно, никогда не вернет. <xref:System.Threading.ReaderWriterLockSlim.TryEnterReadLock%2A> Используйте метод для блокировки на указанный интервал, а затем вернитесь, если вызывающий поток не вошел в режим чтения в течение этого интервала.  
+  
+ Несколько потоков могут одновременно войти в режим чтения.  
+  
+ Если один или несколько потоков ожидают входа в режим записи, поток, вызывающий этот <xref:System.Threading.ReaderWriterLockSlim.EnterReadLock%2A> метод, блокируется до тех пор, пока эти потоки не истечет время ожидания или не перейдет в режим записи, а затем вышли из него.  
+  
+> [!NOTE]
+>  Если блокировка допускает рекурсию, поток, который вошел в блокировку в режиме чтения, может войти в режим чтения рекурсивно, даже если другие потоки ожидают входа в режим записи.  
+  
+ Не более одного потока может находиться в обновляемом режиме, в то время как другие потоки находятся в режиме чтения. Если дополнительные потоки ожидают входа в обновляемый режим и отсутствуют потоки, ожидающие входа в режим записи, потоки, вызывающие этот <xref:System.Threading.ReaderWriterLockSlim.EnterReadLock%2A> метод, немедленно переводятся в режим чтения и не блокируют.  
+  
+   
+  
+## Examples  
+ В следующем примере показано, как использовать <xref:System.Threading.ReaderWriterLockSlim.EnterReadLock%2A> метод для входа в блокировку в режиме чтения. Метод, показанный в примере, извлекает значение, связанное с ключом. Если ключ не найден, исключение, созданное внутренним <xref:System.Collections.Generic.Dictionary%602> , может завершить метод. Блок используется для <xref:System.Threading.ReaderWriterLockSlim.ExitReadLock%2A> выполнения метода, гарантируя, что вызывающий объект выходит из режима чтения. `finally`  
+  
+ Этот код является частью большого примера, <xref:System.Threading.ReaderWriterLockSlim> приведенного для класса.  
+  
+ [!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/source.cs#2)]
+ [!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/source.vb#2)]  
+[!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#3](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/source.cs#3)]
+[!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#3](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/source.vb#3)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Threading.LockRecursionException">Свойство <see cref="P:System.Threading.ReaderWriterLockSlim.RecursionPolicy" /> имеет значение <see cref="F:System.Threading.LockRecursionPolicy.NoRecursion" />, и текущий поток попытался получить блокировку чтения, когда уже удерживает эту блокировку чтения.  
+  
+- или - 
+Свойство <see cref="P:System.Threading.ReaderWriterLockSlim.RecursionPolicy" /> имеет значение <see cref="F:System.Threading.LockRecursionPolicy.NoRecursion" />, и текущий поток попытался получить блокировку записи, когда уже удерживает эту блокировку записи.  
+  
+-или- 
+Глубина рекурсии превышает емкость счетчика. Данное ограничение настолько велико, что приложения никогда не должны столкнуться с этим исключением.</exception>
+        <exception cref="T:System.ObjectDisposedException">Объект <see cref="T:System.Threading.ReaderWriterLockSlim" /> был удален.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="EnterUpgradeableReadLock">
+      <MemberSignature Language="C#" Value="public void EnterUpgradeableReadLock ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void EnterUpgradeableReadLock() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLockSlim.EnterUpgradeableReadLock" />
+      <MemberSignature Language="VB.NET" Value="Public Sub EnterUpgradeableReadLock ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void EnterUpgradeableReadLock();" />
+      <MemberSignature Language="F#" Value="member this.EnterUpgradeableReadLock : unit -&gt; unit" Usage="readerWriterLockSlim.EnterUpgradeableReadLock " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Пытается выполнить вход в блокировку в обновляемом режиме.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод блокируется до тех пор, пока вызывающий поток не введет блокировку и, следовательно, никогда не вернет. <xref:System.Threading.ReaderWriterLockSlim.TryEnterUpgradeableReadLock%2A> Используйте метод для блокировки на указанный интервал, а затем вернитесь, если вызывающий поток не вошел в обновляемый режим в течение этого интервала.  
+  
+ Используйте обновляемый режим, когда поток обычно обращается к ресурсу, защищенному <xref:System.Threading.ReaderWriterLockSlim> в режиме чтения, но при соблюдении определенных условий может потребоваться вход в режим записи. Поток в обновляемом режиме можно понизить до режима чтения или обновить до режима записи.  
+  
+ Только один поток может войти в обновляемый режим в любое заданное время. Если поток находится в обновляемом режиме и отсутствуют потоки, ожидающие входа в режим записи, любое число других потоков может войти в режим чтения, даже если есть потоки, ожидающие входа в обновляемый режим.  
+  
+ Если один или несколько потоков ожидают входа в режим записи, поток, вызывающий этот <xref:System.Threading.ReaderWriterLockSlim.EnterUpgradeableReadLock%2A> метод, блокируется до тех пор, пока эти потоки не истечет время ожидания или не перейдет в режим записи, а затем вышли из него.  
+  
+> [!NOTE]
+>  Если блокировка допускает рекурсию, поток, который вошел в блокировку в обновляемом режиме, может войти в обновляемый режим рекурсивно, даже если другие потоки ожидают входа в режим записи.  
+  
+   
+  
+## Examples  
+ В следующем примере показано, как использовать <xref:System.Threading.ReaderWriterLockSlim.EnterUpgradeableReadLock%2A> метод для входа в блокировку в обновляемом режиме. Блок используется для <xref:System.Threading.ReaderWriterLockSlim.ExitUpgradeableReadLock%2A> выполнения метода, гарантируя, что вызывающий объект завершает обновляемый режим. `finally`  
+  
+ Метод, показанный в примере, извлекает значение, связанное с ключом, и сравнивает его с новым значением. Если значение не изменилось, метод возвращает состояние, указывающее на отсутствие изменений. Для ключа не найдено значение, вставляется пара "ключ — значение". Если значение изменилось, оно обновляется. Обновляемый режим позволяет потоку обновлять блокировку чтения по мере необходимости без риска взаимоблокировок.  
+  
+ В примере используется конструктор без параметров для создания блокировки, поэтому рекурсия не разрешена. Программирование на <xref:System.Threading.ReaderWriterLockSlim> является более простым и менее подверженным ошибкам, если блокировка не допускает рекурсии.  
+  
+ Этот код является частью большого примера, <xref:System.Threading.ReaderWriterLockSlim> приведенного для класса.  
+  
+ [!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/source.cs#2)]
+ [!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/source.vb#2)]  
+[!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#6](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/source.cs#6)]
+[!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#6](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/source.vb#6)]  
+[!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#10](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/source.cs#10)]
+[!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#10](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/source.vb#10)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Threading.LockRecursionException">Свойство <see cref="P:System.Threading.ReaderWriterLockSlim.RecursionPolicy" /> имеет значение <see cref="F:System.Threading.LockRecursionPolicy.NoRecursion" />, а текущий поток уже вошел в блокировку в любом из режимов.  
+  
+-или- 
+Текущий поток вошел в режим чтения, поэтому попытка войти в обновляемый режим создаст возможность взаимоблокировки.  
+  
+-или- 
+Глубина рекурсии превышает емкость счетчика. Ограничение допускает настолько большое число рекурсивных вхождений, что оно не должно достигаться приложениями на практике.</exception>
+        <exception cref="T:System.ObjectDisposedException">Объект <see cref="T:System.Threading.ReaderWriterLockSlim" /> был удален.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="EnterWriteLock">
+      <MemberSignature Language="C#" Value="public void EnterWriteLock ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void EnterWriteLock() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLockSlim.EnterWriteLock" />
+      <MemberSignature Language="VB.NET" Value="Public Sub EnterWriteLock ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void EnterWriteLock();" />
+      <MemberSignature Language="F#" Value="member this.EnterWriteLock : unit -&gt; unit" Usage="readerWriterLockSlim.EnterWriteLock " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Пытается выполнить вход в блокировку в режиме записи.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод блокируется до тех пор, пока вызывающий поток не введет блокировку и, следовательно, никогда не вернет. <xref:System.Threading.ReaderWriterLockSlim.TryEnterWriteLock%2A> Используйте метод для блокировки на указанный интервал, а затем вернитесь, если вызывающий поток не вошел в режим записи в течение этого интервала.  
+  
+ Если другие потоки перешли в режим чтения, поток, который вызывает <xref:System.Threading.ReaderWriterLockSlim.EnterWriteLock%2A> блокировку метода, пока эти потоки не вышли из режима чтения. При наличии потоков, ожидающих входа в режим записи, дополнительные потоки, пытающиеся войти в режим чтения или обновляемый блок режима, пока не истечет время ожидания всех потоков, ожидающих входа в режим записи, или не перейдет в режим записи, а затем завершили работу.  
+  
+> [!NOTE]
+>  Если блокировка допускает рекурсию, поток, который вошел в блокировку в режиме записи, может войти в режим записи рекурсивно, даже если другие потоки ожидают входа в режим записи.  
+  
+   
+  
+## Examples  
+ В следующем примере показано, как использовать <xref:System.Threading.ReaderWriterLockSlim.EnterWriteLock%2A> метод для входа в блокировку в режиме записи. Метод, показанный в примере, добавляет новую пару «ключ-значение» в синхронизированный кэш. Если ключ уже находится в кэше, исключение, созданное внутренним <xref:System.Collections.Generic.Dictionary%602> объектом, может завершить метод. Блок используется для <xref:System.Threading.ReaderWriterLockSlim.ExitWriteLock%2A> выполнения метода, гарантируя, что вызывающий объект выходит из режима записи. `finally`  
+  
+ Этот код является частью большого примера, <xref:System.Threading.ReaderWriterLockSlim> приведенного для класса.  
+  
+ [!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/source.cs#2)]
+ [!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/source.vb#2)]  
+[!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#4](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/source.cs#4)]
+[!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#4](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/source.vb#4)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Threading.LockRecursionException">Свойство <see cref="P:System.Threading.ReaderWriterLockSlim.RecursionPolicy" /> имеет значение <see cref="F:System.Threading.LockRecursionPolicy.NoRecursion" />, а текущий поток уже вошел в блокировку в любом из режимов.  
+  
+-или- 
+Текущий поток вступил в режим чтения и еще не имеет блокировки записи, поэтому попытка войти в режим блокировки в режиме записи создаст возможность взаимоблокировки.  
+  
+-или- 
+Глубина рекурсии превышает емкость счетчика. Ограничение допускает настолько большое число рекурсивных вхождений, что оно не должно достигаться приложениями на практике.</exception>
+        <exception cref="T:System.ObjectDisposedException">Объект <see cref="T:System.Threading.ReaderWriterLockSlim" /> был удален.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="ExitReadLock">
+      <MemberSignature Language="C#" Value="public void ExitReadLock ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void ExitReadLock() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLockSlim.ExitReadLock" />
+      <MemberSignature Language="VB.NET" Value="Public Sub ExitReadLock ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void ExitReadLock();" />
+      <MemberSignature Language="F#" Value="member this.ExitReadLock : unit -&gt; unit" Usage="readerWriterLockSlim.ExitReadLock " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Уменьшает счетчик глубины рекурсии для режима чтения, и выходит из режима чтения, если значение счетчик принял значение 0 (нуль).</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод не зависит от порядка рекурсии. Например, если поток входит в блокировку в обновляемом режиме, а затем входит в блокировку в режиме чтения, то порядок, в котором поток выходит из двух режимов, не имеет значения. Если блокировка допускает рекурсию, поток может войти в блокировку в режиме записи, а затем ввести ее рекурсивно в режиме чтения. порядок, в котором поток выходит из режима чтения и записи, не имеет значения.  
+  
+ Выход из блокировки может подать сигнал другим ожидающим потокам.  
+  
+   
+  
+## Examples  
+ В следующем примере показано, как использовать `finally` блок для <xref:System.Threading.ReaderWriterLockSlim.ExitReadLock%2A> выполнения метода, гарантируя, что вызывающий объект выходит из режима чтения. Метод, показанный в примере, извлекает значение, связанное с ключом. Если ключ не найден, исключение, созданное внутренним <xref:System.Collections.Generic.Dictionary%602> , может завершить метод. <xref:System.Threading.ReaderWriterLockSlim.EnterReadLock%2A> Метод используется для входа в режим чтения.  
+  
+ Этот код является частью большого примера, <xref:System.Threading.ReaderWriterLockSlim> приведенного для класса.  
+  
+ [!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/source.cs#2)]
+ [!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/source.vb#2)]  
+[!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#3](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/source.cs#3)]
+[!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#3](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/source.vb#3)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Threading.SynchronizationLockException">Текущий поток не вошел в блокировку в режиме чтения.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="ExitUpgradeableReadLock">
+      <MemberSignature Language="C#" Value="public void ExitUpgradeableReadLock ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void ExitUpgradeableReadLock() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLockSlim.ExitUpgradeableReadLock" />
+      <MemberSignature Language="VB.NET" Value="Public Sub ExitUpgradeableReadLock ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void ExitUpgradeableReadLock();" />
+      <MemberSignature Language="F#" Value="member this.ExitUpgradeableReadLock : unit -&gt; unit" Usage="readerWriterLockSlim.ExitUpgradeableReadLock " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Уменьшает счетчик глубины рекурсии для обновляемого режима, и выходит из обновляемого режима, если счетчик принял значение 0 (нуль).</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод не зависит от порядка рекурсии. Например, если поток входит в блокировку в обновляемом режиме, а затем входит в блокировку в режиме записи, то порядок, в котором поток выходит из двух режимов, не имеет значения. Если блокировка допускает рекурсию, поток может войти в блокировку в режиме записи, а затем ввести ее рекурсивно в обновляемом режиме. порядок, в котором поток выходит из обновляемого режима и режима записи, не имеет значения.  
+  
+ Выход из блокировки может подать сигнал другим ожидающим потокам.  
+  
+   
+  
+## Examples  
+ В следующем примере показано, как использовать `finally` блок для <xref:System.Threading.ReaderWriterLockSlim.ExitUpgradeableReadLock%2A> выполнения метода, гарантируя, что вызывающий объект завершает обновляемый режим.  
+  
+ Метод, показанный в примере, извлекает значение, связанное с ключом, и сравнивает его с новым значением. Если значение не изменилось, метод возвращает состояние, указывающее на отсутствие изменений. Для ключа не найдено значение, вставляется пара "ключ — значение". Если значение изменилось, оно обновляется. Обновляемый режим позволяет потоку обновлять блокировку чтения по мере необходимости без риска взаимоблокировок.  
+  
+ В примере используется конструктор без параметров для создания блокировки, поэтому рекурсия не разрешена. Программирование на <xref:System.Threading.ReaderWriterLockSlim> является более простым и менее подверженным ошибкам, если блокировка не допускает рекурсии.  
+  
+ Этот код является частью большого примера, <xref:System.Threading.ReaderWriterLockSlim> приведенного для класса.  
+  
+ [!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/source.cs#2)]
+ [!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/source.vb#2)]  
+[!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#6](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/source.cs#6)]
+[!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#6](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/source.vb#6)]  
+[!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#10](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/source.cs#10)]
+[!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#10](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/source.vb#10)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Threading.SynchronizationLockException">Текущий поток не вошел в блокировку в обновляемом режиме.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="ExitWriteLock">
+      <MemberSignature Language="C#" Value="public void ExitWriteLock ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void ExitWriteLock() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLockSlim.ExitWriteLock" />
+      <MemberSignature Language="VB.NET" Value="Public Sub ExitWriteLock ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void ExitWriteLock();" />
+      <MemberSignature Language="F#" Value="member this.ExitWriteLock : unit -&gt; unit" Usage="readerWriterLockSlim.ExitWriteLock " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Уменьшает счетчик глубины рекурсии для режима записи, и выходит из режима записи, если счетчик принял значение 0 (нуль).</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод не зависит от порядка рекурсии. Например, если поток входит в блокировку в обновляемом режиме, а затем входит в блокировку в режиме записи, то порядок, в котором поток выходит из двух режимов, не имеет значения. Если блокировка допускает рекурсию, поток может войти в блокировку в режиме записи, а затем ввести ее рекурсивно в режиме чтения. порядок, в котором поток выходит из режима чтения и записи, не имеет значения.  
+  
+ Выход из блокировки может подать сигнал другим ожидающим потокам.  
+  
+   
+  
+## Examples  
+ В следующем примере показано, как использовать `finally` блок для <xref:System.Threading.ReaderWriterLockSlim.ExitWriteLock%2A> выполнения метода, гарантируя, что вызывающий объект выходит из режима записи. Метод, показанный в примере, добавляет новую пару «ключ-значение» в синхронизированный кэш. Если ключ уже находится в кэше, исключение, созданное внутренним <xref:System.Collections.Generic.Dictionary%602> объектом, может завершить метод. <xref:System.Threading.ReaderWriterLockSlim.EnterWriteLock%2A> Метод используется для входа в блокировку в режиме записи.  
+  
+ Этот код является частью большого примера, <xref:System.Threading.ReaderWriterLockSlim> приведенного для класса.  
+  
+ [!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/source.cs#2)]
+ [!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/source.vb#2)]  
+[!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#4](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/source.cs#4)]
+[!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#4](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/source.vb#4)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Threading.SynchronizationLockException">Текущий поток не вошел в блокировку в режиме записи.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="IsReadLockHeld">
+      <MemberSignature Language="C#" Value="public bool IsReadLockHeld { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool IsReadLockHeld" />
+      <MemberSignature Language="DocId" Value="P:System.Threading.ReaderWriterLockSlim.IsReadLockHeld" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property IsReadLockHeld As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool IsReadLockHeld { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.IsReadLockHeld : bool" Usage="System.Threading.ReaderWriterLockSlim.IsReadLockHeld" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, указывающее, вошел ли текущий поток в блокировку в режиме чтения.</summary>
+        <value>Значение <see langword="true" />, если текущий поток вошел в режим чтения, в противном случае – <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Это свойство предназначено для использования в утверждениях или для других целей отладки. Не используйте его для управления потоком выполнения программы.  
+  
+   
+  
+## Examples  
+ В следующем примере показано, как использовать <xref:System.Threading.ReaderWriterLockSlim.IsReadLockHeld%2A> свойство для создания Assert, если текущий поток неожиданно перешел в режим чтения.  
+  
+ [!code-csharp[System.Threading.ReaderWriterLockSlim_Aux#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/cs/source.cs#1)]
+ [!code-vb[System.Threading.ReaderWriterLockSlim_Aux#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/vb/source.vb#1)]  
+[!code-csharp[System.Threading.ReaderWriterLockSlim_Aux#21](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/cs/source.cs#21)]
+[!code-vb[System.Threading.ReaderWriterLockSlim_Aux#21](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/vb/source.vb#21)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="IsUpgradeableReadLockHeld">
+      <MemberSignature Language="C#" Value="public bool IsUpgradeableReadLockHeld { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool IsUpgradeableReadLockHeld" />
+      <MemberSignature Language="DocId" Value="P:System.Threading.ReaderWriterLockSlim.IsUpgradeableReadLockHeld" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property IsUpgradeableReadLockHeld As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool IsUpgradeableReadLockHeld { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.IsUpgradeableReadLockHeld : bool" Usage="System.Threading.ReaderWriterLockSlim.IsUpgradeableReadLockHeld" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, указывающее, вошел ли текущий поток в блокировку в обновляемом режиме.</summary>
+        <value>Значение <see langword="true" />, если текущий поток вошел в обновляемый режим, противном случае – <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Это свойство предназначено для использования в утверждениях или для других целей отладки. Не используйте его для управления потоком выполнения программы.  
+  
+   
+  
+## Examples  
+ В следующем примере показано, как использовать <xref:System.Threading.ReaderWriterLockSlim.IsUpgradeableReadLockHeld%2A> свойство для создания Assert, если текущий поток неожиданно перешел в обновляемый режим.  
+  
+ [!code-csharp[System.Threading.ReaderWriterLockSlim_Aux#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/cs/source.cs#1)]
+ [!code-vb[System.Threading.ReaderWriterLockSlim_Aux#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/vb/source.vb#1)]  
+[!code-csharp[System.Threading.ReaderWriterLockSlim_Aux#22](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/cs/source.cs#22)]
+[!code-vb[System.Threading.ReaderWriterLockSlim_Aux#22](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/vb/source.vb#22)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="IsWriteLockHeld">
+      <MemberSignature Language="C#" Value="public bool IsWriteLockHeld { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool IsWriteLockHeld" />
+      <MemberSignature Language="DocId" Value="P:System.Threading.ReaderWriterLockSlim.IsWriteLockHeld" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property IsWriteLockHeld As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool IsWriteLockHeld { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.IsWriteLockHeld : bool" Usage="System.Threading.ReaderWriterLockSlim.IsWriteLockHeld" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, указывающее, вошел ли текущий поток в блокировку в режиме записи.</summary>
+        <value>Значение <see langword="true" />, если текущий поток вошел в режим записи, в противном случае – <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Это свойство предназначено для использования в утверждениях или для других целей отладки. Не используйте его для управления потоком выполнения программы.  
+  
+   
+  
+## Examples  
+ В следующем примере показано, как использовать <xref:System.Threading.ReaderWriterLockSlim.IsWriteLockHeld%2A> свойство для создания Assert, если текущий поток неожиданно перешел в режим записи.  
+  
+ [!code-csharp[System.Threading.ReaderWriterLockSlim_Aux#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/cs/source.cs#1)]
+ [!code-vb[System.Threading.ReaderWriterLockSlim_Aux#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/vb/source.vb#1)]  
+[!code-csharp[System.Threading.ReaderWriterLockSlim_Aux#23](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/cs/source.cs#23)]
+[!code-vb[System.Threading.ReaderWriterLockSlim_Aux#23](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/vb/source.vb#23)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="RecursionPolicy">
+      <MemberSignature Language="C#" Value="public System.Threading.LockRecursionPolicy RecursionPolicy { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance valuetype System.Threading.LockRecursionPolicy RecursionPolicy" />
+      <MemberSignature Language="DocId" Value="P:System.Threading.ReaderWriterLockSlim.RecursionPolicy" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property RecursionPolicy As LockRecursionPolicy" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Threading::LockRecursionPolicy RecursionPolicy { System::Threading::LockRecursionPolicy get(); };" />
+      <MemberSignature Language="F#" Value="member this.RecursionPolicy : System.Threading.LockRecursionPolicy" Usage="System.Threading.ReaderWriterLockSlim.RecursionPolicy" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Threading.LockRecursionPolicy</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, указывающее политику рекурсии для текущего объекта <see cref="T:System.Threading.ReaderWriterLockSlim" />.</summary>
+        <value>Одно из значений перечисления, определяющее политику рекурсии блокировки.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Политика рекурсии определяет ограничения для потоков, которые вводят блокировку несколько раз. Например, если блокировка была создана с помощью <xref:System.Threading.LockRecursionPolicy.NoRecursion?displayProperty=nameWithType> и поток вошел в блокировку в режиме чтения, возникает исключение, <xref:System.Threading.LockRecursionException> если поток пытается повторно войти в блокировку в режиме чтения.  
+  
+> [!NOTE]
+>  Поток в обновляемом режиме может обновиться до режима записи или перехода на более раннюю версию в режиме чтения независимо от параметра политики рекурсии блокировки.  
+  
+ Независимо от политики рекурсии потоку, который изначально перешел в режим чтения, запрещено обновление до обновляемого режима или режима записи, поскольку этот шаблон создает строгую вероятность взаимоблокировок.  
+  
+ Дополнительные сведения о политике рекурсии и ее эффектах см. в <xref:System.Threading.LockRecursionPolicy> разделе Перечисление <xref:System.Threading.ReaderWriterLockSlim> и класс.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.Threading.LockRecursionException" />
+      </Docs>
+    </Member>
+    <Member MemberName="RecursiveReadCount">
+      <MemberSignature Language="C#" Value="public int RecursiveReadCount { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 RecursiveReadCount" />
+      <MemberSignature Language="DocId" Value="P:System.Threading.ReaderWriterLockSlim.RecursiveReadCount" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property RecursiveReadCount As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int RecursiveReadCount { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.RecursiveReadCount : int" Usage="System.Threading.ReaderWriterLockSlim.RecursiveReadCount" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает количество раз, которые текущий поток входил в блокировку в режиме чтения, как показатель рекурсии.</summary>
+        <value>0 (нуль), если текущий поток не вошел в режим чтения, 1, если поток вошел в режим чтения, но не рекурсивно, или *n*, если поток вошел в блокировку рекурсивно *n* - 1 раз.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Это свойство используется только для отладки, профилирования и ведения журнала, а не для управления поведением алгоритма. Результаты могут измениться, как только они будут вычислены. Поэтому не рекомендуется принимать решения на основе этого свойства.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="RecursiveUpgradeCount">
+      <MemberSignature Language="C#" Value="public int RecursiveUpgradeCount { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 RecursiveUpgradeCount" />
+      <MemberSignature Language="DocId" Value="P:System.Threading.ReaderWriterLockSlim.RecursiveUpgradeCount" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property RecursiveUpgradeCount As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int RecursiveUpgradeCount { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.RecursiveUpgradeCount : int" Usage="System.Threading.ReaderWriterLockSlim.RecursiveUpgradeCount" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает количество раз, которые текущий поток входил в блокировку в обновляемом режиме, как показатель рекурсии.</summary>
+        <value>0 (нуль), если текущий поток не вошел в обновляемый режим, 1, если поток вошел в обновляемый режим, но не рекурсивно, или *n*, если поток вошел в обновляемый режим рекурсивно *n* - 1 раз.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Это свойство используется только для отладки, профилирования и ведения журнала, а не для управления поведением алгоритма. Результаты могут измениться, как только они будут вычислены. Поэтому не рекомендуется принимать решения на основе этого свойства.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="RecursiveWriteCount">
+      <MemberSignature Language="C#" Value="public int RecursiveWriteCount { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 RecursiveWriteCount" />
+      <MemberSignature Language="DocId" Value="P:System.Threading.ReaderWriterLockSlim.RecursiveWriteCount" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property RecursiveWriteCount As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int RecursiveWriteCount { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.RecursiveWriteCount : int" Usage="System.Threading.ReaderWriterLockSlim.RecursiveWriteCount" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает количество раз, которые текущий поток входил в блокировку в режиме записи, как показатель рекурсии.</summary>
+        <value>0 (нуль), если текущий поток, не вошел в режим записи, 1, если поток вошел в режим записи, но не рекурсивно, или *n*, если поток вошел в режим записи рекурсивно *n* - 1 раз.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Это свойство используется только для отладки, профилирования и ведения журнала, а не для управления поведением алгоритма. Результаты могут измениться, как только они будут вычислены. Поэтому не рекомендуется принимать решения на основе этого свойства.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="TryEnterReadLock">
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Пытается войти в блокировку в режиме чтения с необязательным указанием времени ожидания.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="TryEnterReadLock">
+      <MemberSignature Language="C#" Value="public bool TryEnterReadLock (int millisecondsTimeout);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance bool TryEnterReadLock(int32 millisecondsTimeout) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLockSlim.TryEnterReadLock(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Function TryEnterReadLock (millisecondsTimeout As Integer) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; bool TryEnterReadLock(int millisecondsTimeout);" />
+      <MemberSignature Language="F#" Value="member this.TryEnterReadLock : int -&gt; bool" Usage="readerWriterLockSlim.TryEnterReadLock millisecondsTimeout" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="millisecondsTimeout" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="millisecondsTimeout">Время ожидания в миллисекундах или -1 (<see cref="F:System.Threading.Timeout.Infinite" />) для неограниченного времени ожидания.</param>
+        <summary>Пытается войти в блокировку в режиме чтения с необязательным указанием времени ожидания целым числом.</summary>
+        <returns>Значение <see langword="true" />, если вызывающий поток вошел в режим чтения, иначе — <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если `millisecondsTimeout` имеет значение 0 (ноль), этот метод проверяет состояние блокировки и немедленно `false` возвращает значение, если требуемое состояние недоступно.  
+  
+ Несколько потоков могут одновременно войти в режим чтения.  
+  
+ Если один или несколько потоков ожидают входа в режим записи, то поток, вызывающий этот <xref:System.Threading.ReaderWriterLockSlim.TryEnterReadLock%2A> метод, блокируется до истечения времени ожидания или перехода в режим записи, а затем выхода из него или до окончания срока ожидания вызывающего потока.  
+  
+> [!NOTE]
+>  Если блокировка допускает рекурсию, поток, который вошел в блокировку в режиме чтения, может войти в режим чтения рекурсивно, даже если другие потоки ожидают входа в режим записи.  
+  
+ Один поток может находиться в обновляемом режиме, в то время как другие потоки находятся в режиме чтения. Если дополнительные потоки ожидают входа в обновляемый режим и отсутствуют потоки, ожидающие входа в режим записи, потоки, вызывающие этот <xref:System.Threading.ReaderWriterLockSlim.TryEnterReadLock%2A> метод, немедленно переводятся в режим чтения и не блокируют.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Threading.LockRecursionException">Свойство <see cref="P:System.Threading.ReaderWriterLockSlim.RecursionPolicy" /> имеет значение <see cref="F:System.Threading.LockRecursionPolicy.NoRecursion" />, а текущий поток уже вошел в блокировку.  
+  
+- или - 
+Глубина рекурсии превышает емкость счетчика. Ограничение допускает настолько большое число рекурсивных вхождений, что оно не должно достигаться приложениями на практике.</exception>
+        <exception cref="T:System.ArgumentOutOfRangeException">Значение параметра <paramref name="millisecondsTimeout" /> меньше нуля, но не равно <see cref="F:System.Threading.Timeout.Infinite" /> (-1), которое является единственным допустимым отрицательным значением.</exception>
+        <exception cref="T:System.ObjectDisposedException">Объект <see cref="T:System.Threading.ReaderWriterLockSlim" /> был удален.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="TryEnterReadLock">
+      <MemberSignature Language="C#" Value="public bool TryEnterReadLock (TimeSpan timeout);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance bool TryEnterReadLock(valuetype System.TimeSpan timeout) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLockSlim.TryEnterReadLock(System.TimeSpan)" />
+      <MemberSignature Language="VB.NET" Value="Public Function TryEnterReadLock (timeout As TimeSpan) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; bool TryEnterReadLock(TimeSpan timeout);" />
+      <MemberSignature Language="F#" Value="member this.TryEnterReadLock : TimeSpan -&gt; bool" Usage="readerWriterLockSlim.TryEnterReadLock timeout" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="timeout" Type="System.TimeSpan" />
+      </Parameters>
+      <Docs>
+        <param name="timeout">Период ожидания или значение -1 миллисекунда для ожидания неограниченное время.</param>
+        <summary>Пытается войти в блокировку в режиме чтения с необязательным указанием времени ожидания.</summary>
+        <returns>Значение <see langword="true" />, если вызывающий поток вошел в режим чтения, иначе — <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если `timeout` имеет значение 0 (ноль), этот метод проверяет состояние блокировки и немедленно `false` возвращает значение, если требуемое состояние недоступно.  
+  
+ Несколько потоков могут одновременно войти в блокировку в режиме чтения.  
+  
+ Если один или несколько потоков помещаются в очередь для входа в режим записи, то поток, <xref:System.Threading.ReaderWriterLockSlim.TryEnterReadLock%2A> вызывающий этот метод, блокируется до истечения времени ожидания или перехода в режим записи, а затем выхода из него или до тех пор, пока не истечет собственный интервал времени ожидания вызывающего потока.  
+  
+> [!NOTE]
+>  Если блокировка допускает рекурсию, поток, который вошел в блокировку в режиме чтения, может войти в режим чтения рекурсивно, даже если другие потоки ожидают входа в режим записи.  
+  
+ Один поток может находиться в обновляемом режиме, в то время как другие потоки находятся в режиме чтения. Если дополнительные потоки ожидают входа в обновляемый режим и отсутствуют потоки, ожидающие входа в режим записи, потоки, вызывающие этот <xref:System.Threading.ReaderWriterLockSlim.TryEnterReadLock%2A> метод, немедленно переводятся в режим чтения и не блокируют.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Threading.LockRecursionException">Свойство <see cref="P:System.Threading.ReaderWriterLockSlim.RecursionPolicy" /> имеет значение <see cref="F:System.Threading.LockRecursionPolicy.NoRecursion" />, а текущий поток уже вошел в блокировку.  
+  
+- или - 
+Глубина рекурсии превышает емкость счетчика. Ограничение допускает настолько большое число рекурсивных вхождений, что оно не должно достигаться приложениями на практике.</exception>
+        <exception cref="T:System.ArgumentOutOfRangeException">Значение параметра <paramref name="timeout" /> отрицательное, но оно не равно -1 миллисекунде, которое является единственным допустимым отрицательным значением.  
+  
+-или- 
+Значение <paramref name="timeout" /> больше <see cref="F:System.Int32.MaxValue" /> миллисекунд.</exception>
+        <exception cref="T:System.ObjectDisposedException">Объект <see cref="T:System.Threading.ReaderWriterLockSlim" /> был удален.</exception>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="TryEnterUpgradeableReadLock">
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Пытается войти в блокировку в обновляемом режиме с необязательным указанием времени ожидания.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="TryEnterUpgradeableReadLock">
+      <MemberSignature Language="C#" Value="public bool TryEnterUpgradeableReadLock (int millisecondsTimeout);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance bool TryEnterUpgradeableReadLock(int32 millisecondsTimeout) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLockSlim.TryEnterUpgradeableReadLock(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Function TryEnterUpgradeableReadLock (millisecondsTimeout As Integer) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; bool TryEnterUpgradeableReadLock(int millisecondsTimeout);" />
+      <MemberSignature Language="F#" Value="member this.TryEnterUpgradeableReadLock : int -&gt; bool" Usage="readerWriterLockSlim.TryEnterUpgradeableReadLock millisecondsTimeout" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="millisecondsTimeout" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="millisecondsTimeout">Время ожидания в миллисекундах или -1 (<see cref="F:System.Threading.Timeout.Infinite" />) для неограниченного времени ожидания.</param>
+        <summary>Пытается войти в блокировку в обновляемом режиме с необязательным указанием времени ожидания.</summary>
+        <returns>Значение <see langword="true" />, если вызывающий поток вошел в обновляемый режим, иначе — <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если `millisecondsTimeout` имеет значение 0 (ноль), этот метод проверяет состояние блокировки и немедленно `false` возвращает значение, если требуемое состояние недоступно.  
+  
+ Используйте обновляемый режим, когда поток обычно обращается к ресурсу, защищенному <xref:System.Threading.ReaderWriterLockSlim> в режиме чтения, но при соблюдении определенных условий может потребоваться вход в режим записи. Поток в обновляемом режиме может обновиться до режима записи или перехода на более раннюю версию в режиме чтения.  
+  
+ Только один поток может войти в блокировку в обновляемом режиме в любое заданное время. Если поток находится в обновляемом режиме и отсутствуют потоки, ожидающие входа в режим записи, любое число других потоков может войти в режим чтения, даже если есть потоки, ожидающие входа в обновляемый режим.  
+  
+ Если один или несколько потоков ожидают входа в режим записи, то поток, вызывающий этот <xref:System.Threading.ReaderWriterLockSlim.TryEnterUpgradeableReadLock%2A> метод, блокируется до истечения времени ожидания или перехода в режим записи, а затем выхода из него или до окончания срока ожидания вызывающего потока.  
+  
+> [!NOTE]
+>  Если блокировка допускает рекурсию, поток, который вошел в блокировку в обновляемом режиме, может войти в обновляемый режим рекурсивно, даже если другие потоки ожидают входа в режим записи.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Threading.LockRecursionException">Свойство <see cref="P:System.Threading.ReaderWriterLockSlim.RecursionPolicy" /> имеет значение <see cref="F:System.Threading.LockRecursionPolicy.NoRecursion" />, а текущий поток уже вошел в блокировку.  
+  
+- или - 
+Текущий поток изначально вошел в блокировку в режиме чтения, поэтому попытка войти в обновляемый режим создаст возможность взаимоблокировки.  
+  
+-или- 
+Глубина рекурсии превышает емкость счетчика. Ограничение допускает настолько большое число рекурсивных вхождений, что оно не должно достигаться приложениями на практике.</exception>
+        <exception cref="T:System.ArgumentOutOfRangeException">Значение параметра <paramref name="millisecondsTimeout" /> меньше нуля, но не равно <see cref="F:System.Threading.Timeout.Infinite" /> (-1), которое является единственным допустимым отрицательным значением.</exception>
+        <exception cref="T:System.ObjectDisposedException">Объект <see cref="T:System.Threading.ReaderWriterLockSlim" /> был удален.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="TryEnterUpgradeableReadLock">
+      <MemberSignature Language="C#" Value="public bool TryEnterUpgradeableReadLock (TimeSpan timeout);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance bool TryEnterUpgradeableReadLock(valuetype System.TimeSpan timeout) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLockSlim.TryEnterUpgradeableReadLock(System.TimeSpan)" />
+      <MemberSignature Language="VB.NET" Value="Public Function TryEnterUpgradeableReadLock (timeout As TimeSpan) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; bool TryEnterUpgradeableReadLock(TimeSpan timeout);" />
+      <MemberSignature Language="F#" Value="member this.TryEnterUpgradeableReadLock : TimeSpan -&gt; bool" Usage="readerWriterLockSlim.TryEnterUpgradeableReadLock timeout" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="timeout" Type="System.TimeSpan" />
+      </Parameters>
+      <Docs>
+        <param name="timeout">Период ожидания или значение -1 миллисекунда для ожидания неограниченное время.</param>
+        <summary>Пытается войти в блокировку в обновляемом режиме с необязательным указанием времени ожидания.</summary>
+        <returns>Значение <see langword="true" />, если вызывающий поток вошел в обновляемый режим, иначе — <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если `timeout` имеет значение 0 (ноль), этот метод проверяет состояние блокировки и немедленно `false` возвращает значение, если требуемое состояние недоступно.  
+  
+ Обновляемый режим используется, когда поток обычно обращается к ресурсу, <xref:System.Threading.ReaderWriterLockSlim> защищенному в режиме чтения, но при соблюдении определенных условий может потребоваться вход в режим записи. Поток в обновляемом режиме может обновиться до режима записи или перехода на более раннюю версию в режиме чтения.  
+  
+ Только один поток может войти в блокировку в обновляемом режиме в любое заданное время. Если поток находится в обновляемом режиме и отсутствуют потоки, ожидающие входа в режим записи, любое число других потоков может войти в режим чтения, даже если есть потоки, ожидающие входа в обновляемый режим.  
+  
+ Если один или несколько потоков ожидают входа в режим записи, то поток, вызывающий этот <xref:System.Threading.ReaderWriterLockSlim.TryEnterUpgradeableReadLock%2A> метод, блокируется до истечения времени ожидания или перехода в режим записи, а затем выхода из него или до окончания срока ожидания вызывающего потока.  
+  
+> [!NOTE]
+>  Если блокировка допускает рекурсию, поток, который вошел в блокировку в обновляемом режиме, может войти в обновляемый режим рекурсивно, даже если другие потоки ожидают входа в режим записи.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Threading.LockRecursionException">Свойство <see cref="P:System.Threading.ReaderWriterLockSlim.RecursionPolicy" /> имеет значение <see cref="F:System.Threading.LockRecursionPolicy.NoRecursion" />, а текущий поток уже вошел в блокировку.  
+  
+- или - 
+Текущий поток изначально вошел в блокировку в режиме чтения, поэтому попытка войти в обновляемый режим создаст возможность взаимоблокировки.  
+  
+- или - 
+Глубина рекурсии превышает емкость счетчика. Ограничение допускает настолько большое число рекурсивных вхождений, что оно не должно достигаться приложениями на практике.</exception>
+        <exception cref="T:System.ArgumentOutOfRangeException">Значение параметра <paramref name="timeout" /> отрицательное, но оно не равно -1 миллисекунде, которое является единственным допустимым отрицательным значением.  
+  
+- или - 
+Значение <paramref name="timeout" /> больше <see cref="F:System.Int32.MaxValue" /> миллисекунд.</exception>
+        <exception cref="T:System.ObjectDisposedException">Объект <see cref="T:System.Threading.ReaderWriterLockSlim" /> был удален.</exception>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="TryEnterWriteLock">
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Пытается войти в блокировку в режиме записи с необязательным указанием времени ожидания.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="TryEnterWriteLock">
+      <MemberSignature Language="C#" Value="public bool TryEnterWriteLock (int millisecondsTimeout);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance bool TryEnterWriteLock(int32 millisecondsTimeout) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLockSlim.TryEnterWriteLock(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Function TryEnterWriteLock (millisecondsTimeout As Integer) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; bool TryEnterWriteLock(int millisecondsTimeout);" />
+      <MemberSignature Language="F#" Value="member this.TryEnterWriteLock : int -&gt; bool" Usage="readerWriterLockSlim.TryEnterWriteLock millisecondsTimeout" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="millisecondsTimeout" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="millisecondsTimeout">Время ожидания в миллисекундах или -1 (<see cref="F:System.Threading.Timeout.Infinite" />) для неограниченного времени ожидания.</param>
+        <summary>Пытается войти в блокировку в режиме записи с необязательным указанием времени ожидания.</summary>
+        <returns>Значение <see langword="true" />, если вызывающий поток вошел в режим записи, иначе — <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если `millisecondsTimeout` имеет значение 0 (ноль), этот метод проверяет состояние блокировки и немедленно `false` возвращает значение, если требуемое состояние недоступно.  
+  
+ Если другие потоки перешли в режим чтения, поток, который вызывает <xref:System.Threading.ReaderWriterLockSlim.TryEnterWriteLock%2A> блокировку метода, пока эти потоки не вышли из режима чтения или пока не истечет интервал времени ожидания. Пока потоки заблокированы в ожидании входа в режим записи, дополнительные потоки, пытающиеся войти в режим чтения или обновляемый блок режима, пока не истечет время ожидания всех потоков, ожидающих входа в режим записи, или не перейдет в режим записи, а затем вышли из нее.  
+  
+> [!NOTE]
+>  Если блокировка допускает рекурсию, поток, который вошел в блокировку в режиме записи, может войти в режим записи рекурсивно, даже если другие потоки ожидают входа в режим записи.  
+  
+   
+  
+## Examples  
+ В следующем примере показано, как использовать <xref:System.Threading.ReaderWriterLockSlim.TryEnterWriteLock%2A> метод для входа в блокировку в режиме записи с истечением времени ожидания. Метод, показанный в примере, добавляет новую пару «ключ-значение» в синхронизированный кэш. Если указанный интервал времени ожидания истекает до того, как поток войдет в блокировку, метод возвращает `false`значение. Метод возвращает `true` значение, если добавляется пара "ключ-значения".  
+  
+ Если ключ уже находится в кэше, исключение, созданное внутренним <xref:System.Collections.Generic.Dictionary%602> объектом, может завершить метод. Блок используется для <xref:System.Threading.ReaderWriterLockSlim.ExitWriteLock%2A> выполнения метода, гарантируя, что вызывающий объект завершает блокировку. `finally`  
+  
+ Этот код является частью большого примера, <xref:System.Threading.ReaderWriterLockSlim> приведенного для класса.  
+  
+ [!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/source.cs#2)]
+ [!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/source.vb#2)]  
+[!code-csharp[System.Threading.ReaderWriterLockSlim_Shadow#5](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/cs/source.cs#5)]
+[!code-vb[System.Threading.ReaderWriterLockSlim_Shadow#5](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Shadow/vb/source.vb#5)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Threading.LockRecursionException">Свойство <see cref="P:System.Threading.ReaderWriterLockSlim.RecursionPolicy" /> имеет значение <see cref="F:System.Threading.LockRecursionPolicy.NoRecursion" />, а текущий поток уже вошел в блокировку.  
+  
+- или - 
+Текущий поток изначально вошел в блокировку в режиме чтения, поэтому попытка войти в режим записи создаст возможность взаимоблокировки.  
+  
+- или - 
+Глубина рекурсии превышает емкость счетчика. Ограничение допускает настолько большое число рекурсивных вхождений, что оно не должно достигаться приложениями на практике.</exception>
+        <exception cref="T:System.ArgumentOutOfRangeException">Значение параметра <paramref name="millisecondsTimeout" /> меньше нуля, но не равно <see cref="F:System.Threading.Timeout.Infinite" /> (-1), которое является единственным допустимым отрицательным значением.</exception>
+        <exception cref="T:System.ObjectDisposedException">Объект <see cref="T:System.Threading.ReaderWriterLockSlim" /> был удален.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="TryEnterWriteLock">
+      <MemberSignature Language="C#" Value="public bool TryEnterWriteLock (TimeSpan timeout);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance bool TryEnterWriteLock(valuetype System.TimeSpan timeout) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Threading.ReaderWriterLockSlim.TryEnterWriteLock(System.TimeSpan)" />
+      <MemberSignature Language="VB.NET" Value="Public Function TryEnterWriteLock (timeout As TimeSpan) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; bool TryEnterWriteLock(TimeSpan timeout);" />
+      <MemberSignature Language="F#" Value="member this.TryEnterWriteLock : TimeSpan -&gt; bool" Usage="readerWriterLockSlim.TryEnterWriteLock timeout" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="timeout" Type="System.TimeSpan" />
+      </Parameters>
+      <Docs>
+        <param name="timeout">Период ожидания или значение -1 миллисекунда для ожидания неограниченное время.</param>
+        <summary>Пытается войти в блокировку в режиме записи с необязательным указанием времени ожидания.</summary>
+        <returns>Значение <see langword="true" />, если вызывающий поток вошел в режим записи, иначе — <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если `timeout` имеет значение 0 (ноль), этот метод проверяет состояние блокировки и немедленно `false` возвращает значение, если требуемое состояние недоступно.  
+  
+ Если другие потоки перешли в режим чтения, поток, который вызывает <xref:System.Threading.ReaderWriterLockSlim.TryEnterWriteLock%2A> блокировку метода, пока эти потоки не вышли из режима чтения или пока не истечет интервал времени ожидания. Пока потоки заблокированы в ожидании входа в режим записи, дополнительные потоки, пытающиеся войти в режим чтения или обновляемый блок режима, пока не истечет время ожидания всех потоков, ожидающих входа в режим записи, или не перейдет в режим записи, а затем вышли из нее.  
+  
+> [!NOTE]
+>  Если блокировка допускает рекурсию, поток, который вошел в блокировку в режиме записи, может войти в режим записи рекурсивно, даже если другие потоки ожидают входа в режим записи.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Threading.LockRecursionException">Свойство <see cref="P:System.Threading.ReaderWriterLockSlim.RecursionPolicy" /> имеет значение <see cref="F:System.Threading.LockRecursionPolicy.NoRecursion" />, а текущий поток уже вошел в блокировку.  
+  
+- или - 
+Текущий поток изначально вошел в блокировку в режиме чтения, поэтому попытка войти в режим записи создаст возможность взаимоблокировки.  
+  
+-или- 
+Глубина рекурсии превышает емкость счетчика. Ограничение допускает настолько большое число рекурсивных вхождений, что оно не должно достигаться приложениями на практике.</exception>
+        <exception cref="T:System.ArgumentOutOfRangeException">Значение параметра <paramref name="timeout" /> отрицательное, но оно не равно -1 миллисекунде, которое является единственным допустимым отрицательным значением.  
+  
+-или- 
+Значение <paramref name="timeout" /> больше <see cref="F:System.Int32.MaxValue" /> миллисекунд.</exception>
+        <exception cref="T:System.ObjectDisposedException">Объект <see cref="T:System.Threading.ReaderWriterLockSlim" /> был удален.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="WaitingReadCount">
+      <MemberSignature Language="C#" Value="public int WaitingReadCount { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 WaitingReadCount" />
+      <MemberSignature Language="DocId" Value="P:System.Threading.ReaderWriterLockSlim.WaitingReadCount" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property WaitingReadCount As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int WaitingReadCount { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.WaitingReadCount : int" Usage="System.Threading.ReaderWriterLockSlim.WaitingReadCount" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает общее количество потоков, ожидающих вхождения в блокировку в режиме чтения.</summary>
+        <value>Общее количество потоков, ожидающих вхождения в режим чтения.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Это свойство используется только для отладки, профилирования и ведения журнала, а не для управления поведением алгоритма. Результаты могут измениться, как только они будут вычислены. Поэтому не рекомендуется принимать решения на основе этого свойства.  
+  
+   
+  
+## Examples  
+ В следующем примере показано, как использовать <xref:System.Threading.ReaderWriterLockSlim.WaitingReadCount%2A> свойство для создания записи в журнале событий, если число заблокированных потоков, ожидающих входа в режим чтения, превышает пороговое значение.  
+  
+ [!code-csharp[System.Threading.ReaderWriterLockSlim_Aux#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/cs/source.cs#1)]
+ [!code-vb[System.Threading.ReaderWriterLockSlim_Aux#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/vb/source.vb#1)]  
+[!code-csharp[System.Threading.ReaderWriterLockSlim_Aux#31](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/cs/source.cs#31)]
+[!code-vb[System.Threading.ReaderWriterLockSlim_Aux#31](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/vb/source.vb#31)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="WaitingUpgradeCount">
+      <MemberSignature Language="C#" Value="public int WaitingUpgradeCount { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 WaitingUpgradeCount" />
+      <MemberSignature Language="DocId" Value="P:System.Threading.ReaderWriterLockSlim.WaitingUpgradeCount" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property WaitingUpgradeCount As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int WaitingUpgradeCount { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.WaitingUpgradeCount : int" Usage="System.Threading.ReaderWriterLockSlim.WaitingUpgradeCount" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает общее количество потоков, ожидающих входа в блокировку в обновляемом режиме.</summary>
+        <value>Общее количество потоков, ожидающих входа в обновляемый режим.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Это свойство используется только для отладки, профилирования и ведения журнала, а не для управления поведением алгоритма. Результаты могут измениться, как только они будут вычислены. Поэтому не рекомендуется принимать решения на основе этого свойства.  
+  
+   
+  
+## Examples  
+ В следующем примере показано, как использовать <xref:System.Threading.ReaderWriterLockSlim.WaitingUpgradeCount%2A> свойство для создания записи в журнале событий, если число заблокированных потоков, ожидающих входа в обновляемый режим, превышает пороговое значение.  
+  
+ [!code-csharp[System.Threading.ReaderWriterLockSlim_Aux#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/cs/source.cs#1)]
+ [!code-vb[System.Threading.ReaderWriterLockSlim_Aux#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/vb/source.vb#1)]  
+[!code-csharp[System.Threading.ReaderWriterLockSlim_Aux#33](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/cs/source.cs#33)]
+[!code-vb[System.Threading.ReaderWriterLockSlim_Aux#33](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/vb/source.vb#33)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="WaitingWriteCount">
+      <MemberSignature Language="C#" Value="public int WaitingWriteCount { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 WaitingWriteCount" />
+      <MemberSignature Language="DocId" Value="P:System.Threading.ReaderWriterLockSlim.WaitingWriteCount" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property WaitingWriteCount As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int WaitingWriteCount { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.WaitingWriteCount : int" Usage="System.Threading.ReaderWriterLockSlim.WaitingWriteCount" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Threading</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает общее количество потоков, ожидающих входа в блокировку в режиме записи.</summary>
+        <value>Общее количество потоков, ожидающих входа в режим записи.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Это свойство используется только для отладки, профилирования и ведения журнала, а не для управления поведением алгоритма. Результаты могут измениться, как только они будут вычислены. Поэтому не рекомендуется принимать решения на основе этого свойства.  
+  
+   
+  
+## Examples  
+ В следующем примере показано, как использовать <xref:System.Threading.ReaderWriterLockSlim.WaitingWriteCount%2A> свойство для создания записи в журнале событий, если число заблокированных потоков, ожидающих входа в режим записи, превышает пороговое значение.  
+  
+ [!code-csharp[System.Threading.ReaderWriterLockSlim_Aux#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/cs/source.cs#1)]
+ [!code-vb[System.Threading.ReaderWriterLockSlim_Aux#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/vb/source.vb#1)]  
+[!code-csharp[System.Threading.ReaderWriterLockSlim_Aux#32](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/cs/source.cs#32)]
+[!code-vb[System.Threading.ReaderWriterLockSlim_Aux#32](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Threading.ReaderWriterLockSlim_Aux/vb/source.vb#32)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

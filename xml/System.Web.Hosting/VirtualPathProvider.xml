@@ -1,0 +1,677 @@
+<Type Name="VirtualPathProvider" FullName="System.Web.Hosting.VirtualPathProvider">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="da63e243320d1d952dd56cd32ed2c99a746c0bdd" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70591065" /></Metadata><TypeSignature Language="C#" Value="public abstract class VirtualPathProvider : MarshalByRefObject" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract beforefieldinit VirtualPathProvider extends System.MarshalByRefObject" />
+  <TypeSignature Language="DocId" Value="T:System.Web.Hosting.VirtualPathProvider" />
+  <TypeSignature Language="VB.NET" Value="Public MustInherit Class VirtualPathProvider&#xA;Inherits MarshalByRefObject" />
+  <TypeSignature Language="C++ CLI" Value="public ref class VirtualPathProvider abstract : MarshalByRefObject" />
+  <TypeSignature Language="F#" Value="type VirtualPathProvider = class&#xA;    inherit MarshalByRefObject" />
+  <AssemblyInfo>
+    <AssemblyName>System.Web</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.MarshalByRefObject</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>Предоставляет набор методов, позволяющих веб-приложению извлекать ресурсы из виртуальной файловой системы.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Hosting.VirtualPathProvider> Класс предоставляет набор методов для реализации виртуальной файловой системы для веб-приложения. В виртуальной файловой системе файлы и каталоги управляются хранилищем данных, отличным от файловой системы, предоставляемой операционной системой сервера. Например, можно использовать виртуальную файловую систему для хранения содержимого в базе данных SQL Server.  
+  
+ Любой файл, обрабатываемый по запросу, можно хранить в виртуальной файловой системе. В том числе следующее:  
+  
+-   ASP.NET страницы, главные страницы, пользовательские элементы управления и другие объекты.  
+  
+-   Стандартные веб-страницы с расширениями, такими как htm и JPG.  
+  
+-   Любое пользовательское расширение, сопоставленное с <xref:System.Web.Compilation.BuildProvider> экземпляром.  
+  
+-   Любая именованная тема в `App_Theme` папке.  
+  
+ Нельзя хранить папки или файлы приложения ASP.NET, которые создают сборки уровня приложения в виртуальной файловой системе. В том числе следующее:  
+  
+-   Файл Global. asax.  
+  
+-   Файлы Web. config.  
+  
+-   Файлы данных карт сайта, <xref:System.Web.XmlSiteMapProvider>используемые.  
+  
+-   Каталоги, содержащие сборки приложений или создающие сборки приложений: `Bin`, `App_Code`, `App_GlobalResources`, Any `App_LocalResources`.  
+  
+-   Папка Application Data `App_Data`.  
+  
+> [!NOTE]
+>  Если веб-сайт предварительно компилируется для развертывания, содержимое, предоставленное <xref:System.Web.Hosting.VirtualPathProvider> экземпляром, не компилируется и <xref:System.Web.Hosting.VirtualPathProvider> ни один экземпляр не используется предкомпилированным сайтом.  
+  
+## <a name="registering-a-virtualpathprovider"></a>Регистрация Виртуалпаспровидер  
+ Пользовательский <xref:System.Web.Hosting.VirtualPathProvider> экземпляр должен быть зарегистрирован в системе компиляции ASP.NET с <xref:System.Web.Hosting.HostingEnvironment.RegisterVirtualPathProvider%2A?displayProperty=nameWithType> помощью метода до выполнения синтаксического анализа страницы или компиляции веб-приложением.  
+  
+ Как правило, <xref:System.Web.Hosting.VirtualPathProvider> экземпляр регистрируется `AppInitialize` в методе, определенном `App_Code` в `Global.asax` каталоге, или во `Application_Start` время события в файле. Пример регистрации <xref:System.Web.Hosting.VirtualPathProvider> экземпляра `AppInitialize` в методе см. в разделе "пример".  
+  
+ <xref:System.Web.Hosting.VirtualPathProvider> Экземпляр можно зарегистрировать во время других событий, но страницы, скомпилированные и кэшированные <xref:System.Web.Hosting.VirtualPathProvider> до регистрации экземпляра, не станут недействительными, даже если новый <xref:System.Web.Hosting.VirtualPathProvider> экземпляр теперь предоставит источник для ранее скомпилированная страница.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показана <xref:System.Web.Hosting.VirtualPathProvider> реализация класса, который создает виртуальную файловую систему, используя сведения <xref:System.Data.DataSet> , хранящиеся в объекте. Пример кода работает с примерами кода для <xref:System.Web.Hosting.VirtualFile> классов и <xref:System.Web.Hosting.VirtualDirectory> , чтобы предоставить виртуальные ресурсы из хранилища данных <xref:System.Data.DataSet> , которое загружается в объект.  
+  
+ <xref:System.Web.Hosting.VirtualPathProvider> Этот пример состоит из четырех частей: реализация класса, XML-файл данных, используемый для заполнения <xref:System.Data.DataSet> объекта, `AppStart` объект <xref:System.Web.Hosting.VirtualPathProvider> , содержащий `AppInitialize` метод, используемый для регистрации класса с компиляцией. система и страница ASP.NET, которая предоставляет ссылки на виртуальные файлы.  
+  
+ Чтобы использовать этот пример кода в приложении, выполните следующие действия.  
+  
+1.  Создайте пример приложения на веб-сервере.  
+  
+2.  Скопируйте исходный код для пользовательского <xref:System.Web.Hosting.VirtualPathProvider> объекта (см. ниже) в файл в `App_Code` каталоге приложения.  
+  
+3.  Скопируйте исходный код для пользовательского <xref:System.Web.Hosting.VirtualDirectory> объекта (см. раздел "пример" в разделе " <xref:System.Web.Hosting.VirtualDirectory> обзор класса") в `App_Code` файл в каталоге приложения.  
+  
+4.  Скопируйте исходный код для пользовательского <xref:System.Web.Hosting.VirtualFile> объекта (см. раздел "пример" в разделе " <xref:System.Web.Hosting.VirtualFile> обзор класса") в `App_Code` файл в каталоге приложения.  
+  
+5.  Скопируйте исходный код `AppStart` объекта (см. ниже) в файл в `App_Code` каталоге приложения.  
+  
+6.  Скопируйте XML-данные (см. ниже) в файл с `XMLData.xml` именем в файл в `App_Data` каталоге приложения.  
+  
+7.  `default.aspx` Скопируйте файл (см. ниже) в корневой каталог примера приложения. Откройте `default.aspx` файл с помощью веб-браузера, а затем перейдите по ссылкам на странице, чтобы просмотреть содержимое виртуальных файлов.  
+  
+ Первый пример — пользовательский <xref:System.Web.Hosting.VirtualPathProvider> класс. Методы <xref:System.Web.Hosting.VirtualPathProvider.DirectoryExists%2A> и <xref:System.Web.Hosting.VirtualPathProvider.FileExists%2A>  переопределяются, чтобы указать, имеется ли в виртуальной файловой системе запрашиваемый каталог. Методы <xref:System.Web.Hosting.VirtualPathProvider.GetDirectory%2A> и <xref:System.Web.Hosting.VirtualDirectory> <xref:System.Web.Hosting.VirtualFile> переопределяются для возврата пользовательских экземпляров и, содержащих сведения из виртуальной файловой системы. <xref:System.Web.Hosting.VirtualPathProvider.GetFile%2A>  
+  
+ Класс также предоставляет `GetVirtualData` метод, используемый <xref:System.Web.Hosting.VirtualDirectory> классами <xref:System.Data.DataSet> и <xref:System.Web.Hosting.VirtualFile> для доступа к объекту, содержащему данные виртуальной файловой системы. В производственной реализации этот метод обычно реализуется в бизнес-объекте, отвечающем за взаимодействие с хранилищем данных.  
+  
+ [!code-csharp[System.Web.Hosting.VirtualPathProvider#20](~/samples/snippets/csharp/VS_Snippets_WebNet/system.web.hosting.virtualpathprovider/CS/SamplePathProvider.cs#20)]
+ [!code-vb[System.Web.Hosting.VirtualPathProvider#20](~/samples/snippets/visualbasic/VS_Snippets_WebNet/system.web.hosting.virtualpathprovider/VB/SamplePathProvider.vb#20)]  
+  
+ Вторым примером является XML-файл данных, используемый для заполнения <xref:System.Data.DataSet> объекта, возвращаемого пользовательским <xref:System.Web.Hosting.VirtualPathProvider> объектом. Эти XML-данные используются для демонстрации использования <xref:System.Web.Hosting.VirtualPathProvider>объектов, <xref:System.Web.Hosting.VirtualDirectory>и <xref:System.Web.Hosting.VirtualFile> для получения данных из внешних данных и не предназначены для представления рабочего хранилища данных.  
+  
+```  
+<?xml version="1.0" encoding="utf-8" ?>  
+  <resource type="dir"   
+    path="/vrDir"   
+    parentPath=""   
+    content="">  
+    <resource type="file"   
+      path="/vrDir/Level1FileA.vrf"  
+      parentPath="/vrDir"   
+      content="This is the content of file Level1FileA.">  
+    </resource>  
+    <resource type="file"   
+      path="/vrDir/Level1FileB.vrf"  
+      parentPath="/vrDir"   
+      content="This is the content of file Level1FileB.">  
+    </resource>  
+    <resource type="dir"   
+      path="/vrDir/Level2DirA"   
+      parentPath="/vrDir"   
+      content="">  
+    <resource type="file"   
+      path="/vrDir/Level2DirA/Level2FileA.vrf"   
+      parentPath="/vrDir/Level2DirA"   
+      content="This is the content of file Level2FileA.">  
+    </resource>  
+    <resource type="file"   
+      path="/vrDir/Level2DirA/Level2FileB.vrf"  
+      parentPath="/vrDir/Level2DirA"   
+      content="This is the content of file Level2FileB.">  
+    </resource>  
+  </resource>  
+  <resource type="dir"   
+    path="/vrDir/Level2DirB"   
+    parentPath="/vrDir"   
+    content="">  
+    <resource type="file"   
+      path="/vrDir/Level2DirB/Level2FileA.vrf"   
+      parentPath="/vrDir/Level2DirB"   
+      content="This is the content of file Level2FileA.">  
+    </resource>  
+    <resource type="file"   
+      path="/vrDir/Level2DirB/Level2FileB.vrf"  
+      parentPath="/vrDir/Level2DirB"   
+      content="This is the content of file Level2FileB.">  
+    </resource>  
+  </resource>  
+</resource>  
+```  
+  
+ В третьем примере предоставляется `AppStart` объект, `AppInitialize` содержащий метод. Этот метод вызывается во время инициализации приложения ASP.NET для выполнения необходимой пользовательской инициализации. В этом случае пользовательский <xref:System.Web.Hosting.VirtualPathProvider> объект регистрируется в системе сборки ASP.NET.  
+  
+ [!code-csharp[System.Web.Hosting.VirtualPathProvider#10](~/samples/snippets/csharp/VS_Snippets_WebNet/system.web.hosting.virtualpathprovider/CS/AppStart.cs#10)]
+ [!code-vb[System.Web.Hosting.VirtualPathProvider#10](~/samples/snippets/visualbasic/VS_Snippets_WebNet/system.web.hosting.virtualpathprovider/VB/AppStart.vb#10)]  
+  
+ Последний пример — это ASP.NET страница, содержащая ссылки на виртуальные файлы, содержащиеся в виртуальной файловой системе.  
+  
+ [!code-aspx-csharp[System.Web.Hosting.VirtualPathProvider#1](~/samples/snippets/csharp/VS_Snippets_WebNet/system.web.hosting.virtualpathprovider/CS/Default.aspx#1)]
+ [!code-aspx-vb[System.Web.Hosting.VirtualPathProvider#1](~/samples/snippets/visualbasic/VS_Snippets_WebNet/system.web.hosting.virtualpathprovider/VB/Default.aspx#1)]  
+  
+ ]]></format>
+    </remarks>
+    <block subset="none" type="overrides"><para>При наследовании из <see cref="T:System.Web.Hosting.VirtualPathProvider" />необходимо переопределить следующие члены: 
+-   <see cref="M:System.Web.Hosting.VirtualPathProvider.FileExists(System.String)" />  
+  
+-   <see cref="M:System.Web.Hosting.VirtualPathProvider.GetFile(System.String)" />  
+  
+Если пользовательский <see cref="T:System.Web.Hosting.VirtualPathProvider" /> класс поддерживает каталоги в виртуальной файловой системе, необходимо переопределить следующие члены.  
+  
+-   <see cref="M:System.Web.Hosting.VirtualPathProvider.DirectoryExists(System.String)" />  
+  
+-   <see cref="M:System.Web.Hosting.VirtualPathProvider.GetDirectory(System.String)" /><block subset="none" type="note"><para>  
+      Если ваша виртуальная файловая система будет содержать темы для веб-сайта (путем создания виртуального каталога <c>App_Themes</c> ), Пользовательский <see cref="T:System.Web.Hosting.VirtualPathProvider" /> класс должен поддерживать каталоги.
+    </para></block>  
+  
+    Пользовательский <see cref="T:System.Web.Hosting.VirtualPathProvider" /> класс работает с классами, производными <see cref="T:System.Web.Hosting.VirtualFile" /> от <see cref="T:System.Web.Hosting.VirtualDirectory" /> классов и. Необходимо реализовать производные классы из этих типов, чтобы предоставить сведения о файлах и каталогах из виртуальной файловой системы. Пример пользовательской <see cref="T:System.Web.Hosting.VirtualFile" /> реализации см. в разделе "пример" <see cref="T:System.Web.Hosting.VirtualFile" /> раздела Обзор класса. Пример пользовательской <see cref="T:System.Web.Hosting.VirtualDirectory" /> реализации см. в разделе "пример" <see cref="T:System.Web.Hosting.VirtualDirectory" /> раздела Обзор класса.</para></block>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="protected VirtualPathProvider ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Hosting.VirtualPathProvider.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Protected Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; VirtualPathProvider();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует класс для использования экземпляром унаследованного класса. Этот конструктор может быть вызван только унаследованным классом.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ При переопределении <xref:System.Web.Hosting.VirtualPathProvider.%23ctor%2A> конструктора отложите любую инициализацию, которая должна произойти <xref:System.Web.Hosting.VirtualPathProvider> после регистрации <xref:System.Web.Hosting.VirtualPathProvider.Initialize%2A> объекта в методе.  
+  
+   
+  
+## Examples  
+ Следующий пример кода является реализацией <xref:System.Web.Hosting.VirtualPathProvider.%23ctor%2A> конструктора, который инициализирует пользовательский <xref:System.Web.Hosting.VirtualPathProvider> класс. Полный код, необходимый для выполнения примера, см. в разделе "пример" <xref:System.Web.Hosting.VirtualPathProvider> раздела Обзор класса.  
+  
+ [!code-csharp[System.Web.Hosting.VirtualPathProvider#25](~/samples/snippets/csharp/VS_Snippets_WebNet/system.web.hosting.virtualpathprovider/CS/SamplePathProvider.cs#25)]
+ [!code-vb[System.Web.Hosting.VirtualPathProvider#25](~/samples/snippets/visualbasic/VS_Snippets_WebNet/system.web.hosting.virtualpathprovider/VB/SamplePathProvider.vb#25)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CombineVirtualPaths">
+      <MemberSignature Language="C#" Value="public virtual string CombineVirtualPaths (string basePath, string relativePath);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance string CombineVirtualPaths(string basePath, string relativePath) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Hosting.VirtualPathProvider.CombineVirtualPaths(System.String,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function CombineVirtualPaths (basePath As String, relativePath As String) As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::String ^ CombineVirtualPaths(System::String ^ basePath, System::String ^ relativePath);" />
+      <MemberSignature Language="F#" Value="abstract member CombineVirtualPaths : string * string -&gt; string&#xA;override this.CombineVirtualPaths : string * string -&gt; string" Usage="virtualPathProvider.CombineVirtualPaths (basePath, relativePath)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="basePath" Type="System.String" />
+        <Parameter Name="relativePath" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="basePath">Базовый путь к приложению.</param>
+        <param name="relativePath">Путь к виртуальному ресурсу относительно базового пути.</param>
+        <summary>Объединяет базовый и относительный путь для возврата полного пути к виртуальному ресурсу.</summary>
+        <returns>Полный путь к виртуальному ресурсу.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Используйте метод <xref:System.Web.Hosting.VirtualPathProvider.CombineVirtualPaths%2A> , чтобы проверить содержимое относительного пути к виртуальному ресурсу и выполнить необходимые изменения.  
+  
+ Реализация по умолчанию объединяет `basePath` параметры `relativePath` и в соответствии со стандартной обработкой пути ASP.NET.  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>При переопределении реализации <see cref="M:System.Web.Hosting.VirtualPathProvider.CombineVirtualPaths(System.String,System.String)" /> метода по умолчанию требуется преобразовать любой специальный синтаксис <paramref name="relativePath" /> с параметром в допустимый виртуальный путь. Вы несете ответственность за проверку синтаксиса, проверку пути и обработку неверно сформированных входных данных, а также на граничные варианты для правильного ввода данных.  
+  
+В большинстве случаев переопределение метода по умолчанию <see cref="M:System.Web.Hosting.VirtualPathProvider.CombineVirtualPaths(System.String,System.String)" /> не потребуется. Однако, если необходимо изменить путь, рекомендуется ограничить <see cref="M:System.Web.Hosting.VirtualPathProvider.CombineVirtualPaths(System.String,System.String)" /> реализацию изменением токенов, относящихся к поставщику виртуальных путей, <paramref name="relativeUrl" /> в параметре, а затем вызвать базовую реализацию для выполнения обычной задачи. Обработка пути ASP.NET</para></block>
+      </Docs>
+    </Member>
+    <Member MemberName="DirectoryExists">
+      <MemberSignature Language="C#" Value="public virtual bool DirectoryExists (string virtualDir);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance bool DirectoryExists(string virtualDir) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Hosting.VirtualPathProvider.DirectoryExists(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function DirectoryExists (virtualDir As String) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual bool DirectoryExists(System::String ^ virtualDir);" />
+      <MemberSignature Language="F#" Value="abstract member DirectoryExists : string -&gt; bool&#xA;override this.DirectoryExists : string -&gt; bool" Usage="virtualPathProvider.DirectoryExists virtualDir" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="virtualDir" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="virtualDir">Путь к виртуальному каталогу.</param>
+        <summary>Получает значение, указывающее, существует ли каталог в виртуальной файловой системе.</summary>
+        <returns><see langword="true" />, если каталог существует в виртуальной файловой системе; в противном случае <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Переопределить <xref:System.Web.Hosting.VirtualPathProvider.DirectoryExists%2A> методу, чтобы показать системе компиляции, представленный ресурса `virtualDir` существует в виртуальной файловой системы, предоставляемые этим <xref:System.Web.Hosting.VirtualPathProvider> экземпляра.  
+  
+ Если пользовательский <xref:System.Web.Hosting.VirtualPathProvider> класс не поддерживает каталоги, метод должен вернуть <xref:System.Web.Hosting.VirtualPathProvider.DirectoryExists%2A> `false`значение.  
+  
+> [!NOTE]
+>  Если ваша виртуальная файловая система будет содержать темы для веб-сайта (путем создания `App_Themes` виртуального каталога), Пользовательский <xref:System.Web.Hosting.VirtualPathProvider> класс должен поддерживать каталоги.  
+  
+   
+  
+## Examples  
+ Следующий пример кода является реализацией <xref:System.Web.Hosting.VirtualPathProvider.DirectoryExists%2A> метода в пользовательском <xref:System.Web.Hosting.VirtualPathProvider> классе. Полный код, необходимый для выполнения примера, см. в разделе "пример" <xref:System.Web.Hosting.VirtualPathProvider> раздела Обзор класса.  
+  
+ [!code-csharp[System.Web.Hosting.VirtualPathProvider#22](~/samples/snippets/csharp/VS_Snippets_WebNet/system.web.hosting.virtualpathprovider/CS/SamplePathProvider.cs#22)]
+ [!code-vb[System.Web.Hosting.VirtualPathProvider#22](~/samples/snippets/visualbasic/VS_Snippets_WebNet/system.web.hosting.virtualpathprovider/VB/SamplePathProvider.vb#22)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="FileExists">
+      <MemberSignature Language="C#" Value="public virtual bool FileExists (string virtualPath);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance bool FileExists(string virtualPath) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Hosting.VirtualPathProvider.FileExists(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function FileExists (virtualPath As String) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual bool FileExists(System::String ^ virtualPath);" />
+      <MemberSignature Language="F#" Value="abstract member FileExists : string -&gt; bool&#xA;override this.FileExists : string -&gt; bool" Usage="virtualPathProvider.FileExists virtualPath" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="virtualPath" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="virtualPath">Путь виртуального файла.</param>
+        <summary>Получает значение, указывающее, существует ли файл в виртуальной файловой системе.</summary>
+        <returns><see langword="true" />, если файл существует в виртуальной файловой системе; в противном случае <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Переопределить <xref:System.Web.Hosting.VirtualPathProvider.FileExists%2A> методу, чтобы показать системе компиляции, представленный ресурса `virtualPath` существует в виртуальной файловой системы, предоставляемые этим <xref:System.Web.Hosting.VirtualPathProvider> экземпляра.  
+  
+   
+  
+## Examples  
+ Следующий пример кода является реализацией <xref:System.Web.Hosting.VirtualPathProvider.FileExists%2A> метода в пользовательском <xref:System.Web.Hosting.VirtualPathProvider> классе. Полный код, необходимый для выполнения примера, см. в разделе "пример" <xref:System.Web.Hosting.VirtualPathProvider> раздела Обзор класса.  
+  
+ [!code-csharp[System.Web.Hosting.VirtualPathProvider#21](~/samples/snippets/csharp/VS_Snippets_WebNet/system.web.hosting.virtualpathprovider/CS/SamplePathProvider.cs#21)]
+ [!code-vb[System.Web.Hosting.VirtualPathProvider#21](~/samples/snippets/visualbasic/VS_Snippets_WebNet/system.web.hosting.virtualpathprovider/VB/SamplePathProvider.vb#21)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetCacheDependency">
+      <MemberSignature Language="C#" Value="public virtual System.Web.Caching.CacheDependency GetCacheDependency (string virtualPath, System.Collections.IEnumerable virtualPathDependencies, DateTime utcStart);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Web.Caching.CacheDependency GetCacheDependency(string virtualPath, class System.Collections.IEnumerable virtualPathDependencies, valuetype System.DateTime utcStart) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Hosting.VirtualPathProvider.GetCacheDependency(System.String,System.Collections.IEnumerable,System.DateTime)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function GetCacheDependency (virtualPath As String, virtualPathDependencies As IEnumerable, utcStart As DateTime) As CacheDependency" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::Web::Caching::CacheDependency ^ GetCacheDependency(System::String ^ virtualPath, System::Collections::IEnumerable ^ virtualPathDependencies, DateTime utcStart);" />
+      <MemberSignature Language="F#" Value="abstract member GetCacheDependency : string * System.Collections.IEnumerable * DateTime -&gt; System.Web.Caching.CacheDependency&#xA;override this.GetCacheDependency : string * System.Collections.IEnumerable * DateTime -&gt; System.Web.Caching.CacheDependency" Usage="virtualPathProvider.GetCacheDependency (virtualPath, virtualPathDependencies, utcStart)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Caching.CacheDependency</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="virtualPath" Type="System.String" />
+        <Parameter Name="virtualPathDependencies" Type="System.Collections.IEnumerable" />
+        <Parameter Name="utcStart" Type="System.DateTime" />
+      </Parameters>
+      <Docs>
+        <param name="virtualPath">Путь к основному виртуальному ресурсу.</param>
+        <param name="virtualPathDependencies">Массив путей к другим ресурсам, необходимым для основного виртуального ресурса.</param>
+        <param name="utcStart">Время в формате UTC, когда были прочитаны виртуальные ресурсы.</param>
+        <summary>Создает зависимость кэша на основе указанных виртуальных путей.</summary>
+        <returns>Объект <see cref="T:System.Web.Caching.CacheDependency" /> для указанных виртуальных ресурсов.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация <xref:System.Web.Hosting.VirtualPathProvider.GetCacheDependency%2A> метода по умолчанию возвращает `null`. Чтобы кэшировать виртуальные ресурсы для последующего использования, необходимо переопределить либо <xref:System.Web.Hosting.VirtualPathProvider.GetCacheDependency%2A> метод, <xref:System.Web.Hosting.VirtualPathProvider.GetFileHash%2A> либо метод.  
+  
+   
+  
+## Examples  
+ В следующем примере кода реализуется <xref:System.Web.Hosting.VirtualPathProvider.GetCacheDependency%2A> метод для пользовательского <xref:System.Web.Hosting.VirtualPathProvider> класса. Полный код, необходимый для выполнения примера, см. в разделе "пример" <xref:System.Web.Hosting.VirtualPathProvider> раздела Обзор класса.  
+  
+ [!code-csharp[System.Web.Hosting.VirtualPathProvider#28](~/samples/snippets/csharp/VS_Snippets_WebNet/system.web.hosting.virtualpathprovider/CS/SamplePathProvider.cs#28)]
+ [!code-vb[System.Web.Hosting.VirtualPathProvider#28](~/samples/snippets/visualbasic/VS_Snippets_WebNet/system.web.hosting.virtualpathprovider/VB/SamplePathProvider.vb#28)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetCacheKey">
+      <MemberSignature Language="C#" Value="public virtual string GetCacheKey (string virtualPath);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance string GetCacheKey(string virtualPath) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Hosting.VirtualPathProvider.GetCacheKey(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function GetCacheKey (virtualPath As String) As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::String ^ GetCacheKey(System::String ^ virtualPath);" />
+      <MemberSignature Language="F#" Value="abstract member GetCacheKey : string -&gt; string&#xA;override this.GetCacheKey : string -&gt; string" Usage="virtualPathProvider.GetCacheKey virtualPath" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="virtualPath" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="virtualPath">Путь к виртуальному ресурсу.</param>
+        <summary>Возвращает ключ кэша, используемый для указанного виртуального пути.</summary>
+        <returns>Ключ кэша для указанных виртуальных ресурсов.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Hosting.VirtualPathProvider.GetCacheKey%2A> Используйте метод, чтобы предоставить пользовательский ключ кэша для виртуальных ресурсов. Если <xref:System.Web.Hosting.VirtualPathProvider.GetCacheKey%2A> метод не переопределен, для ключа кэша используется виртуальный путь.  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>Переопределяйте метод по <see cref="M:System.Web.Hosting.VirtualPathProvider.GetCacheKey(System.String)" /> умолчанию, только если создание ключа кэша на основе виртуального пути не будет работать для вашего приложения.</para></block>
+      </Docs>
+    </Member>
+    <Member MemberName="GetDirectory">
+      <MemberSignature Language="C#" Value="public virtual System.Web.Hosting.VirtualDirectory GetDirectory (string virtualDir);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Web.Hosting.VirtualDirectory GetDirectory(string virtualDir) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Hosting.VirtualPathProvider.GetDirectory(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function GetDirectory (virtualDir As String) As VirtualDirectory" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::Web::Hosting::VirtualDirectory ^ GetDirectory(System::String ^ virtualDir);" />
+      <MemberSignature Language="F#" Value="abstract member GetDirectory : string -&gt; System.Web.Hosting.VirtualDirectory&#xA;override this.GetDirectory : string -&gt; System.Web.Hosting.VirtualDirectory" Usage="virtualPathProvider.GetDirectory virtualDir" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Hosting.VirtualDirectory</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="virtualDir" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="virtualDir">Путь к виртуальному каталогу.</param>
+        <summary>Получает виртуальный каталог из виртуальной файловой системы.</summary>
+        <returns>Потомок класса <see cref="T:System.Web.Hosting.VirtualDirectory" />, представляющий каталог в виртуальной файловой системе.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод возвращает потомок <xref:System.Web.Hosting.VirtualDirectory> класса, который содержит файл и каталоги, содержащиеся в каталоге, указанном в `virtualDir` параметре. <xref:System.Web.Hosting.VirtualPathProvider.GetDirectory%2A>  
+  
+ Если пользовательский <xref:System.Web.Hosting.VirtualPathProvider> класс не поддерживает каталоги, метод должен вернуть <xref:System.Web.Hosting.VirtualPathProvider.GetDirectory%2A> `null`значение.  
+  
+> [!NOTE]
+>  Если ваша виртуальная файловая система будет содержать темы для веб-сайта (путем создания `App_Themes` виртуального каталога), Пользовательский <xref:System.Web.Hosting.VirtualPathProvider> класс должен поддерживать каталоги.  
+  
+   
+  
+## Examples  
+ Следующий пример кода является реализацией <xref:System.Web.Hosting.VirtualPathProvider.GetDirectory%2A> метода в пользовательском <xref:System.Web.Hosting.VirtualPathProvider> классе. Полный код, необходимый для выполнения примера, см. в разделе "пример" <xref:System.Web.Hosting.VirtualPathProvider> раздела Обзор класса.  
+  
+ [!code-csharp[System.Web.Hosting.VirtualPathProvider#24](~/samples/snippets/csharp/VS_Snippets_WebNet/system.web.hosting.virtualpathprovider/CS/SamplePathProvider.cs#24)]
+ [!code-vb[System.Web.Hosting.VirtualPathProvider#24](~/samples/snippets/visualbasic/VS_Snippets_WebNet/system.web.hosting.virtualpathprovider/VB/SamplePathProvider.vb#24)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetFile">
+      <MemberSignature Language="C#" Value="public virtual System.Web.Hosting.VirtualFile GetFile (string virtualPath);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Web.Hosting.VirtualFile GetFile(string virtualPath) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Hosting.VirtualPathProvider.GetFile(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function GetFile (virtualPath As String) As VirtualFile" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::Web::Hosting::VirtualFile ^ GetFile(System::String ^ virtualPath);" />
+      <MemberSignature Language="F#" Value="abstract member GetFile : string -&gt; System.Web.Hosting.VirtualFile&#xA;override this.GetFile : string -&gt; System.Web.Hosting.VirtualFile" Usage="virtualPathProvider.GetFile virtualPath" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Hosting.VirtualFile</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="virtualPath" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="virtualPath">Путь виртуального файла.</param>
+        <summary>Получает виртуальный файл из виртуальной файловой системы.</summary>
+        <returns>Потомок класса <see cref="T:System.Web.Hosting.VirtualFile" />, представляющий файл в виртуальной файловой системе.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод возвращает потомок <xref:System.Web.Hosting.VirtualFile> класса, представляющий файл, заданный `virtualPath` параметром. <xref:System.Web.Hosting.VirtualPathProvider.GetFile%2A>  
+  
+   
+  
+## Examples  
+ Следующий пример кода является реализацией <xref:System.Web.Hosting.VirtualPathProvider.GetFile%2A> метода в пользовательском <xref:System.Web.Hosting.VirtualPathProvider> классе. Полный код, необходимый для выполнения примера, см. в разделе "пример" <xref:System.Web.Hosting.VirtualPathProvider> раздела Обзор класса.  
+  
+ [!code-csharp[System.Web.Hosting.VirtualPathProvider#23](~/samples/snippets/csharp/VS_Snippets_WebNet/system.web.hosting.virtualpathprovider/CS/SamplePathProvider.cs#23)]
+ [!code-vb[System.Web.Hosting.VirtualPathProvider#23](~/samples/snippets/visualbasic/VS_Snippets_WebNet/system.web.hosting.virtualpathprovider/VB/SamplePathProvider.vb#23)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetFileHash">
+      <MemberSignature Language="C#" Value="public virtual string GetFileHash (string virtualPath, System.Collections.IEnumerable virtualPathDependencies);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance string GetFileHash(string virtualPath, class System.Collections.IEnumerable virtualPathDependencies) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Hosting.VirtualPathProvider.GetFileHash(System.String,System.Collections.IEnumerable)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function GetFileHash (virtualPath As String, virtualPathDependencies As IEnumerable) As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::String ^ GetFileHash(System::String ^ virtualPath, System::Collections::IEnumerable ^ virtualPathDependencies);" />
+      <MemberSignature Language="F#" Value="abstract member GetFileHash : string * System.Collections.IEnumerable -&gt; string&#xA;override this.GetFileHash : string * System.Collections.IEnumerable -&gt; string" Usage="virtualPathProvider.GetFileHash (virtualPath, virtualPathDependencies)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="virtualPath" Type="System.String" />
+        <Parameter Name="virtualPathDependencies" Type="System.Collections.IEnumerable" />
+      </Parameters>
+      <Docs>
+        <param name="virtualPath">Путь к основному виртуальному ресурсу.</param>
+        <param name="virtualPathDependencies">Массив путей к другим виртуальным ресурсам, необходимым для основного виртуального ресурса.</param>
+        <summary>Возвращает хэш указанных виртуальных путей.</summary>
+        <returns>Хэш указанных виртуальных путей.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Hosting.VirtualPathProvider.GetFileHash%2A> Используйте метод, чтобы предоставить хэш зависимостей для ресурса виртуальной-файловой системы.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Initialize">
+      <MemberSignature Language="C#" Value="protected virtual void Initialize ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void Initialize() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Hosting.VirtualPathProvider.Initialize" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub Initialize ()" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void Initialize();" />
+      <MemberSignature Language="F#" Value="abstract member Initialize : unit -&gt; unit&#xA;override this.Initialize : unit -&gt; unit" Usage="virtualPathProvider.Initialize " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует экземпляр <see cref="T:System.Web.Hosting.VirtualPathProvider" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Hosting.VirtualPathProvider.Initialize%2A> Метод вызывается после регистрации поставщика в системе компиляции ASP.NET. Метод используется для предоставления любой инициализации, необходимой <xref:System.Web.Hosting.VirtualPathProvider> после того, как экземпляр помещается в среду, занимаемую приложением. <xref:System.Web.Hosting.VirtualPathProvider.Initialize%2A>  
+  
+   
+  
+## Examples  
+ Следующий пример кода является реализацией <xref:System.Web.Hosting.VirtualPathProvider.Initialize%2A> метода, который задает путь к файлу данных из <xref:System.Web.Hosting.HostingEnvironment> экземпляра приложения. Полный код, необходимый для выполнения примера, см. в разделе "пример" <xref:System.Web.Hosting.VirtualPathProvider> раздела Обзор класса.  
+  
+ [!code-csharp[System.Web.Hosting.VirtualPathProvider#26](~/samples/snippets/csharp/VS_Snippets_WebNet/system.web.hosting.virtualpathprovider/CS/SamplePathProvider.cs#26)]
+ [!code-vb[System.Web.Hosting.VirtualPathProvider#26](~/samples/snippets/visualbasic/VS_Snippets_WebNet/system.web.hosting.virtualpathprovider/VB/SamplePathProvider.vb#26)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="InitializeLifetimeService">
+      <MemberSignature Language="C#" Value="public override object InitializeLifetimeService ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance object InitializeLifetimeService() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Hosting.VirtualPathProvider.InitializeLifetimeService" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function InitializeLifetimeService () As Object" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::Object ^ InitializeLifetimeService();" />
+      <MemberSignature Language="F#" Value="override this.InitializeLifetimeService : unit -&gt; obj" Usage="virtualPathProvider.InitializeLifetimeService " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Object</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Предоставляет объекту <see cref="T:System.Web.Hosting.VirtualPathProvider" /> неограниченное время жизни, препятствуя созданию аренды.</summary>
+        <returns>Всегда <see langword="null" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод переопределяет <xref:System.MarshalByRefObject.InitializeLifetimeService%2A> метод в базовом классе. Он всегда возвращает `null` и, таким образом, предотвращает создание аренды, которая <xref:System.Web.Hosting.VirtualPathProvider> ограничивает время существования объекта.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OpenFile">
+      <MemberSignature Language="C#" Value="public static System.IO.Stream OpenFile (string virtualPath);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig class System.IO.Stream OpenFile(string virtualPath) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Hosting.VirtualPathProvider.OpenFile(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function OpenFile (virtualPath As String) As Stream" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static System::IO::Stream ^ OpenFile(System::String ^ virtualPath);" />
+      <MemberSignature Language="F#" Value="static member OpenFile : string -&gt; System.IO.Stream" Usage="System.Web.Hosting.VirtualPathProvider.OpenFile virtualPath" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IO.Stream</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="virtualPath" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="virtualPath">Путь виртуального файла.</param>
+        <summary>Возвращает поток из виртуального файла.</summary>
+        <returns>Доступный только для чтения объект <see cref="T:System.IO.Stream" /> для указанного виртуального файла или ресурса.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод — это удобный метод, который позволяет получить поток из виртуального файла, не <xref:System.Web.Hosting.VirtualPathProvider> создавая экземпляр. <xref:System.Web.Hosting.VirtualPathProvider.OpenFile%2A>  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Previous">
+      <MemberSignature Language="C#" Value="protected internal System.Web.Hosting.VirtualPathProvider Previous { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Web.Hosting.VirtualPathProvider Previous" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Hosting.VirtualPathProvider.Previous" />
+      <MemberSignature Language="VB.NET" Value="Protected Friend ReadOnly Property Previous As VirtualPathProvider" />
+      <MemberSignature Language="C++ CLI" Value="protected public:&#xA; property System::Web::Hosting::VirtualPathProvider ^ Previous { System::Web::Hosting::VirtualPathProvider ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Previous : System.Web.Hosting.VirtualPathProvider" Usage="System.Web.Hosting.VirtualPathProvider.Previous" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Web.Hosting.VirtualPathProvider</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает ссылку на ранее зарегистрированный в системе компиляции объект <see cref="T:System.Web.Hosting.VirtualPathProvider" />.</summary>
+        <value>Следующий объект <see cref="T:System.Web.Hosting.VirtualPathProvider" /> в системе компиляции.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Hosting.VirtualPathProvider> Когда объект зарегистрирован в системе компиляции ASP.NET, он добавляется в цепочку поставщиков. Используйте свойство для обработки предыдущего <xref:System.Web.Hosting.VirtualPathProvider> объекта в цепочке, если запрошенный путь не предоставлен этим <xref:System.Web.Hosting.VirtualPathProvider> экземпляром. <xref:System.Web.Hosting.VirtualPathProvider.Previous%2A>  
+  
+ Цепочка поставщиков путей всегда заканчивается поставщиком ASP.NET по умолчанию, который обслуживает файлы из файловой системы.  
+  
+   
+  
+## Examples  
+ Следующий пример кода является реализацией <xref:System.Web.Hosting.VirtualPathProvider.GetFile%2A> метода. Если запрашиваемый виртуальный каталог не начинается со строки `"/vrdir"`, метод <xref:System.Web.Hosting.VirtualPathProvider.Previous%2A> использует свойство для передачи запроса следующему <xref:System.Web.Hosting.VirtualPathProvider> объекту в цепочке. Полный код, необходимый для выполнения примера, см. в разделе "пример" <xref:System.Web.Hosting.VirtualPathProvider> раздела Обзор класса.  
+  
+ [!code-csharp[System.Web.Hosting.VirtualPathProvider#23](~/samples/snippets/csharp/VS_Snippets_WebNet/system.web.hosting.virtualpathprovider/CS/SamplePathProvider.cs#23)]
+ [!code-vb[System.Web.Hosting.VirtualPathProvider#23](~/samples/snippets/visualbasic/VS_Snippets_WebNet/system.web.hosting.virtualpathprovider/VB/SamplePathProvider.vb#23)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
