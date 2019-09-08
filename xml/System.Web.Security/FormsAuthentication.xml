@@ -1,0 +1,1513 @@
+<Type Name="FormsAuthentication" FullName="System.Web.Security.FormsAuthentication">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="5085665c318739d9c4f0a4babbeb476c2b23dea6" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70419700" /></Metadata><TypeSignature Language="C#" Value="public sealed class FormsAuthentication" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi sealed beforefieldinit FormsAuthentication extends System.Object" />
+  <TypeSignature Language="DocId" Value="T:System.Web.Security.FormsAuthentication" />
+  <TypeSignature Language="VB.NET" Value="Public NotInheritable Class FormsAuthentication" />
+  <TypeSignature Language="C++ CLI" Value="public ref class FormsAuthentication sealed" />
+  <TypeSignature Language="F#" Value="type FormsAuthentication = class" />
+  <AssemblyInfo>
+    <AssemblyName>System.Web</AssemblyName>
+    <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>Управляет службами проверки подлинности с помощью форм для веб-приложений. Этот класс не наследуется.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Проверка подлинности с помощью форм обеспечивает проверку пользователей и паролей для веб-приложений, которые не нуждаются в проверке подлинности Windows. При проверке подлинности с помощью форм сведения о пользователях хранятся во внешнем источнике данных, например <xref:System.Web.Security.Membership> в базе данных, или в файле конфигурации приложения. После аутентификации пользователя проверка подлинности с помощью форм ведет билет проверки подлинности в файле cookie или в URL-адресе, чтобы пользователь, прошедший проверку подлинности, не предоставил учетные данные при каждом запросе.  
+  
+ Проверка подлинности с помощью форм `mode` включается путем присвоения атрибуту `Forms`элемента конфигурации [проверки подлинности](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/532aee0e(v%3dvs.100)) значения. Можно потребовать, чтобы все запросы к приложению содержали действительный билет проверки подлинности пользователя с помощью элемента конфигурации [авторизации](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/8d82143t(v%3dvs.100)) , чтобы запретить запрос неизвестного пользователя, как показано в следующем примере.  
+  
+```  
+<system.web>  
+  <authentication mode="Forms">  
+    <forms loginUrl="login.aspx" />  
+  </authentication>  
+  <authorization>  
+    <deny users="?" />  
+  </authorization>  
+</system.web>  
+```  
+  
+ В предыдущем примере любому запросу для страницы ASP.NET, которая является частью приложения, требуется допустимое имя пользователя, предоставляемое проверкой подлинности с помощью форм. Если имя пользователя не существует, запрос перенаправляется на настроенный <xref:System.Web.Security.FormsAuthentication.LoginUrl%2A>.  
+  
+ <xref:System.Web.Security.FormsAuthentication> Класс предоставляет доступ к методам и свойствам, которые можно использовать в приложении, которое выполняет проверку подлинности пользователей. Метод перенаправляет браузер в, настроенный <xref:System.Web.Security.FormsAuthentication.LoginUrl%2A> для входа пользователей в приложение. <xref:System.Web.Security.FormsAuthentication.RedirectToLoginPage%2A> Метод перенаправляет пользователя, прошедшего проверку подлинности, обратно в исходный защищенный URL-адрес, <xref:System.Web.Security.FormsAuthentication.DefaultUrl%2A>который был запрошен, или на. <xref:System.Web.Security.FormsAuthentication.RedirectFromLoginPage%2A> Существуют также методы, позволяющие управлять билетами проверки подлинности форм, если это необходимо.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показан файл Web. config для приложения ASP.NET, которое использует поставщик членства ASP.NET для проверки подлинности с помощью форм и требует, чтобы все пользователи прошли проверку подлинности.  
+  
+```  
+<configuration>  
+  <connectionStrings>  
+    <add name="SqlServices" connectionString="Data Source=MySqlServer;Integrated Security=SSPI;Initial Catalog=aspnetdb;" />  
+  </connectionStrings>  
+  <system.web>  
+    <membership defaultProvider="SqlProvider" userIsOnlineTimeWindow="20">  
+      <providers>  
+        <add name="SqlProvider"  
+          type="System.Web.Security.SqlMembershipProvider"  
+          connectionStringName="SqlServices"  
+          enablePasswordRetrieval="false"  
+          enablePasswordReset="true"  
+          requiresQuestionAndAnswer="true"  
+          passwordFormat="Hashed"  
+          applicationName="/" />  
+      </providers>  
+    </membership>  
+  </system.web>  
+</configuration>  
+```  
+  
+ В следующем примере кода показана страница входа для приложения ASP.NET, использующего проверку подлинности на основе форм и членство в ASP.NET.  
+  
+> [!IMPORTANT]
+>  Этот пример содержит текстовое поле, которое принимает вводимые пользователем данные, что является потенциальной угрозой безопасности. По умолчанию данные, вводимые пользователем на веб-страницах ASP.NET, проверяются на наличие скриптов и HTML-элементов. Дополнительные сведения см. в разделе [Общие сведения об использовании сценариев](https://msdn.microsoft.com/library/772c7312-211a-4eb3-8d6e-eec0aa1dcc07).  
+  
+ [!code-aspx-csharp[System.Web.Security.SqlMembershipProvider#1](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.SqlMembershipProvider/CS/logincs.aspx#1)]
+ [!code-aspx-vb[System.Web.Security.SqlMembershipProvider#1](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.SqlMembershipProvider/VB/loginvb.aspx#1)]  
+  
+ ]]></format>
+    </remarks>
+    <permission cref="T:System.Web.AspNetHostingPermission">Для использования <see cref="T:System.Web.Security.FormsAuthentication" /> класса в размещенной среде. Значение спроса: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Значение разрешения: <see cref="F:System.Web.AspNetHostingPermissionLevel.Minimal" />.</permission>
+    <related type="Article" href="https://msdn.microsoft.com/library/77e21ba2-bad1-4967-a8ec-74942dea7e47">Поставщик проверки подлинности форм</related>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public FormsAuthentication ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.FormsAuthentication.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; FormsAuthentication();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Web.Security.FormsAuthentication" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот конструктор не предназначен для использования из кода.  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Authenticate">
+      <MemberSignature Language="C#" Value="public static bool Authenticate (string name, string password);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool Authenticate(string name, string password) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.FormsAuthentication.Authenticate(System.String,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function Authenticate (name As String, password As String) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static bool Authenticate(System::String ^ name, System::String ^ password);" />
+      <MemberSignature Language="F#" Value="static member Authenticate : string * string -&gt; bool" Usage="System.Web.Security.FormsAuthentication.Authenticate (name, password)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Obsolete("The recommended alternative is to use the Membership APIs, such as Membership.ValidateUser. For more information, see http://go.microsoft.com/fwlink/?LinkId=252463.")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="name" Type="System.String" />
+        <Parameter Name="password" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="name">Имя пользователя.</param>
+        <param name="password">Пароль для пользователя.</param>
+        <summary>Проверяет имя пользователя и пароль на соответствие учетным данным, хранящимся в файле конфигурации приложения.</summary>
+        <returns>Значение <see langword="true" />, если имя пользователя и пароль допустимы; в противном случае — значение <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод проверки подлинности проверяет учетные данные пользователя, которые хранятся в разделе [учетные данные](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/e01fc50a(v%3dvs.100)) файла конфигурации приложения. Кроме того, можно использовать членство ASP.NET для хранения учетных данных пользователя и <xref:System.Web.Security.MembershipProvider.ValidateUser%2A> вызова для проверки учетных данных. Дополнительные сведения см. в статье [Управление пользователями с помощью членства](https://msdn.microsoft.com/library/824c3a24-f0af-427c-a652-0d2d1e9397cd).  
+  
+ Для повышения безопасности можно зашифровать пароли, хранящиеся в файле конфигурации для приложения, с помощью <xref:System.Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile%2A> метода.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показаны учетные данные пользователя, хранящиеся в файле Web. config для приложения. Значения пароля были хэшированы с помощью <xref:System.Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile%2A> метода.  
+
+ В этом примере используется SHA1. Из-за конфликта с SHA1 корпорация Майкрософт рекомендует использовать SHA256.  
+  
+ `<authentication mode="Forms">`  
+  
+ `<forms loginUrl="login.aspx">`  
+  
+ `<credentials passwordFormat="SHA1">`  
+  
+ `<user name="user1"   password="27CE4CA7FBF00685AF2F617E3F5BBCAFF7B7403C" />`  
+  
+ `<user name="user2"   password="D108F80936F78DFDD333141EBC985B0233A30C7A" />`  
+  
+ `<user name="user3" password="7BDB09781A3F23885CD43177C0508B375CB1B7E9"/>`  
+  
+ `</credentials>`  
+  
+ `</forms>`  
+  
+ `</authentication>`  
+  
+ В следующем примере кода показана страница входа, использующая <xref:System.Web.Security.FormsAuthentication.Authenticate%2A> метод для проверки учетных данных пользователя.  
+  
+> [!IMPORTANT]
+>  Этот пример содержит текстовое поле, которое принимает вводимые пользователем данные, что является потенциальной угрозой безопасности. По умолчанию данные, вводимые пользователем на веб-страницах ASP.NET, проверяются на наличие скриптов и HTML-элементов. Дополнительные сведения см. в разделе [Общие сведения об использовании сценариев](https://msdn.microsoft.com/library/772c7312-211a-4eb3-8d6e-eec0aa1dcc07).  
+  
+ [!code-aspx-csharp[System.Web.Security.FormsAuthentication#1](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.FormsAuthentication/CS/logincs.aspx#1)]
+ [!code-aspx-vb[System.Web.Security.FormsAuthentication#1](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.FormsAuthentication/VB/loginvb.aspx#1)]  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="CookieDomain">
+      <MemberSignature Language="C#" Value="public static string CookieDomain { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property string CookieDomain" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.FormsAuthentication.CookieDomain" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property CookieDomain As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property System::String ^ CookieDomain { System::String ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.CookieDomain : string" Usage="System.Web.Security.FormsAuthentication.CookieDomain" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение домена для файла Cookie проверки подлинности с помощью форм.</summary>
+        <value>Свойство <see cref="P:System.Web.HttpCookie.Domain" /> файла Cookie проверки подлинности с помощью форм. Значение по умолчанию — пустая строка ("").</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение свойства задается в файле конфигурации для приложения ASP.NET с `domain` помощью атрибута элемента конфигурации [Forms](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/1d3t3c61(v%3dvs.100)) . <xref:System.Web.Security.FormsAuthentication.CookieDomain%2A> Значение <xref:System.Web.Security.FormsAuthentication.CookieDomain%2A> свойства <xref:System.Web.HttpCookie.Domain%2A> определяет, для чего будет использоваться файл cookie.  
+  
+   
+  
+## Examples  
+ В следующем примере кода задается `domain` атрибут в файле Web. config.  
+  
+```  
+<authentication mode="Forms">  
+  <forms loginUrl="member_login.aspx"  
+    cookieless="UseCookies"  
+    domain="contoso.com" />  
+</authentication>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="CookieMode">
+      <MemberSignature Language="C#" Value="public static System.Web.HttpCookieMode CookieMode { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property valuetype System.Web.HttpCookieMode CookieMode" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.FormsAuthentication.CookieMode" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property CookieMode As HttpCookieMode" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property System::Web::HttpCookieMode CookieMode { System::Web::HttpCookieMode get(); };" />
+      <MemberSignature Language="F#" Value="member this.CookieMode : System.Web.HttpCookieMode" Usage="System.Web.Security.FormsAuthentication.CookieMode" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.HttpCookieMode</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, позволяющее определить, настроено ли приложение для проверки подлинности с помощью форм без использования файлов cookie.</summary>
+        <value>Одно из значений <see cref="T:System.Web.HttpCookieMode" />, позволяющее определить, настроено ли приложение для проверки подлинности с помощью форм без поддержки файлов Cookie. Значение по умолчанию — <see cref="F:System.Web.HttpCookieMode.UseDeviceProfile" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойство отражает значение `cookieless` атрибута элемента конфигурации [Forms.](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/1d3t3c61(v%3dvs.100)) <xref:System.Web.Security.FormsAuthentication.CookieMode%2A> Свойство определяет, будет <xref:System.Web.Security.FormsAuthenticationTicket> ли значение храниться в файле cookie сеанса в <xref:System.Web.HttpRequest.QueryString%2A> браузере или храниться в свойстве. <xref:System.Web.Security.FormsAuthentication.CookieMode%2A>  
+  
+> [!NOTE]
+>  <xref:System.Web.Security.FormsAuthenticationTicket> Если значение хранится в URI, длина созданного URI может быть длиннее максимально допустимой. Скорее всего, это происходит, когда <xref:System.Web.Security.FormsAuthentication.FormsCookiePath%2A> свойству присвоено имя приложения, а имя приложения длиннее (40 или более символов), если имена пользователей в приложении длиннее, или если длинные <xref:System.Web.Security.FormsAuthenticationTicket.UserData%2A> <xref:System.Web.Security.FormsAuthenticationTicket> строки хранятся в значений. Если созданный URI слишком длинный, веб-сервер возвратит `400 - Bad Request` ошибку.  
+  
+   
+  
+## Examples  
+ В следующем примере кода для `cookieless` `AutoDetect` атрибута задается значение в файле Web. config.  
+  
+```  
+<authentication mode="Forms">  
+  <forms loginUrl="member_login.aspx"  
+    cookieless="AutoDetect" />  
+</authentication>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="CookieSameSite">
+      <MemberSignature Language="C#" Value="public static System.Web.SameSiteMode CookieSameSite { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property valuetype System.Web.SameSiteMode CookieSameSite" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.FormsAuthentication.CookieSameSite" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property CookieSameSite As SameSiteMode" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property System::Web::SameSiteMode CookieSameSite { System::Web::SameSiteMode get(); };" />
+      <MemberSignature Language="F#" Value="member this.CookieSameSite : System.Web.SameSiteMode" Usage="System.Web.Security.FormsAuthentication.CookieSameSite" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.SameSiteMode</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или устанавливает значение атрибута SameSite файла cookie.</summary>
+        <value>Одно из значений перечисления, представляющее режим применения политик для файла cookie. Значение по умолчанию — <see cref="F:System.Web.SameSiteMode.Lax" />.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CookiesSupported">
+      <MemberSignature Language="C#" Value="public static bool CookiesSupported { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property bool CookiesSupported" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.FormsAuthentication.CookiesSupported" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property CookiesSupported As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property bool CookiesSupported { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.CookiesSupported : bool" Usage="System.Web.Security.FormsAuthentication.CookiesSupported" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, позволяющее определить, поддерживает ли приложение проверку подлинности с помощью форм без использования файлов cookie.</summary>
+        <value><see langword="false" />, если приложение поддерживает проверку подлинности с помощью форм без поддержки файлов Cookie; в противном случае — <see langword="true" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойство возвращает значение, основанное <xref:System.Web.Security.FormsAuthentication.CookieMode%2A> на значении и возможностях браузера. <xref:System.Web.Security.FormsAuthentication.CookiesSupported%2A>  
+  
+-   Если свойство имеет <xref:System.Web.HttpCookieMode.UseCookies>значение, <xref:System.Web.Security.FormsAuthentication.CookiesSupported%2A> свойство будет возвращать `true`значение. <xref:System.Web.Security.FormsAuthentication.CookieMode%2A>  
+  
+-   Если свойство имеет <xref:System.Web.HttpCookieMode.UseUri>значение, <xref:System.Web.Security.FormsAuthentication.CookiesSupported%2A> свойство будет возвращать `false`значение. <xref:System.Web.Security.FormsAuthentication.CookieMode%2A>  
+  
+-   <xref:System.Web.HttpCookieMode.AutoDetect> <xref:System.Web.Security.FormsAuthentication.CookiesSupported%2A> `true` <xref:System.Web.Security.FormsAuthentication.CookiesSupported%2A> Если свойство имеет значение, свойство будет возвращать, если браузер поддерживает файлы cookie, а файлы Cookie включены; в противном случае свойство возвратит `false`значение. <xref:System.Web.Security.FormsAuthentication.CookieMode%2A>  
+  
+-   `true` <xref:System.Web.HttpRequest.Browser%2A> <xref:System.Web.HttpContext.Request%2A> Если свойство имеет <xref:System.Web.HttpCookieMode.UseDeviceProfile>значение, <xref:System.Web.Security.FormsAuthentication.CookiesSupported%2A> свойство возвращает, если объект для текущего поддерживает как файлы cookie, так и перенаправление с помощью файлов cookie; в противном случае <xref:System.Web.Security.FormsAuthentication.CookiesSupported%2A>  <xref:System.Web.Security.FormsAuthentication.CookieMode%2A> возвратит `false`значение.  
+  
+   
+  
+## Examples  
+ В следующем примере кода для `cookieless` <xref:System.Web.HttpCookieMode.UseUri> атрибута задается значение в файле Web. config. Эта конфигурация приведет к <xref:System.Web.Security.FormsAuthentication.CookiesSupported%2A> возврату `false`свойства.  
+  
+```  
+<authentication mode="Forms">  
+  <forms loginUrl="member_login.aspx"  
+    cookieless="UseUri" />  
+</authentication>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Decrypt">
+      <MemberSignature Language="C#" Value="public static System.Web.Security.FormsAuthenticationTicket Decrypt (string encryptedTicket);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig class System.Web.Security.FormsAuthenticationTicket Decrypt(string encryptedTicket) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.FormsAuthentication.Decrypt(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function Decrypt (encryptedTicket As String) As FormsAuthenticationTicket" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static System::Web::Security::FormsAuthenticationTicket ^ Decrypt(System::String ^ encryptedTicket);" />
+      <MemberSignature Language="F#" Value="static member Decrypt : string -&gt; System.Web.Security.FormsAuthenticationTicket" Usage="System.Web.Security.FormsAuthentication.Decrypt encryptedTicket" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Security.FormsAuthenticationTicket</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="encryptedTicket" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="encryptedTicket">Зашифрованный билет проверки подлинности.</param>
+        <summary>Создает объект <see cref="T:System.Web.Security.FormsAuthenticationTicket" /> на основе шифрованного билета проверки подлинности с помощью форм, переданных методу.</summary>
+        <returns>Объект <see cref="T:System.Web.Security.FormsAuthenticationTicket" />. Если параметр <paramref name="encryptedTicket" /> не является действительным билетом, возвращается значение <see langword="null" />.</returns>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentException">Свойство <paramref name="encryptedTicket" /> имеет значение <see langword="null" />.  
+  
+-или- 
+ Параметр <paramref name="encryptedTicket" /> является пустой строкой ("").  
+  
+-или- 
+Длина <paramref name="encryptedTicket" /> превышает 4096 символов.  
+  
+- или - 
+ Параметр <paramref name="encryptedTicket" /> имеет недопустимый формат.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="DefaultUrl">
+      <MemberSignature Language="C#" Value="public static string DefaultUrl { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property string DefaultUrl" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.FormsAuthentication.DefaultUrl" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property DefaultUrl As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property System::String ^ DefaultUrl { System::String ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.DefaultUrl : string" Usage="System.Web.Security.FormsAuthentication.DefaultUrl" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает URL-адрес, который будет перенаправлен классом <see cref="T:System.Web.Security.FormsAuthentication" />, если перенаправление URL-адреса не указано.</summary>
+        <value>URL-адрес, который будет перенаправлен классом <see cref="T:System.Web.Security.FormsAuthentication" />, если перенаправление URL-адреса не указано. По умолчанию используется "default.aspx."</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение свойства задается в файле конфигурации для приложения ASP.NET с `defaultUrl` помощью атрибута элемента конфигурации [Forms](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/1d3t3c61(v%3dvs.100)) . <xref:System.Web.Security.FormsAuthentication.DefaultUrl%2A> <xref:System.Web.Security.FormsAuthentication.DefaultUrl%2A> Свойство используется <xref:System.Web.Security.FormsAuthentication.RedirectFromLoginPage%2A>  методом, если в запрос не включен URL-адрес возврата. Аналогичным образом <xref:System.Web.Security.FormsAuthentication.GetRedirectUrl%2A> , метод возвратит значение <xref:System.Web.Security.FormsAuthentication.DefaultUrl%2A> , если URL-адрес возврата не включен в запрос.  
+  
+   
+  
+## Examples  
+ В следующем примере кода задается `defaultUrl` атрибут в файле Web. config.  
+  
+```  
+<authentication mode="Forms">  
+  <forms loginUrl="member_login.aspx"  
+    defaultUrl="index.aspx" />  
+</authentication>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="EnableCrossAppRedirects">
+      <MemberSignature Language="C#" Value="public static bool EnableCrossAppRedirects { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property bool EnableCrossAppRedirects" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.FormsAuthentication.EnableCrossAppRedirects" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property EnableCrossAppRedirects As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property bool EnableCrossAppRedirects { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.EnableCrossAppRedirects : bool" Usage="System.Web.Security.FormsAuthentication.EnableCrossAppRedirects" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, показывающее могут ли пользователи, прошедшие проверку подлинности перенаправляться на URL-адреса в других веб-приложениях.</summary>
+        <value><see langword="true" />, если пользователи, прошедший проверку подлинности могут быть переадресованы на URL-адреса в других веб-приложениях, в противном случае — <see langword="false" />. Значение по умолчанию — <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение свойства задается `enableCrossAppRedirects` с помощью атрибута элемента конфигурации [Forms.](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/1d3t3c61(v%3dvs.100)) <xref:System.Web.Security.FormsAuthentication.EnableCrossAppRedirects%2A>  
+  
+ Свойство проверяется в методе, если URL-адрес перенаправления не указывает на страницу в текущем приложении. <xref:System.Web.Security.FormsAuthentication.RedirectFromLoginPage%2A> <xref:System.Web.Security.FormsAuthentication.EnableCrossAppRedirects%2A> Если <xref:System.Web.Security.FormsAuthentication.EnableCrossAppRedirects%2A> параметр `true`имеет значение, перенаправление выполняется; если <xref:System.Web.Security.FormsAuthentication.EnableCrossAppRedirects%2A> имеет `false`значение, <xref:System.Web.Security.FormsAuthentication.DefaultUrl%2A> браузер перенаправляется на страницу, определенную в свойстве.  
+  
+> [!NOTE]
+>  При перенаправлении страниц между приложениями необходимо убедиться, что определенные атрибуты в элементе конфигурации [Forms](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/1d3t3c61(v%3dvs.100)) дублируются по прошедшему проверку подлинности приложениям. Дополнительные сведения и пример см. в статье [Проверка подлинности с помощью форм в приложениях](https://msdn.microsoft.com/library/99e2f9e8-5b97-4a4d-a4ed-5f93276053b7).  
+  
+> [!IMPORTANT]
+>  Если перенаправления между приложениями разрешены, ваш сайт уязвим для атаки, которая направляет пользователей на вредоносный веб-сайт, но использует страницу входа для сайта. Всегда проверяйте, что URL-адрес перенаправления, <xref:System.Web.Security.FormsAuthentication.GetRedirectUrl%2A> возвращаемый методом, является нужным URL-адресом, чтобы вы могли убедиться, что вы можете разрешить перенаправление только на утвержденные веб-сайты. Также необходимо убедиться, что в URL-адресе перенаправления используется соответствующий протокол (HTTP или HTTPS). Для выполнения этих проверок можно добавить обработчик событий обратной передачи на страницу входа или добавить обработчик для <xref:System.Web.UI.WebControls.Login.LoggedIn> события <xref:System.Web.UI.WebControls.Login> элемента управления.  
+  
+   
+  
+## Examples  
+ В следующем примере кода для `enableCrossAppRedirects` `true` атрибута задается значение в файле Web. config для приложения ASP.NET.  
+  
+```  
+<authentication mode="Forms">  
+  <forms loginUrl="member_login.aspx"  
+    cookieless="UseUri"  
+    requireSSL="true"   
+    enableCrossAppRedirects="true" />  
+</authentication>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="EnableFormsAuthentication">
+      <MemberSignature Language="C#" Value="public static void EnableFormsAuthentication (System.Collections.Specialized.NameValueCollection configurationData);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void EnableFormsAuthentication(class System.Collections.Specialized.NameValueCollection configurationData) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.FormsAuthentication.EnableFormsAuthentication(System.Collections.Specialized.NameValueCollection)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Sub EnableFormsAuthentication (configurationData As NameValueCollection)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static void EnableFormsAuthentication(System::Collections::Specialized::NameValueCollection ^ configurationData);" />
+      <MemberSignature Language="F#" Value="static member EnableFormsAuthentication : System.Collections.Specialized.NameValueCollection -&gt; unit" Usage="System.Web.Security.FormsAuthentication.EnableFormsAuthentication configurationData" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="configurationData" Type="System.Collections.Specialized.NameValueCollection" Index="0" FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      </Parameters>
+      <Docs>
+        <param name="configurationData">Коллекция значений-имён, которая содержит значения для «defaultUrl» и/или «loginUrl». Параметр может иметь значение NULL, если отсутствуют значения по умолчанию URL-адреса или URL-адреса входа.</param>
+        <summary>Включает аутентификацию с помощью форм.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если свойство имеет `null`значение, для свойства задается URL-адрес `configurationData` по умолчанию из параметра. <xref:System.Web.Security.FormsAuthentication.DefaultUrl%2A> Если свойство имеет `null`значение, для свойства задается URL-адрес `configurationData` входа из параметра. <xref:System.Web.Security.FormsAuthentication.LoginUrl%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Приложение не находится в состоянии инициализации перед запуском.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="Encrypt">
+      <MemberSignature Language="C#" Value="public static string Encrypt (System.Web.Security.FormsAuthenticationTicket ticket);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig string Encrypt(class System.Web.Security.FormsAuthenticationTicket ticket) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.FormsAuthentication.Encrypt(System.Web.Security.FormsAuthenticationTicket)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function Encrypt (ticket As FormsAuthenticationTicket) As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static System::String ^ Encrypt(System::Web::Security::FormsAuthenticationTicket ^ ticket);" />
+      <MemberSignature Language="F#" Value="static member Encrypt : System.Web.Security.FormsAuthenticationTicket -&gt; string" Usage="System.Web.Security.FormsAuthentication.Encrypt ticket" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="ticket" Type="System.Web.Security.FormsAuthenticationTicket" />
+      </Parameters>
+      <Docs>
+        <param name="ticket">Объект <see cref="T:System.Web.Security.FormsAuthenticationTicket" />, с помощью которого следует создать зашифрованный билет проверки подлинности с помощью форм.</param>
+        <summary>Создает строку, содержащую зашифрованный билет проверки подлинности с помощью форм, подходящий для использования в файле Cookie HTTP.</summary>
+        <returns>Строка, содержащая зашифрованный билет проверки подлинности с помощью форм.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Examples  
+ В следующем примере кода результат <xref:System.Web.Security.FormsAuthentication.Encrypt%2A> метода сохраняется в файле cookie с <xref:System.Web.Security.FormsAuthentication.FormsCookieName%2A> помощью свойства и перенаправляет пользователя на URL-адрес, возвращенный <xref:System.Web.Security.FormsAuthentication.GetRedirectUrl%2A> методом.  
+  
+> [!IMPORTANT]
+>  Этот пример содержит текстовое поле, которое принимает вводимые пользователем данные, что является потенциальной угрозой безопасности. По умолчанию данные, вводимые пользователем на веб-страницах ASP.NET, проверяются на наличие скриптов и HTML-элементов. Дополнительные сведения см. в разделе [Общие сведения об использовании сценариев](https://msdn.microsoft.com/library/772c7312-211a-4eb3-8d6e-eec0aa1dcc07).  
+  
+ [!code-aspx-csharp[FormsAuthenticationTicketClass#1](~/samples/snippets/csharp/VS_Snippets_WebNet/FormsAuthenticationTicketClass/CS/formsauthenticationticketclasscs.aspx#1)]
+ [!code-aspx-vb[FormsAuthenticationTicketClass#1](~/samples/snippets/visualbasic/VS_Snippets_WebNet/FormsAuthenticationTicketClass/VB/formsauthenticationticketclassvb.aspx#1)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="ticket" /> — <see langword="null" />.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="FormsCookieName">
+      <MemberSignature Language="C#" Value="public static string FormsCookieName { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property string FormsCookieName" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.FormsAuthentication.FormsCookieName" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property FormsCookieName As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property System::String ^ FormsCookieName { System::String ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.FormsCookieName : string" Usage="System.Web.Security.FormsAuthentication.FormsCookieName" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает имя файла Cookie, который используется для сохранения билета проверки подлинности с помощью форм.</summary>
+        <value>Имя файла Cookie, который используется для сохранения билета проверки подлинности с помощью форм. По умолчанию установлено значение ".ASPXAUTH".</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение свойства задается в файле конфигурации для приложения ASP.NET с `name` помощью атрибута элемента конфигурации [Forms](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/1d3t3c61(v%3dvs.100)) . <xref:System.Web.Security.FormsAuthentication.FormsCookieName%2A> Используется для ссылки на файл cookie, в котором <xref:System.Web.Security.FormsAuthenticationTicket> хранятся данные. <xref:System.Web.Security.FormsAuthentication.FormsCookieName%2A>  
+  
+   
+  
+## Examples  
+ В следующем примере кода значение <xref:System.Web.Security.FormsAuthentication.FormsCookieName%2A> свойства задается `name` с помощью атрибута в файле Web. config.  
+  
+```  
+<authentication mode="Forms">  
+  <forms loginUrl="member_login.aspx"  
+    cookieless="UseCookies"  
+    name=".ASPXFORMSAUTH" />  
+</authentication>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="FormsCookiePath">
+      <MemberSignature Language="C#" Value="public static string FormsCookiePath { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property string FormsCookiePath" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.FormsAuthentication.FormsCookiePath" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property FormsCookiePath As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property System::String ^ FormsCookiePath { System::String ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.FormsCookiePath : string" Usage="System.Web.Security.FormsAuthentication.FormsCookiePath" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает путь к файлу Cookie для билета проверки подлинности с помощью формы.</summary>
+        <value>Путь к файлу Cookie, в котором хранится билет проверки подлинности для форм проверки подлинности. По умолчанию используется значение "/".</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение свойства задается в файле конфигурации для приложения ASP.NET, `path` использующего атрибут элемента конфигурации [Forms](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/1d3t3c61(v%3dvs.100)) . <xref:System.Web.Security.FormsAuthentication.FormsCookiePath%2A> Указывает для файла cookie, в котором хранятся <xref:System.Web.Security.FormsAuthenticationTicket> данные. <xref:System.Web.HttpCookie.Path%2A> <xref:System.Web.Security.FormsAuthentication.FormsCookiePath%2A>  
+  
+   
+  
+## Examples  
+ В следующем примере кода значение <xref:System.Web.Security.FormsAuthentication.FormsCookiePath%2A> свойства задается `path` с помощью атрибута в файле Web. config.  
+  
+```  
+<authentication mode="Forms">  
+  <forms loginUrl="member_login.aspx"  
+    cookieless="UseCookies"  
+    path="/MyApplication" />  
+</authentication>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="GetAuthCookie">
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Создает файл Cookie проверки подлинности для полученного имени пользователя.</summary>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="GetAuthCookie">
+      <MemberSignature Language="C#" Value="public static System.Web.HttpCookie GetAuthCookie (string userName, bool createPersistentCookie);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig class System.Web.HttpCookie GetAuthCookie(string userName, bool createPersistentCookie) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.FormsAuthentication.GetAuthCookie(System.String,System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function GetAuthCookie (userName As String, createPersistentCookie As Boolean) As HttpCookie" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static System::Web::HttpCookie ^ GetAuthCookie(System::String ^ userName, bool createPersistentCookie);" />
+      <MemberSignature Language="F#" Value="static member GetAuthCookie : string * bool -&gt; System.Web.HttpCookie" Usage="System.Web.Security.FormsAuthentication.GetAuthCookie (userName, createPersistentCookie)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.HttpCookie</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="userName" Type="System.String" />
+        <Parameter Name="createPersistentCookie" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="userName">Имя пользователя, прошедшего проверку подлинности.</param>
+        <param name="createPersistentCookie"><see langword="true" />, чтобы создать долговременный файл Cookie (т.е. сохраняемый между сеансами браузера); в противном случае — <see langword="false" />.</param>
+        <summary>Создает файл Cookie проверки подлинности для полученного имени пользователя. При этом файл Cookie не является частью исходящего ответного сообщения, поэтому приложение может более строго контролировать выдачу файлов Cookie.</summary>
+        <returns>Класс <see cref="T:System.Web.HttpCookie" />, который содержит сведения о шифрованном билете проверки подлинности с помощью форм. По умолчанию используется значение свойства <see cref="P:System.Web.Security.FormsAuthentication.FormsCookiePath" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Путь к файлу cookie определяется <xref:System.Web.Security.FormsAuthentication.FormsCookiePath%2A> свойством.  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="GetAuthCookie">
+      <MemberSignature Language="C#" Value="public static System.Web.HttpCookie GetAuthCookie (string userName, bool createPersistentCookie, string strCookiePath);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig class System.Web.HttpCookie GetAuthCookie(string userName, bool createPersistentCookie, string strCookiePath) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.FormsAuthentication.GetAuthCookie(System.String,System.Boolean,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function GetAuthCookie (userName As String, createPersistentCookie As Boolean, strCookiePath As String) As HttpCookie" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static System::Web::HttpCookie ^ GetAuthCookie(System::String ^ userName, bool createPersistentCookie, System::String ^ strCookiePath);" />
+      <MemberSignature Language="F#" Value="static member GetAuthCookie : string * bool * string -&gt; System.Web.HttpCookie" Usage="System.Web.Security.FormsAuthentication.GetAuthCookie (userName, createPersistentCookie, strCookiePath)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Web.HttpCookie</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="userName" Type="System.String" />
+        <Parameter Name="createPersistentCookie" Type="System.Boolean" />
+        <Parameter Name="strCookiePath" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="userName">Имя пользователя, прошедшего проверку подлинности.</param>
+        <param name="createPersistentCookie"><see langword="true" />, чтобы создать долговременный файл Cookie (т.е. сохраняемый между сеансами браузера); в противном случае — <see langword="false" />.</param>
+        <param name="strCookiePath">Свойство <see cref="P:System.Web.HttpCookie.Path" /> файла Cookie проверки подлинности.</param>
+        <summary>Создает файл Cookie проверки подлинности для полученного имени пользователя. Это не устанавливает файл Cookie частью исходящего ответного сообщения.</summary>
+        <returns>Класс <see cref="T:System.Web.HttpCookie" />, который содержит сведения о шифрованном билете проверки подлинности с помощью форм.</returns>
+        <remarks>To be added.</remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="GetRedirectUrl">
+      <MemberSignature Language="C#" Value="public static string GetRedirectUrl (string userName, bool createPersistentCookie);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig string GetRedirectUrl(string userName, bool createPersistentCookie) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.FormsAuthentication.GetRedirectUrl(System.String,System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function GetRedirectUrl (userName As String, createPersistentCookie As Boolean) As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static System::String ^ GetRedirectUrl(System::String ^ userName, bool createPersistentCookie);" />
+      <MemberSignature Language="F#" Value="static member GetRedirectUrl : string * bool -&gt; string" Usage="System.Web.Security.FormsAuthentication.GetRedirectUrl (userName, createPersistentCookie)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="userName" Type="System.String" />
+        <Parameter Name="createPersistentCookie" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="userName">Имя пользователя, прошедшего проверку подлинности.</param>
+        <param name="createPersistentCookie">Этот параметр не учитывается.</param>
+        <summary>Возвращает URL-адрес перенаправления для первоначального запроса, вызвавший перенаправление на страницу входа.</summary>
+        <returns>Строка, содержащая URL-адрес перенаправления, либо NULL, если значение <paramref name="userName" /> равно NULL.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод можно использовать, если требуется выполнить перенаправление в коде приложения вместо использования <xref:System.Web.Security.FormsAuthentication.RedirectFromLoginPage%2A> метода.  
+  
+ Метод возвращает URL-адрес, указанный в строке запроса, `ReturnURL` используя имя переменной. <xref:System.Web.Security.FormsAuthentication.GetRedirectUrl%2A> Например, в URL-адресе `http://www.contoso.com/login.aspx?ReturnUrl=caller.aspx` <xref:System.Web.Security.FormsAuthentication.GetRedirectUrl%2A> метод возвращает URL-адрес `caller.aspx`возврата. Если переменная не существует <xref:System.Web.Security.FormsAuthentication.GetRedirectUrl%2A> , метод <xref:System.Web.Security.FormsAuthentication.DefaultUrl%2A> возвращает URL-адрес в свойстве. `ReturnURL`  
+  
+ ASP.NET автоматически добавляет URL-адрес возврата, когда браузер перенаправляется на страницу входа.  
+  
+ По умолчанию `ReturnUrl` переменная должна ссылаться на страницу в текущем приложении. Если `ReturnUrl` ссылается на страницу в другом приложении или на другом сервере <xref:System.Web.Security.FormsAuthentication.GetRedirectUrl%2A> , методы <xref:System.Web.Security.FormsAuthentication.DefaultUrl%2A> возвращают URL-адрес в свойстве. Если вы хотите разрешить URL-адресу возврата ссылку на страницу за пределами текущего приложения <xref:System.Web.Security.FormsAuthentication.EnableCrossAppRedirects%2A> , необходимо установить свойство в `true` значение, используя `enableCrossAppRedirects` атрибут элемента конфигурации [Forms](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/1d3t3c61(v%3dvs.100)) .  
+
+Этот метод не создает файл cookie.
+  
+> [!IMPORTANT]
+>  <xref:System.Web.Security.FormsAuthentication.EnableCrossAppRedirects%2A> Установка свойства в значение, разрешающее перенаправление между приложениями, является потенциальной `true`  угрозой безопасности. Дополнительные сведения см. в описании свойства <xref:System.Web.Security.FormsAuthentication.EnableCrossAppRedirects%2A>.  
+  
+   
+  
+## Examples  
+ В следующем примере кода выполняется перенаправление пользователей, прошедших проверку подлинности, <xref:System.Web.Security.FormsAuthentication.GetRedirectUrl%2A> на URL-адрес, возвращенный методом.  
+  
+> [!IMPORTANT]
+>  Этот пример содержит текстовое поле, которое принимает вводимые пользователем данные, что является потенциальной угрозой безопасности. По умолчанию данные, вводимые пользователем на веб-страницах ASP.NET, проверяются на наличие скриптов и HTML-элементов. Дополнительные сведения см. в разделе [Общие сведения об использовании сценариев](https://msdn.microsoft.com/library/772c7312-211a-4eb3-8d6e-eec0aa1dcc07).  
+  
+ [!code-aspx-csharp[FormsAuthenticationTicketClass#1](~/samples/snippets/csharp/VS_Snippets_WebNet/FormsAuthenticationTicketClass/CS/formsauthenticationticketclasscs.aspx#1)]
+ [!code-aspx-vb[FormsAuthenticationTicketClass#1](~/samples/snippets/visualbasic/VS_Snippets_WebNet/FormsAuthenticationTicketClass/VB/formsauthenticationticketclassvb.aspx#1)]  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="HashPasswordForStoringInConfigFile">
+      <MemberSignature Language="C#" Value="public static string HashPasswordForStoringInConfigFile (string password, string passwordFormat);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig string HashPasswordForStoringInConfigFile(string password, string passwordFormat) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(System.String,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function HashPasswordForStoringInConfigFile (password As String, passwordFormat As String) As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static System::String ^ HashPasswordForStoringInConfigFile(System::String ^ password, System::String ^ passwordFormat);" />
+      <MemberSignature Language="F#" Value="static member HashPasswordForStoringInConfigFile : string * string -&gt; string" Usage="System.Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile (password, passwordFormat)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Obsolete("The recommended alternative is to use the Membership APIs, such as Membership.CreateUser. For more information, see http://go.microsoft.com/fwlink/?LinkId=252463.")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="password" Type="System.String" />
+        <Parameter Name="passwordFormat" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="password">Пароль для хэширования.</param>
+        <param name="passwordFormat">Используемый хэш-алгоритм. Параметр <paramref name="passwordFormat" /> является значением типа <see langword="String" />, представляющим одно из значений перечисления <see cref="T:System.Web.Configuration.FormsAuthPasswordFormat" />.</param>
+        <summary>Формирует хэшированный пароль, подходящий для хранения в файле конфигурации, в зависимости от указанного пароля и алгоритма хэширования.</summary>
+        <returns>Хэшированный пароль.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile%2A> Метод создает хэшированное значение пароля, которое можно использовать при хранении учетных данных проверки подлинности форм в файле конфигурации для приложения.  
+  
+ Учетные данные проверки подлинности, хранящиеся в файле конфигурации для <xref:System.Web.Security.FormsAuthentication.Authenticate%2A> приложения, используются методом для проверки паролей пользователей приложения. Кроме того, вы можете использовать членство ASP.NET для хранения учетных данных пользователя. Дополнительные сведения см. в статье [Управление пользователями с помощью членства](https://msdn.microsoft.com/library/824c3a24-f0af-427c-a652-0d2d1e9397cd).  
+  
+   
+  
+## Examples  
+ В следующем примере кода принимается имя пользователя, пароль и тип хэша, а также отображается раздел [учетных данных](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/e01fc50a(v%3dvs.100)) конфигурации, включающий определение пользователя и хэшированный пароль.  
+  
+> [!IMPORTANT]
+>  Этот пример содержит текстовое поле, которое принимает вводимые пользователем данные, что является потенциальной угрозой безопасности. По умолчанию данные, вводимые пользователем на веб-страницах ASP.NET, проверяются на наличие скриптов и HTML-элементов. Дополнительные сведения см. в разделе [Общие сведения об использовании сценариев](https://msdn.microsoft.com/library/772c7312-211a-4eb3-8d6e-eec0aa1dcc07).  
+  
+ [!code-aspx-csharp[FormsAuthenticationHashPassword#1](~/samples/snippets/csharp/VS_Snippets_WebNet/FormsAuthenticationHashPassword/CS/formsauthenticationhashpasswordcs.aspx#1)]
+ [!code-aspx-vb[FormsAuthenticationHashPassword#1](~/samples/snippets/visualbasic/VS_Snippets_WebNet/FormsAuthenticationHashPassword/VB/formsauthenticationhashpasswordvb.aspx#1)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="password" /> равно <see langword="null" />  
+  
+-или- 
+ Свойство <paramref name="passwordFormat" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException"><paramref name="passwordFormat" /> не является допустимым значением <see cref="T:System.Web.Configuration.FormsAuthPasswordFormat" />.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Initialize">
+      <MemberSignature Language="C#" Value="public static void Initialize ();" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void Initialize() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.FormsAuthentication.Initialize" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Sub Initialize ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static void Initialize();" />
+      <MemberSignature Language="F#" Value="static member Initialize : unit -&gt; unit" Usage="System.Web.Security.FormsAuthentication.Initialize " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует объект <see cref="T:System.Web.Security.FormsAuthentication" /> в зависимости от параметров конфигурации приложения.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод вызывается, <xref:System.Web.Security.FormsAuthenticationModule> когда <xref:System.Web.Security.FormsAuthentication> создает экземпляр класса. <xref:System.Web.Security.FormsAuthentication.Initialize%2A> Этот метод не предназначен для непосредственного вызова из кода.  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="IsEnabled">
+      <MemberSignature Language="C#" Value="public static bool IsEnabled { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property bool IsEnabled" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.FormsAuthentication.IsEnabled" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property IsEnabled As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property bool IsEnabled { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.IsEnabled : bool" Usage="System.Web.Security.FormsAuthentication.IsEnabled" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает значение, указывающее, включена ли аутентификация форм.</summary>
+        <value>Значение <see langword="true" />, если аутентификация форм включена; в противном случае — значение <see langword="false" />.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="LoginUrl">
+      <MemberSignature Language="C#" Value="public static string LoginUrl { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property string LoginUrl" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.FormsAuthentication.LoginUrl" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property LoginUrl As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property System::String ^ LoginUrl { System::String ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.LoginUrl : string" Usage="System.Web.Security.FormsAuthentication.LoginUrl" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает URL-адрес страницы входа, на которую будет перенаправляться класс <see cref="T:System.Web.Security.FormsAuthentication" />.</summary>
+        <value>URL-адрес страницы входа, на которую будет перенаправляться класс <see cref="T:System.Web.Security.FormsAuthentication" />. По умолчанию используется "login.aspx."</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение свойства задается в файле конфигурации для приложения ASP.NET с `loginUrl` помощью атрибута элемента конфигурации [Forms](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/1d3t3c61(v%3dvs.100)) . <xref:System.Web.Security.FormsAuthentication.LoginUrl%2A> Метод используется <xref:System.Web.Security.FormsAuthentication.RedirectToLoginPage%2A> методом. <xref:System.Web.Security.FormsAuthentication.LoginUrl%2A>  
+  
+   
+  
+## Examples  
+ В следующем примере кода задается `loginUrl` атрибут в файле Web. config.  
+  
+```  
+<authentication mode="Forms">  
+  <forms loginUrl="member_login.aspx"  
+    defaultUrl="index.aspx" />  
+</authentication>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="RedirectFromLoginPage">
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Перенаправляет прошедшего проверку подлинности пользователя по первоначально запрошенному URL-адресу или URL-адресу по умолчанию.</summary>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="RedirectFromLoginPage">
+      <MemberSignature Language="C#" Value="public static void RedirectFromLoginPage (string userName, bool createPersistentCookie);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void RedirectFromLoginPage(string userName, bool createPersistentCookie) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.FormsAuthentication.RedirectFromLoginPage(System.String,System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Sub RedirectFromLoginPage (userName As String, createPersistentCookie As Boolean)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static void RedirectFromLoginPage(System::String ^ userName, bool createPersistentCookie);" />
+      <MemberSignature Language="F#" Value="static member RedirectFromLoginPage : string * bool -&gt; unit" Usage="System.Web.Security.FormsAuthentication.RedirectFromLoginPage (userName, createPersistentCookie)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="userName" Type="System.String" />
+        <Parameter Name="createPersistentCookie" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="userName">Имя пользователя, прошедшего проверку подлинности.</param>
+        <param name="createPersistentCookie"><see langword="true" />, чтобы создать долговременный файл Cookie (т.е. сохраняемый между сеансами браузера); в противном случае — <see langword="false" />.</param>
+        <summary>Перенаправляет прошедшего проверку подлинности пользователя по первоначально запрошенному URL-адресу или URL-адресу по умолчанию.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод перенаправляет на URL-адрес, указанный в строке запроса, `ReturnURL` используя имя переменной. <xref:System.Web.Security.FormsAuthentication.RedirectFromLoginPage%2A> Например, в URL-адресе `http://www.contoso.com/login.aspx?ReturnUrl=caller.aspx` <xref:System.Web.Security.FormsAuthentication.RedirectFromLoginPage%2A> метод перенаправляется на URL-адрес `caller.aspx`возврата. Если переменная не существует <xref:System.Web.Security.FormsAuthentication.RedirectFromLoginPage%2A> , метод перенаправляется <xref:System.Web.Security.FormsAuthentication.DefaultUrl%2A> на URL-адрес в свойстве. `ReturnURL`  
+  
+ ASP.NET автоматически добавляет URL-адрес возврата, когда браузер перенаправляется на страницу входа.  
+  
+ По умолчанию `ReturnUrl` переменная должна ссылаться на страницу в текущем приложении. Если `ReturnUrl` ссылается на страницу в другом приложении или на другом сервере <xref:System.Web.Security.FormsAuthentication.RedirectFromLoginPage%2A> , методы перенаправляются <xref:System.Web.Security.FormsAuthentication.DefaultUrl%2A> на URL-адрес в свойстве. Если вы хотите разрешить перенаправление на страницу за пределами текущего приложения <xref:System.Web.Security.FormsAuthentication.EnableCrossAppRedirects%2A> , необходимо установить свойство в `true` значение, используя `enableCrossAppRedirects` атрибут элемента конфигурации [Forms](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/1d3t3c61(v%3dvs.100)) .  
+  
+> [!IMPORTANT]
+>  <xref:System.Web.Security.FormsAuthentication.EnableCrossAppRedirects%2A> Установка свойства в значение, разрешающее перенаправление между приложениями, является потенциальной `true`  угрозой безопасности. Дополнительные сведения см. в описании свойства <xref:System.Web.Security.FormsAuthentication.EnableCrossAppRedirects%2A>.  
+  
+ <xref:System.Web.Security.FormsAuthentication.EnableCrossAppRedirects%2A> `ReturnUrl` `true` <xref:System.Web.Security.FormsAuthentication.RedirectFromLoginPage%2A> Если свойство имеет `true`значение, а либо переменная находится в текущем приложении, либо свойство имеет значение, то метод выдает билет проверки подлинности и помещает его в <xref:System.Web.Security.FormsAuthentication.CookiesSupported%2A> файл cookie по умолчанию с помощью <xref:System.Web.Security.FormsAuthentication.SetAuthCookie%2A> метода.  
+  
+ Если <xref:System.Web.Security.FormsAuthentication.CookiesSupported%2A> параметр `false` имеет значение, а путь перенаправления — к URL-адресу в текущем приложении, то билет выдается как часть URL-адреса перенаправления. Если <xref:System.Web.Security.FormsAuthentication.CookiesSupported%2A> имеет `false`значение <xref:System.Web.HttpRequest.QueryString%2A> , <xref:System.Web.Security.FormsAuthentication.EnableCrossAppRedirects%2A> то параметр имеет `true`значение, а URL-адрес перенаправления <xref:System.Web.Security.FormsAuthentication.RedirectFromLoginPage%2A> не ссылается на страницу в текущем приложении, метод выдает билет проверки подлинности и помещает его в свойство.  
+  
+   
+  
+## Examples  
+ В следующем примере кода проверенные пользователи перенаправлены к первоначально запрошенному URL-адресу <xref:System.Web.Security.FormsAuthentication.DefaultUrl%2A>или. В примере кода для проверки пользователей используется членство в ASP.NET. Дополнительные сведения о членстве в ASP.NET см. в статье [Управление пользователями с помощью членства](https://msdn.microsoft.com/library/824c3a24-f0af-427c-a652-0d2d1e9397cd).  
+  
+> [!IMPORTANT]
+>  Этот пример содержит текстовое поле, которое принимает вводимые пользователем данные, что является потенциальной угрозой безопасности. По умолчанию данные, вводимые пользователем на веб-страницах ASP.NET, проверяются на наличие скриптов и HTML-элементов. Дополнительные сведения см. в разделе [Общие сведения об использовании сценариев](https://msdn.microsoft.com/library/772c7312-211a-4eb3-8d6e-eec0aa1dcc07).  
+  
+ [!code-aspx-csharp[System.Web.Security.SqlMembershipProvider#1](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.SqlMembershipProvider/CS/logincs.aspx#1)]
+ [!code-aspx-vb[System.Web.Security.SqlMembershipProvider#1](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.SqlMembershipProvider/VB/loginvb.aspx#1)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Web.HttpException">Возвращаемый URL-адрес, указанный в строке запроса содержит протокол отличный от HTTP: или HTTPS:.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="RedirectFromLoginPage">
+      <MemberSignature Language="C#" Value="public static void RedirectFromLoginPage (string userName, bool createPersistentCookie, string strCookiePath);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void RedirectFromLoginPage(string userName, bool createPersistentCookie, string strCookiePath) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.FormsAuthentication.RedirectFromLoginPage(System.String,System.Boolean,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Sub RedirectFromLoginPage (userName As String, createPersistentCookie As Boolean, strCookiePath As String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static void RedirectFromLoginPage(System::String ^ userName, bool createPersistentCookie, System::String ^ strCookiePath);" />
+      <MemberSignature Language="F#" Value="static member RedirectFromLoginPage : string * bool * string -&gt; unit" Usage="System.Web.Security.FormsAuthentication.RedirectFromLoginPage (userName, createPersistentCookie, strCookiePath)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="userName" Type="System.String" />
+        <Parameter Name="createPersistentCookie" Type="System.Boolean" />
+        <Parameter Name="strCookiePath" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="userName">Имя пользователя, прошедшего проверку подлинности.</param>
+        <param name="createPersistentCookie"><see langword="true" />, чтобы создать долговременный файл Cookie (т.е. сохраняемый между сеансами браузера); в противном случае — <see langword="false" />.</param>
+        <param name="strCookiePath">Путь к файлу Cookie для билета проверки подлинности формы.</param>
+        <summary>Перенаправляет пользователя, прошедшего проверку на первоначально запрошенный URL-адрес или на URL-адрес, использующий указанный путь к файлу Cookie для проверки подлинности с помощью форм.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод перенаправляется на URL-адрес возврата, указанный в строке запроса, `ReturnURL` используя имя переменной. <xref:System.Web.Security.FormsAuthentication.RedirectFromLoginPage%2A> Например, в URL-адресе `http://www.contoso.com/login.aspx?ReturnUrl=caller.aspx` <xref:System.Web.Security.FormsAuthentication.RedirectFromLoginPage%2A> метод перенаправляется на URL-адрес `caller.aspx`возврата. Если переменная не существует <xref:System.Web.Security.FormsAuthentication.RedirectFromLoginPage%2A> , метод перенаправляется <xref:System.Web.Security.FormsAuthentication.DefaultUrl%2A> на URL-адрес в свойстве. `ReturnURL`  
+  
+ ASP.NET автоматически добавляет URL-адрес возврата, когда браузер перенаправляется на страницу входа.  
+  
+ По умолчанию `ReturnUrl` переменная должна ссылаться на страницу в текущем приложении. Если `ReturnUrl` ссылается на страницу в другом приложении или на другом сервере <xref:System.Web.Security.FormsAuthentication.RedirectFromLoginPage%2A> , метод перенаправляется <xref:System.Web.Security.FormsAuthentication.DefaultUrl%2A> на URL-адрес в свойстве. Если вы хотите разрешить перенаправление на страницу за пределами текущего приложения <xref:System.Web.Security.FormsAuthentication.EnableCrossAppRedirects%2A> , необходимо установить свойство в `true` значение, используя `enableCrossAppRedirects` атрибут элемента конфигурации [Forms](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/1d3t3c61(v%3dvs.100)) .  
+  
+> [!IMPORTANT]
+>  <xref:System.Web.Security.FormsAuthentication.EnableCrossAppRedirects%2A> Установка свойства в значение, разрешающее перенаправление между приложениями, является потенциальной `true`  угрозой безопасности. Дополнительные сведения см. в описании свойства <xref:System.Web.Security.FormsAuthentication.EnableCrossAppRedirects%2A>.  
+  
+ <xref:System.Web.Security.FormsAuthentication.EnableCrossAppRedirects%2A> `ReturnUrl` `true` <xref:System.Web.Security.FormsAuthentication.RedirectFromLoginPage%2A> Если свойство имеет `true`значение, а либо переменная находится в текущем приложении, либо свойство имеет значение, то метод выдает билет проверки подлинности и помещает его в <xref:System.Web.Security.FormsAuthentication.CookiesSupported%2A> файл cookie, заданный `strCookiePath` параметром, <xref:System.Web.Security.FormsAuthentication.SetAuthCookie%2A> с помощью метода.  
+  
+ Если <xref:System.Web.Security.FormsAuthentication.CookiesSupported%2A> параметр `false` имеет значение, а путь перенаправления — к URL-адресу в текущем приложении, то билет выдается как часть URL-адреса перенаправления. Если <xref:System.Web.Security.FormsAuthentication.CookiesSupported%2A> имеет `false`значение <xref:System.Web.HttpRequest.QueryString%2A> , <xref:System.Web.Security.FormsAuthentication.EnableCrossAppRedirects%2A> то параметр имеет `true`значение, а URL-адрес перенаправления <xref:System.Web.Security.FormsAuthentication.RedirectFromLoginPage%2A> не ссылается на страницу в текущем приложении, метод выдает билет проверки подлинности и помещает его в свойство.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Web.HttpException">Возвращаемый URL-адрес, указанный в строке запроса содержит протокол отличный от HTTP: или HTTPS:.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="RedirectToLoginPage">
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Перенаправляет браузер на URL-адрес страницы входа.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод перенаправляет браузер  <xref:System.Web.Security.FormsAuthentication.LoginUrl%2A> в.  <xref:System.Web.Security.FormsAuthentication.RedirectToLoginPage%2A>  
+  
+ <xref:System.Web.Security.FormsAuthentication.RedirectToLoginPage%2A> Метод не очищает файл cookie проверки подлинности форм. <xref:System.Web.Security.FormsAuthentication.RedirectToLoginPage%2A> Метод можно использовать в сочетании <xref:System.Web.Security.FormsAuthentication.SignOut%2A> с методом для регистрации одного пользователя и предоставления другому пользователю возможности входа.  
+  
+ В отличие от <xref:System.Web.HttpResponse.Redirect%2A?displayProperty=nameWithType> метода, этот метод не завершает запрос путем вызова. <xref:System.Web.HttpResponse.End%2A?displayProperty=nameWithType> Это означает, что будет выполнен код <xref:System.Web.Security.FormsAuthentication.RedirectToLoginPage%2A> , следующий за вызовом метода.  
+  
+   
+  
+## Examples  
+ Следующий пример кода очищает файл cookie проверки подлинности форм с помощью <xref:System.Web.Security.FormsAuthentication.SignOut%2A> метода и перенаправляет пользователя на страницу входа <xref:System.Web.Security.FormsAuthentication.RedirectToLoginPage%2A> с помощью метода.  
+  
+ [!code-aspx-csharp[System.Web.Security.FormsAuthentication#2](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.FormsAuthentication/CS/signoutcs.aspx#2)]
+ [!code-aspx-vb[System.Web.Security.FormsAuthentication#2](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.FormsAuthentication/VB/signoutvb.aspx#2)]  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="RedirectToLoginPage">
+      <MemberSignature Language="C#" Value="public static void RedirectToLoginPage ();" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void RedirectToLoginPage() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.FormsAuthentication.RedirectToLoginPage" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Sub RedirectToLoginPage ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static void RedirectToLoginPage();" />
+      <MemberSignature Language="F#" Value="static member RedirectToLoginPage : unit -&gt; unit" Usage="System.Web.Security.FormsAuthentication.RedirectToLoginPage " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Перенаправляет браузер на URL-адрес страницы входа.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод перенаправляет браузер  <xref:System.Web.Security.FormsAuthentication.LoginUrl%2A> в.  <xref:System.Web.Security.FormsAuthentication.RedirectToLoginPage%2A>  
+  
+ <xref:System.Web.Security.FormsAuthentication.RedirectToLoginPage%2A> Метод не очищает файл cookie проверки подлинности форм. <xref:System.Web.Security.FormsAuthentication.RedirectToLoginPage%2A> Метод можно использовать в сочетании <xref:System.Web.Security.FormsAuthentication.SignOut%2A> с методом для регистрации одного пользователя и предоставления другому пользователю возможности входа.  
+  
+   
+  
+## Examples  
+ Следующий пример кода очищает файл cookie проверки подлинности форм с помощью <xref:System.Web.Security.FormsAuthentication.SignOut%2A> метода и перенаправляет пользователя на страницу входа <xref:System.Web.Security.FormsAuthentication.RedirectToLoginPage%2A> с помощью метода.  
+  
+ [!code-aspx-csharp[System.Web.Security.FormsAuthentication#2](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.FormsAuthentication/CS/signoutcs.aspx#2)]
+ [!code-aspx-vb[System.Web.Security.FormsAuthentication#2](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.FormsAuthentication/VB/signoutvb.aspx#2)]  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="RedirectToLoginPage">
+      <MemberSignature Language="C#" Value="public static void RedirectToLoginPage (string extraQueryString);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void RedirectToLoginPage(string extraQueryString) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.FormsAuthentication.RedirectToLoginPage(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Sub RedirectToLoginPage (extraQueryString As String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static void RedirectToLoginPage(System::String ^ extraQueryString);" />
+      <MemberSignature Language="F#" Value="static member RedirectToLoginPage : string -&gt; unit" Usage="System.Web.Security.FormsAuthentication.RedirectToLoginPage extraQueryString" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="extraQueryString" Type="System.String" Index="0" FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      </Parameters>
+      <Docs>
+        <param name="extraQueryString">Строка запроса для включения в URL-адрес перенаправления.</param>
+        <summary>Перенаправляет браузер на URL-адрес страницы входа с указанной строкой запроса.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод перенаправляет браузер <xref:System.Web.Security.FormsAuthentication.LoginUrl%2A> в и включает `extraQueryString` значение в <xref:System.Management.ManagementQuery.QueryString%2A> качестве для перенаправленного URL-адреса. <xref:System.Web.Security.FormsAuthentication.RedirectToLoginPage%2A>  
+  
+ <xref:System.Web.Security.FormsAuthentication.RedirectToLoginPage%2A> Метод не очищает файл cookie проверки подлинности форм. <xref:System.Web.Security.FormsAuthentication.RedirectToLoginPage%2A> Метод можно использовать в сочетании <xref:System.Web.Security.FormsAuthentication.SignOut%2A> с методом для регистрации одного пользователя и предоставления другому пользователю возможности входа.  
+  
+   
+  
+## Examples  
+ Следующий пример кода очищает файл cookie проверки подлинности форм с помощью <xref:System.Web.Security.FormsAuthentication.SignOut%2A> метода и перенаправляет пользователя на страницу входа <xref:System.Web.Security.FormsAuthentication.RedirectToLoginPage%2A> с помощью метода.  
+  
+ [!code-aspx-csharp[System.Web.Security.FormsAuthentication#3](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.FormsAuthentication/CS/signout2cs.aspx#3)]
+ [!code-aspx-vb[System.Web.Security.FormsAuthentication#3](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.FormsAuthentication/VB/signout2vb.aspx#3)]  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="RenewTicketIfOld">
+      <MemberSignature Language="C#" Value="public static System.Web.Security.FormsAuthenticationTicket RenewTicketIfOld (System.Web.Security.FormsAuthenticationTicket tOld);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig class System.Web.Security.FormsAuthenticationTicket RenewTicketIfOld(class System.Web.Security.FormsAuthenticationTicket tOld) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.FormsAuthentication.RenewTicketIfOld(System.Web.Security.FormsAuthenticationTicket)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function RenewTicketIfOld (tOld As FormsAuthenticationTicket) As FormsAuthenticationTicket" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static System::Web::Security::FormsAuthenticationTicket ^ RenewTicketIfOld(System::Web::Security::FormsAuthenticationTicket ^ tOld);" />
+      <MemberSignature Language="F#" Value="static member RenewTicketIfOld : System.Web.Security.FormsAuthenticationTicket -&gt; System.Web.Security.FormsAuthenticationTicket" Usage="System.Web.Security.FormsAuthentication.RenewTicketIfOld tOld" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Security.FormsAuthenticationTicket</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="tOld" Type="System.Web.Security.FormsAuthenticationTicket" />
+      </Parameters>
+      <Docs>
+        <param name="tOld">Билет проверки подлинности с помощью форм для обновления.</param>
+        <summary>Условно обновляет дату и время выдачи, и дату и время истечения срока действия <see cref="T:System.Web.Security.FormsAuthenticationTicket" />.</summary>
+        <returns>Обновленный <see cref="T:System.Web.Security.FormsAuthenticationTicket" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод обновляет дату и время окончания срока действия, указанные <xref:System.Web.Security.FormsAuthenticationTicket> , если текущая <xref:System.Web.Security.FormsAuthenticationTicket.IssueDate%2A> Дата и время минус значение больше, чем <xref:System.Web.Security.FormsAuthenticationTicket.Expiration%2A> текущая дата и время. <xref:System.Web.Security.FormsAuthentication.RenewTicketIfOld%2A>  
+  
+ Билет обновляется <xref:System.Web.Security.FormsAuthenticationTicket.IssueDate%2A> свойством, для которого установлено значение текущая дата и время <xref:System.Web.Security.FormsAuthenticationTicket.Expiration%2A> , а свойству — текущая дата и время плюс исходное <xref:System.Web.Security.FormsAuthenticationTicket.Expiration%2A> значение минус исходное <xref:System.Web.Security.FormsAuthenticationTicket.IssueDate%2A> значение.  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="RequireSSL">
+      <MemberSignature Language="C#" Value="public static bool RequireSSL { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property bool RequireSSL" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.FormsAuthentication.RequireSSL" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property RequireSSL As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property bool RequireSSL { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.RequireSSL : bool" Usage="System.Web.Security.FormsAuthentication.RequireSSL" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, показывающее требуется ли файлам Cookie проверки подлинности с помощью форм протокол SSL для возвращения на сервер.</summary>
+        <value><see langword="true" />, если протокол SSL необходим для возвращения на сервер файлов Cookie проверки подлинности с помощью форм; в противном случае — <see langword="false" />. Значение по умолчанию — <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение свойства задается в файле конфигурации для приложения ASP.NET с `requireSSL` помощью атрибута элемента конфигурации [Forms](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/1d3t3c61(v%3dvs.100)) . <xref:System.Web.Security.FormsAuthentication.RequireSSL%2A> Вы можете указать в файле Web. config приложения ASP.NET, требуется ли SSL (SSL) для возврата файла cookie проверки подлинности форм на сервер, установив `requireSSL` атрибут. Для получения дополнительной информации см. <xref:System.Web.HttpCookie.Secure%2A>.  
+  
+ Если настроить `requireSSL` как `false`, то рекомендуется также настроить `slidingExpiration` как `false`, чтобы сократить время, в течение которого билет действителен.  
+  
+   
+  
+## Examples  
+ В следующем примере кода задается `requireSSL` атрибут в файле Web. config.  
+  
+```  
+<authentication mode="Forms">  
+  <forms loginUrl="member_login.aspx"  
+    cookieless="UseCookies"  
+    requireSSL="true"  
+    path="/MyApplication" />  
+</authentication>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="SetAuthCookie">
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Создает билет проверки подлинности для указанного имени пользователя и добавляет его к коллекции файлов Cookie ответа или к URL-адресу, если используется проверка подлинности без файлов Cookie.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод добавляет билет проверки подлинности форм в коллекцию Cookies или URL, если <xref:System.Web.Security.FormsAuthentication.CookiesSupported%2A> имеет значение  `false` .  <xref:System.Web.Security.FormsAuthentication.SetAuthCookie%2A> Билет проверки подлинности форм предоставляет сведения о проверке подлинности форм для следующего запроса, сделанного браузером. При использовании проверки подлинности с помощью <xref:System.Web.Security.FormsAuthentication.SetAuthCookie%2A> форм можно использовать метод, если требуется проверить подлинность пользователя, но сохранить контроль над навигацией с перенаправлениями.  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+        <related type="ExternalDocumentation" href="https://go.microsoft.com/fwlink/?LinkId=197376">Описание: проверка подлинности с помощью форм в ASP.NET 2,0</related>
+        <related type="ExternalDocumentation" href="https://go.microsoft.com/fwlink/?LinkId=197377">Как использовать членство в ASP.NET 2,0</related>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="SetAuthCookie">
+      <MemberSignature Language="C#" Value="public static void SetAuthCookie (string userName, bool createPersistentCookie);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void SetAuthCookie(string userName, bool createPersistentCookie) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.FormsAuthentication.SetAuthCookie(System.String,System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Sub SetAuthCookie (userName As String, createPersistentCookie As Boolean)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static void SetAuthCookie(System::String ^ userName, bool createPersistentCookie);" />
+      <MemberSignature Language="F#" Value="static member SetAuthCookie : string * bool -&gt; unit" Usage="System.Web.Security.FormsAuthentication.SetAuthCookie (userName, createPersistentCookie)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="userName" Type="System.String" />
+        <Parameter Name="createPersistentCookie" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="userName">Имя пользователя, прошедшего проверку подлинности. Совпадение с учетной записью Windows не обязательно.</param>
+        <param name="createPersistentCookie"><see langword="true" /> для создания постоянного файла Cookie (сохраняемого между сеансами браузера); в противном случае — <see langword="false" />.</param>
+        <summary>Создает билет проверки подлинности для указанного имени пользователя и добавляет его к коллекции файлов Cookie ответа или к URL-адресу, если используется проверка подлинности без файлов Cookie.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод добавляет билет проверки подлинности форм в коллекцию Cookies или URL-адрес, если <xref:System.Web.Security.FormsAuthentication.CookiesSupported%2A> имеет значение  `false` .  <xref:System.Web.Security.FormsAuthentication.SetAuthCookie%2A> Билет проверки подлинности форм предоставляет сведения о проверке подлинности форм для следующего запроса, сделанного браузером. При использовании проверки подлинности с помощью <xref:System.Web.Security.FormsAuthentication.SetAuthCookie%2A> форм можно использовать метод, если требуется проверить подлинность пользователя, но сохранить контроль над навигацией с перенаправлениями.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Web.HttpException">Свойство <see cref="P:System.Web.Security.FormsAuthentication.RequireSSL" /> имеет значение <see langword="true" />; свойство <see cref="P:System.Web.HttpRequest.IsSecureConnection" /> имеет значение <see langword="false" />.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="SetAuthCookie">
+      <MemberSignature Language="C#" Value="public static void SetAuthCookie (string userName, bool createPersistentCookie, string strCookiePath);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void SetAuthCookie(string userName, bool createPersistentCookie, string strCookiePath) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.FormsAuthentication.SetAuthCookie(System.String,System.Boolean,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Sub SetAuthCookie (userName As String, createPersistentCookie As Boolean, strCookiePath As String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static void SetAuthCookie(System::String ^ userName, bool createPersistentCookie, System::String ^ strCookiePath);" />
+      <MemberSignature Language="F#" Value="static member SetAuthCookie : string * bool * string -&gt; unit" Usage="System.Web.Security.FormsAuthentication.SetAuthCookie (userName, createPersistentCookie, strCookiePath)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="userName" Type="System.String" />
+        <Parameter Name="createPersistentCookie" Type="System.Boolean" />
+        <Parameter Name="strCookiePath" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="userName">Имя пользователя, прошедшего проверку подлинности.</param>
+        <param name="createPersistentCookie"><see langword="true" />, чтобы создать долговременный файл Cookie (т.е. сохраняемый между сеансами браузера); в противном случае — <see langword="false" />.</param>
+        <param name="strCookiePath">Путь к файлу Cookie для билета проверки подлинности формы.</param>
+        <summary>Создает билет проверки подлинности для указанного имени пользователя и добавляет его к коллекции файлов Cookie ответа, используя заданный путь к файлу Cookie или URL-адрес, если используется проверка подлинности без cookie-файлов.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод добавляет билет проверки подлинности форм в коллекцию Cookies или URL, если <xref:System.Web.Security.FormsAuthentication.CookiesSupported%2A> имеет значение  `false` .  <xref:System.Web.Security.FormsAuthentication.SetAuthCookie%2A> Билет проверки подлинности форм предоставляет сведения о проверке подлинности форм для следующего запроса, сделанного браузером. При использовании проверки подлинности с помощью <xref:System.Web.Security.FormsAuthentication.SetAuthCookie%2A> форм можно использовать метод, если требуется проверить подлинность пользователя, но сохранить контроль над навигацией с перенаправлениями.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Web.HttpException">Свойство <see cref="P:System.Web.Security.FormsAuthentication.RequireSSL" /> имеет значение <see langword="true" />; свойство <see cref="P:System.Web.HttpRequest.IsSecureConnection" /> имеет значение <see langword="false" />.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+        <related type="ExternalDocumentation" href="https://go.microsoft.com/fwlink/?LinkId=197376">Описание: проверка подлинности с помощью форм в ASP.NET 2,0</related>
+        <related type="ExternalDocumentation" href="https://go.microsoft.com/fwlink/?LinkId=197377">Как использовать членство в ASP.NET 2,0</related>
+      </Docs>
+    </Member>
+    <Member MemberName="SignOut">
+      <MemberSignature Language="C#" Value="public static void SignOut ();" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void SignOut() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.FormsAuthentication.SignOut" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Sub SignOut ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static void SignOut();" />
+      <MemberSignature Language="F#" Value="static member SignOut : unit -&gt; unit" Usage="System.Web.Security.FormsAuthentication.SignOut " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Удаляет из браузера билет проверки подлинности с помощью форм.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод удаляет данные билета проверки подлинности форм из файла cookie или URL-адреса <xref:System.Web.Security.FormsAuthentication.CookiesSupported%2A> , если имеет значение  `false` .  <xref:System.Web.Security.FormsAuthentication.SignOut%2A> <xref:System.Web.Security.FormsAuthentication.SignOut%2A> Метод можно использовать в сочетании <xref:System.Web.Security.FormsAuthentication.RedirectToLoginPage%2A> с методом для регистрации одного пользователя и предоставления другому пользователю возможности входа.  
+  
+ Если вы выполняете монопольный режим без поддержки файлов cookie или поддерживаете проверку подлинности и анонимных пользователей, следует явно управлять перенаправлением на страницу входа, если требуется специальная бизнес-логика для выполнения в результате удаления анонимного идентификатора.  
+  
+ При вызове <xref:System.Web.HttpResponse.Redirect%2A> `endResponse` `false`метода перенаправление на страницу входа приложения осуществляется путем вызова метода с параметром, для которого задано значение. <xref:System.Web.Security.FormsAuthentication.SignOut%2A> Перенаправление не выполняется до завершения текущей страницы, поэтому можно запустить дополнительный код. Если код не содержит явного перенаправления на другую страницу, пользователь перенаправляется на страницу входа, настроенную в файле конфигурации приложения.  
+  
+ При вызове <xref:System.Web.Security.FormsAuthentication.SignOut%2A> метода удаляется только файл cookie проверки подлинности на формах. Веб-сервер не сохраняет действительные и просроченные билеты проверки подлинности для последующего сравнения. Это делает сайт уязвимым для атаки на воспроизведение, если пользователь-злоумышленник получает действительный файл cookie проверки подлинности форм. Для повышения безопасности при использовании файла cookie проверки подлинности с помощью форм необходимо выполнить следующие действия.  
+  
+-   Используйте Абсолютный срок действия для файлов cookie проверки подлинности форм `false`, задав <xref:System.Web.Security.FormsAuthentication.SlidingExpiration%2A> для свойства значение. Это ограничивает окно, в котором можно воспроизвести перехваченный файл cookie.  
+  
+-   Выдача и прием файлов cookie для <xref:System.Web.Security.FormsAuthentication.RequireSSL%2A> `true` проверки подлинности только по SSL (SSL) путем присвоения свойству значения и путем запуска всего веб-сайта по протоколу SSL. Если задать для `true` свойства значение, то ASP.NET никогда не будет передавать файл cookie проверки подлинности в браузер через подключение, отличное от SSL. Однако клиент может не учитывать параметры безопасности для файла cookie. <xref:System.Web.Security.FormsAuthentication.RequireSSL%2A> Это означает, что клиент может отправить файл cookie проверки подлинности с помощью форм через соединение, не поддерживающее SSL, тем самым оставляя его уязвимым для захвата. Можно запретить клиенту отправлять файл cookie проверки подлинности с помощью форм на очистку, запустив весь веб-сайт по протоколу SSL.  
+  
+-   Используйте постоянное хранилище на сервере для записи при выходе пользователя из системы с веб-сайта, а затем используйте событие приложения, например <xref:System.Web.HttpApplication.PostAuthenticateRequest> Event, чтобы определить, прошел ли текущий пользователь проверку подлинности с помощью форм. Если пользователь прошел проверку подлинности с помощью форм, и если информация в постоянном хранилище указывает, что пользователь вышел из системы, немедленно очистите файл cookie проверки подлинности и перенаправьте браузер обратно на страницу входа. После успешного входа обновите хранилище, чтобы оно отражало, что пользователь вошел в систему. При использовании этого метода приложение должно относить состояние вошедшего в систему пользователя и принудительно выполнять выход из режима бездействия пользователей.  
+  
+   
+  
+## Examples  
+ Следующий пример кода очищает файл cookie проверки подлинности форм с помощью <xref:System.Web.Security.FormsAuthentication.SignOut%2A> метода и перенаправляет пользователя на страницу входа <xref:System.Web.Security.FormsAuthentication.RedirectToLoginPage%2A> с помощью метода.  
+  
+ [!code-aspx-csharp[System.Web.Security.FormsAuthentication#2](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.FormsAuthentication/CS/signoutcs.aspx#2)]
+ [!code-aspx-vb[System.Web.Security.FormsAuthentication#2](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.FormsAuthentication/VB/signoutvb.aspx#2)]  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+        <related type="ExternalDocumentation" href="https://go.microsoft.com/fwlink/?LinkId=197376">Описание: проверка подлинности с помощью форм в ASP.NET 2,0</related>
+        <related type="ExternalDocumentation" href="https://go.microsoft.com/fwlink/?LinkId=197377">Как использовать членство в ASP.NET 2,0</related>
+      </Docs>
+    </Member>
+    <Member MemberName="SlidingExpiration">
+      <MemberSignature Language="C#" Value="public static bool SlidingExpiration { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property bool SlidingExpiration" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.FormsAuthentication.SlidingExpiration" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property SlidingExpiration As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property bool SlidingExpiration { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.SlidingExpiration : bool" Usage="System.Web.Security.FormsAuthentication.SlidingExpiration" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, определяющее, включен ли скользящий срок действия.</summary>
+        <value><see langword="true" />, если включен скользящий срок действия; в противном случае — <see langword="false" />. Значение по умолчанию — <see langword="true" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение свойства задается `slidingExpiration` с помощью атрибута элемента конфигурации [Forms.](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/1d3t3c61(v%3dvs.100)) <xref:System.Web.Security.FormsAuthentication.SlidingExpiration%2A>  
+  
+ Скользящий срок действия сбрасывает срок действия для допустимого файла cookie проверки подлинности, если был выполнен запрос и прошло более половины интервала времени ожидания. Если срок действия файла cookie истекает, пользователь должен пройти повторную проверку подлинности. Установка свойства в `false` значение может повысить безопасность приложения за счет ограничения времени, в течение которого файл cookie проверки подлинности является допустимым, в `timeout` зависимости от настроенного значения. <xref:System.Web.Security.FormsAuthentication.SlidingExpiration%2A>  
+  
+ Если вы настраиваете `requireSSL` как `false`, вы также настраиваете `false` `slidingExpiration` как, чтобы сократить период времени, в течение которого билет действителен.  
+  
+   
+  
+## Examples  
+ В следующем примере кода для `slidingExpiration` `false` атрибута задается значение в файле Web. config для приложения ASP.NET.  
+  
+```  
+<authentication mode="Forms">  
+  <forms loginUrl="member_login.aspx"  
+    name=".ASPXFORMSAUTH"  
+    cookieless="UseCookies"  
+    requireSSL="true"   
+    slidingExpiration="false" />  
+</authentication>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/658d0430-1644-4744-b52d-08b0d6fcacb8">Безопасность веб-приложений ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="TicketCompatibilityMode">
+      <MemberSignature Language="C#" Value="public static System.Web.Configuration.TicketCompatibilityMode TicketCompatibilityMode { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property valuetype System.Web.Configuration.TicketCompatibilityMode TicketCompatibilityMode" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.FormsAuthentication.TicketCompatibilityMode" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property TicketCompatibilityMode As TicketCompatibilityMode" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property System::Web::Configuration::TicketCompatibilityMode TicketCompatibilityMode { System::Web::Configuration::TicketCompatibilityMode get(); };" />
+      <MemberSignature Language="F#" Value="member this.TicketCompatibilityMode : System.Web.Configuration.TicketCompatibilityMode" Usage="System.Web.Security.FormsAuthentication.TicketCompatibilityMode" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Configuration.TicketCompatibilityMode</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает значение, указывающее, какое время используется для даты окончания срока действия билета: в формате UTC или местное.</summary>
+        <value>Значение, указывающее, какое время используется для даты окончания срока действия билета: в формате UTC или местное.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Timeout">
+      <MemberSignature Language="C#" Value="public static TimeSpan Timeout { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property valuetype System.TimeSpan Timeout" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.FormsAuthentication.Timeout" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property Timeout As TimeSpan" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property TimeSpan Timeout { TimeSpan get(); };" />
+      <MemberSignature Language="F#" Value="member this.Timeout : TimeSpan" Usage="System.Web.Security.FormsAuthentication.Timeout" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.TimeSpan</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает время, по истечении которого билет аутентификации прекращает действовать.</summary>
+        <value>Время, по истечении которого билет аутентификации прекращает действовать.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
