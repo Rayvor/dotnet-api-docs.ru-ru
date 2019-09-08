@@ -1,0 +1,645 @@
+<Type Name="DesignerTransaction" FullName="System.ComponentModel.Design.DesignerTransaction">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="b9e1e6ca934582313022c535bd5cb244c9168ba4" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70687176" /></Metadata><TypeSignature Language="C#" Value="public abstract class DesignerTransaction : IDisposable" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract beforefieldinit DesignerTransaction extends System.Object implements class System.IDisposable" />
+  <TypeSignature Language="DocId" Value="T:System.ComponentModel.Design.DesignerTransaction" />
+  <TypeSignature Language="VB.NET" Value="Public MustInherit Class DesignerTransaction&#xA;Implements IDisposable" />
+  <TypeSignature Language="C++ CLI" Value="public ref class DesignerTransaction abstract : IDisposable" />
+  <TypeSignature Language="F#" Value="type DesignerTransaction = class&#xA;    interface IDisposable" />
+  <AssemblyInfo>
+    <AssemblyName>System</AssemblyName>
+    <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>2.0.5.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>netstandard</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>System.ComponentModel.TypeConverter</AssemblyName>
+    <AssemblyVersion>4.2.0.0</AssemblyVersion>
+    <AssemblyVersion>4.2.1.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces>
+    <Interface>
+      <InterfaceName>System.IDisposable</InterfaceName>
+    </Interface>
+  </Interfaces>
+  <Docs>
+    <summary>Предоставляет способ сгруппировать последовательность действий этапа разработки, что позволит повысить производительность и даст возможность отменять действия большинства типов.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Транзакции могут относиться к действиям, которые могут быть отменены позже. Изменения, внесенные во время транзакции, можно отменять, отменяя транзакцию, которая автоматически пытается отменить каждое изменение, присвоив каждому измененному свойству значение предварительного изменения. Транзакции также могут повысить производительность во время выполнения последовательности операций, откладывая обновления на экране до завершения транзакции.  
+  
+ При выполнении транзакции некоторые компоненты откладывают свою обработку до завершения транзакции, прослушивая <xref:System.ComponentModel.Design.IDesignerHost.TransactionOpening> события и. <xref:System.ComponentModel.Design.IDesignerHost.TransactionClosed> Окно свойств, например, не обновляет его отображение после открытия транзакции до закрытия транзакции.  
+  
+ Чтобы использовать транзакции для обратимого или нескольких операций, конструктор должен создать <xref:System.ComponentModel.Design.DesignerTransaction> для каждой операции или последовательности операций, которые должны быть обратимыми. Будьте внимательны, чтобы не выполнять действия за пределами транзакций, которые могут препятствовать успешному завершению последовательности событий отмены.  
+  
+ Новый <xref:System.ComponentModel.Design.DesignerTransaction> можно получить, <xref:System.ComponentModel.Design.IDesignerHost.CreateTransaction%2A> вызвав метод класса <xref:System.ComponentModel.Design.IDesignerHost>. Чтобы обеспечить правильную интеграцию <xref:System.ComponentModel.Design.DesignerTransaction> с механизмом <xref:System.ComponentModel.Design.IDesignerHost> обработки транзакций конструктора, не забудьте получить каждый из активных, а не создавать новый <xref:System.ComponentModel.Design.DesignerTransaction> напрямую.  
+  
+ Чтобы выполнить действие в рамках транзакции, необходимо сначала создать транзакцию. Затем необходимо вызвать <xref:System.ComponentModel.Design.IComponentChangeService.OnComponentChanging%2A> метод перед каждым изменением или набором изменений, а также <xref:System.ComponentModel.Design.IComponentChangeService.OnComponentChanged%2A> метод после каждого изменения или набора изменений. Наконец, завершите и закройте транзакцию, вызвав <xref:System.ComponentModel.Design.DesignerTransaction.Commit%2A> метод.  
+  
+> [!NOTE]
+>  При внесении изменений <xref:System.ComponentModel.PropertyDescriptor.SetValue%2A> в значения свойств используйте метод <xref:System.ComponentModel.PropertyDescriptor>объекта, который вызывает методы изменения <xref:System.ComponentModel.Design.IComponentChangeService> компонента и создает объект <xref:System.ComponentModel.Design.DesignerTransaction> , представляющий изменение, автоматически.  
+  
+ Чтобы выполнить транзакцию, выполните следующие действия.  
+  
+1.  Вызовите метод <xref:System.ComponentModel.Design.IDesignerHost.CreateTransaction%2A> <xref:System.ComponentModel.Design.DesignerTransaction> , чтобы получить, который можно использовать для управления транзакцией.  
+  
+2.  В блоке для каждого действия, которое необходимо отвести <xref:System.ComponentModel.Design.DesignerTransaction>с помощью, вызовите <xref:System.ComponentModel.Design.IComponentChangeService.OnComponentChanging%2A> метод, внесите изменения или изменения, а затем вызовите <xref:System.ComponentModel.Design.IComponentChangeService.OnComponentChanged%2A> метод, чтобы сообщить о внесении изменений или изменений. `try`  
+  
+3.  Чтобы завершить транзакцию, вызовите <xref:System.ComponentModel.Design.DesignerTransaction.Commit%2A> `finally` в блоке.  
+  
+ В C#можно использовать `using` `try/finally` оператор, а не блок, как показано в следующем примере.  
+  
+```  
+using (host.CreateTransaction() {  
+// Insert your code here.  
+}  
+```  
+  
+ Чтобы отменить транзакцию и попытаться выполнить откат транзакции до ее фиксации, вызовите <xref:System.ComponentModel.Design.DesignerTransaction.Cancel%2A> метод. При вызове <xref:System.ComponentModel.Design.DesignerTransaction> метода действия, которые отправляются, отменяются, чтобы попытаться откатить изменения. <xref:System.ComponentModel.Design.DesignerTransaction.Cancel%2A> Чтобы отменить действия, которые произошли в рамках предыдущих транзакций, необходимо использовать команду Undo, предоставленную средой разработки.  
+  
+   
+  
+## Examples  
+ В следующем примере кода программа демонстрирует создание <xref:System.ComponentModel.Design.DesignerTransaction> из конструктора. Чтобы запустить этот пример, Скомпилируйте исходный код в библиотеку классов. Необходимо добавить ссылку на сборку System. Design. В новом проекте добавьте ссылку на скомпилированную библиотеку DLL и добавьте компонент в библиотеку на **панель элементов**.  
+  
+ В Visual Studio реализована расширенная поддержка этой функции.  
+  
+ См. также раздел [Пошаговое руководство. Автоматическое заполнение панели элементов пользовательскими компонентами](https://msdn.microsoft.com/library/fw694kde\(v=vs.110\).aspx).  
+  
+ Конструктор может при необходимости отображать уведомления о событиях транзакций конструктора. При добавлении экземпляра в `DTComponent` форму в режиме конструктора появляется окно сообщения с вопросом о том, хотите ли вы получать уведомления о событиях транзакций в конструкторе. Эти уведомления можно переключать с помощью контекстного меню, которое появляется при щелчке правой кнопкой мыши `DTComponent`на экземпляре компонента. Транзакции создаются при изменении значений с помощью окно свойств. Кроме того, конструктор может выполнить транзакцию, щелкнув **выполнить пример транзакции** в контекстном меню компонента.  
+  
+ [!code-cpp[DesignerTransaction Sample#1](~/samples/snippets/cpp/VS_Snippets_Winforms/DesignerTransaction Sample/CPP/source.cpp#1)]
+ [!code-csharp[DesignerTransaction Sample#1](~/samples/snippets/csharp/VS_Snippets_Winforms/DesignerTransaction Sample/CS/source.cs#1)]
+ [!code-vb[DesignerTransaction Sample#1](~/samples/snippets/visualbasic/VS_Snippets_Winforms/DesignerTransaction Sample/VB/source.vb#1)]  
+  
+ ]]></format>
+    </remarks>
+    <permission cref="T:System.Security.NamedPermissionSet">для полного доступа к системным ресурсам. Значение спроса: <see cref="F:System.Security.Permissions.SecurityAction.InheritanceDemand" />. Связанное состояние:</permission>
+    <altmember cref="T:System.ComponentModel.Design.IDesignerHost" />
+    <altmember cref="T:System.ComponentModel.Design.IComponentChangeService" />
+    <altmember cref="T:System.ComponentModel.PropertyDescriptor" />
+  </Docs>
+  <Members>
+    <MemberGroup MemberName=".ctor">
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.ComponentModel.Design.DesignerTransaction" />.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="protected DesignerTransaction ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerTransaction.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Protected Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; DesignerTransaction();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ComponentModel.TypeConverter</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.ComponentModel.Design.DesignerTransaction" /> без описания.</summary>
+        <remarks>To be added.</remarks>
+        <permission cref="T:System.Security.NamedPermissionSet">для полного доступа к системным ресурсам. Значение спроса: <see cref="F:System.Security.Permissions.SecurityAction.InheritanceDemand" />. Связанное состояние:</permission>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="protected DesignerTransaction (string description);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig specialname rtspecialname instance void .ctor(string description) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerTransaction.#ctor(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Protected Sub New (description As String)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; DesignerTransaction(System::String ^ description);" />
+      <MemberSignature Language="F#" Value="new System.ComponentModel.Design.DesignerTransaction : string -&gt; System.ComponentModel.Design.DesignerTransaction" Usage="new System.ComponentModel.Design.DesignerTransaction description" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ComponentModel.TypeConverter</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters>
+        <Parameter Name="description" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="description">Описание транзакции.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.ComponentModel.Design.DesignerTransaction" /> с помощью заданного описания транзакции.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот конструктор инициализирует транзакцию с указанным описанием.  
+  
+ ]]></format>
+        </remarks>
+        <permission cref="T:System.Security.NamedPermissionSet">для полного доступа к системным ресурсам. Значение спроса: <see cref="F:System.Security.Permissions.SecurityAction.InheritanceDemand" />. Связанное состояние:</permission>
+      </Docs>
+    </Member>
+    <Member MemberName="Cancel">
+      <MemberSignature Language="C#" Value="public void Cancel ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Cancel() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerTransaction.Cancel" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Cancel ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Cancel();" />
+      <MemberSignature Language="F#" Value="member this.Cancel : unit -&gt; unit" Usage="designerTransaction.Cancel " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ComponentModel.TypeConverter</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Отменяет транзакцию и пытается отменить все действия, выполненные событиями транзакции.</summary>
+        <remarks>To be added.</remarks>
+        <permission cref="T:System.Security.NamedPermissionSet">для полного доступа к системным ресурсам. Значение спроса: <see cref="F:System.Security.Permissions.SecurityAction.InheritanceDemand" />. Связанное состояние:</permission>
+        <altmember cref="M:System.ComponentModel.Design.DesignerTransaction.OnCancel" />
+      </Docs>
+    </Member>
+    <Member MemberName="Canceled">
+      <MemberSignature Language="C#" Value="public bool Canceled { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool Canceled" />
+      <MemberSignature Language="DocId" Value="P:System.ComponentModel.Design.DesignerTransaction.Canceled" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property Canceled As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool Canceled { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.Canceled : bool" Usage="System.ComponentModel.Design.DesignerTransaction.Canceled" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ComponentModel.TypeConverter</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, определяющее, была ли отменена данная транзакция.</summary>
+        <value>Значение <see langword="true" />, если транзакция была отменена; в противном случае — значение <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ При отмене транзакции конструктора механизм обработки транзакций пытается откатить изменения, выполненные до сих пор в транзакции. Успешность этого зависит от таких факторов, как тип каждой операции, от других операций, мешающих какому-либо из состояний, и от того, не удалось ли завершить последовательность ожидаемых операций.  
+  
+ ]]></format>
+        </remarks>
+        <permission cref="T:System.Security.NamedPermissionSet">для полного доступа к системным ресурсам. Значение спроса: <see cref="F:System.Security.Permissions.SecurityAction.InheritanceDemand" />. Связанное состояние:</permission>
+      </Docs>
+    </Member>
+    <Member MemberName="Commit">
+      <MemberSignature Language="C#" Value="public void Commit ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Commit() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerTransaction.Commit" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Commit ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Commit();" />
+      <MemberSignature Language="F#" Value="member this.Commit : unit -&gt; unit" Usage="designerTransaction.Commit " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ComponentModel.TypeConverter</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Фиксирует транзакцию.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ При фиксации транзакции конструктора транзакция считается завершенной и не следит за дальнейшими изменениями.  
+  
+ После фиксации транзакции дальнейшие вызовы этого метода не выполняют никаких действий. Всегда вызывайте этот метод после создания транзакции, чтобы убедиться, что транзакция правильно закрывается.  
+  
+ ]]></format>
+        </remarks>
+        <permission cref="T:System.Security.NamedPermissionSet">для полного доступа к системным ресурсам. Значение спроса: <see cref="F:System.Security.Permissions.SecurityAction.InheritanceDemand" />. Связанное состояние:</permission>
+        <altmember cref="M:System.ComponentModel.Design.DesignerTransaction.OnCommit" />
+      </Docs>
+    </Member>
+    <Member MemberName="Committed">
+      <MemberSignature Language="C#" Value="public bool Committed { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool Committed" />
+      <MemberSignature Language="DocId" Value="P:System.ComponentModel.Design.DesignerTransaction.Committed" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property Committed As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool Committed { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.Committed : bool" Usage="System.ComponentModel.Design.DesignerTransaction.Committed" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ComponentModel.TypeConverter</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, определяющее, была ли зафиксирована данная транзакция.</summary>
+        <value>Значение <see langword="true" />, если транзакция была зафиксирована; в противном случае — значение <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ При фиксации транзакции конструктора транзакция считается завершенной и не следит за дальнейшими изменениями.  
+  
+ ]]></format>
+        </remarks>
+        <permission cref="T:System.Security.NamedPermissionSet">для полного доступа к системным ресурсам. Значение спроса: <see cref="F:System.Security.Permissions.SecurityAction.InheritanceDemand" />. Связанное состояние:</permission>
+      </Docs>
+    </Member>
+    <Member MemberName="Description">
+      <MemberSignature Language="C#" Value="public string Description { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string Description" />
+      <MemberSignature Language="DocId" Value="P:System.ComponentModel.Design.DesignerTransaction.Description" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property Description As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ Description { System::String ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Description : string" Usage="System.ComponentModel.Design.DesignerTransaction.Description" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ComponentModel.TypeConverter</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает описание транзакции.</summary>
+        <value>Описание транзакции.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Транзакция может иметь описание, которое полезно для определения природы операции или операций.  
+  
+ ]]></format>
+        </remarks>
+        <permission cref="T:System.Security.NamedPermissionSet">для полного доступа к системным ресурсам. Значение спроса: <see cref="F:System.Security.Permissions.SecurityAction.InheritanceDemand" />. Связанное состояние:</permission>
+      </Docs>
+    </Member>
+    <Member MemberName="Dispose">
+      <MemberSignature Language="C#" Value="protected virtual void Dispose (bool disposing);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void Dispose(bool disposing) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerTransaction.Dispose(System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub Dispose (disposing As Boolean)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void Dispose(bool disposing);" />
+      <MemberSignature Language="F#" Value="abstract member Dispose : bool -&gt; unit&#xA;override this.Dispose : bool -&gt; unit" Usage="designerTransaction.Dispose disposing" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ComponentModel.TypeConverter</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="disposing" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="disposing">Значение <see langword="true" /> позволяет освободить управляемые и неуправляемые ресурсы; значение <see langword="false" /> позволяет освободить только неуправляемые ресурсы.</param>
+        <summary>Освобождает неуправляемые ресурсы, используемые объектом <see cref="T:System.ComponentModel.Design.DesignerTransaction" />, а при необходимости освобождает также управляемые ресурсы.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод вызывается открытым `Dispose()` методом <xref:System.Object.Finalize%2A> и методом. `Dispose()`вызывает защищенный `Dispose(Boolean)` метод с параметром `disposing` , для `true`которого задано значение. <xref:System.Object.Finalize%2A>вызывает метод `disposing` `false`с параметром, равным. `Dispose`  
+  
+ Если параметр `disposing` имеет значение `true`, то данный метод освобождает все ресурсы, занятые любыми управляемыми объектами, на которые ссылается этот объект <xref:System.ComponentModel.Design.DesignerTransaction>. Этот метод вызывает метод `Dispose()` каждого объекта, на который есть ссылка.  
+  
+ ]]></format>
+        </remarks>
+        <permission cref="T:System.Security.NamedPermissionSet">для полного доступа к системным ресурсам. Значение спроса: <see cref="F:System.Security.Permissions.SecurityAction.InheritanceDemand" />. Связанное состояние:</permission>
+        <block subset="none" type="overrides"><para>Метод 
+            <see langword="Dispose" /> может вызываться несколько раз другими объектами. При переопределении метода <see langword="Dispose(Boolean)" /> нужно избегать ссылок на объекты, которые были уничтожены предыдущими вызовами метода <see langword="Dispose" />. Дополнительные сведения о реализации <see langword="Dispose(Boolean)" />см. в разделе [Реализация метода Dispose](~/docs/standard/garbage-collection/implementing-dispose.md).  
+  
+<see langword="Dispose" /> Дополнительные сведения о <see cref="M:System.Object.Finalize" />и см. в разделе [Очистка неуправляемых ресурсов](~/docs/standard/garbage-collection/unmanaged.md) и [Переопределение метода Finalize](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/ddae83kx(v=vs.100)).</para></block>
+        <related type="Article" href="~/docs/standard/garbage-collection/implementing-dispose.md">Реализация метода Dispose</related>
+        <related type="Article" href="~/docs/standard/garbage-collection/unmanaged.md">Очистка неуправляемых ресурсов</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Finalize">
+      <MemberSignature Language="C#" Value="~DesignerTransaction ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void Finalize() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerTransaction.Finalize" />
+      <MemberSignature Language="VB.NET" Value="Finalize ()" />
+      <MemberSignature Language="C++ CLI" Value="!DesignerTransaction ()" />
+      <MemberSignature Language="F#" Value="override this.Finalize : unit -&gt; unit" Usage="designerTransaction.Finalize " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ComponentModel.TypeConverter</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Освобождает ресурсы, связанные с данным объектом. Данный метод фиксирует транзакцию, если она не была зафиксирована ранее.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод переопределяет <xref:System.Object.Finalize%2A?displayProperty=nameWithType> и очищает ресурсы путем вызова `Dispose(false)`. Переопределите метод `Dispose(Boolean)`, чтобы настроить очистку.  
+  
+ Код приложения не должен вызывать этот метод; `Finalize` метод объекта автоматически вызывается во время сборки мусора, если окончательное завершение сборщика мусора не было отключено вызовом <xref:System.GC.SuppressFinalize%2A?displayProperty=nameWithType> метода.  
+  
+ Дополнительные сведения см. в статьях [методы Finalize и деструкторы](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/0s71x931(v%3dvs.100)), [Очистка неуправляемых ресурсов](~/docs/standard/garbage-collection/unmanaged.md)и [Переопределение метода Finalize](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/ddae83kx(v=vs.100)).  
+  
+ ]]></format>
+        </remarks>
+        <permission cref="T:System.Security.NamedPermissionSet">для полного доступа к системным ресурсам. Значение спроса: <see cref="F:System.Security.Permissions.SecurityAction.InheritanceDemand" />. Связанное состояние:</permission>
+      </Docs>
+    </Member>
+    <Member MemberName="OnCancel">
+      <MemberSignature Language="C#" Value="protected abstract void OnCancel ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void OnCancel() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerTransaction.OnCancel" />
+      <MemberSignature Language="VB.NET" Value="Protected MustOverride Sub OnCancel ()" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; abstract void OnCancel();" />
+      <MemberSignature Language="F#" Value="abstract member OnCancel : unit -&gt; unit" Usage="designerTransaction.OnCancel " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ComponentModel.TypeConverter</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Вызывает событие <see langword="Cancel" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ При отмене транзакции конструктора механизм обработки транзакций пытается откатить изменения, выполненные до сих пор в транзакции. Успешность этого зависит от таких факторов, как тип каждой операции, от других операций, мешающих какому-либо из состояний, и от того, не удалось ли завершить последовательность ожидаемых операций.  
+  
+ ]]></format>
+        </remarks>
+        <permission cref="T:System.Security.NamedPermissionSet">для полного доступа к системным ресурсам. Значение спроса: <see cref="F:System.Security.Permissions.SecurityAction.InheritanceDemand" />. Связанное состояние:</permission>
+        <block subset="none" type="overrides"><para>При реализации в производном классе этот метод отменяет транзакцию.</para></block>
+        <altmember cref="M:System.ComponentModel.Design.DesignerTransaction.Cancel" />
+      </Docs>
+    </Member>
+    <Member MemberName="OnCommit">
+      <MemberSignature Language="C#" Value="protected abstract void OnCommit ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void OnCommit() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerTransaction.OnCommit" />
+      <MemberSignature Language="VB.NET" Value="Protected MustOverride Sub OnCommit ()" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; abstract void OnCommit();" />
+      <MemberSignature Language="F#" Value="abstract member OnCommit : unit -&gt; unit" Usage="designerTransaction.OnCommit " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ComponentModel.TypeConverter</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Фактически фиксирует транзакцию.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ При фиксации транзакции конструктора транзакция считается завершенной и не следит за дальнейшими изменениями.  
+  
+ ]]></format>
+        </remarks>
+        <permission cref="T:System.Security.NamedPermissionSet">для полного доступа к системным ресурсам. Значение спроса: <see cref="F:System.Security.Permissions.SecurityAction.InheritanceDemand" />. Связанное состояние:</permission>
+        <block subset="none" type="overrides"><para>При реализации в производном классе этот метод выполняет работу, связанную с обработкой транзакции.</para></block>
+        <altmember cref="M:System.ComponentModel.Design.DesignerTransaction.Commit" />
+      </Docs>
+    </Member>
+    <Member MemberName="System.IDisposable.Dispose">
+      <MemberSignature Language="C#" Value="void IDisposable.Dispose ();" />
+      <MemberSignature Language="ILAsm" Value=".method hidebysig newslot virtual instance void System.IDisposable.Dispose() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerTransaction.System#IDisposable#Dispose" />
+      <MemberSignature Language="VB.NET" Value="Sub Dispose () Implements IDisposable.Dispose" />
+      <MemberSignature Language="C++ CLI" Value=" virtual void System.IDisposable.Dispose() = IDisposable::Dispose;" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.IDisposable.Dispose</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ComponentModel.TypeConverter</AssemblyName>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Освобождает все ресурсы, занятые модулем <see cref="T:System.ComponentModel.Design.DesignerTransaction" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Когда транзакция удаляется, она фиксируется.  
+  
+ ]]></format>
+        </remarks>
+        <permission cref="T:System.Security.NamedPermissionSet">для полного доступа к системным ресурсам. Значение спроса: <see cref="F:System.Security.Permissions.SecurityAction.InheritanceDemand" />. Связанное состояние:</permission>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

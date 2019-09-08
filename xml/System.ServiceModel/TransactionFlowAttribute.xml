@@ -1,0 +1,326 @@
+<Type Name="TransactionFlowAttribute" FullName="System.ServiceModel.TransactionFlowAttribute">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="a8c645520d9085130fe38a89ef75d59376c12fcf" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70631946" /></Metadata><TypeSignature Language="C#" Value="public sealed class TransactionFlowAttribute : Attribute, System.ServiceModel.Description.IOperationBehavior" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi sealed beforefieldinit TransactionFlowAttribute extends System.Attribute implements class System.ServiceModel.Description.IOperationBehavior" />
+  <TypeSignature Language="DocId" Value="T:System.ServiceModel.TransactionFlowAttribute" />
+  <TypeSignature Language="VB.NET" Value="Public NotInheritable Class TransactionFlowAttribute&#xA;Inherits Attribute&#xA;Implements IOperationBehavior" />
+  <TypeSignature Language="C++ CLI" Value="public ref class TransactionFlowAttribute sealed : Attribute, System::ServiceModel::Description::IOperationBehavior" />
+  <TypeSignature Language="F#" Value="type TransactionFlowAttribute = class&#xA;    inherit Attribute&#xA;    interface IOperationBehavior" />
+  <AssemblyInfo>
+    <AssemblyName>System.ServiceModel</AssemblyName>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Attribute</BaseTypeName>
+  </Base>
+  <Interfaces>
+    <Interface>
+      <InterfaceName>System.ServiceModel.Description.IOperationBehavior</InterfaceName>
+    </Interface>
+  </Interfaces>
+  <Attributes>
+    <Attribute>
+      <AttributeName>System.AttributeUsage(System.AttributeTargets.Method)</AttributeName>
+    </Attribute>
+  </Attributes>
+  <Docs>
+    <summary>Указывает, принимает ли операция службы входящие транзакции от клиента.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.ServiceModel.TransactionFlowAttribute> является атрибутом, используемым декларативно для связи определенной политики потока транзакции с операцией службы. Свойство <xref:System.ServiceModel.TransactionFlowOption> этого атрибута указывает, принимает ли соответствующая операция транзакцию от клиента или должен ли при этой операции клиент всегда направлять транзакцию. <xref:System.ServiceModel.TransactionFlowAttribute> также можно использовать в качестве поведения операции для программной связи политики потока транзакций с определенной операцией. В этом случае его следует добавить в `Behaviors` коллекцию в описании операции.  
+  
+> [!NOTE]
+>  В `OperationContract` для каждого метода, использующего <xref:System.ServiceModel.TransactionFlowAttribute>, должна указываться полная строка `Action`. Значение "*" не поддерживается.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано использование этого перечисления наряду с классом <xref:System.ServiceModel.TransactionFlowOption> на уровне операции.  
+  
+```  
+using System;  
+using System.ServiceModel;  
+using System.Transactions;  
+  
+namespace Microsoft.WCF.Documentation  
+{  
+  [ServiceContract(  
+    Namespace="http://microsoft.wcf.documentation",   
+    SessionMode=SessionMode.Required  
+  )]  
+  public interface IBehaviorService  
+  {  
+    [OperationContract]  
+    [TransactionFlow(TransactionFlowOption.Mandatory)]  
+    string TxWork(string message);  
+  }  
+  
+  // Note: To use the TransactionIsolationLevel property, you   
+  // must add a reference to the System.Transactions.dll assembly.  
+  /* The following service implementation:  
+   *   -- Processes messages on one thread at a time  
+   *   -- Creates one service object per session  
+   *   -- Releases the service object when the transaction commits  
+   */  
+  [ServiceBehavior(  
+    ConcurrencyMode=ConcurrencyMode.Single,  
+    InstanceContextMode=InstanceContextMode.PerSession,  
+    ReleaseServiceInstanceOnTransactionComplete=true  
+  )]  
+  public class BehaviorService : IBehaviorService, IDisposable  
+  {  
+    Guid myID;  
+  
+    public BehaviorService()  
+    {  
+      myID = Guid.NewGuid();  
+      Console.WriteLine(  
+        "Object "  
+        + myID.ToString()  
+        + " created.");  
+    }  
+  
+    /*  
+    / * The following operation-level behaviors are specified:  
+    / * Always executes under a transaction scope.  
+    / * The transaction scope is completed when the operation  
+    / * terminates without an unhandled exception.  
+    /*  
+    [OperationBehavior(  
+      TransactionAutoComplete = true,  
+      TransactionScopeRequired = true  
+    )]  
+    public string TxWork(string message)  
+    {  
+      // Do some transactable work.  
+      Console.WriteLine("TxWork called with: " + message);  
+      // Display transaction information.  
+  
+      TransactionInformation info = Transaction.Current.TransactionInformation;  
+      Console.WriteLine("The distributed tx ID: {0}.", info.DistributedIdentifier);  
+      Console.WriteLine("The tx status: {0}.", info.Status);  
+      return String.Format("Hello. This was object {0}.",myID.ToString()) ;  
+    }  
+  
+    public void Dispose()  
+    {  
+      Console.WriteLine(  
+        "Service "  
+        + myID.ToString()  
+        + " is being recycled."  
+      );  
+    }  
+  }  
+}  
+```  
+  
+ ]]></format>
+    </remarks>
+    <related type="Article" href="~/docs/framework/wcf/feature-details/enabling-transaction-flow.md">Включение потока транзакций</related>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public TransactionFlowAttribute (System.ServiceModel.TransactionFlowOption transactions);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(valuetype System.ServiceModel.TransactionFlowOption transactions) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceModel.TransactionFlowAttribute.#ctor(System.ServiceModel.TransactionFlowOption)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (transactions As TransactionFlowOption)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; TransactionFlowAttribute(System::ServiceModel::TransactionFlowOption transactions);" />
+      <MemberSignature Language="F#" Value="new System.ServiceModel.TransactionFlowAttribute : System.ServiceModel.TransactionFlowOption -&gt; System.ServiceModel.TransactionFlowAttribute" Usage="new System.ServiceModel.TransactionFlowAttribute transactions" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceModel</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="transactions" Type="System.ServiceModel.TransactionFlowOption" />
+      </Parameters>
+      <Docs>
+        <param name="transactions">Объект <see cref="T:System.ServiceModel.TransactionFlowOption" />.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.ServiceModel.TransactionFlowAttribute" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Examples  
+ В следующем примере кода показано использование этого перечисления наряду с классом <xref:System.ServiceModel.TransactionFlowOption> на уровне операции.  
+  
+ [!code-csharp[OperationBehaviorAttribute1#2](~/samples/snippets/csharp/VS_Snippets_CFX/operationbehaviorattribute1/cs/services.cs#2)]
+ [!code-vb[OperationBehaviorAttribute1#2](~/samples/snippets/visualbasic/VS_Snippets_CFX/operationbehaviorattribute1/vb/services.vb#2)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="System.ServiceModel.Description.IOperationBehavior.AddBindingParameters">
+      <MemberSignature Language="C#" Value="void IOperationBehavior.AddBindingParameters (System.ServiceModel.Description.OperationDescription description, System.ServiceModel.Channels.BindingParameterCollection parameters);" />
+      <MemberSignature Language="ILAsm" Value=".method hidebysig newslot virtual instance void System.ServiceModel.Description.IOperationBehavior.AddBindingParameters(class System.ServiceModel.Description.OperationDescription description, class System.ServiceModel.Channels.BindingParameterCollection parameters) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceModel.TransactionFlowAttribute.System#ServiceModel#Description#IOperationBehavior#AddBindingParameters(System.ServiceModel.Description.OperationDescription,System.ServiceModel.Channels.BindingParameterCollection)" />
+      <MemberSignature Language="VB.NET" Value="Sub AddBindingParameters (description As OperationDescription, parameters As BindingParameterCollection) Implements IOperationBehavior.AddBindingParameters" />
+      <MemberSignature Language="C++ CLI" Value=" virtual void System.ServiceModel.Description.IOperationBehavior.AddBindingParameters(System::ServiceModel::Description::OperationDescription ^ description, System::ServiceModel::Channels::BindingParameterCollection ^ parameters) = System::ServiceModel::Description::IOperationBehavior::AddBindingParameters;" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.ServiceModel.Description.IOperationBehavior.AddBindingParameters(System.ServiceModel.Description.OperationDescription,System.ServiceModel.Channels.BindingParameterCollection)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceModel</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="description" Type="System.ServiceModel.Description.OperationDescription" />
+        <Parameter Name="parameters" Type="System.ServiceModel.Channels.BindingParameterCollection" />
+      </Parameters>
+      <Docs>
+        <param name="description">Описание операции, для которой атрибут добавляет функциональные возможности.</param>
+        <param name="parameters">Коллекция объектов параметров для контекста привязок.</param>
+        <summary>Добавляет дополнительные параметры в контекст привязок для поддержки поведения этой операции. Наследовать этот метод нельзя.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод обеспечивает контекст привязок с дополнительными параметрами для поддержки необходимого поведения для этой операции. Его можно вызвать изнутри с помощью инфраструктуры при создании службы.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="System.ServiceModel.Description.IOperationBehavior.ApplyClientBehavior">
+      <MemberSignature Language="C#" Value="void IOperationBehavior.ApplyClientBehavior (System.ServiceModel.Description.OperationDescription description, System.ServiceModel.Dispatcher.ClientOperation proxy);" />
+      <MemberSignature Language="ILAsm" Value=".method hidebysig newslot virtual instance void System.ServiceModel.Description.IOperationBehavior.ApplyClientBehavior(class System.ServiceModel.Description.OperationDescription description, class System.ServiceModel.Dispatcher.ClientOperation proxy) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceModel.TransactionFlowAttribute.System#ServiceModel#Description#IOperationBehavior#ApplyClientBehavior(System.ServiceModel.Description.OperationDescription,System.ServiceModel.Dispatcher.ClientOperation)" />
+      <MemberSignature Language="VB.NET" Value="Sub ApplyClientBehavior (description As OperationDescription, proxy As ClientOperation) Implements IOperationBehavior.ApplyClientBehavior" />
+      <MemberSignature Language="C++ CLI" Value=" virtual void System.ServiceModel.Description.IOperationBehavior.ApplyClientBehavior(System::ServiceModel::Description::OperationDescription ^ description, System::ServiceModel::Dispatcher::ClientOperation ^ proxy) = System::ServiceModel::Description::IOperationBehavior::ApplyClientBehavior;" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.ServiceModel.Description.IOperationBehavior.ApplyClientBehavior(System.ServiceModel.Description.OperationDescription,System.ServiceModel.Dispatcher.ClientOperation)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceModel</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="description" Type="System.ServiceModel.Description.OperationDescription" />
+        <Parameter Name="proxy" Type="System.ServiceModel.Dispatcher.ClientOperation" />
+      </Parameters>
+      <Docs>
+        <param name="description">Операция, которой атрибут передает функциональные возможности.</param>
+        <param name="proxy">Объект <see cref="T:System.ServiceModel.Dispatcher.ClientOperation" />, представляющий текущую операцию.</param>
+        <summary>Передает функциональность атрибута объекту <see langword="ProxyOperation" /> для метода, отмечаемого атрибутом. Наследовать этот метод нельзя.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод позволяет просматривать, изменять или добавлять пользовательские расширения в клиентскую среду выполнения для всех сообщений или для одной конкретной операции. Обратите внимание, что в случае <xref:System.ServiceModel.TransactionFlowAttribute> реализация этого метода пуста. Это метод можно вызвать изнутри с помощью инфраструктуры при создании прокси-сервера службы.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="System.ServiceModel.Description.IOperationBehavior.ApplyDispatchBehavior">
+      <MemberSignature Language="C#" Value="void IOperationBehavior.ApplyDispatchBehavior (System.ServiceModel.Description.OperationDescription description, System.ServiceModel.Dispatcher.DispatchOperation dispatch);" />
+      <MemberSignature Language="ILAsm" Value=".method hidebysig newslot virtual instance void System.ServiceModel.Description.IOperationBehavior.ApplyDispatchBehavior(class System.ServiceModel.Description.OperationDescription description, class System.ServiceModel.Dispatcher.DispatchOperation dispatch) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceModel.TransactionFlowAttribute.System#ServiceModel#Description#IOperationBehavior#ApplyDispatchBehavior(System.ServiceModel.Description.OperationDescription,System.ServiceModel.Dispatcher.DispatchOperation)" />
+      <MemberSignature Language="VB.NET" Value="Sub ApplyDispatchBehavior (description As OperationDescription, dispatch As DispatchOperation) Implements IOperationBehavior.ApplyDispatchBehavior" />
+      <MemberSignature Language="C++ CLI" Value=" virtual void System.ServiceModel.Description.IOperationBehavior.ApplyDispatchBehavior(System::ServiceModel::Description::OperationDescription ^ description, System::ServiceModel::Dispatcher::DispatchOperation ^ dispatch) = System::ServiceModel::Description::IOperationBehavior::ApplyDispatchBehavior;" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.ServiceModel.Description.IOperationBehavior.ApplyDispatchBehavior(System.ServiceModel.Description.OperationDescription,System.ServiceModel.Dispatcher.DispatchOperation)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceModel</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="description" Type="System.ServiceModel.Description.OperationDescription" />
+        <Parameter Name="dispatch" Type="System.ServiceModel.Dispatcher.DispatchOperation" />
+      </Parameters>
+      <Docs>
+        <param name="description">Описание этой операции.</param>
+        <param name="dispatch">Объект <see cref="T:System.ServiceModel.Dispatcher.DispatchOperation" /> для этой операции.</param>
+        <summary>Передает функциональность атрибута объекту <see cref="T:System.ServiceModel.Dispatcher.DispatchOperation" /> для метода, отмечаемого атрибутом. Наследовать этот метод нельзя.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод позволяет просматривать, изменять или добавлять пользовательские расширения в клиентскую среду выполнения для всех сообщений или для одной конкретной операции. Обратите внимание, что в случае <xref:System.ServiceModel.TransactionFlowAttribute> реализация этого метода пуста. Это метод можно вызвать изнутри с помощью инфраструктуры при создании службы.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="System.ServiceModel.Description.IOperationBehavior.Validate">
+      <MemberSignature Language="C#" Value="void IOperationBehavior.Validate (System.ServiceModel.Description.OperationDescription description);" />
+      <MemberSignature Language="ILAsm" Value=".method hidebysig newslot virtual instance void System.ServiceModel.Description.IOperationBehavior.Validate(class System.ServiceModel.Description.OperationDescription description) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceModel.TransactionFlowAttribute.System#ServiceModel#Description#IOperationBehavior#Validate(System.ServiceModel.Description.OperationDescription)" />
+      <MemberSignature Language="VB.NET" Value="Sub Validate (description As OperationDescription) Implements IOperationBehavior.Validate" />
+      <MemberSignature Language="C++ CLI" Value=" virtual void System.ServiceModel.Description.IOperationBehavior.Validate(System::ServiceModel::Description::OperationDescription ^ description) = System::ServiceModel::Description::IOperationBehavior::Validate;" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.ServiceModel.Description.IOperationBehavior.Validate(System.ServiceModel.Description.OperationDescription)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceModel</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="description" Type="System.ServiceModel.Description.OperationDescription" />
+      </Parameters>
+      <Docs>
+        <param name="description">Проверяемая операция.</param>
+        <summary>Проверяет, поддерживает ли операция это поведение. Наследовать этот метод нельзя.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод проверяет, достаточно ли полное описание операции для поддержки поведения потока транзакций. Обратите внимание, что в случае <xref:System.ServiceModel.TransactionFlowAttribute> реализация этого метода пуста. Это метод можно вызвать изнутри с помощью инфраструктуры при создании службы.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Transactions">
+      <MemberSignature Language="C#" Value="public System.ServiceModel.TransactionFlowOption Transactions { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance valuetype System.ServiceModel.TransactionFlowOption Transactions" />
+      <MemberSignature Language="DocId" Value="P:System.ServiceModel.TransactionFlowAttribute.Transactions" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property Transactions As TransactionFlowOption" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::ServiceModel::TransactionFlowOption Transactions { System::ServiceModel::TransactionFlowOption get(); };" />
+      <MemberSignature Language="F#" Value="member this.Transactions : System.ServiceModel.TransactionFlowOption" Usage="System.ServiceModel.TransactionFlowAttribute.Transactions" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceModel</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.ServiceModel.TransactionFlowOption</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, указывающее, поддерживается ли входящая транзакция.</summary>
+        <value>Значение <see cref="T:System.ServiceModel.TransactionFlowOption" />, указывающее, поддерживается ли входящая транзакция.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

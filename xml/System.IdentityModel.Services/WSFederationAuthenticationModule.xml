@@ -1,0 +1,2379 @@
+<Type Name="WSFederationAuthenticationModule" FullName="System.IdentityModel.Services.WSFederationAuthenticationModule">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="a131cae0a9eb30df1d6a862b72b081d3ef8187e6" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70602726" /></Metadata><TypeSignature Language="C#" Value="public class WSFederationAuthenticationModule : System.IdentityModel.Services.HttpModuleBase" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit WSFederationAuthenticationModule extends System.IdentityModel.Services.HttpModuleBase" />
+  <TypeSignature Language="DocId" Value="T:System.IdentityModel.Services.WSFederationAuthenticationModule" />
+  <TypeSignature Language="VB.NET" Value="Public Class WSFederationAuthenticationModule&#xA;Inherits HttpModuleBase" />
+  <TypeSignature Language="C++ CLI" Value="public ref class WSFederationAuthenticationModule : System::IdentityModel::Services::HttpModuleBase" />
+  <TypeSignature Language="F#" Value="type WSFederationAuthenticationModule = class&#xA;    inherit HttpModuleBase" />
+  <AssemblyInfo>
+    <AssemblyName>System.IdentityModel.Services</AssemblyName>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.IdentityModel.Services.HttpModuleBase</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary><see cref="T:System.IdentityModel.Services.WSFederationAuthenticationModule" /> представляет собой HTTP-модуль, используемый для защиты приложения ASP.NET путем применения параметров федеративной проверки подлинности к входящим запросам. <see cref="T:System.IdentityModel.Services.WSFederationAuthenticationModule" /> представляет собой готовый главный модуль, который WIF предлагает для обработки доступа по удостоверениям на основе утверждений в приложениях ASP.NET.  
+  
+Класс <see cref="T:System.IdentityModel.Services.WSFederationAuthenticationModule" /> вызывает несколько событий, что позволяет разработчикам ASP.NET изменять поведение по умолчанию и отслеживать сведения о порядке выполнения аутентификации и обработки утверждений. Функциональные возможности класса <see cref="T:System.IdentityModel.Services.WSFederationAuthenticationModule" /> разделены на методы, специфичные для задач.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.IdentityModel.Services.WSFederationAuthenticationModule> Класс реализует модуль HTTP, известный как модуль проверки подлинности WS-Federation (всфам). ВСФАМ реализована в Windows Identity Foundation (WIF). ВСФАМ добавляется в конвейер ASP.NET путем внесения записи в файл Web. config. Он является производным <xref:System.IdentityModel.Services.HttpModuleBase>от, который <xref:System.Web.IHttpModule>реализует. Он регистрируется в среде выполнения ASP.NET для прослушивания <xref:System.Web.HttpApplication.EndRequest> событий <xref:System.Web.HttpApplication.AuthenticateRequest> и. Прослушиваемое <xref:System.Web.HttpApplication.EndRequest> событие позволяет всфам перенаправлять клиентов в службу маркеров безопасности (STS) для получения маркера безопасности при сбое авторизации в запрошенном ресурсе. Прослушивание <xref:System.Web.HttpApplication.AuthenticateRequest> события позволяет всфам отслеживать HTTP-запросы для ответа от STS, содержащей запрошенный маркер. Если такой маркер является допустимым, он создает экземпляр <xref:System.Security.Claims.ClaimsPrincipal> для пользователя, прошедшего проверку подлинности, с помощью утверждений, имеющихся в токене.  
+  
+ При использовании всфам управление сеансами обеспечивается модулем проверки подлинности сеансов (SAM), который является экземпляром <xref:System.IdentityModel.Services.SessionAuthenticationModule> класса, или производным от него классом. Кроме того, SAM добавляется в конвейер ASP.NET в файле конфигурации. SAM отслеживает запросы для файлов cookie проверки подлинности (сеанса). Если эти файлы cookie существуют и действительны, модуль <xref:System.Security.Claims.ClaimsPrincipal> извлекает для пользователя, прошедшего проверку подлинности, <xref:System.IdentityModel.Tokens.SessionSecurityToken> из и <xref:System.Web.HttpContext.User%2A?displayProperty=nameWithType> устанавливает свойства и участника <xref:System.Threading.Thread.CurrentPrincipal%2A?displayProperty=nameWithType> потока.  
+  
+ ВСФАМ предоставляет:  
+  
+-   Возможность ASP.NETного приложения выполнять аутентификацию в службе маркеров безопасности (STS) с помощью протокола WS-Federation. Удостоверение может быть федеративным в одной или нескольких сферах удостоверений и содержать несколько службы маркеров безопасности.  
+  
+-   Удостоверение на основе утверждений для приложений ASP.NET. Во время проверки подлинности ВСФАМ создает участника на основе утверждений в маркере безопасности, отправленном STS, и устанавливает этот субъект утверждений в качестве участника потока. Затем этот участник можно использовать для принятия дальнейших решений авторизации, представления и логики для пользователя, представленного в коде.  
+  
+ ВСФАМ предоставляет несколько свойств, которые предоставляют параметры сообщений по умолчанию для использования в запросах входа и выхода WS-Federation. Эти свойства обычно инициализируются из [ &lt;элемента wsfederation&gt; ](~/docs/framework/configure-apps/file-schema/windows-identity-foundation/wsfederation.md) в файле конфигурации. Ниже перечислены наиболее важные из этих свойств.  
+  
+-   <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer%2A> Свойство, указывающее адрес службы маркеров безопасности (STS), к которой отправляются запросы на вход и выход WS-Federation.  
+  
+-   <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Realm%2A> Свойство, указывающее параметр wtrealm для использования в запросах входа WS-Federation. Параметр wtrealm определяет область безопасности приложения проверяющей стороны (RP) для STS.  
+  
+ Параметры сообщения для входа можно также изменить для каждого запроса, предоставив делегат обработчика событий для <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectingToIdentityProvider> события.  
+  
+ Поведение модуля управляется двумя свойствами. Оба эти свойства также обычно инициализируются из `<wsFederation>` элемента в конфигурации.  
+  
+-   <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.PassiveRedirectEnabled%2A> Свойство указывает, должен ли модуль выполнять пассивные перенаправления для STS для проверки подлинности.  
+  
+-   Свойство <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.PersistentCookiesOnPassiveRedirects%2A> указывает, должны ли сеансы быть постоянными. Если это свойство имеет значение true, то SAM используется для записи файла cookie сеанса клиенту. При последующих запросах от клиента SAM обеспечивает проверку подлинности с помощью маркера, сохраненного в файле cookie сеанса.  
+  
+ ВСФАМ создает несколько событий во время входа и выхода, что позволяет разработчикам ASP.NET изменять поведение модуля по умолчанию и управлять сведениями о том, как выполняются аутентификация и обработка утверждений.  
+  
+ Следующие события возникают перед отправкой запроса на вход WS-Federation в службу STS:  
+  
+-   <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.AuthorizationFailed>: Возникает, когда пассивное перенаправление включено и авторизация для запрошенного ресурса завершается сбоем.  
+  
+-   <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectingToIdentityProvider>: Вызывается непосредственно перед тем, как ВСФАМ отправляет службе STS запрос на вход WS-Federation. Это событие можно использовать для изменения параметров в запросе на вход.  
+  
+ Следующие события возникают, когда от STS получается ответ на вход (выданный маркер безопасности):  
+  
+-   <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SecurityTokenReceived>: Вызывается сразу после того, как маркер безопасности, отправленный службой STS, считывается из ответа.  
+  
+-   <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SecurityTokenValidated>: Возникает сразу после проверки маркера. Это событие можно использовать для фильтрации, преобразования или добавления утверждений в субъект утверждений (<xref:System.Security.Claims.ClaimsPrincipal>), созданный из токена безопасности.  
+  
+-   <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SessionSecurityTokenCreated>: Вызывается непосредственно перед токеном сеанса<xref:System.IdentityModel.Tokens.SessionSecurityToken>(), созданным из субъекта утверждений, для установки субъекта-потока и текущего пользователя и записывается в файл cookie сеанса. Предоставляет возможность изменить маркер сеанса или включить или отключить запись файла cookie сеанса.  
+  
+-   <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignedIn>: Возникает в конце проверки подлинности сразу после установки участника потока и текущего пользователя.  
+  
+-   <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignInError>: Возникает при возникновении исключения во время входа в систему. Вы можете отменить запрос и предотвратить возвращение исключения вызывающему объекту.  
+  
+ При выходе из сеанса или при обработке запроса на очистку выхода WS-Federation (wsignoutcleanup 1.0) возникают следующие события:  
+  
+-   <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SigningOut>: Вызывается непосредственно перед удалением сеанса для выполнения любой очистки, которая может зависеть от сеанса или отмены выхода.  
+  
+-   <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignedOut>: Вызвано сразу после удаления сеанса.  
+  
+-   <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOutError>: Возникает при возникновении исключения во время выхода. Вы можете отменить выход и предотвратить возвращение исключения вызывающему объекту.  
+  
+> [!NOTE]
+>  События выхода не вызываются при выходе из службы STS с помощью вызова <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.FederatedSignOut%2A> метода.  
+  
+ Существует два способа входа в службу STS с помощью ВСФАМ. Первый заключается в включении пассивных перенаправлений через <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.PassiveRedirectEnabled%2A> свойство. В этом случае, когда авторизация для запрошенного ресурса завершается неудачей `401:Access Denied` , а не возвращается ответ клиенту, всфам создает сообщение о запросе входа WS-Federation из его свойств и перенаправляет клиент в STS для получения маркера безопасности. Второй способ заключается в явном перенаправлении клиента к STS путем вызова <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignIn%2A> метода из веб-страницы или пользовательского элемента управления в приложении. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignIn%2A> Метод также использует свойства всфам для создания запроса на вход.  
+  
+ Любой из перегруженных <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOut%2A> методов можно использовать для выхода из сеанса. Это приведет к удалению файла cookie сеанса на клиенте. Он не отправляет службе STS сообщение выхода WS-Federation ("wsignout 1.0"). Чтобы выйти из службы STS, необходимо использовать <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.FederatedSignOut%2A> метод.  
+  
+ ВСФАМ обрабатывает запросы на очистку выхода WS-Federation ("wsignoutcleanup 1.0"), удаляя его сеанс с клиентом. Если параметр wreply в сообщении очистки выхода не установлен, ВСФАМ возвращает изображение зеленого флажка для STS, отправившего сообщение. Служба STS может использовать эту функцию в качестве подтверждения того, что RP завершил выход.  
+  
+ ВСФАМ предоставляет свою функциональность (например, конвейер обработки запросов) с помощью нескольких методов для конкретных задач. Эти методы можно переопределить в производных классах, чтобы изменить поведение ВСФАМ.  
+  
+ Для использования необходимо добавить модуль в конвейер, как в следующем коде XML:  
+  
+```  
+<configuration>  
+  <system.webServer>  
+    <modules>  
+      <add name="WsFederationAuthenticationModule" type="System.IdentityModel.Services.WSFederationAuthenticationModule, System.IdentityModel.Services, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"/>  
+    </modules>  
+  </system.webServer>  
+</configuration>  
+```  
+  
+ После настройки <xref:System.IdentityModel.Services.WSFederationAuthenticationModule> компонент создает события на различных этапах обработки HTTP-запроса. Разработчики ASP.NET могут справиться с этими событиями в файле Global. asax.  
+  
+   
+  
+## Examples  
+ [!code-csharp[WifWSFAM#1](~/samples/snippets/csharp/VS_Snippets_Misc/wifwsfam/cs/webapplication1/global.asax.cs#1)]  
+  
+ ]]></format>
+    </remarks>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public WSFederationAuthenticationModule ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; WSFederationAuthenticationModule();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters />
+      <Docs>
+        <summary>Вызывается конструкторами в производных классах для инициализации класса <see cref="T:System.IdentityModel.Services.WSFederationAuthenticationModule" />.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="AuthenticationType">
+      <MemberSignature Language="C#" Value="public string AuthenticationType { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string AuthenticationType" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Services.WSFederationAuthenticationModule.AuthenticationType" />
+      <MemberSignature Language="VB.NET" Value="Public Property AuthenticationType As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ AuthenticationType { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.AuthenticationType : string with get, set" Usage="System.IdentityModel.Services.WSFederationAuthenticationModule.AuthenticationType" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает значение параметра wauth, используемого в запросах входа WS-Federation ("wsignin1.0").</summary>
+        <value>Универсальный код ресурса (URI), указывающий тип аутентификации.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Параметр wauth является необязательным. Если свойство имеет `null` значение или пустую строку, параметр wauth не включается в запрос на вход. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.AuthenticationType%2A>  
+  
+ Этот параметр можно переопределить для каждого HTTP-запроса, добавив обработчик для <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectingToIdentityProvider> события. Это событие возникает непосредственно перед тем, как модуль перенаправляется в службу маркеров безопасности (STS) с сообщением запроса на вход WS-Federation. STS задается <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer%2A> свойством.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="AuthorizationFailed">
+      <MemberSignature Language="C#" Value="public event EventHandler&lt;System.IdentityModel.Services.AuthorizationFailedEventArgs&gt; AuthorizationFailed;" />
+      <MemberSignature Language="ILAsm" Value=".event class System.EventHandler`1&lt;class System.IdentityModel.Services.AuthorizationFailedEventArgs&gt; AuthorizationFailed" />
+      <MemberSignature Language="DocId" Value="E:System.IdentityModel.Services.WSFederationAuthenticationModule.AuthorizationFailed" />
+      <MemberSignature Language="VB.NET" Value="Public Event AuthorizationFailed As EventHandler(Of AuthorizationFailedEventArgs) " />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; event EventHandler&lt;System::IdentityModel::Services::AuthorizationFailedEventArgs ^&gt; ^ AuthorizationFailed;" />
+      <MemberSignature Language="F#" Value="member this.AuthorizationFailed : EventHandler&lt;System.IdentityModel.Services.AuthorizationFailedEventArgs&gt; " Usage="member this.AuthorizationFailed : System.EventHandler&lt;System.IdentityModel.Services.AuthorizationFailedEventArgs&gt; " />
+      <MemberType>Event</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.EventHandler&lt;System.IdentityModel.Services.AuthorizationFailedEventArgs&gt;</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возникает, когда модуль определяет, должен ли он перенаправить пользователя на настроенного издателя для аутентификации.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.AuthorizationFailed> Событие возникает при сбое авторизации для HTTP-запроса. Он создается <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.OnEndRequest%2A> в делегате обработчика событий посредством вызова <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.OnAuthorizationFailed%2A> метода.  
+  
+ Можно задать <xref:System.IdentityModel.Services.AuthorizationFailedEventArgs.RedirectToIdentityProvider%2A?displayProperty=nameWithType> свойство, определяющее, будет ли запрос перенаправляться к поставщику удостоверений. Платформа инициализирует это свойство до `false` , если пользователь уже прошел проверку подлинности. В этом случае присвоение свойству `true` значения может привести к циклическому циклу со службой STS.  
+  
+> [!NOTE]
+>  Это <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectingToIdentityProvider> событие можно использовать для изменения URL-адреса или отмены перенаправления.  
+  
+ Чтобы обрабатывал это событие в приложении ASP.NET, создайте метод с именем `WSFederationAuthentication_AuthorizationFailed` в файле Global. asax.  
+  
+   
+  
+## Examples  
+ [!code-csharp[WifWSFAM#7](~/samples/snippets/csharp/VS_Snippets_Misc/wifwsfam/cs/webapplication1/global.asax.cs#7)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="CanReadSignInResponse">
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Возвращает значение, указывающее, является ли заданный HTTP-запрос ответным сообщением входа WS-Federation. Если сообщение является сообщением очистки выхода WS-Federation ("wsignoutcleanup1.0"), этот метод обрабатывает запрос.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Сообщение с ответом на вход отправляется проверяющей стороне (RP) службой маркеров безопасности (STS) в ответ на сообщение запроса на вход.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="CanReadSignInResponse">
+      <MemberSignature Language="C#" Value="public bool CanReadSignInResponse (System.Web.HttpRequestBase request);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance bool CanReadSignInResponse(class System.Web.HttpRequestBase request) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.CanReadSignInResponse(System.Web.HttpRequestBase)" />
+      <MemberSignature Language="VB.NET" Value="Public Function CanReadSignInResponse (request As HttpRequestBase) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; bool CanReadSignInResponse(System::Web::HttpRequestBase ^ request);" />
+      <MemberSignature Language="F#" Value="member this.CanReadSignInResponse : System.Web.HttpRequestBase -&gt; bool" Usage="wSFederationAuthenticationModule.CanReadSignInResponse request" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="request" Type="System.Web.HttpRequestBase" />
+      </Parameters>
+      <Docs>
+        <param name="request">Входящий HTTP-запрос.</param>
+        <summary>Возвращает значение, указывающее, является ли заданный HTTP-запрос ответным сообщением входа WS-Federation. Если сообщение является сообщением очистки выхода WS-Federation ("wsignoutcleanup1.0"), этот метод обрабатывает запрос.</summary>
+        <returns>Значение <see langword="true" />, если указанный HTTP-запрос содержит запрос POST формы, в котором параметр wa имеет значение "wsignout1.0", а параметр wresult не пуст; в противном случае — значение <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод вызывается из конвейера обработки запроса, чтобы определить, является ли входящий HTTP-запрос записью формы, содержащей ответное сообщение WS-Federation для входа.  
+  
+ Он вызывает <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.CanReadSignInResponse%28System.Web.HttpRequestBase%2CSystem.Boolean%29?displayProperty=nameWithType> перегрузку `onPage` с набором `false` параметров, чтобы указать, что вызов не был получен во время обработки страницы.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="request" /> — <see langword="null" />.</exception>
+        <altmember cref="M:System.IdentityModel.Services.WSFederationAuthenticationModule.OnAuthenticateRequest(System.Object,System.EventArgs)" />
+        <altmember cref="M:System.IdentityModel.Services.WSFederationAuthenticationModule.CanReadSignInResponse(System.Web.HttpRequestBase,System.Boolean)" />
+      </Docs>
+    </Member>
+    <Member MemberName="CanReadSignInResponse">
+      <MemberSignature Language="C#" Value="public virtual bool CanReadSignInResponse (System.Web.HttpRequestBase request, bool onPage);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance bool CanReadSignInResponse(class System.Web.HttpRequestBase request, bool onPage) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.CanReadSignInResponse(System.Web.HttpRequestBase,System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function CanReadSignInResponse (request As HttpRequestBase, onPage As Boolean) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual bool CanReadSignInResponse(System::Web::HttpRequestBase ^ request, bool onPage);" />
+      <MemberSignature Language="F#" Value="abstract member CanReadSignInResponse : System.Web.HttpRequestBase * bool -&gt; bool&#xA;override this.CanReadSignInResponse : System.Web.HttpRequestBase * bool -&gt; bool" Usage="wSFederationAuthenticationModule.CanReadSignInResponse (request, onPage)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="request" Type="System.Web.HttpRequestBase" />
+        <Parameter Name="onPage" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="request">Входящий HTTP-запрос.</param>
+        <param name="onPage">Значение <see langword="true" />, если вызов происходит при обработке запроса страницы. <see langword="false" /> Если вызывающий объект — HTTP-модуль. Этот параметр определяет, как следует завершать обработку или отправлять сообщения перенаправления, если входящее сообщение является сообщением очистки выхода WS-Federation ("wsignoutcleanup1.0").</param>
+        <summary>Возвращает значение, указывающее, является ли заданный HTTP-запрос ответным сообщением входа WS-Federation. Если сообщение является сообщением очистки выхода WS-Federation ("wsignoutcleanup1.0"), этот метод обрабатывает запрос.</summary>
+        <returns>Значение <see langword="true" />, если указанный HTTP-запрос содержит запрос POST формы, в котором параметр wa имеет значение "wsignout1.0", а параметр wresult не пуст; в противном случае — значение <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод вызывается из конвейера обработки запроса через <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.CanReadSignInResponse%28System.Web.HttpRequestBase%29?displayProperty=nameWithType> перегрузку, чтобы определить, является ли входящий HTTP-запрос записью формы, содержащей сообщение ответа WS-Federation для входа.  
+  
+ Реализация по умолчанию выполняет следующие действия.  
+  
+-   Если входящий запрос является формой POST, то он вызывает <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.IsSignInResponse%2A> метод, чтобы определить, содержит ли запись в форме ответ на вход.  
+  
+-   Если входящий запрос не является формой POST и запрос содержит запрос на очистку выхода WS-Federation (параметр wa имеет значение "wsignoutcleanup 1.0"), выполняется очистка выхода. В этом случае <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOut%28System.Boolean%29?displayProperty=nameWithType> вызывается метод (с параметром `true` , равным, чтобы указать очистку для выхода), чтобы выйти из сеанса. Это также приводит к возникновению событий выхода.  
+  
+     Затем, если запрос на очистку выхода содержит параметр wreply, клиент перенаправляется на URL-адрес, возвращенный <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.GetSignOutRedirectUrl%2A> методом; в противном случае в STS возвращается изображение зеленого галочки. Получение этого образа может использоваться службой STS как подтверждение получения запроса на очистку выхода и его успешной обработки RP.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="request" /> имеет значение <see langword="null" />.</exception>
+        <altmember cref="M:System.IdentityModel.Services.WSFederationAuthenticationModule.CanReadSignInResponse(System.Web.HttpRequestBase)" />
+      </Docs>
+    </Member>
+    <Member MemberName="CreateSignInRequest">
+      <MemberSignature Language="C#" Value="public System.IdentityModel.Services.SignInRequestMessage CreateSignInRequest (string uniqueId, string returnUrl, bool rememberMeSet);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.IdentityModel.Services.SignInRequestMessage CreateSignInRequest(string uniqueId, string returnUrl, bool rememberMeSet) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.CreateSignInRequest(System.String,System.String,System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Public Function CreateSignInRequest (uniqueId As String, returnUrl As String, rememberMeSet As Boolean) As SignInRequestMessage" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::IdentityModel::Services::SignInRequestMessage ^ CreateSignInRequest(System::String ^ uniqueId, System::String ^ returnUrl, bool rememberMeSet);" />
+      <MemberSignature Language="F#" Value="member this.CreateSignInRequest : string * string * bool -&gt; System.IdentityModel.Services.SignInRequestMessage" Usage="wSFederationAuthenticationModule.CreateSignInRequest (uniqueId, returnUrl, rememberMeSet)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Services.SignInRequestMessage</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="uniqueId" Type="System.String" />
+        <Parameter Name="returnUrl" Type="System.String" />
+        <Parameter Name="rememberMeSet" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="uniqueId">WSFAM хранит это значение в параметре wctx запроса входа WS-Federation; однако этот модуль не использует его при обработке запросов входа и ответных сообщений входа. Можно задать любое значение. Не обязательно должен быть уникальным.</param>
+        <param name="returnUrl">URL-адрес, на который модуль должен вернуться после аутентификации.</param>
+        <param name="rememberMeSet">WSFAM хранит это значение в параметре wctx запроса входа WS-Federation; однако этот модуль не использует его при обработке запросов входа и ответных сообщений входа. Можно задать значение <see langword="true" /> или <see langword="false" />.</param>
+        <summary>Создает сообщение запроса входа WS-Federation, используя параметры WS-Federation, настроенные для модуля.</summary>
+        <returns>Сообщение запроса входа WS-Federation.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Создает запрос на вход WS-Federation, представленный <xref:System.IdentityModel.Services.SignInRequestMessage> объектом. Свойства нового <xref:System.IdentityModel.Services.SignInRequestMessage> объекта задаются следующим образом:  
+  
+-   <xref:System.IdentityModel.Services.WSFederationMessage.Context%2A> Свойству (параметру вкткс) присваивается значение, созданное с помощью параметров метода.  
+  
+-   <xref:System.IdentityModel.Services.SignInRequestMessage.CurrentTime%2A> Свойству (параметру WCT) присвоено текущее время.  
+  
+-   Все остальные свойства задаются с помощью эквивалентных свойств текущего экземпляра.  
+  
+ Параметры, передаваемые в метод, используются для создания параметра сообщения вкткс. Это строка в следующем формате: `ru=returnUrl&cx=SignInContext&rm=rememberMeSet&id=uniqueId`.  
+  
+-   В `ru` качестве значения задается значение `returnUrl` параметра, переданного в метод, и указывается URL-адрес, по которому модуль должен направить браузер на следующую успешную проверку подлинности. Это единственное значение, хранящееся в строке вкткс, используемой ВСФАМ. Модуль вызывает <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.GetReturnUrlFromResponse%2A> метод для извлечения этого значения из параметра вкткс при обработке ответа WS-Federation Sign-On. Его не следует путать с параметром сообщения wreply, который указывается <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Reply%2A> свойством и предоставляет адрес в RP, к которому служба маркеров безопасности должна направить свой ответ.  
+  
+-   Параметру присваивается значение <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignInContext%2A> свойства. `cx` Это свойство предоставляется, чтобы можно было задать любой определенный в приложении контекст, который должен храниться в строке вкткс. Однако ВСФАМ не предоставляет метод для извлечения этого значения в ответе. Если это значение является необходимым для приложения, необходимо предоставить код для анализа строки вкткс и считывание этого значения при обработке ответа. Это можно сделать, переопределив <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.GetReturnUrlFromResponse%2A> метод.  
+  
+-   Ни значение, которое задано значением `rememberMeSet` параметра, ни `id` параметр, для `uniqueId` которого задано значение параметра, используется всфам. `rm` Для них можно задать любое значение.  
+  
+ Метод вызывается из  <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectToIdentityProvider%2A> метода. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.CreateSignInRequest%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Свойство <see cref="P:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer" /> имеет значение <see langword="null" /> или пустая строка.  
+  
+-или- 
+Свойство <see cref="P:System.IdentityModel.Services.WSFederationAuthenticationModule.Realm" /> имеет значение <see langword="null" /> или пустая строка.</exception>
+        <altmember cref="M:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectToIdentityProvider(System.String,System.String,System.Boolean)" />
+      </Docs>
+    </Member>
+    <Member MemberName="FederatedSignOut">
+      <MemberSignature Language="C#" Value="public static void FederatedSignOut (Uri signOutUrl, Uri replyUrl);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void FederatedSignOut(class System.Uri signOutUrl, class System.Uri replyUrl) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.FederatedSignOut(System.Uri,System.Uri)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Sub FederatedSignOut (signOutUrl As Uri, replyUrl As Uri)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static void FederatedSignOut(Uri ^ signOutUrl, Uri ^ replyUrl);" />
+      <MemberSignature Language="F#" Value="static member FederatedSignOut : Uri * Uri -&gt; unit" Usage="System.IdentityModel.Services.WSFederationAuthenticationModule.FederatedSignOut (signOutUrl, replyUrl)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="signOutUrl" Type="System.Uri" />
+        <Parameter Name="replyUrl" Type="System.Uri" />
+      </Parameters>
+      <Docs>
+        <param name="signOutUrl">URL-адрес службы STS, которая должна получить сообщение запроса выхода WS-Federation. Не может иметь значение <see langword="null" />.</param>
+        <param name="replyUrl">URL-адрес для отправки в качестве значения "wreply" в сообщении запроса выхода.</param>
+        <summary>Выполняет выход в указанной службе токенов безопасности (STS) с помощью протокола WS-Federation.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вызовите этот метод, чтобы отправить сообщение запроса выхода WS-Federation в указанную STS. При необходимости можно указать значение для параметра wreply в запросе на выход.  
+  
+ Метод выполняет следующие действия:  
+  
+1.  Создает сообщение о запросе выхода WS-Federation с использованием указанных параметров.  
+  
+2.  <xref:System.IdentityModel.Services.SessionAuthenticationModule.DeleteSessionTokenCookie%2A?displayProperty=nameWithType> Вызывает метод в SAM для удаления файла cookie сеанса.  
+  
+3.  Выполняет перенаправление на службу STS с помощью сообщения о запросе выхода из первого шага.  
+  
+ Ни одно из событий выхода: <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SigningOut>, <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignedOut>или <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOutError> не вызывается этим методом. Чтобы удалить сеанс, не отправляя в STS сообщение запроса выхода, вызовите один из перегруженных <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOut%2A> методов.  
+  
+> [!NOTE]
+>  Чтобы выполнить пассивный выход с помощью токена сеанса, модуль использует значение, которое было сохранено в <xref:System.IdentityModel.Tokens.SessionSecurityToken.Context%2A?displayProperty=nameWithType> свойстве во время входа. Дополнительные сведения см. в <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.GetSessionTokenContext%2A> описании метода.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException"><paramref name="signOutUrl" /> имеет значение, отличное от <see langword="null" />, и не является абсолютным универсальным кодом ресурса (URI).  
+  
+-или- 
+ <paramref name="replyUrl" /> имеет значение, отличное от <see langword="null" />, и не является абсолютным универсальным кодом ресурса (URI).</exception>
+        <exception cref="T:System.InvalidOperationException">Свойство <paramref name="signOutUrl" /> имеет значение <see langword="null" />.</exception>
+        <altmember cref="M:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOut" />
+        <altmember cref="M:System.IdentityModel.Services.WSFederationAuthenticationModule.GetSessionTokenContext" />
+      </Docs>
+    </Member>
+    <Member MemberName="Freshness">
+      <MemberSignature Language="C#" Value="public string Freshness { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string Freshness" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Services.WSFederationAuthenticationModule.Freshness" />
+      <MemberSignature Language="VB.NET" Value="Public Property Freshness As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ Freshness { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.Freshness : string with get, set" Usage="System.IdentityModel.Services.WSFederationAuthenticationModule.Freshness" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает значение параметра wfresh, используемого в запросах входа WS-Federation ("wsignin1.0").</summary>
+        <value>Требуемая максимальная длительность запросов аутентификации в минутах.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Параметр wfresh является необязательным. Если свойство имеет `null` значение или пустую строку, параметр wfresh не включается в запрос на вход. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Freshness%2A>  
+  
+ Этот параметр можно переопределить для каждого HTTP-запроса, добавив обработчик для <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectingToIdentityProvider> события. Это событие возникает непосредственно перед тем, как модуль перенаправляется в службу маркеров безопасности (STS) с сообщением запроса на вход WS-Federation. STS задается <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer%2A> свойством.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetFederationPassiveSignOutUrl">
+      <MemberSignature Language="C#" Value="public static string GetFederationPassiveSignOutUrl (string issuer, string signOutReply, string signOutQueryString);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig string GetFederationPassiveSignOutUrl(string issuer, string signOutReply, string signOutQueryString) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.GetFederationPassiveSignOutUrl(System.String,System.String,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function GetFederationPassiveSignOutUrl (issuer As String, signOutReply As String, signOutQueryString As String) As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static System::String ^ GetFederationPassiveSignOutUrl(System::String ^ issuer, System::String ^ signOutReply, System::String ^ signOutQueryString);" />
+      <MemberSignature Language="F#" Value="static member GetFederationPassiveSignOutUrl : string * string * string -&gt; string" Usage="System.IdentityModel.Services.WSFederationAuthenticationModule.GetFederationPassiveSignOutUrl (issuer, signOutReply, signOutQueryString)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="issuer" Type="System.String" />
+        <Parameter Name="signOutReply" Type="System.String" />
+        <Parameter Name="signOutQueryString" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="issuer">Адрес поставщика. Адрес службы токена безопасности (STS), в которую требуется перенаправить запрос.</param>
+        <param name="signOutReply">URL-адрес, задающий адрес для возврата после выхода. Это задает параметр wreply в запросе выхода. Может быть <see langword="null" /> или быть пустым, если нет параметров wreply, которые должны быть включены в созданный запрос выхода. Это должен быть абсолютный универсальный код ресурса (URI).</param>
+        <param name="signOutQueryString">Дополнительные параметры строки запроса, которые необходимо включить в запрос выхода. Может быть <see langword="null" /> или быть пустым, если нет дополнительных параметров to be включенных в созданный запрос выхода. Это должен быть относительный универсальный код ресурса (URI).</param>
+        <summary>Возвращает URL-адрес, представляющие запрос на выход из WS-Federation обращенный к указанному издателю и который содержит указанный параметр wreply и заданные дополнительные параметры.</summary>
+        <returns>URL-адрес, содержащий пассивный запрос выхода WS-Federation, который формируется с использованием указанных параметров.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ В возвращенном URL-адресе: базовый URI имеет значение `issuer`; параметр wa имеет значение "wsignout 1.0"; параметр wreply имеет `signOutReply`значение, а параметры, указанные в `signOutQueryString` , представлены дополнительными параметрами строки запроса.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="issuer" /> имеет значение <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetReferencedResult">
+      <MemberSignature Language="C#" Value="protected virtual string GetReferencedResult (string resultPtr);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance string GetReferencedResult(string resultPtr) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.GetReferencedResult(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Function GetReferencedResult (resultPtr As String) As String" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual System::String ^ GetReferencedResult(System::String ^ resultPtr);" />
+      <MemberSignature Language="F#" Value="abstract member GetReferencedResult : string -&gt; string&#xA;override this.GetReferencedResult : string -&gt; string" Usage="wSFederationAuthenticationModule.GetReferencedResult resultPtr" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="resultPtr" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="resultPtr">URL-адрес, задающий адрес результата выпуска.</param>
+        <summary>Получает результат выдачи (обычно выданный токен) из указанного URL-адреса. Разрешает URL-адрес, указанный в параметре wresultptr  в ответном сообщении входа.</summary>
+        <returns>Результат выпуска, на который ссылался URL-адрес.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вызывается <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.GetXmlTokenFromMessage%28System.IdentityModel.Services.SignInResponseMessage%29?displayProperty=nameWithType> методом из конвейера обработки для разрешения URL-адреса, указанного в параметре wresultptr в сообщении ответа входа, полученном от службы маркеров безопасности (STS).  
+  
+ По умолчанию этот метод создает <xref:System.NotSupportedException>исключение. Переопределите этот метод в производном классе для поддержки параметра wresultptr. URL-адрес указывает на результат выдачи, который должен быть одним из следующих: `<wst:RequestSecurityTokenResponse>` элемент `<wst:RequestSecurityTokenResponseCollection>` , элемент, ответ SOAP или элемент SOAP `<S:Fault>` .  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.NotSupportedException">Этот метод не поддерживается в базовом классе. Это необходимо переопределить в производном классе.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetReturnUrlFromResponse">
+      <MemberSignature Language="C#" Value="protected virtual string GetReturnUrlFromResponse (System.Web.HttpRequestBase request);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance string GetReturnUrlFromResponse(class System.Web.HttpRequestBase request) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.GetReturnUrlFromResponse(System.Web.HttpRequestBase)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Function GetReturnUrlFromResponse (request As HttpRequestBase) As String" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual System::String ^ GetReturnUrlFromResponse(System::Web::HttpRequestBase ^ request);" />
+      <MemberSignature Language="F#" Value="abstract member GetReturnUrlFromResponse : System.Web.HttpRequestBase -&gt; string&#xA;override this.GetReturnUrlFromResponse : System.Web.HttpRequestBase -&gt; string" Usage="wSFederationAuthenticationModule.GetReturnUrlFromResponse request" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="request" Type="System.Web.HttpRequestBase" />
+      </Parameters>
+      <Docs>
+        <param name="request">HTTP-запрос, содержащий POST-формы, которые содержат ответное сообщение входа WS-Federation.</param>
+        <summary>Извлекает URL-адрес изначально запрошенной страницы из ответа входа.</summary>
+        <returns>URL страницы, первоначально запрошенной клиентом. Это URL-адрес (на проверяющей стороне), на который перенаправляется клиент после успешной входа.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод вызывается из конвейера обработки запросов ( <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.OnAuthenticateRequest%2A> метод) для получения URL-адреса страницы в проверяющей стороне (RP) для направления клиента после успешного входа. Это, как правило, URL-адрес ресурса RP, к которому клиент изначально запрашивал доступ.  
+  
+ По умолчанию ВСФАМ сохраняет URL-адрес возврата в параметре сообщения вкткс при отправке запроса на вход WS-Federation в службу маркеров безопасности (STS). В соответствии со спецификацией WS-Federation параметр вкткс сохраняется в сущностях, через которые проходит сообщение, и возвращается в ответе, не измененном в сообщении о входе в WS-Federation, которое отправляется службой STS.  
+  
+ Реализация по умолчанию получает URL-адрес возврата из параметра вкткс в ответе на вход. Дополнительные сведения о формате параметра вкткс, используемого всфам, см. в <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.CreateSignInRequest%2A> описании метода.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="request" /> имеет значение <see langword="null" />.</exception>
+        <altmember cref="M:System.IdentityModel.Services.WSFederationAuthenticationModule.CreateSignInRequest(System.String,System.String,System.Boolean)" />
+        <altmember cref="M:System.IdentityModel.Services.WSFederationAuthenticationModule.OnAuthenticateRequest(System.Object,System.EventArgs)" />
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="GetSecurityToken">
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Считывает токен безопасности из указанного запроса.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="GetSecurityToken">
+      <MemberSignature Language="C#" Value="public virtual System.IdentityModel.Tokens.SecurityToken GetSecurityToken (System.IdentityModel.Services.SignInResponseMessage message);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.IdentityModel.Tokens.SecurityToken GetSecurityToken(class System.IdentityModel.Services.SignInResponseMessage message) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.GetSecurityToken(System.IdentityModel.Services.SignInResponseMessage)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function GetSecurityToken (message As SignInResponseMessage) As SecurityToken" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::IdentityModel::Tokens::SecurityToken ^ GetSecurityToken(System::IdentityModel::Services::SignInResponseMessage ^ message);" />
+      <MemberSignature Language="F#" Value="abstract member GetSecurityToken : System.IdentityModel.Services.SignInResponseMessage -&gt; System.IdentityModel.Tokens.SecurityToken&#xA;override this.GetSecurityToken : System.IdentityModel.Services.SignInResponseMessage -&gt; System.IdentityModel.Tokens.SecurityToken" Usage="wSFederationAuthenticationModule.GetSecurityToken message" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Tokens.SecurityToken</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="message" Type="System.IdentityModel.Services.SignInResponseMessage" />
+      </Parameters>
+      <Docs>
+        <param name="message">Ответное сообщение входа, из которого требуется считать токен.</param>
+        <summary>Считывает токен безопасности из указанного ответного сообщения входа WS Federation.</summary>
+        <returns>Токен безопасности, который был прочитан из сообщения.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация по умолчанию вызывает <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.GetXmlTokenFromMessage%28System.IdentityModel.Services.SignInResponseMessage%2CSystem.IdentityModel.Services.WSFederationSerializer%29?displayProperty=nameWithType> метод для получения маркера и считывает его с помощью соответствующего обработчика из настроенных обработчиков маркеров безопасности.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="message" /> имеет значение <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetSecurityToken">
+      <MemberSignature Language="C#" Value="public virtual System.IdentityModel.Tokens.SecurityToken GetSecurityToken (System.Web.HttpRequestBase request);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.IdentityModel.Tokens.SecurityToken GetSecurityToken(class System.Web.HttpRequestBase request) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.GetSecurityToken(System.Web.HttpRequestBase)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function GetSecurityToken (request As HttpRequestBase) As SecurityToken" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::IdentityModel::Tokens::SecurityToken ^ GetSecurityToken(System::Web::HttpRequestBase ^ request);" />
+      <MemberSignature Language="F#" Value="abstract member GetSecurityToken : System.Web.HttpRequestBase -&gt; System.IdentityModel.Tokens.SecurityToken&#xA;override this.GetSecurityToken : System.Web.HttpRequestBase -&gt; System.IdentityModel.Tokens.SecurityToken" Usage="wSFederationAuthenticationModule.GetSecurityToken request" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Tokens.SecurityToken</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="request" Type="System.Web.HttpRequestBase" />
+      </Parameters>
+      <Docs>
+        <param name="request">HTTP-запрос, с которого нужно считывать токен.</param>
+        <summary>Считывает токен безопасности из указанного HTTP-запроса.</summary>
+        <returns>Считанный маркер безопасности.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вызывается из конвейера обработки запроса для получения сообщения запроса на вход WS-Federation в качестве <xref:System.IdentityModel.Tokens.SecurityToken> объекта.  
+  
+ Реализация по умолчанию вызывает <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.GetSignInResponseMessage%2A> метод, чтобы <xref:System.IdentityModel.Services.SignInResponseMessage> получить объект <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.GetSecurityToken%28System.IdentityModel.Services.SignInResponseMessage%29?displayProperty=nameWithType> , а затем вызывает перегрузку.  
+  
+ Используйте производный класс для интерпретации определенного типа запроса.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="request" /> — <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetSessionTokenContext">
+      <MemberSignature Language="C#" Value="protected virtual string GetSessionTokenContext ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance string GetSessionTokenContext() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.GetSessionTokenContext" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Function GetSessionTokenContext () As String" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual System::String ^ GetSessionTokenContext();" />
+      <MemberSignature Language="F#" Value="abstract member GetSessionTokenContext : unit -&gt; string&#xA;override this.GetSessionTokenContext : unit -&gt; string" Usage="wSFederationAuthenticationModule.GetSessionTokenContext " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Получает строку, которая должна быть сохранена с файлом cookie сеанса в свойстве <see cref="P:System.IdentityModel.Tokens.SessionSecurityToken.Context" />.</summary>
+        <returns>Строка, которую необходимо сохранять в файле Cookie сеанса.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод вызывается из конвейера обработки запроса при обработке сообщения ответа WS-Federation Sign-On для получения значения, которое необходимо сохранить <xref:System.IdentityModel.Tokens.SessionSecurityToken.Context%2A?displayProperty=nameWithType> в свойстве в файле cookie сеанса. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.GetSessionTokenContext%2A>  
+  
+ Этот метод можно переопределить, чтобы предоставить значение, зависящее от приложения, которое должно храниться в файле cookie. ВСФАМ не предоставляет методы для получения значения из файла cookie. Необходимо предоставить логику в приложении, чтобы считать значение обратно из файла cookie, если это необходимо.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Значение свойства <see cref="P:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer" /> — <see langword="null" />.</exception>
+        <altmember cref="P:System.IdentityModel.Tokens.SessionSecurityToken.Context" />
+      </Docs>
+    </Member>
+    <Member MemberName="GetSignInResponseMessage">
+      <MemberSignature Language="C#" Value="public virtual System.IdentityModel.Services.SignInResponseMessage GetSignInResponseMessage (System.Web.HttpRequestBase request);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.IdentityModel.Services.SignInResponseMessage GetSignInResponseMessage(class System.Web.HttpRequestBase request) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.GetSignInResponseMessage(System.Web.HttpRequestBase)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function GetSignInResponseMessage (request As HttpRequestBase) As SignInResponseMessage" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::IdentityModel::Services::SignInResponseMessage ^ GetSignInResponseMessage(System::Web::HttpRequestBase ^ request);" />
+      <MemberSignature Language="F#" Value="abstract member GetSignInResponseMessage : System.Web.HttpRequestBase -&gt; System.IdentityModel.Services.SignInResponseMessage&#xA;override this.GetSignInResponseMessage : System.Web.HttpRequestBase -&gt; System.IdentityModel.Services.SignInResponseMessage" Usage="wSFederationAuthenticationModule.GetSignInResponseMessage request" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IdentityModel.Services.SignInResponseMessage</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="request" Type="System.Web.HttpRequestBase" />
+      </Parameters>
+      <Docs>
+        <param name="request">HTTP-запрос, из которого следует считывать ответное сообщение входа. Запрос должен представлять форму POST.</param>
+        <summary>Считывает объект <see cref="T:System.IdentityModel.Services.SignInResponseMessage" /> из формы POST, представленной указанным HTTP-запросом.</summary>
+        <returns>Созданное ответное сообщение входа.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вызывается из <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.GetSecurityToken%28System.Web.HttpRequestBase%29?displayProperty=nameWithType> метода в конвейере обработки запроса для получения сообщения ответа входа из формы POST, содержащейся в HTTP-запросе.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="request" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.InvalidOperationException">Ответное сообщение входа не может быть считано из указанного запроса.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetSignOutRedirectUrl">
+      <MemberSignature Language="C#" Value="protected virtual string GetSignOutRedirectUrl (System.IdentityModel.Services.SignOutCleanupRequestMessage signOutMessage);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance string GetSignOutRedirectUrl(class System.IdentityModel.Services.SignOutCleanupRequestMessage signOutMessage) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.GetSignOutRedirectUrl(System.IdentityModel.Services.SignOutCleanupRequestMessage)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Function GetSignOutRedirectUrl (signOutMessage As SignOutCleanupRequestMessage) As String" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual System::String ^ GetSignOutRedirectUrl(System::IdentityModel::Services::SignOutCleanupRequestMessage ^ signOutMessage);" />
+      <MemberSignature Language="F#" Value="abstract member GetSignOutRedirectUrl : System.IdentityModel.Services.SignOutCleanupRequestMessage -&gt; string&#xA;override this.GetSignOutRedirectUrl : System.IdentityModel.Services.SignOutCleanupRequestMessage -&gt; string" Usage="wSFederationAuthenticationModule.GetSignOutRedirectUrl signOutMessage" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="signOutMessage" Type="System.IdentityModel.Services.SignOutCleanupRequestMessage" />
+      </Parameters>
+      <Docs>
+        <param name="signOutMessage">Запрос очистки при выходе.</param>
+        <summary>Определяет URL-адрес, на который идет перенаправление при обработке запроса очистки выхода WS-Federation (wsignoutcleanup1.0), который содержит параметр wreply.</summary>
+        <returns>URL-адрес, на который выполняется перенаправление.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод вызывается из <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.CanReadSignInResponse%2A> метода в конвейере обработки запроса, чтобы определить URL-адрес для перенаправления после обработки запроса на очистку выхода WS-Federation. Он вызывается только в том случае, если сообщение имеет параметр wreply ( `signOutMessage` у параметра <xref:System.IdentityModel.Services.SignOutCleanupRequestMessage.Reply%2A> есть свойство, которое не `null` является ни и пустым).  
+  
+ Реализация по умолчанию проверяет URL-адрес ответа, содержащийся в сообщении <xref:System.IdentityModel.Services.SignOutCleanupRequestMessage.Reply%2A?displayProperty=nameWithType> (свойство), по адресу службы маркеров безопасности (STS), заданной <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer%2A> свойством. Чтобы URL-адрес ответа был действительным, должны быть выполнены следующие условия:  
+  
+1.  URL-адрес ответа — это абсолютный URL-адрес.  
+  
+2.  URL-адрес ответа имеет ту же схему, что и издатель.  
+  
+3.  URL-адрес ответа имеет тот же порт, что и издатель.  
+  
+4.  URL-адрес ответа имеет тот же узел, что и издатель, или URL-адрес ответа указывает поддомен издателя.  
+  
+ Если все эти условия имеют значение true, возвращается URL-адрес ответа (ответ). в противном случае возвращается URL- <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer%2A> адрес, заданный свойством.  
+  
+ Переопределите этот метод, чтобы обеспечить дополнительную проверку URL-адреса ответа.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="signOutMessage" /> имеет свойство <see cref="P:System.IdentityModel.Services.SignOutCleanupRequestMessage.Reply" /> с типом <see langword="null" /> или пуст.</exception>
+        <exception cref="T:System.ArgumentNullException"><paramref name="signOutMessage" /> — <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="GetXmlTokenFromMessage">
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Извлекает выданный токен из указанного ответного сообщения входа WS Federation.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="GetXmlTokenFromMessage">
+      <MemberSignature Language="C#" Value="public virtual string GetXmlTokenFromMessage (System.IdentityModel.Services.SignInResponseMessage message);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance string GetXmlTokenFromMessage(class System.IdentityModel.Services.SignInResponseMessage message) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.GetXmlTokenFromMessage(System.IdentityModel.Services.SignInResponseMessage)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function GetXmlTokenFromMessage (message As SignInResponseMessage) As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::String ^ GetXmlTokenFromMessage(System::IdentityModel::Services::SignInResponseMessage ^ message);" />
+      <MemberSignature Language="F#" Value="abstract member GetXmlTokenFromMessage : System.IdentityModel.Services.SignInResponseMessage -&gt; string&#xA;override this.GetXmlTokenFromMessage : System.IdentityModel.Services.SignInResponseMessage -&gt; string" Usage="wSFederationAuthenticationModule.GetXmlTokenFromMessage message" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="message" Type="System.IdentityModel.Services.SignInResponseMessage" />
+      </Parameters>
+      <Docs>
+        <param name="message">Ответное сообщение входа, из которого требуется извлечь токен. Ответ входа в систему содержит токен, выданный службой токенов безопасности.</param>
+        <summary>Извлекает выданный токен из указанного ответного сообщения входа WS Federation.</summary>
+        <returns>Строка, содержащая XML, представляющий выданный токен. Это элемент <see langword="&lt;wst:RequestSecurityTokenResponse&gt;" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если в ответном сообщении для входа отсутствует параметр wresult, <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.GetReferencedResult%2A> вызывается метод, чтобы попытаться получить маркер с помощью параметра wresultptr.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="message" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.InvalidOperationException"><paramref name="message" /> не содержит токена. (Не содержит допустимый параметр wresult или wresultptr).</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetXmlTokenFromMessage">
+      <MemberSignature Language="C#" Value="public virtual string GetXmlTokenFromMessage (System.IdentityModel.Services.SignInResponseMessage message, System.IdentityModel.Services.WSFederationSerializer federationSerializer);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance string GetXmlTokenFromMessage(class System.IdentityModel.Services.SignInResponseMessage message, class System.IdentityModel.Services.WSFederationSerializer federationSerializer) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.GetXmlTokenFromMessage(System.IdentityModel.Services.SignInResponseMessage,System.IdentityModel.Services.WSFederationSerializer)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function GetXmlTokenFromMessage (message As SignInResponseMessage, federationSerializer As WSFederationSerializer) As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::String ^ GetXmlTokenFromMessage(System::IdentityModel::Services::SignInResponseMessage ^ message, System::IdentityModel::Services::WSFederationSerializer ^ federationSerializer);" />
+      <MemberSignature Language="F#" Value="abstract member GetXmlTokenFromMessage : System.IdentityModel.Services.SignInResponseMessage * System.IdentityModel.Services.WSFederationSerializer -&gt; string&#xA;override this.GetXmlTokenFromMessage : System.IdentityModel.Services.SignInResponseMessage * System.IdentityModel.Services.WSFederationSerializer -&gt; string" Usage="wSFederationAuthenticationModule.GetXmlTokenFromMessage (message, federationSerializer)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="message" Type="System.IdentityModel.Services.SignInResponseMessage" />
+        <Parameter Name="federationSerializer" Type="System.IdentityModel.Services.WSFederationSerializer" />
+      </Parameters>
+      <Docs>
+        <param name="message">Ответное сообщение входа, из которого требуется извлечь токен. Ответ входа в систему содержит токен, выданный службой токенов безопасности.</param>
+        <param name="federationSerializer">Сериализатор WS-Federation, для использования для десериализации ответного сообщения входа.</param>
+        <summary>Извлекает выданный токен из указанного ответного сообщения входа WS-Federation с использованием указанного сериализатора WS-Federation.</summary>
+        <returns>Строка, содержащая XML, представляющий выданный токен. Это элемент <see langword="&lt;wst:RequestSecurityTokenResponse&gt;" />.</returns>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="message" /> — <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="HomeRealm">
+      <MemberSignature Language="C#" Value="public string HomeRealm { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string HomeRealm" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Services.WSFederationAuthenticationModule.HomeRealm" />
+      <MemberSignature Language="VB.NET" Value="Public Property HomeRealm As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ HomeRealm { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.HomeRealm : string with get, set" Usage="System.IdentityModel.Services.WSFederationAuthenticationModule.HomeRealm" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает значение параметра whr, используемого в запросах входа WS-Federation ("wsignin1.0").</summary>
+        <value>Адрес поставщика удостоверений.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Параметр Втч является необязательным. Если свойство имеет `null` значение или пустую строку, параметр Втч не включается в запрос на вход. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.HomeRealm%2A>  
+  
+ Этот параметр можно переопределить для каждого HTTP-запроса, добавив обработчик для <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectingToIdentityProvider> события. Это событие возникает непосредственно перед тем, как модуль перенаправляется в службу маркеров безопасности (STS) с сообщением запроса на вход WS-Federation. STS задается <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer%2A> свойством.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="InitializeModule">
+      <MemberSignature Language="C#" Value="protected override void InitializeModule (System.Web.HttpApplication context);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void InitializeModule(class System.Web.HttpApplication context) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.InitializeModule(System.Web.HttpApplication)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Sub InitializeModule (context As HttpApplication)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override void InitializeModule(System::Web::HttpApplication ^ context);" />
+      <MemberSignature Language="F#" Value="override this.InitializeModule : System.Web.HttpApplication -&gt; unit" Usage="wSFederationAuthenticationModule.InitializeModule context" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="context" Type="System.Web.HttpApplication" />
+      </Parameters>
+      <Docs>
+        <param name="context">Объект приложения HTTP, содержащий данный модуль.</param>
+        <summary>Инициализирует модуль и подготавливает его для обработки событий из объекта приложения [!INCLUDE[vstecasp](~/includes/vstecasp-md.md)] модуля.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Добавляет обработчики для событий конвейера ASP.NET в соответствии со следующей таблицей.  
+  
+|событие|Обработке|  
+|-----------|-------------|  
+|<xref:System.Web.HttpApplication.AuthenticateRequest?displayProperty=nameWithType>|<xref:System.IdentityModel.Services.WSFederationAuthenticationModule.OnAuthenticateRequest%2A>|  
+|<xref:System.Web.HttpApplication.EndRequest?displayProperty=nameWithType>|<xref:System.IdentityModel.Services.WSFederationAuthenticationModule.OnEndRequest%2A>|  
+|<xref:System.Web.HttpApplication.PostAuthenticateRequest?displayProperty=nameWithType>|<xref:System.IdentityModel.Services.WSFederationAuthenticationModule.OnPostAuthenticateRequest%2A>|  
+  
+> [!NOTE]
+>  Свойства модуля, такие как <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer%2A> , инициализируются <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.InitializePropertiesFromConfiguration%2A> из метода.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="context" /> имеет значение <see langword="null" />.</exception>
+        <altmember cref="M:System.IdentityModel.Services.WSFederationAuthenticationModule.InitializePropertiesFromConfiguration" />
+      </Docs>
+    </Member>
+    <Member MemberName="InitializePropertiesFromConfiguration">
+      <MemberSignature Language="C#" Value="protected override void InitializePropertiesFromConfiguration ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void InitializePropertiesFromConfiguration() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.InitializePropertiesFromConfiguration" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Sub InitializePropertiesFromConfiguration ()" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override void InitializePropertiesFromConfiguration();" />
+      <MemberSignature Language="F#" Value="override this.InitializePropertiesFromConfiguration : unit -&gt; unit" Usage="wSFederationAuthenticationModule.InitializePropertiesFromConfiguration " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует свойства модуля на основе конфигурации, заданной свойством <see cref="P:System.IdentityModel.Services.HttpModuleBase.FederationConfiguration" /> модуля.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойства модуля инициализируются с помощью эквивалентных свойств <xref:System.IdentityModel.Services.Configuration.WsFederationConfiguration> объекта, заданного <xref:System.IdentityModel.Services.Configuration.FederationConfiguration.WsFederationConfiguration%2A?displayProperty=nameWithType> свойством.  
+  
+ Параметры в файле конфигурации можно указать с помощью [ &lt;элемента wsfederation&gt; ](~/docs/framework/configure-apps/file-schema/windows-identity-foundation/wsfederation.md) .  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="IsSignInResponse">
+      <MemberSignature Language="C#" Value="public virtual bool IsSignInResponse (System.Web.HttpRequestBase request);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance bool IsSignInResponse(class System.Web.HttpRequestBase request) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.IsSignInResponse(System.Web.HttpRequestBase)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function IsSignInResponse (request As HttpRequestBase) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual bool IsSignInResponse(System::Web::HttpRequestBase ^ request);" />
+      <MemberSignature Language="F#" Value="abstract member IsSignInResponse : System.Web.HttpRequestBase -&gt; bool&#xA;override this.IsSignInResponse : System.Web.HttpRequestBase -&gt; bool" Usage="wSFederationAuthenticationModule.IsSignInResponse request" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="request" Type="System.Web.HttpRequestBase" />
+      </Parameters>
+      <Docs>
+        <param name="request">Входящий HTTP-запрос.</param>
+        <summary>Получает значение, указывающее, является ли заданный запрос ответным сообщением входа WS-Federation.</summary>
+        <returns>Значение <see langword="true" />, если запрос является ответным сообщением входа WS-Federation; в противном случае — значение <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод вызывается из <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.CanReadSignInResponse%2A> метода в конвейере обработки запроса, чтобы определить, является ли входящий HTTP-ответ сообщением входа WS-Federation.  
+  
+ Реализация по умолчанию `true` возвращает значение, если параметр wa имеет значение "wsignin 1.0", а параметры wreq и wreqptr не заданы одновременно.  
+  
+ Этот метод можно переопределить в производных классах для выполнения дополнительной проверки.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="request" /> — <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="Issuer">
+      <MemberSignature Language="C#" Value="public string Issuer { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string Issuer" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer" />
+      <MemberSignature Language="VB.NET" Value="Public Property Issuer As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ Issuer { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.Issuer : string with get, set" Usage="System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает универсальный код ресурса (URI), который указывает предполагаемого издателя токена безопасности.</summary>
+        <value>Универсальный код ресурса (URI), определяющий службу токенов безопасности (STS).</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Это обязательное свойство. Его необходимо задать, если включены пассивные перенаправления. Он указывает URL-адрес службы маркеров безопасности (STS), которой должны выдаваться запросы WS-Federation.  
+  
+ Этот параметр можно переопределить для каждого HTTP-запроса, добавив обработчик для <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectingToIdentityProvider> события. Это событие возникает непосредственно перед тем, как модуль перенаправляется в службу маркеров безопасности (STS) с сообщением запроса на вход WS-Federation. STS задается <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer%2A> свойством.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Предпринята попытка присвоить свойству значение <see langword="null" /> или пустую строку.  
+  
+- или - 
+Предпринята попытка присвоить свойству значение, которое не является допустимым абсолютным универсальным кодом ресурса (URI).</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="OnAuthenticateRequest">
+      <MemberSignature Language="C#" Value="protected virtual void OnAuthenticateRequest (object sender, EventArgs args);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void OnAuthenticateRequest(object sender, class System.EventArgs args) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.OnAuthenticateRequest(System.Object,System.EventArgs)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub OnAuthenticateRequest (sender As Object, args As EventArgs)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void OnAuthenticateRequest(System::Object ^ sender, EventArgs ^ args);" />
+      <MemberSignature Language="F#" Value="abstract member OnAuthenticateRequest : obj * EventArgs -&gt; unit&#xA;override this.OnAuthenticateRequest : obj * EventArgs -&gt; unit" Usage="wSFederationAuthenticationModule.OnAuthenticateRequest (sender, args)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="sender" Type="System.Object" />
+        <Parameter Name="args" Type="System.EventArgs" />
+      </Parameters>
+      <Docs>
+        <param name="sender">Источник события. Это будет объект <see cref="T:System.Web.HttpApplication" />.</param>
+        <param name="args">Данные для события.</param>
+        <summary>Обрабатывает событие <see cref="E:System.Web.HttpApplication.AuthenticateRequest" /> из конвейера [!INCLUDE[vstecasp](~/includes/vstecasp-md.md)].</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.OnAuthenticateRequest%2A> Метод реализует конвейер обработки запросов WS-Federation. Он добавляется <xref:System.Web.HttpApplication.AuthenticateRequest?displayProperty=nameWithType> в событие [!INCLUDE[vstecasp](~/includes/vstecasp-md.md)] в конвейере <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.InitializeModule%2A> методом.  
+  
+ Метод выполняет следующие действия:  
+  
+1.  <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.CanReadSignInResponse%28System.Web.HttpRequestBase%29> Вызывает метод, чтобы определить, получено ли сообщение об ответе на вход WS-Federation ("wsignin 1.0"). Если ответ является запросом на очистку выхода WS-Federation ("wsignoutcleanup 1.0"), <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.CanReadSignInResponse%28System.Web.HttpRequestBase%29> обрабатывает сообщение, завершает запрос и перенаправляет клиент в соответствии с параметрами WS-Federation в запросе. Если сообщение не является ответом входа или запросом на очистку выхода, модуль просто возвращает значение. в противном случае он выполняет следующие действия для обработки ответа на вход.  
+  
+2.  Вызывает метод для десериализации <xref:System.IdentityModel.Tokens.SecurityToken> объекта из запроса. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.GetSecurityToken%28System.Web.HttpRequestBase%29>  
+  
+3.  Создает событие <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SecurityTokenReceived>. Вы можете отменить дальнейшую обработку или изменить полученный маркер безопасности в обработчике для этого события. Обработчик обычно используется для изменения <xref:System.IdentityModel.Tokens.SecurityToken.ValidFrom%2A?displayProperty=nameWithType> свойств или. <xref:System.IdentityModel.Tokens.SecurityToken.ValidTo%2A?displayProperty=nameWithType>  
+  
+4.  Проверяет маркер безопасности и создает <xref:System.Security.Claims.ClaimsPrincipal> объект на основе утверждений в токене безопасности.  
+  
+5.  Вызывает событие <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SecurityTokenValidated>. Вы можете отменить дальнейшую обработку или изменить субъект утверждений в обработчике для этого события.  
+  
+6.  Использует настроенный модуль проверки подлинности сеансов (SAM) <xref:System.IdentityModel.Tokens.SessionSecurityToken> для создания объекта. (Настроенный SAM является <xref:System.IdentityModel.Services.SessionAuthenticationModule> объектом, возвращаемым <xref:System.IdentityModel.Services.FederatedAuthentication.SessionAuthenticationModule%2A?displayProperty=nameWithType> свойством.) Токен сеанса создается с помощью субъекта утверждений, возвращенного на шаге 5. <xref:System.IdentityModel.Tokens.SecurityToken> <xref:System.IdentityModel.Tokens.SecurityToken.ValidTo%2A> <xref:System.IdentityModel.Tokens.SecurityToken.ValidFrom%2A> Свойства и задаются с помощью свойств и, возвращаемых на шаге 3, и проверяются на соответствие текущему времени и времени существования токена, заданного либо параметром <xref:System.IdentityModel.Tokens.SessionSecurityToken.ValidTo%2A?displayProperty=nameWithType>  <xref:System.IdentityModel.Tokens.SessionSecurityToken.ValidFrom%2A?displayProperty=nameWithType> <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.DefaultTokenLifetime%2A> или <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler>  свойство объекта в коллекции обработчиков маркеров, <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler.TokenLifetime%2A>  используемой всфам. Время существования маркера в обработчике токенов сеанса можно указать в конфигурации [ &lt;с&gt; ](~/docs/framework/configure-apps/file-schema/windows-identity-foundation/sessiontokenrequirement.md) помощью элемента сессионтокенрекуиремент. Примечание. <xref:System.IdentityModel.Services.CookieHandler.PersistentSessionLifetime%2A> свойство обработчика файлов cookie, настроенного для SAM, не используется.  
+  
+7.  <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SetPrincipalAndWriteSessionToken%2A> Вызывает метод с токеном сеанса для записи файла cookie сеанса. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SetPrincipalAndWriteSessionToken%2A> Метод сначала <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SessionSecurityTokenCreated>  вызывает событие. Вы можете изменить свойства маркера сеанса или указать, следует ли сохранять файл cookie в обработчике для этого события. После возникновения события метод записывает файл cookie с помощью SAM.  
+  
+    > [!NOTE]
+    >  <xref:System.IdentityModel.Tokens.SessionSecurityTokenHandler> Набор в конфигурации не используется для записи файла cookie.  
+  
+8.  Вызывает метод для вызова  <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignedIn> события. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.OnSignedIn%2A>  
+  
+9. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.GetReturnUrlFromResponse%2A> Вызывает метод для получения страницы RP, на которую перенаправляется клиент. По умолчанию этот метод считывает URL-адрес возврата из параметра вкткс в ответе на вход. Дополнительные сведения о том, как всфам сохраняет URL-адрес возврата, <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.CreateSignInRequest%2A> см. в описании метода.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnAuthorizationFailed">
+      <MemberSignature Language="C#" Value="protected virtual void OnAuthorizationFailed (System.IdentityModel.Services.AuthorizationFailedEventArgs e);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void OnAuthorizationFailed(class System.IdentityModel.Services.AuthorizationFailedEventArgs e) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.OnAuthorizationFailed(System.IdentityModel.Services.AuthorizationFailedEventArgs)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub OnAuthorizationFailed (e As AuthorizationFailedEventArgs)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void OnAuthorizationFailed(System::IdentityModel::Services::AuthorizationFailedEventArgs ^ e);" />
+      <MemberSignature Language="F#" Value="abstract member OnAuthorizationFailed : System.IdentityModel.Services.AuthorizationFailedEventArgs -&gt; unit&#xA;override this.OnAuthorizationFailed : System.IdentityModel.Services.AuthorizationFailedEventArgs -&gt; unit" Usage="wSFederationAuthenticationModule.OnAuthorizationFailed e" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="e" Type="System.IdentityModel.Services.AuthorizationFailedEventArgs" />
+      </Parameters>
+      <Docs>
+        <param name="e">Данные для события.</param>
+        <summary>Создает событие <see cref="E:System.IdentityModel.Services.WSFederationAuthenticationModule.AuthorizationFailed" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вызывается из <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.OnEndRequest%2A> делегата обработчика событий при сбое авторизации.  
+  
+ Инициализирует <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.AuthorizationFailed> свойство перед вызовом события для предотвращения циклических перенаправлений, если пользователь уже прошел проверку подлинности. <xref:System.IdentityModel.Services.AuthorizationFailedEventArgs.RedirectToIdentityProvider%2A?displayProperty=nameWithType> Если пользователь уже прошел проверку подлинности, свойство инициализируется с `false` целью предотвращения перенаправления; в противном случае инициализируется значением. `true`  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnEndRequest">
+      <MemberSignature Language="C#" Value="protected virtual void OnEndRequest (object sender, EventArgs args);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void OnEndRequest(object sender, class System.EventArgs args) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.OnEndRequest(System.Object,System.EventArgs)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub OnEndRequest (sender As Object, args As EventArgs)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void OnEndRequest(System::Object ^ sender, EventArgs ^ args);" />
+      <MemberSignature Language="F#" Value="abstract member OnEndRequest : obj * EventArgs -&gt; unit&#xA;override this.OnEndRequest : obj * EventArgs -&gt; unit" Usage="wSFederationAuthenticationModule.OnEndRequest (sender, args)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="sender" Type="System.Object" />
+        <Parameter Name="args" Type="System.EventArgs" />
+      </Parameters>
+      <Docs>
+        <param name="sender">Источник события. Это будет объект <see cref="T:System.Web.HttpApplication" />.</param>
+        <param name="args">Данные для события.</param>
+        <summary>Обрабатывает событие <see cref="E:System.Web.HttpApplication.EndRequest" /> из конвейера [!INCLUDE[vstecasp](~/includes/vstecasp-md.md)].</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Событие игнорируется, если <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.PassiveRedirectEnabled%2A> свойство не имеет `true`значение.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnPostAuthenticateRequest">
+      <MemberSignature Language="C#" Value="protected virtual void OnPostAuthenticateRequest (object sender, EventArgs e);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void OnPostAuthenticateRequest(object sender, class System.EventArgs e) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.OnPostAuthenticateRequest(System.Object,System.EventArgs)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub OnPostAuthenticateRequest (sender As Object, e As EventArgs)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void OnPostAuthenticateRequest(System::Object ^ sender, EventArgs ^ e);" />
+      <MemberSignature Language="F#" Value="abstract member OnPostAuthenticateRequest : obj * EventArgs -&gt; unit&#xA;override this.OnPostAuthenticateRequest : obj * EventArgs -&gt; unit" Usage="wSFederationAuthenticationModule.OnPostAuthenticateRequest (sender, e)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="sender" Type="System.Object" />
+        <Parameter Name="e" Type="System.EventArgs" />
+      </Parameters>
+      <Docs>
+        <param name="sender">Источник события. Это будет объект <see cref="T:System.Web.HttpApplication" />.</param>
+        <param name="e">Данные для события.</param>
+        <summary>Обрабатывает событие <see cref="E:System.Web.HttpApplication.PostAuthenticateRequest" /> из конвейера [!INCLUDE[vstecasp](~/includes/vstecasp-md.md)].</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ По умолчанию это пустой обработчик.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnRedirectingToIdentityProvider">
+      <MemberSignature Language="C#" Value="protected virtual void OnRedirectingToIdentityProvider (System.IdentityModel.Services.RedirectingToIdentityProviderEventArgs e);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void OnRedirectingToIdentityProvider(class System.IdentityModel.Services.RedirectingToIdentityProviderEventArgs e) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.OnRedirectingToIdentityProvider(System.IdentityModel.Services.RedirectingToIdentityProviderEventArgs)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub OnRedirectingToIdentityProvider (e As RedirectingToIdentityProviderEventArgs)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void OnRedirectingToIdentityProvider(System::IdentityModel::Services::RedirectingToIdentityProviderEventArgs ^ e);" />
+      <MemberSignature Language="F#" Value="abstract member OnRedirectingToIdentityProvider : System.IdentityModel.Services.RedirectingToIdentityProviderEventArgs -&gt; unit&#xA;override this.OnRedirectingToIdentityProvider : System.IdentityModel.Services.RedirectingToIdentityProviderEventArgs -&gt; unit" Usage="wSFederationAuthenticationModule.OnRedirectingToIdentityProvider e" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="e" Type="System.IdentityModel.Services.RedirectingToIdentityProviderEventArgs" />
+      </Parameters>
+      <Docs>
+        <param name="e">Данные для события.</param>
+        <summary>Вызывает событие <see cref="E:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectingToIdentityProvider" />.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnSessionSecurityTokenCreated">
+      <MemberSignature Language="C#" Value="protected virtual void OnSessionSecurityTokenCreated (System.IdentityModel.Services.SessionSecurityTokenCreatedEventArgs args);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void OnSessionSecurityTokenCreated(class System.IdentityModel.Services.SessionSecurityTokenCreatedEventArgs args) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.OnSessionSecurityTokenCreated(System.IdentityModel.Services.SessionSecurityTokenCreatedEventArgs)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub OnSessionSecurityTokenCreated (args As SessionSecurityTokenCreatedEventArgs)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void OnSessionSecurityTokenCreated(System::IdentityModel::Services::SessionSecurityTokenCreatedEventArgs ^ args);" />
+      <MemberSignature Language="F#" Value="abstract member OnSessionSecurityTokenCreated : System.IdentityModel.Services.SessionSecurityTokenCreatedEventArgs -&gt; unit&#xA;override this.OnSessionSecurityTokenCreated : System.IdentityModel.Services.SessionSecurityTokenCreatedEventArgs -&gt; unit" Usage="wSFederationAuthenticationModule.OnSessionSecurityTokenCreated args" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="args" Type="System.IdentityModel.Services.SessionSecurityTokenCreatedEventArgs" />
+      </Parameters>
+      <Docs>
+        <param name="args">Данные для события.</param>
+        <summary>Вызывает событие <see cref="E:System.IdentityModel.Services.WSFederationAuthenticationModule.SessionSecurityTokenCreated" />.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnSignedIn">
+      <MemberSignature Language="C#" Value="protected virtual void OnSignedIn (EventArgs args);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void OnSignedIn(class System.EventArgs args) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.OnSignedIn(System.EventArgs)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub OnSignedIn (args As EventArgs)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void OnSignedIn(EventArgs ^ args);" />
+      <MemberSignature Language="F#" Value="abstract member OnSignedIn : EventArgs -&gt; unit&#xA;override this.OnSignedIn : EventArgs -&gt; unit" Usage="wSFederationAuthenticationModule.OnSignedIn args" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="args" Type="System.EventArgs" />
+      </Parameters>
+      <Docs>
+        <param name="args">Данные для события.</param>
+        <summary>Создает событие <see cref="E:System.IdentityModel.Services.WSFederationAuthenticationModule.SignedIn" />.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnSignedOut">
+      <MemberSignature Language="C#" Value="protected virtual void OnSignedOut (EventArgs args);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void OnSignedOut(class System.EventArgs args) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.OnSignedOut(System.EventArgs)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub OnSignedOut (args As EventArgs)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void OnSignedOut(EventArgs ^ args);" />
+      <MemberSignature Language="F#" Value="abstract member OnSignedOut : EventArgs -&gt; unit&#xA;override this.OnSignedOut : EventArgs -&gt; unit" Usage="wSFederationAuthenticationModule.OnSignedOut args" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="args" Type="System.EventArgs" />
+      </Parameters>
+      <Docs>
+        <param name="args">Данные для события.</param>
+        <summary>Вызывает событие <see cref="E:System.IdentityModel.Services.WSFederationAuthenticationModule.SignedOut" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вызывается из <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOut%28System.Boolean%29?displayProperty=nameWithType> метода сразу после удаления сеанса.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOut(System.Boolean)" />
+      </Docs>
+    </Member>
+    <Member MemberName="OnSignInError">
+      <MemberSignature Language="C#" Value="protected virtual void OnSignInError (System.IdentityModel.Services.ErrorEventArgs args);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void OnSignInError(class System.IdentityModel.Services.ErrorEventArgs args) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.OnSignInError(System.IdentityModel.Services.ErrorEventArgs)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub OnSignInError (args As ErrorEventArgs)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void OnSignInError(System::IdentityModel::Services::ErrorEventArgs ^ args);" />
+      <MemberSignature Language="F#" Value="abstract member OnSignInError : System.IdentityModel.Services.ErrorEventArgs -&gt; unit&#xA;override this.OnSignInError : System.IdentityModel.Services.ErrorEventArgs -&gt; unit" Usage="wSFederationAuthenticationModule.OnSignInError args" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="args" Type="System.IdentityModel.Services.ErrorEventArgs" />
+      </Parameters>
+      <Docs>
+        <param name="args">Данные для события.</param>
+        <summary>Вызывает событие <see cref="E:System.IdentityModel.Services.WSFederationAuthenticationModule.SignInError" />.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnSigningOut">
+      <MemberSignature Language="C#" Value="protected virtual void OnSigningOut (System.IdentityModel.Services.SigningOutEventArgs args);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void OnSigningOut(class System.IdentityModel.Services.SigningOutEventArgs args) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.OnSigningOut(System.IdentityModel.Services.SigningOutEventArgs)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub OnSigningOut (args As SigningOutEventArgs)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void OnSigningOut(System::IdentityModel::Services::SigningOutEventArgs ^ args);" />
+      <MemberSignature Language="F#" Value="abstract member OnSigningOut : System.IdentityModel.Services.SigningOutEventArgs -&gt; unit&#xA;override this.OnSigningOut : System.IdentityModel.Services.SigningOutEventArgs -&gt; unit" Usage="wSFederationAuthenticationModule.OnSigningOut args" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="args" Type="System.IdentityModel.Services.SigningOutEventArgs" />
+      </Parameters>
+      <Docs>
+        <param name="args">Данные для события.</param>
+        <summary>Вызывает событие <see cref="E:System.IdentityModel.Services.WSFederationAuthenticationModule.SigningOut" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вызывается из <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOut%28System.Boolean%29?displayProperty=nameWithType> метода непосредственно перед удалением сеанса.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOut(System.Boolean)" />
+      </Docs>
+    </Member>
+    <Member MemberName="OnSignOutError">
+      <MemberSignature Language="C#" Value="protected virtual void OnSignOutError (System.IdentityModel.Services.ErrorEventArgs args);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void OnSignOutError(class System.IdentityModel.Services.ErrorEventArgs args) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.OnSignOutError(System.IdentityModel.Services.ErrorEventArgs)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub OnSignOutError (args As ErrorEventArgs)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void OnSignOutError(System::IdentityModel::Services::ErrorEventArgs ^ args);" />
+      <MemberSignature Language="F#" Value="abstract member OnSignOutError : System.IdentityModel.Services.ErrorEventArgs -&gt; unit&#xA;override this.OnSignOutError : System.IdentityModel.Services.ErrorEventArgs -&gt; unit" Usage="wSFederationAuthenticationModule.OnSignOutError args" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="args" Type="System.IdentityModel.Services.ErrorEventArgs" />
+      </Parameters>
+      <Docs>
+        <param name="args">Данные для события.</param>
+        <summary>Вызывает событие <see cref="E:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOutError" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вызывается из <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOut%28System.Boolean%29?displayProperty=nameWithType> метода, если во время обработки возникает исключение.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOut(System.Boolean)" />
+      </Docs>
+    </Member>
+    <Member MemberName="PassiveRedirectEnabled">
+      <MemberSignature Language="C#" Value="public bool PassiveRedirectEnabled { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool PassiveRedirectEnabled" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Services.WSFederationAuthenticationModule.PassiveRedirectEnabled" />
+      <MemberSignature Language="VB.NET" Value="Public Property PassiveRedirectEnabled As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool PassiveRedirectEnabled { bool get(); void set(bool value); };" />
+      <MemberSignature Language="F#" Value="member this.PassiveRedirectEnabled : bool with get, set" Usage="System.IdentityModel.Services.WSFederationAuthenticationModule.PassiveRedirectEnabled" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает значение, указывающее, разрешено ли модулю инициировать перенаправления протокола WS-Federation.</summary>
+        <value>Значение <see langword="true" /> для включения перенаправлений; в противном случае — значение <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Модуль не будет инициировать перенаправления протокола WS-Federation, если этот режим не включен. Если это свойство имеет `true`значение <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer%2A> , свойство должно иметь значение URL-адреса службы маркеров безопасности (STS), на которую перенаправляется вызывающий объект.  
+  
+> [!WARNING]
+>  Код приложения может выдавать запросы на вход WS-Federation явным образом с помощью <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignIn%2A> метода независимо от значения <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.PassiveRedirectEnabled%2A> свойства.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.IdentityModel.Services.WSFederationAuthenticationModule.PersistentCookiesOnPassiveRedirects" />
+      </Docs>
+    </Member>
+    <Member MemberName="PersistentCookiesOnPassiveRedirects">
+      <MemberSignature Language="C#" Value="public bool PersistentCookiesOnPassiveRedirects { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool PersistentCookiesOnPassiveRedirects" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Services.WSFederationAuthenticationModule.PersistentCookiesOnPassiveRedirects" />
+      <MemberSignature Language="VB.NET" Value="Public Property PersistentCookiesOnPassiveRedirects As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool PersistentCookiesOnPassiveRedirects { bool get(); void set(bool value); };" />
+      <MemberSignature Language="F#" Value="member this.PersistentCookiesOnPassiveRedirects : bool with get, set" Usage="System.IdentityModel.Services.WSFederationAuthenticationModule.PersistentCookiesOnPassiveRedirects" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает значение, указывающее, выдается ли после успешной аутентификации постоянный файл cookie сеанса.</summary>
+        <value>Значение <see langword="true" /> для создания постоянного сеансового файла cookie; в противном случае — значение <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот параметр можно переопределить для каждого HTTP-запроса, добавив обработчик для <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SessionSecurityTokenCreated> события. Это событие возникает из конвейера обработки запросов при обработке сообщения ответа WS-Federation для входа из службы маркеров безопасности (STS).  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.IdentityModel.Services.WSFederationAuthenticationModule.PassiveRedirectEnabled" />
+      </Docs>
+    </Member>
+    <Member MemberName="Policy">
+      <MemberSignature Language="C#" Value="public string Policy { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string Policy" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Services.WSFederationAuthenticationModule.Policy" />
+      <MemberSignature Language="VB.NET" Value="Public Property Policy As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ Policy { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.Policy : string with get, set" Usage="System.IdentityModel.Services.WSFederationAuthenticationModule.Policy" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает значение параметра wp, используемого в запросах входа WS-Federation ("wsignin1.0").</summary>
+        <value>URL, определяющий используемую политику.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Параметр WP является необязательным. Если свойство имеет `null` значение или является пустой строкой, параметр WP не включается в запрос на вход. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Policy%2A>  
+  
+ Этот параметр можно переопределить для каждого HTTP-запроса, добавив обработчик для <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectingToIdentityProvider> события. Это событие возникает непосредственно перед тем, как модуль перенаправляется в службу маркеров безопасности (STS) с сообщением запроса на вход WS-Federation. STS задается <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer%2A> свойством.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Realm">
+      <MemberSignature Language="C#" Value="public string Realm { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string Realm" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Services.WSFederationAuthenticationModule.Realm" />
+      <MemberSignature Language="VB.NET" Value="Public Property Realm As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ Realm { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.Realm : string with get, set" Usage="System.IdentityModel.Services.WSFederationAuthenticationModule.Realm" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает значение параметра wtrealm, используемого для запросов входа WS-Federation ("wsignin1.0").</summary>
+        <value>Универсальный код ресурса (URI), идентифицирующий проверяющую сторону (RP) для службы токенов безопасности (STS).</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Это обязательное свойство для запросов входа WS-Federation. Его необходимо задать, если включены пассивные перенаправления. URI идентифицирует RP для STS. (Для идентификации STS для RP см <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer%2A> . свойство).  
+  
+ Значение этого свойства сериализуется как параметр строки запроса wtrealm в протоколе WS-Federation. Он идентифицирует RP для STS. Она используется службой STS для принятия решения о том, какую политику применить к выдаче маркера и куда перенаправлять пользователя после выдачи маркера. (Сведения об идентификации STS для RP см. в <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer%2A>разделе.)  
+  
+ Этот параметр можно переопределить для каждого HTTP-запроса, добавив обработчик для <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectingToIdentityProvider> события. Это событие возникает непосредственно перед тем, как модуль перенаправляется в службу маркеров безопасности (STS) с сообщением запроса на вход WS-Federation. STS задается <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer%2A> свойством.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Предпринята попытка присвоить свойству значение <see langword="null" /> или пустую строку.  
+  
+- или - 
+Предпринята попытка присвоить свойству значение, которое не является допустимым абсолютным универсальным кодом ресурса (URI).</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="RedirectingToIdentityProvider">
+      <MemberSignature Language="C#" Value="public event EventHandler&lt;System.IdentityModel.Services.RedirectingToIdentityProviderEventArgs&gt; RedirectingToIdentityProvider;" />
+      <MemberSignature Language="ILAsm" Value=".event class System.EventHandler`1&lt;class System.IdentityModel.Services.RedirectingToIdentityProviderEventArgs&gt; RedirectingToIdentityProvider" />
+      <MemberSignature Language="DocId" Value="E:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectingToIdentityProvider" />
+      <MemberSignature Language="VB.NET" Value="Public Event RedirectingToIdentityProvider As EventHandler(Of RedirectingToIdentityProviderEventArgs) " />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; event EventHandler&lt;System::IdentityModel::Services::RedirectingToIdentityProviderEventArgs ^&gt; ^ RedirectingToIdentityProvider;" />
+      <MemberSignature Language="F#" Value="member this.RedirectingToIdentityProvider : EventHandler&lt;System.IdentityModel.Services.RedirectingToIdentityProviderEventArgs&gt; " Usage="member this.RedirectingToIdentityProvider : System.EventHandler&lt;System.IdentityModel.Services.RedirectingToIdentityProviderEventArgs&gt; " />
+      <MemberType>Event</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.EventHandler&lt;System.IdentityModel.Services.RedirectingToIdentityProviderEventArgs&gt;</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возникает, когда модуль собирается перенаправить пользователя на поставщика удостоверений.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вы можете получить доступ к запросу на вход WS-Federation и изменить его с <xref:System.IdentityModel.Services.RedirectingToIdentityProviderEventArgs.SignInRequestMessage%2A?displayProperty=nameWithType> помощью свойства. Например, можно изменить <xref:System.IdentityModel.Services.FederationMessage.BaseUri%2A> свойство в сообщении для входа, чтобы изменить поставщика удостоверений, на который будет перенаправлен запрос. Событие является отменяемым событием, и вы можете <xref:System.ComponentModel.CancelEventArgs.Cancel%2A> задать для `true` свойства значение, чтобы отменить перенаправление. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectingToIdentityProvider>  
+  
+ Событие возникает внутри <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectToIdentityProvider%2A> метода через вызов <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.OnRedirectingToIdentityProvider%2A> метода.  
+  
+ Чтобы обрабатывал это событие в приложении ASP.NET, создайте метод, вызываемый `WSFederationAuthentication_RedirectingToIdentityProvider` в файле Global. asax.  
+  
+   
+  
+## Examples  
+ В следующем коде показано, как добавить обработчик для <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectingToIdentityProvider> события `Application_Init` в событие в файле Global. asax. Код берется из `FederationForWebApps` примера. Дополнительные сведения об этом образце см. в разделе [Индекс образца кода WIF](~/docs/framework/security/wif-code-sample-index.md).  
+  
+  
+  
+ В следующем коде показан обработчик <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectingToIdentityProvider> события в в файле Global. asax RP. Код проверяет, содержит ли входящий HTTP-запрос параметр Втч, и, если он есть, этот параметр задается в запросе на вход WS-Federation, который будет отправлен службе STS. Код берется из `FederationForWebApps` примера. Дополнительные сведения об этом образце см. в разделе [Индекс образца кода WIF](~/docs/framework/security/wif-code-sample-index.md).  
+  
+  
+  
+ В следующем коде показан обработчик <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectingToIdentityProvider> события в в файле Global. asax STS поставщика Федерации. Код проверяет, содержит ли входящий HTTP-запрос параметр емкостью в Втч. Если запрос содержит параметр Втч, клиент перенаправляется на IP-STS для входа в систему. в противном случае клиент направляется на страницу обнаружения домашней области, чтобы выбрать IP-STS для входа. Код берется из `FederationForWebApps` примера. Дополнительные сведения об этом образце см. в разделе [Индекс образца кода WIF](~/docs/framework/security/wif-code-sample-index.md).  
+  
+  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="RedirectToIdentityProvider">
+      <MemberSignature Language="C#" Value="public virtual void RedirectToIdentityProvider (string uniqueId, string returnUrl, bool persist);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void RedirectToIdentityProvider(string uniqueId, string returnUrl, bool persist) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectToIdentityProvider(System.String,System.String,System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Sub RedirectToIdentityProvider (uniqueId As String, returnUrl As String, persist As Boolean)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void RedirectToIdentityProvider(System::String ^ uniqueId, System::String ^ returnUrl, bool persist);" />
+      <MemberSignature Language="F#" Value="abstract member RedirectToIdentityProvider : string * string * bool -&gt; unit&#xA;override this.RedirectToIdentityProvider : string * string * bool -&gt; unit" Usage="wSFederationAuthenticationModule.RedirectToIdentityProvider (uniqueId, returnUrl, persist)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="uniqueId" Type="System.String" />
+        <Parameter Name="returnUrl" Type="System.String" />
+        <Parameter Name="persist" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="uniqueId">WSFAM хранит это значение в параметре wctx запроса входа WS-Federation; однако этот модуль не использует его при обработке запросов входа и ответных сообщений входа. Можно задать любое значение. Не обязательно должен быть уникальным. Дополнительные сведения см. в описании метода <see cref="M:System.IdentityModel.Services.WSFederationAuthenticationModule.CreateSignInRequest(System.String,System.String,System.Boolean)" />.</param>
+        <param name="returnUrl">URL-адрес, на который модуль должен вернуться после аутентификации.</param>
+        <param name="persist">WSFAM хранит это значение в параметре wctx запроса входа WS-Federation; однако этот модуль не использует его при обработке запросов входа и ответных сообщений входа. Можно задать значение <see langword="true" /> или <see langword="false" />.</param>
+        <summary>Перенаправляет пользователя на службу токенов безопасности (STS), указанную свойством <see cref="P:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer" />, чтобы получить токен безопасности с помощью протокола WS-Federation.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод вызывается из метода, <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignIn%2A> когда запрос выдается из веб-страницы, представленной проверяющей стороной ( <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.OnEndRequest%2A> RP) или делегата обработчика событий, для выполнения пассивного перенаправления к поставщику удостоверений на <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectToIdentityProvider%2A> Ошибка авторизации.  
+  
+ Параметры, передаваемые в метод, используются для создания параметра сообщения вкткс. Единственным значащим параметром является `returnUrl` параметр. Указывает URL-адрес, который RP должен направить браузеру на следующую успешную проверку подлинности. Его не следует путать с параметром сообщения wreply, который указывается <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Reply%2A> свойством и предоставляет адрес в RP, к которому служба маркеров безопасности должна направить свой ответ.  
+  
+ Метод выполняет следующие действия:  
+  
+1.  <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.VerifyProperties%2A> Вызывает метод, чтобы убедиться, что модуль может выдать допустимый запрос на вход.  
+  
+2.  <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.CreateSignInRequest%2A> Вызывает метод для создания запроса на вход из свойств, настроенных в модуле.  
+  
+3.  Вызывает метод для вызова  <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectingToIdentityProvider> события. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.OnRedirectingToIdentityProvider%2A> Вы можете отменить перенаправление или изменить сообщение запроса на вход в обработчике событий для этого события.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Параметр <see cref="P:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer" /> имеет значение <see langword="null" /> или является пустой строкой.  
+  
+- или - 
+ Параметр <see cref="P:System.IdentityModel.Services.WSFederationAuthenticationModule.Realm" /> имеет значение <see langword="null" /> или является пустой строкой.  
+  
+-или- 
+Свойство <see cref="P:System.Web.HttpContext.Current" /> имеет значение <see langword="null" /> или пусто.  
+  
+-или- 
+Свойство <see cref="P:System.Web.HttpContext.Response" /> контекста, возвращаемого свойством <see cref="P:System.Web.HttpContext.Current" />, имеет значение <see langword="null" /> или пусто.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="Reply">
+      <MemberSignature Language="C#" Value="public string Reply { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string Reply" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Services.WSFederationAuthenticationModule.Reply" />
+      <MemberSignature Language="VB.NET" Value="Public Property Reply As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ Reply { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.Reply : string with get, set" Usage="System.IdentityModel.Services.WSFederationAuthenticationModule.Reply" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает значение параметра wreply, используемого в запросах входа WS-Federation ("wsignin1.0").</summary>
+        <value>URL-адрес, указывающий адрес, по которому приложение проверяющей стороны (RP) хотел бы получить ответы от службы токенов безопасности (STS).</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Параметр wreply является необязательным. Если свойство имеет `null` значение или пустую строку, параметр wreply не включается в запрос на вход. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Reply%2A>  
+  
+ Служба STS использует параметр wreply, чтобы решить, куда перенаправлять пользователя после выдачи маркера. Не рекомендуется, чтобы STS не применяет этот адрес для перенаправления пользователя, так как такое перенаправление имеет уязвимости безопасности. Ответный адрес должен проверяться службой STS (возможно, путем сравнения с набором предварительно настроенных адресов ответа для целей или другого метода), чтобы обеспечить отправку ответа в понятное известное и безопасное расположение.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Предпринята попытка присвоить свойству значение, которое не является допустимым абсолютным универсальным кодом ресурса (URI).</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="Request">
+      <MemberSignature Language="C#" Value="public string Request { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string Request" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Services.WSFederationAuthenticationModule.Request" />
+      <MemberSignature Language="VB.NET" Value="Public Property Request As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ Request { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.Request : string with get, set" Usage="System.IdentityModel.Services.WSFederationAuthenticationModule.Request" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает значение параметра wreq, используемого в запросах входа WS-Federation ("wsignin1.0").</summary>
+        <value>Запрос выдачи токена, выраженный в виде элемента <see langword="&lt;wst:RequestSecurityToken&gt;" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Параметр wreq является необязательным. Если свойство имеет `null` значение или пустую строку, параметр wreq не включается в запрос на вход. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Request%2A>  
+  
+ Этот параметр можно переопределить для каждого HTTP-запроса, добавив обработчик для <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectingToIdentityProvider> события. Это событие возникает непосредственно перед тем, как модуль перенаправляется в службу маркеров безопасности (STS) с сообщением запроса на вход WS-Federation. STS задается <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer%2A> свойством.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="RequestPtr">
+      <MemberSignature Language="C#" Value="public string RequestPtr { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string RequestPtr" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Services.WSFederationAuthenticationModule.RequestPtr" />
+      <MemberSignature Language="VB.NET" Value="Public Property RequestPtr As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ RequestPtr { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.RequestPtr : string with get, set" Usage="System.IdentityModel.Services.WSFederationAuthenticationModule.RequestPtr" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает значение параметра wreqptr, используемого в запросах входа WS-Federation ("wsignin1.0").</summary>
+        <value>URL-адрес, указывающий расположение запроса выдачи токена, выраженного элементом <see langword="&lt;wst:RequestSecurityToken&gt;" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Параметр wreqptr является необязательным. Если свойство имеет `null` значение или пустую строку, параметр wreq не включается в запрос на вход. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RequestPtr%2A>  
+  
+ Этот параметр можно переопределить для каждого HTTP-запроса, добавив обработчик для <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectingToIdentityProvider> события. Это событие возникает непосредственно перед тем, как модуль перенаправляется в службу маркеров безопасности (STS) с сообщением запроса на вход WS-Federation. STS задается <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer%2A> свойством.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Предпринята попытка присвоить свойству значение, которое не является допустимым абсолютным универсальным кодом ресурса (URI).</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="RequireHttps">
+      <MemberSignature Language="C#" Value="public bool RequireHttps { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool RequireHttps" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Services.WSFederationAuthenticationModule.RequireHttps" />
+      <MemberSignature Language="VB.NET" Value="Public Property RequireHttps As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool RequireHttps { bool get(); void set(bool value); };" />
+      <MemberSignature Language="F#" Value="member this.RequireHttps : bool with get, set" Usage="System.IdentityModel.Services.WSFederationAuthenticationModule.RequireHttps" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает значение, которое определяет, должно ли взаимодействие со службой токенов безопасности (STS) осуществляться по протоколу HTTPS.</summary>
+        <value>Значение <see langword="true" />, если связь со службой токенов безопасности должна быть защищена с помощью протокола HTTPS; в противном случае — значение <see langword="false" />.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Resource">
+      <MemberSignature Language="C#" Value="public string Resource { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string Resource" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Services.WSFederationAuthenticationModule.Resource" />
+      <MemberSignature Language="VB.NET" Value="Public Property Resource As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ Resource { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.Resource : string with get, set" Usage="System.IdentityModel.Services.WSFederationAuthenticationModule.Resource" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает значение параметра wres, используемого в запросах входа WS-Federation ("wsignin1.0").</summary>
+        <value>Универсальный код ресурса (URI), определяющий ресурс, доступ к которому осуществлялся, проверяющую сторону (RP), для службы токенов безопасности (STS).</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вместо этого параметра следует использовать параметр wtrealm, <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Realm%2A> заданный свойством.  
+  
+ Параметр врес является необязательным. Если свойство имеет `null` значение или пустую строку, параметр врес не включается в запрос на вход. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Resource%2A>  
+  
+ Этот параметр можно переопределить для каждого HTTP-запроса, добавив обработчик для <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectingToIdentityProvider> события. Это событие возникает непосредственно перед тем, как модуль перенаправляется в службу маркеров безопасности (STS) с сообщением запроса на вход WS-Federation. STS задается <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer%2A> свойством.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SecurityTokenReceived">
+      <MemberSignature Language="C#" Value="public event EventHandler&lt;System.IdentityModel.Services.SecurityTokenReceivedEventArgs&gt; SecurityTokenReceived;" />
+      <MemberSignature Language="ILAsm" Value=".event class System.EventHandler`1&lt;class System.IdentityModel.Services.SecurityTokenReceivedEventArgs&gt; SecurityTokenReceived" />
+      <MemberSignature Language="DocId" Value="E:System.IdentityModel.Services.WSFederationAuthenticationModule.SecurityTokenReceived" />
+      <MemberSignature Language="VB.NET" Value="Public Event SecurityTokenReceived As EventHandler(Of SecurityTokenReceivedEventArgs) " />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; event EventHandler&lt;System::IdentityModel::Services::SecurityTokenReceivedEventArgs ^&gt; ^ SecurityTokenReceived;" />
+      <MemberSignature Language="F#" Value="member this.SecurityTokenReceived : EventHandler&lt;System.IdentityModel.Services.SecurityTokenReceivedEventArgs&gt; " Usage="member this.SecurityTokenReceived : System.EventHandler&lt;System.IdentityModel.Services.SecurityTokenReceivedEventArgs&gt; " />
+      <MemberType>Event</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.EventHandler&lt;System.IdentityModel.Services.SecurityTokenReceivedEventArgs&gt;</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возникает при получении токена безопасности от службы токенов безопасности (STS).</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Обработчик событий можно добавить для изменения маркера перед его проверкой. В обработчике событий можно получить доступ к маркеру безопасности с <xref:System.IdentityModel.Services.SecurityTokenReceivedEventArgs.SecurityToken%2A?displayProperty=nameWithType> помощью свойства. Событие — это событие, которое можно отменять, чтобы <xref:System.ComponentModel.CancelEventArgs.Cancel%2A> задать для `true` свойства значение в обработчике событий, чтобы завершить обработку сообщения ответа WS-Federation Sign-On. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SecurityTokenReceived>  
+  
+ Это событие возникает <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.OnAuthenticateRequest%2A> в делегате обработчика событий при обработке сообщения ответа WS-Federation Sign-On ("wsignin 1.0"), полученного от службы маркеров безопасности (STS). Он вызывается сразу после десериализации маркера безопасности из wresult или параметра wresultptr в сообщении ответа входа, но до проверки маркера безопасности.  
+  
+   
+  
+## Examples  
+ [!code-csharp[WifWSFAM#6](~/samples/snippets/csharp/VS_Snippets_Misc/wifwsfam/cs/webapplication1/global.asax.cs#6)]  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.IdentityModel.Services.SecurityTokenReceivedEventArgs" />
+      </Docs>
+    </Member>
+    <Member MemberName="SecurityTokenValidated">
+      <MemberSignature Language="C#" Value="public event EventHandler&lt;System.IdentityModel.Services.SecurityTokenValidatedEventArgs&gt; SecurityTokenValidated;" />
+      <MemberSignature Language="ILAsm" Value=".event class System.EventHandler`1&lt;class System.IdentityModel.Services.SecurityTokenValidatedEventArgs&gt; SecurityTokenValidated" />
+      <MemberSignature Language="DocId" Value="E:System.IdentityModel.Services.WSFederationAuthenticationModule.SecurityTokenValidated" />
+      <MemberSignature Language="VB.NET" Value="Public Event SecurityTokenValidated As EventHandler(Of SecurityTokenValidatedEventArgs) " />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; event EventHandler&lt;System::IdentityModel::Services::SecurityTokenValidatedEventArgs ^&gt; ^ SecurityTokenValidated;" />
+      <MemberSignature Language="F#" Value="member this.SecurityTokenValidated : EventHandler&lt;System.IdentityModel.Services.SecurityTokenValidatedEventArgs&gt; " Usage="member this.SecurityTokenValidated : System.EventHandler&lt;System.IdentityModel.Services.SecurityTokenValidatedEventArgs&gt; " />
+      <MemberType>Event</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.EventHandler&lt;System.IdentityModel.Services.SecurityTokenValidatedEventArgs&gt;</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возникает после того, как полученный от службы токенов безопасности (STS) токен безопасности был проверен, однако до того, как будет создан токен безопасности сеанса.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вы можете добавить обработчик событий, чтобы изменить участника, созданного при обработке сообщения ответа WS-Federation для входа из службы маркеров безопасности (STS), прежде чем использовать его для создания токена сеанса. В обработчике событий можно получить доступ к участнику через <xref:System.IdentityModel.Services.SecurityTokenValidatedEventArgs.ClaimsPrincipal%2A> свойство. Событие — это событие, которое можно отменять, чтобы <xref:System.ComponentModel.CancelEventArgs.Cancel%2A> задать для `true` свойства значение в обработчике событий, чтобы завершить обработку сообщения ответа WS-Federation Sign-On. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SecurityTokenValidated>  
+  
+ Это событие возникает <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.OnAuthenticateRequest%2A> в делегате обработчика событий при обработке сообщения ответа WS-Federation Sign-On ("wsignin 1.0"), полученного от службы маркеров безопасности (STS). Оно возникает сразу после того, как маркер безопасности, десериализованный из wresult, или параметр wresultptr в ответном сообщении на вход, был проверен и до создания маркера безопасности сеанса.  
+  
+   
+  
+## Examples  
+ [!code-csharp[WifWSFAM#5](~/samples/snippets/csharp/VS_Snippets_Misc/wifwsfam/cs/webapplication1/global.asax.cs#5)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SessionSecurityTokenCreated">
+      <MemberSignature Language="C#" Value="public event EventHandler&lt;System.IdentityModel.Services.SessionSecurityTokenCreatedEventArgs&gt; SessionSecurityTokenCreated;" />
+      <MemberSignature Language="ILAsm" Value=".event class System.EventHandler`1&lt;class System.IdentityModel.Services.SessionSecurityTokenCreatedEventArgs&gt; SessionSecurityTokenCreated" />
+      <MemberSignature Language="DocId" Value="E:System.IdentityModel.Services.WSFederationAuthenticationModule.SessionSecurityTokenCreated" />
+      <MemberSignature Language="VB.NET" Value="Public Event SessionSecurityTokenCreated As EventHandler(Of SessionSecurityTokenCreatedEventArgs) " />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; event EventHandler&lt;System::IdentityModel::Services::SessionSecurityTokenCreatedEventArgs ^&gt; ^ SessionSecurityTokenCreated;" />
+      <MemberSignature Language="F#" Value="member this.SessionSecurityTokenCreated : EventHandler&lt;System.IdentityModel.Services.SessionSecurityTokenCreatedEventArgs&gt; " Usage="member this.SessionSecurityTokenCreated : System.EventHandler&lt;System.IdentityModel.Services.SessionSecurityTokenCreatedEventArgs&gt; " />
+      <MemberType>Event</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.EventHandler&lt;System.IdentityModel.Services.SessionSecurityTokenCreatedEventArgs&gt;</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возникает при создании токена безопасности сеанса из токена безопасности, полученного от службы токенов безопасности (STS).</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вы можете добавить обработчик событий, чтобы изменить маркер сеанса до того, как он будет использоваться для установки субъекта-потока и будет записан в файл cookie сеанса. В обработчике событий можно получить доступ к маркеру сеанса через <xref:System.IdentityModel.Services.SessionSecurityTokenCreatedEventArgs.SessionToken%2A?displayProperty=nameWithType> свойство. Можно указать, следует ли записывать файл cookie сеанса, задав <xref:System.IdentityModel.Services.SessionSecurityTokenCreatedEventArgs.WriteSessionCookie%2A?displayProperty=nameWithType> свойство.  
+  
+ Это событие возникает <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.OnAuthenticateRequest%2A> в делегате обработчика событий при обработке сообщения ответа WS-Federation Sign-On ("wsignin 1.0"), полученного от службы маркеров безопасности (STS). Он вызывается сразу после проверки маркера безопасности, десериализованного из wresult или параметра wresultptr в ответном сообщении для входа, а также до того, как участник утверждений установлен <xref:System.Threading.Thread.CurrentPrincipal%2A?displayProperty=nameWithType> в (и <xref:System.Web.HttpContext.User%2A> на свойстве класса  <xref:System.Web.HttpContext.Current%2A?displayProperty=nameWithType>).  
+  
+> [!IMPORTANT]
+>  Для работы сеансов в режиме ссылки Корпорация Майкрософт рекомендует предоставить обработчик для <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SessionSecurityTokenCreated?displayProperty=nameWithType> события в файле Global.asax.cs и <xref:System.IdentityModel.Tokens.SessionSecurityToken.IsReferenceMode%2A?displayProperty=nameWithType> задать свойство для маркера, переданного в <xref:System.IdentityModel.Services.SessionSecurityTokenCreatedEventArgs.SessionToken%2A?displayProperty=nameWithType> свойстве. Это гарантирует, что маркер сеанса будет работать в режиме ссылки для каждого запроса и будет предпочтительнее, чем просто установить <xref:System.IdentityModel.Services.SessionAuthenticationModule.IsReferenceMode%2A?displayProperty=nameWithType> свойство в модуле проверки подлинности сеанса.  
+  
+   
+  
+## Examples  
+ [!code-csharp[WifWSFAM#4](~/samples/snippets/csharp/VS_Snippets_Misc/wifwsfam/cs/webapplication1/global.asax.cs#4)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SetPrincipalAndWriteSessionToken">
+      <MemberSignature Language="C#" Value="public void SetPrincipalAndWriteSessionToken (System.IdentityModel.Tokens.SessionSecurityToken sessionToken, bool isSession);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void SetPrincipalAndWriteSessionToken(class System.IdentityModel.Tokens.SessionSecurityToken sessionToken, bool isSession) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.SetPrincipalAndWriteSessionToken(System.IdentityModel.Tokens.SessionSecurityToken,System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub SetPrincipalAndWriteSessionToken (sessionToken As SessionSecurityToken, isSession As Boolean)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void SetPrincipalAndWriteSessionToken(System::IdentityModel::Tokens::SessionSecurityToken ^ sessionToken, bool isSession);" />
+      <MemberSignature Language="F#" Value="member this.SetPrincipalAndWriteSessionToken : System.IdentityModel.Tokens.SessionSecurityToken * bool -&gt; unit" Usage="wSFederationAuthenticationModule.SetPrincipalAndWriteSessionToken (sessionToken, isSession)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="sessionToken" Type="System.IdentityModel.Tokens.SessionSecurityToken" />
+        <Parameter Name="isSession" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="sessionToken">Токен безопасности сеанса, созданный из ответного сообщения входа WS-Federation, полученного от службы STS.</param>
+        <param name="isSession">Значение <see langword="true" /> для записи файла cookie, который представляет сеанс, включенный в отклик; в противном случае — значение <see langword="false" />.</param>
+        <summary>Задает субъект потока и (опционально) записывает файл cookie сеанса.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вызывается из конвейера обработки запроса, реализованного в <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.OnAuthenticateRequest%2A> делегате обработчика событий. Этот метод выполняет следующие действия:  
+  
+1.  Вызывает метод для вызова  <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SessionSecurityTokenCreated> события. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.OnSessionSecurityTokenCreated%2A> Это событие можно использовать для изменения маркера сеанса до того, как он будет использоваться для установки участника потока и его занесения в файл cookie сеанса, а также для указания, следует ли записывать файл cookie сеанса.  
+  
+2.  Вызывает метод в настроенном модуле проверки подлинности сеанса<xref:System.IdentityModel.Services.SessionAuthenticationModule>() для установки субъекта-потока и при необходимости записи файла cookie сеанса. <xref:System.IdentityModel.Services.SessionAuthenticationModule.AuthenticateSessionSecurityToken%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="sessionToken" /> — <see langword="null" />.</exception>
+        <altmember cref="M:System.IdentityModel.Services.WSFederationAuthenticationModule.OnAuthenticateRequest(System.Object,System.EventArgs)" />
+      </Docs>
+    </Member>
+    <Member MemberName="SignedIn">
+      <MemberSignature Language="C#" Value="public event EventHandler SignedIn;" />
+      <MemberSignature Language="ILAsm" Value=".event class System.EventHandler SignedIn" />
+      <MemberSignature Language="DocId" Value="E:System.IdentityModel.Services.WSFederationAuthenticationModule.SignedIn" />
+      <MemberSignature Language="VB.NET" Value="Public Event SignedIn As EventHandler " />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; event EventHandler ^ SignedIn;" />
+      <MemberSignature Language="F#" Value="member this.SignedIn : EventHandler " Usage="member this.SignedIn : System.EventHandler " />
+      <MemberType>Event</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.EventHandler</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возникает после того, как пользователь вошел в систему.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если запрос опубликован на странице входа, то элемент управления на этой странице вызовет это событие, а не этот модуль.  
+  
+   
+  
+## Examples  
+ [!code-csharp[WifWSFAM#3](~/samples/snippets/csharp/VS_Snippets_Misc/wifwsfam/cs/webapplication1/global.asax.cs#3)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SignedOut">
+      <MemberSignature Language="C#" Value="public event EventHandler SignedOut;" />
+      <MemberSignature Language="ILAsm" Value=".event class System.EventHandler SignedOut" />
+      <MemberSignature Language="DocId" Value="E:System.IdentityModel.Services.WSFederationAuthenticationModule.SignedOut" />
+      <MemberSignature Language="VB.NET" Value="Public Event SignedOut As EventHandler " />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; event EventHandler ^ SignedOut;" />
+      <MemberSignature Language="F#" Value="member this.SignedOut : EventHandler " Usage="member this.SignedOut : System.EventHandler " />
+      <MemberType>Event</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.EventHandler</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возникает сразу после удаления сеанса во время выхода из системы.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Это событие возникает через вызов <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.OnSignedOut%2A> метода из <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOut%28System.Boolean%29?displayProperty=nameWithType> метода при выходе из сеанса проверяющей стороны (RP). Событие не возникает при выполнении федеративного выхода с помощью <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.FederatedSignOut%2A> метода.  
+  
+ Обработчик событий можно добавить для выполнения любой дополнительной обработки, необходимой приложению после удаления файла cookie сеанса.  
+  
+ Это событие не гарантируется вызывать для каждого сеанса. Например, файлы cookie могут быть удалены на стороне клиента, поэтому это событие никогда не будет вызываться.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SignIn">
+      <MemberSignature Language="C#" Value="public virtual void SignIn (string ControlId);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void SignIn(string ControlId) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.SignIn(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Sub SignIn (ControlId As String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void SignIn(System::String ^ ControlId);" />
+      <MemberSignature Language="F#" Value="abstract member SignIn : string -&gt; unit&#xA;override this.SignIn : string -&gt; unit" Usage="wSFederationAuthenticationModule.SignIn ControlId" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="ControlId" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="ControlId">WSFAM хранит это значение в параметре wctx запроса входа WS-Federation; однако этот модуль не использует его при обработке запросов входа и ответных сообщений входа. Можно задать любое значение. Не обязательно должен быть уникальным. Дополнительные сведения см. в описании метода <see cref="M:System.IdentityModel.Services.WSFederationAuthenticationModule.CreateSignInRequest(System.String,System.String,System.Boolean)" />.</param>
+        <summary>Выполняет вход в службу токенов безопасности (STS) через протокол WS-Federation.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация по умолчанию вызывает <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectToIdentityProvider%2A> метод для выполнения входа.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SignInContext">
+      <MemberSignature Language="C#" Value="public string SignInContext { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string SignInContext" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Services.WSFederationAuthenticationModule.SignInContext" />
+      <MemberSignature Language="VB.NET" Value="Public Property SignInContext As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ SignInContext { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.SignInContext : string with get, set" Usage="System.IdentityModel.Services.WSFederationAuthenticationModule.SignInContext" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает значение контекста приложения для включения в параметр wctx в запросы входа в WS-Federation.</summary>
+        <value>Значение контекста приложения для включения в параметр wctx для запросов входа.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ При вызове  `ru=returnUrl&cx=SignInContext&rm=rememberMeSet&id=uniqueId` метода создаваемое сообщение входа содержит параметр вкткс, имеющий следующий формат:. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.CreateSignInRequest%2A> Значение <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignInContext%2A> параметра сохраняется `cx` в параметре. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.CreateSignInRequest%2A>может вызываться непосредственно из кода. Он также вызывается, когда всфам выполняет пассивные перенаправления, а также когда <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignIn%2A> метод <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectToIdentityProvider%2A> или метод вызывается кодом приложения.  
+  
+ Несмотря на то, что <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignInContext%2A> всфам сохраняет значение в сообщениях запроса на вход, если оно используется приложением во время обработки ответа, необходимо предоставить логику для извлечения ее из параметра вкткс в сообщении ответа входа.  
+  
+ Дополнительные сведения о формате и обработке параметра вкткс см. в <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.CreateSignInRequest%2A> описании метода.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.IdentityModel.Services.WSFederationAuthenticationModule.CreateSignInRequest(System.String,System.String,System.Boolean)" />
+      </Docs>
+    </Member>
+    <Member MemberName="SignInError">
+      <MemberSignature Language="C#" Value="public event EventHandler&lt;System.IdentityModel.Services.ErrorEventArgs&gt; SignInError;" />
+      <MemberSignature Language="ILAsm" Value=".event class System.EventHandler`1&lt;class System.IdentityModel.Services.ErrorEventArgs&gt; SignInError" />
+      <MemberSignature Language="DocId" Value="E:System.IdentityModel.Services.WSFederationAuthenticationModule.SignInError" />
+      <MemberSignature Language="VB.NET" Value="Public Event SignInError As EventHandler(Of ErrorEventArgs) " />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; event EventHandler&lt;System::IdentityModel::Services::ErrorEventArgs ^&gt; ^ SignInError;" />
+      <MemberSignature Language="F#" Value="member this.SignInError : EventHandler&lt;System.IdentityModel.Services.ErrorEventArgs&gt; " Usage="member this.SignInError : System.EventHandler&lt;System.IdentityModel.Services.ErrorEventArgs&gt; " />
+      <MemberType>Event</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.EventHandler&lt;System.IdentityModel.Services.ErrorEventArgs&gt;</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Создается при возникновении ошибки во время входа.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если запрос опубликован на странице входа, то элемент управления на этой странице вызовет это событие, а не этот модуль.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SigningOut">
+      <MemberSignature Language="C#" Value="public event EventHandler&lt;System.IdentityModel.Services.SigningOutEventArgs&gt; SigningOut;" />
+      <MemberSignature Language="ILAsm" Value=".event class System.EventHandler`1&lt;class System.IdentityModel.Services.SigningOutEventArgs&gt; SigningOut" />
+      <MemberSignature Language="DocId" Value="E:System.IdentityModel.Services.WSFederationAuthenticationModule.SigningOut" />
+      <MemberSignature Language="VB.NET" Value="Public Event SigningOut As EventHandler(Of SigningOutEventArgs) " />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; event EventHandler&lt;System::IdentityModel::Services::SigningOutEventArgs ^&gt; ^ SigningOut;" />
+      <MemberSignature Language="F#" Value="member this.SigningOut : EventHandler&lt;System.IdentityModel.Services.SigningOutEventArgs&gt; " Usage="member this.SigningOut : System.EventHandler&lt;System.IdentityModel.Services.SigningOutEventArgs&gt; " />
+      <MemberType>Event</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.EventHandler&lt;System.IdentityModel.Services.SigningOutEventArgs&gt;</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возникает перед удалением сеанса во время выхода из системы.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Это событие возникает через вызов <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.OnSigningOut%2A> метода из <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOut%28System.Boolean%29?displayProperty=nameWithType> метода при выходе из сеанса проверяющей стороны (RP). Событие не возникает при выполнении федеративного выхода с помощью <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.FederatedSignOut%2A> метода.  
+  
+ Вы можете добавить обработчик событий для выполнения любой дополнительной обработки, необходимой приложению перед удалением файла cookie сеанса. Можно прочитать <xref:System.IdentityModel.Services.SigningOutEventArgs.IsIPInitiated*> свойство в обработчике событий, чтобы определить, является ли выход результатом получения сообщения запроса на очистку выхода WS-Federation ("wsignoutcleanup 1.0") от службы маркеров безопасности (STS) или ее инициирования в RP.  
+  
+ Это событие не гарантируется вызывать для каждого сеанса. Например, файлы cookie могут быть удалены на стороне клиента, поэтому это событие никогда не будет вызываться.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SignInQueryString">
+      <MemberSignature Language="C#" Value="public string SignInQueryString { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string SignInQueryString" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Services.WSFederationAuthenticationModule.SignInQueryString" />
+      <MemberSignature Language="VB.NET" Value="Public Property SignInQueryString As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ SignInQueryString { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.SignInQueryString : string with get, set" Usage="System.IdentityModel.Services.WSFederationAuthenticationModule.SignInQueryString" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает строку запроса, которая содержит любые дополнительные параметры, которые будут отправляться в запросах входа WS-Federation ("wsignin1.0").</summary>
+        <value>Фрагмент URL-адреса, содержащий дополнительные параметры сообщения в следующем формате: <c>param1 = value1&amp;Param2 = значение2&amp;paramN = контрольное</c>. Значение по умолчанию - пустая строка.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Это свойство можно использовать для отправки дополнительных параметров в запросе на вход. Это могут быть параметры, зависящие от приложения, которые не являются одним из параметров, заданных протоколом WS-Federation. Чтобы удалить дополнительные параметры из запроса, задайте для свойства пустую строку.  
+  
+ Этот параметр можно переопределить для каждого HTTP-запроса, добавив обработчик для <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.RedirectingToIdentityProvider> события. Это событие возникает непосредственно перед тем, как модуль перенаправляется в службу маркеров безопасности (STS) с сообщением запроса на вход WS-Federation. STS задается <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer%2A> свойством.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Предпринята попытка задать для свойства значение <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="SignOut">
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Выполняет выход из текущего сеанса.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Удаляет текущий сеанс.  
+  
+ В службу маркеров безопасности (STS) не отправляется сообщение о запросе выхода ("wsignout 1.0"). Чтобы выйти из службы STS с помощью протокола WS-Federation, используйте <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.FederatedSignOut%2A> метод.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="SignOut">
+      <MemberSignature Language="C#" Value="public virtual void SignOut ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void SignOut() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOut" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Sub SignOut ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void SignOut();" />
+      <MemberSignature Language="F#" Value="abstract member SignOut : unit -&gt; unit&#xA;override this.SignOut : unit -&gt; unit" Usage="wSFederationAuthenticationModule.SignOut " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Выполняет выход из текущего сеанса и запрашивает перенаправление обратно на URL-адрес, указанный в текущем HTTP-запросе.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Удаляет текущий сеанс и перенаправляет браузер обратно к URL-адресу, указанному в текущем HTTP-запросе.  
+  
+ <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOut%28System.String%29?displayProperty=nameWithType> Вызывает метод `redirectUrl` с параметром, для которого задано значение URL-адреса текущего запроса.  
+  
+ В службу маркеров безопасности (STS) не отправляется сообщение о запросе выхода ("wsignout 1.0"). Чтобы выйти из службы STS с помощью протокола WS-Federation, используйте <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.FederatedSignOut%2A> метод.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SignOut">
+      <MemberSignature Language="C#" Value="public virtual void SignOut (bool isIPRequest);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void SignOut(bool isIPRequest) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOut(System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Sub SignOut (isIPRequest As Boolean)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void SignOut(bool isIPRequest);" />
+      <MemberSignature Language="F#" Value="abstract member SignOut : bool -&gt; unit&#xA;override this.SignOut : bool -&gt; unit" Usage="wSFederationAuthenticationModule.SignOut isIPRequest" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="isIPRequest" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="isIPRequest">Значение <see langword="true" />, если запрос был инициирован IP-STS через сообщение запроса очистки выхода WS-Federation ("wsignoutcleanup1.0"); в противном случае значение <see langword="false" />.</param>
+        <summary>Выполняет выход из текущего сеанса и вызывает соответствующие события.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод выполняет фактическую работу по удалению текущего сеанса и порождает соответствующие события выхода. Метод выполняет следующие действия:  
+  
+1.  Вызывает метод для вызова  <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SigningOut> события. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.OnSigningOut%2A> Обработчик событий может предоставить любую необходимую обработку перед удалением сеанса. Свойство задается в соответствии `isIPRequest` с параметром. <xref:System.IdentityModel.Services.SigningOutEventArgs.IsIPInitiated%2A?displayProperty=nameWithType>  
+  
+2.  <xref:System.IdentityModel.Services.SessionAuthenticationModule.DeleteSessionTokenCookie%2A?displayProperty=nameWithType> Вызывает метод для текущего диспетчера проверки подлинности сеанса, чтобы удалить файл cookie сеанса.  
+  
+     Вызывает метод для вызова  <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignedOut> события. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.OnSignedOut%2A>  
+  
+3.  Если во время обработки выхода возникла ошибка, вызывает <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.OnSignOutError%2A> метод для <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOutError> вызова события. Обработчик событий может отменить обработку и предотвратить возвращение исключения вызывающему объекту<xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOut%2A>  
+  
+ <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOut%2A?displayProperty=nameWithType> Метод можно вызвать `isIPRequest` с набором `false` параметров для выхода из сеанса без выполнения перенаправления. Метод в конечном итоге вызывается всеми другими перегруженными <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOut%2A> методами (с параметром, `isIPRequest` имеющим значение `false`) для выполнения обработки выхода. Метод вызывается из <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.CanReadSignInResponse%28System.Web.HttpRequestBase%2CSystem.Boolean%29?displayProperty=nameWithType> метода `isIPRequest` с набором `true` параметров для выхода из сеанса при обработке сообщения об ошибке выхода WS-Federation ("wsignoutcleanup 1.0").  
+  
+ В службу маркеров безопасности (STS) не отправляется сообщение о запросе выхода ("wsignout 1.0"). Чтобы выйти из службы STS с помощью протокола WS-Federation, используйте <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.FederatedSignOut%2A> метод.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SignOut">
+      <MemberSignature Language="C#" Value="public virtual void SignOut (string redirectUrl);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void SignOut(string redirectUrl) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOut(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Sub SignOut (redirectUrl As String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void SignOut(System::String ^ redirectUrl);" />
+      <MemberSignature Language="F#" Value="abstract member SignOut : string -&gt; unit&#xA;override this.SignOut : string -&gt; unit" Usage="wSFederationAuthenticationModule.SignOut redirectUrl" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="redirectUrl" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="redirectUrl">URL-адрес, на который должен перенаправляться браузер после удаления сеанса.</param>
+        <summary>Выполняет выход из текущего сеанса и запрашивает перенаправление обратно на указанный URL-адрес.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Удаляет текущий сеанс и перенаправляет браузер назад по указанному URL-адресу.  
+  
+ Вызывает метод с параметром и `initiateSignoutCleanup` набором  `false` .  `redirectUrl` <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOut%28System.String%2CSystem.Boolean%29?displayProperty=nameWithType>  
+  
+ В службу маркеров безопасности (STS) не отправляется сообщение о запросе выхода ("wsignout 1.0"). Чтобы выйти из службы STS с помощью протокола WS-Federation, используйте <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.FederatedSignOut%2A> метод.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException"><paramref name="redirectUrl" /> не является допустимым URI.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="SignOut">
+      <MemberSignature Language="C#" Value="public virtual void SignOut (string redirectUrl, bool initiateSignoutCleanup);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void SignOut(string redirectUrl, bool initiateSignoutCleanup) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOut(System.String,System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Sub SignOut (redirectUrl As String, initiateSignoutCleanup As Boolean)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void SignOut(System::String ^ redirectUrl, bool initiateSignoutCleanup);" />
+      <MemberSignature Language="F#" Value="abstract member SignOut : string * bool -&gt; unit&#xA;override this.SignOut : string * bool -&gt; unit" Usage="wSFederationAuthenticationModule.SignOut (redirectUrl, initiateSignoutCleanup)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="redirectUrl" Type="System.String" />
+        <Parameter Name="initiateSignoutCleanup" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="redirectUrl">URL-адрес, на который должен перенаправляться браузер после выхода.</param>
+        <param name="initiateSignoutCleanup">Всегда имеет значение <see langword="false" />. Присвоение значения <see langword="true" /> данному параметру не поддерживается.</param>
+        <summary>Выполняет выход из текущего сеанса и запрашивает перенаправление обратно на указанный URL-адрес.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Удаляет текущий сеанс и перенаправляет браузер назад по указанному URL-адресу.  
+  
+ Вызывает метод с набором  `false` параметров.  `initiateSignoutCleanup` <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOut%28System.Boolean%29?displayProperty=nameWithType>  
+  
+ В службу маркеров безопасности (STS) не отправляется сообщение о запросе выхода ("wsignout 1.0"). Чтобы выйти из службы STS с помощью протокола WS-Federation, используйте <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.FederatedSignOut%2A> метод.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException"><paramref name="redirectUrl" /> не является допустимым URI.</exception>
+        <exception cref="T:System.NotImplementedException">Класс <see cref="T:System.IdentityModel.Services.WSFederationAuthenticationModule" /> вызывает это исключение, если параметр <paramref name="initiateSignoutCleanup" /> имеет значение <see langword="true" />. Не устанавливайте этот параметр на <see langword="true" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="SignOutError">
+      <MemberSignature Language="C#" Value="public event EventHandler&lt;System.IdentityModel.Services.ErrorEventArgs&gt; SignOutError;" />
+      <MemberSignature Language="ILAsm" Value=".event class System.EventHandler`1&lt;class System.IdentityModel.Services.ErrorEventArgs&gt; SignOutError" />
+      <MemberSignature Language="DocId" Value="E:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOutError" />
+      <MemberSignature Language="VB.NET" Value="Public Event SignOutError As EventHandler(Of ErrorEventArgs) " />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; event EventHandler&lt;System::IdentityModel::Services::ErrorEventArgs ^&gt; ^ SignOutError;" />
+      <MemberSignature Language="F#" Value="member this.SignOutError : EventHandler&lt;System.IdentityModel.Services.ErrorEventArgs&gt; " Usage="member this.SignOutError : System.EventHandler&lt;System.IdentityModel.Services.ErrorEventArgs&gt; " />
+      <MemberType>Event</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.EventHandler&lt;System.IdentityModel.Services.ErrorEventArgs&gt;</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Создается при возникновении ошибки во время выхода.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Это событие возникает через вызов <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.OnSignOutError%2A> метода из <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOut%28System.Boolean%29?displayProperty=nameWithType> метода при выходе из сеанса проверяющей стороны (RP). Событие не возникает при выполнении федеративного выхода с помощью <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.FederatedSignOut%2A> метода.  
+  
+ <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOutError> Событие является отменяемым событием. Вы можете задать <xref:System.ComponentModel.CancelEventArgs.Cancel%2A> свойство в обработчике событий, чтобы предотвратить возврат исключения, вызвавшего ошибку, инициатору выхода.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SignOutQueryString">
+      <MemberSignature Language="C#" Value="public string SignOutQueryString { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string SignOutQueryString" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOutQueryString" />
+      <MemberSignature Language="VB.NET" Value="Public Property SignOutQueryString As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ SignOutQueryString { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.SignOutQueryString : string with get, set" Usage="System.IdentityModel.Services.WSFederationAuthenticationModule.SignOutQueryString" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает строку запроса, которая содержит любые дополнительные параметры, которые будут отправляться в запросах выхода WS-Federation ("wsignout1.0").</summary>
+        <value>Фрагмент URL-адреса, содержащий дополнительные параметры сообщения в следующем формате: <c>param1 = value1&amp;Param2 = значение2&amp;paramN = контрольное</c>. Значение по умолчанию - пустая строка.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ По умолчанию это свойство инициализируется из `signOutQueryString` атрибута [ &lt;элемента wsfederation&gt; ](~/docs/framework/configure-apps/file-schema/windows-identity-foundation/wsfederation.md) в файле конфигурации. Он должен содержать любые зависящие от приложения параметры, которые будут отправляться в запросе выхода WS-Federation. Чтобы удалить эти параметры, можно задать для свойства пустую строку.  
+  
+ ВСФАМ не использует это свойство напрямую; Однако его <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.GetFederationPassiveSignOutUrl%2A> можно передать в метод, чтобы создать полный URL-адрес выхода WS-Federation, который затем может использоваться в коде.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Предпринята попытка задать для свойства значение <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="SignOutReply">
+      <MemberSignature Language="C#" Value="public string SignOutReply { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string SignOutReply" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOutReply" />
+      <MemberSignature Language="VB.NET" Value="Public Property SignOutReply As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ SignOutReply { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.SignOutReply : string with get, set" Usage="System.IdentityModel.Services.WSFederationAuthenticationModule.SignOutReply" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает значение параметра wreply, используемого в запросах выхода WS-Federation ("wsignout1.0").</summary>
+        <value>URL-адрес, на который служба токенов безопасности (STS) должна перенаправлять клиент во время пассивного выхода через протокол WS-Federation.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ По умолчанию это свойство инициализируется из `signOutReply` атрибута [ &lt;элемента wsfederation&gt; ](~/docs/framework/configure-apps/file-schema/windows-identity-foundation/wsfederation.md) в файле конфигурации. Он предназначен для представления параметра wreply в запросе выхода WS-Federation.  
+  
+ Параметр wreply является необязательным. Если свойство имеет `null` значение или является пустой строкой, параметр wreply не включается в запрос выхода. <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.SignOutReply%2A>  
+  
+ ВСФАМ не использует это свойство напрямую. Однако его <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.FederatedSignOut%2A> можно передать в метод при выполнении выхода WS-Federation из кода или передать его <xref:System.IdentityModel.Services.WSFederationAuthenticationModule.GetFederationPassiveSignOutUrl%2A> методу, чтобы создать полный URL-адрес выхода WS-Federation.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="VerifyProperties">
+      <MemberSignature Language="C#" Value="public void VerifyProperties ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void VerifyProperties() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.IdentityModel.Services.WSFederationAuthenticationModule.VerifyProperties" />
+      <MemberSignature Language="VB.NET" Value="Public Sub VerifyProperties ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void VerifyProperties();" />
+      <MemberSignature Language="F#" Value="member this.VerifyProperties : unit -&gt; unit" Usage="wSFederationAuthenticationModule.VerifyProperties " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Проверяет, являются ли свойства <see cref="P:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer" /> и <see cref="P:System.IdentityModel.Services.WSFederationAuthenticationModule.Realm" /> непустыми, и совместимы ли с HTTPS универсальные коды ресурса (URI), заданные для свойств <see cref="P:System.IdentityModel.Services.WSFederationAuthenticationModule.RequireHttps" /> и <see cref="P:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer" />, если свойство <see cref="P:System.IdentityModel.Services.WSFederationAuthenticationModule.Realm" /> имеет значение <see langword="true" />.</summary>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.InvalidOperationException">Параметр <see cref="P:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer" /> имеет значение <see langword="null" /> или является пустой строкой.  
+  
+- или - 
+ Параметр <see cref="P:System.IdentityModel.Services.WSFederationAuthenticationModule.Realm" /> имеет значение <see langword="null" /> или является пустой строкой.  
+  
+- или - 
+ <see cref="P:System.IdentityModel.Services.WSFederationAuthenticationModule.RequireHttps" /> имеет значение <see langword="true" /> и <see cref="P:System.IdentityModel.Services.WSFederationAuthenticationModule.Issuer" /> не совместимы с HTTPS.  
+  
+- или - 
+ <see cref="P:System.IdentityModel.Services.WSFederationAuthenticationModule.RequireHttps" /> имеет значение <see langword="true" /> и <see cref="P:System.IdentityModel.Services.WSFederationAuthenticationModule.Realm" /> не совместимы с HTTPS.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="XmlDictionaryReaderQuotas">
+      <MemberSignature Language="C#" Value="public System.Xml.XmlDictionaryReaderQuotas XmlDictionaryReaderQuotas { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Xml.XmlDictionaryReaderQuotas XmlDictionaryReaderQuotas" />
+      <MemberSignature Language="DocId" Value="P:System.IdentityModel.Services.WSFederationAuthenticationModule.XmlDictionaryReaderQuotas" />
+      <MemberSignature Language="VB.NET" Value="Public Property XmlDictionaryReaderQuotas As XmlDictionaryReaderQuotas" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Xml::XmlDictionaryReaderQuotas ^ XmlDictionaryReaderQuotas { System::Xml::XmlDictionaryReaderQuotas ^ get(); void set(System::Xml::XmlDictionaryReaderQuotas ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.XmlDictionaryReaderQuotas : System.Xml.XmlDictionaryReaderQuotas with get, set" Usage="System.IdentityModel.Services.WSFederationAuthenticationModule.XmlDictionaryReaderQuotas" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel.Services</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Xml.XmlDictionaryReaderQuotas</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает объект <see cref="T:System.Xml.XmlDictionaryReaderQuotas" />, используемый при десериализации ответных сообщений входа WS-Federation для получения токена, выданного службой токенов безопасности (STS).</summary>
+        <value>Объект <see cref="T:System.Xml.XmlDictionaryReaderQuotas" />, используемый при десериализации ответных сообщений входа WS-Federation для получения токена, выданного службой токенов безопасности (STS).</value>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentNullException">Предпринята попытка задать для свойства значение <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
