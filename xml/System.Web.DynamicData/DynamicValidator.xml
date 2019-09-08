@@ -1,0 +1,366 @@
+<Type Name="DynamicValidator" FullName="System.Web.DynamicData.DynamicValidator">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="fa7d5826eac42ccca9297cad328aeb7d4c192edd" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70528755" /></Metadata><TypeSignature Language="C#" Value="public class DynamicValidator : System.Web.UI.WebControls.BaseValidator" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit DynamicValidator extends System.Web.UI.WebControls.BaseValidator" />
+  <TypeSignature Language="DocId" Value="T:System.Web.DynamicData.DynamicValidator" />
+  <TypeSignature Language="VB.NET" Value="Public Class DynamicValidator&#xA;Inherits BaseValidator" />
+  <TypeSignature Language="C++ CLI" Value="public ref class DynamicValidator : System::Web::UI::WebControls::BaseValidator" />
+  <TypeSignature Language="F#" Value="type DynamicValidator = class&#xA;    inherit BaseValidator" />
+  <AssemblyInfo>
+    <AssemblyName>System.Web.DynamicData</AssemblyName>
+    <AssemblyVersion>3.5.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Web.UI.WebControls.BaseValidator</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Attributes>
+    <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+      <AttributeName>System.Drawing.ToolboxBitmap(typeof(System.Web.DynamicData.DynamicValidator), "DynamicValidator.bmp")</AttributeName>
+    </Attribute>
+    <Attribute FrameworkAlternate="netframework-3.5">
+      <AttributeName>System.Drawing.ToolboxBitmap(typeof(System.Web.DynamicData.DynamicValidator), "DynamicValidator.ico")</AttributeName>
+    </Attribute>
+  </Attributes>
+  <Docs>
+    <summary>Принудительно применяет и перехватывает исключения, возникающие в модели данных, и выводит сообщение об ошибке.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.DynamicData.DynamicValidator> Элемент управления может использоваться с полями данных или сущностями данных. Он перехватывает исключения, возникающие в классах или сущностях LINQ-to-SQL в методах расширяемости в модели данных. <xref:System.Web.DynamicData.DynamicValidator> Элемент управления связывается с элементами управления, принимающими данные, вводимые пользователем. Например, <xref:System.Web.DynamicData.DynamicValidator> элемент управления, связанный с текстовым полем, который принимает вводимые пользователем данные для поля UnitsInStock в таблице Products, перехватывает и отображает исключение, которое создается, если входные данные больше или меньше допустимых единиц в модели данных.  
+  
+ По умолчанию ASP.NET платформа динамических данных не отображает все исключения из модели данных на странице, так как некоторые исключения базы данных могут содержать конфиденциальные сведения. Платформа динамических данных отображает <xref:System.Web.DynamicData.DynamicValidator.ValidationException%2A> только значения. Если требуется, чтобы в приложении отображались другие исключения, можно создать <xref:System.Web.DynamicData.DynamicValidator> элемент управления, предоставить исключения, которые требуется отобразить, и присоединить исключения <xref:System.Web.DynamicData.DynamicValidator> к элементу управления. Исключения, возникающие в модели данных, будут отображаться на всех страницах приложения.  
+  
+   
+  
+## Examples  
+ В следующем примере показано, как создать <xref:System.Web.DynamicData.DynamicValidator> класс элемента управления, отображающий другие исключения на всех страницах.  
+  
+```vb  
+''' <summary>   
+''' Display other exceptions in all pages.   
+''' </summary>   
+Public Class MyDynamicValidator   
+    Inherits DynamicValidator   
+  
+    Protected Overloads Overrides Sub ValidateException(ByVal exception As Exception)   
+        ' If it's not an exception that DynamicValidator displays find   
+        ' the innermost exception.   
+        If Not (TypeOf exception Is IDynamicValidatorException) AndAlso _  
+                Not (TypeOf exception Is ValidationException) Then   
+            While exception.InnerException IsNot Nothing   
+                exception = exception.InnerException   
+            End While   
+  
+            ' Wrap it in a ValidationException so that the base code   
+            ' does not ignore it.   
+            If ExceptionShouldBeDisplayedInPage(exception) Then   
+                exception = New ValidationException(Nothing, exception)   
+            End If   
+        End If   
+  
+        ' Call the base class for the exception that is modified.  
+        MyBase.ValidateException(exception)   
+    End Sub   
+  
+    Private Function ExceptionShouldBeDisplayedInPage(ByVal e As Exception) _  
+            As Boolean   
+        ' Add code to find the exception and   
+        ' decide whether it should be shown in the page.  
+  
+        Return True   
+    End Function   
+End Class  
+```  
+  
+```csharp  
+/// <summary>  
+/// Display other exceptions in all pages.   
+/// </summary>  
+public class MyDynamicValidator : DynamicValidator {  
+  
+    protected override void ValidateException(Exception exception) {  
+        // If it's not an exception that DynamicValidator displays find   
+        // the innermost exception.  
+        if (!(exception is IDynamicValidatorException) && !(exception   
+              is ValidationException)) {  
+            while (exception.InnerException != null) {  
+                exception = exception.InnerException;  
+            }  
+  
+            // Wrap it in a ValidationException so that the base code   
+            // does not ignore it.  
+            if (ExceptionShouldBeDisplayedInPage(exception)) {  
+                exception = new ValidationException(null, exception);  
+            }  
+        }  
+  
+        // Call the base class on the exception that is modified.  
+        base.ValidateException(exception);  
+    }  
+  
+    private bool ExceptionShouldBeDisplayedInPage(Exception e) {  
+        // Add your code to find the exception and  
+        // decides whether it should be shown in the page.  
+  
+           return true;  
+    }  
+}  
+```  
+  
+ В следующем примере показано, как использовать повторное сопоставление тегов в файле Web. config для отображения исключения на всех веб-страницах.  
+  
+```xml  
+<pages>  
+  <tagMapping>  
+    <add tagType="System.Web.DynamicData.DynamicValidator"   
+        mappedTagType="MyDynamicValidator"/>  
+  </tagMapping>  
+</pages>  
+```  
+  
+ ]]></format>
+    </remarks>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public DynamicValidator ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.DynamicData.DynamicValidator.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; DynamicValidator();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web.DynamicData</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Web.DynamicData.DynamicValidator" />.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Column">
+      <MemberSignature Language="C#" Value="public System.Web.DynamicData.MetaColumn Column { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Web.DynamicData.MetaColumn Column" />
+      <MemberSignature Language="DocId" Value="P:System.Web.DynamicData.DynamicValidator.Column" />
+      <MemberSignature Language="VB.NET" Value="Public Property Column As MetaColumn" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Web::DynamicData::MetaColumn ^ Column { System::Web::DynamicData::MetaColumn ^ get(); void set(System::Web::DynamicData::MetaColumn ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.Column : System.Web.DynamicData.MetaColumn with get, set" Usage="System.Web.DynamicData.DynamicValidator.Column" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web.DynamicData</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.ComponentModel.Browsable(false)</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Web.UI.Themeable(false)</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>set: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Web.DynamicData.MetaColumn</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает проверяемый столбец.</summary>
+        <value>Проверяемый столбец или значение <see langword="null" />, если проверяется сущность данных.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ColumnName">
+      <MemberSignature Language="C#" Value="public string ColumnName { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string ColumnName" />
+      <MemberSignature Language="DocId" Value="P:System.Web.DynamicData.DynamicValidator.ColumnName" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property ColumnName As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ ColumnName { System::String ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.ColumnName : string" Usage="System.Web.DynamicData.DynamicValidator.ColumnName" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web.DynamicData</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.ComponentModel.Browsable(false)</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Web.UI.Themeable(false)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает имя проверяемого столбца.</summary>
+        <value>Имя проверяемого столбца или значение <see langword="null" />, если проверяется сущность данных.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ControlPropertiesValid">
+      <MemberSignature Language="C#" Value="protected override bool ControlPropertiesValid ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance bool ControlPropertiesValid() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.DynamicData.DynamicValidator.ControlPropertiesValid" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Function ControlPropertiesValid () As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override bool ControlPropertiesValid();" />
+      <MemberSignature Language="F#" Value="override this.ControlPropertiesValid : unit -&gt; bool" Usage="dynamicValidator.ControlPropertiesValid " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web.DynamicData</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Указывает, допустимы ли свойства заданного элемента управления <see cref="T:System.Web.DynamicData.DynamicValidator" />.</summary>
+        <returns><see langword="true" />, если свойства заданного проверяющего элемента управления допустимы; в противном случае — <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод переопределяется из базового класса. Вызов базового класса завершается ошибкой, если элемент управления, который вы пытаетесь проверить, не имеет свойства проверки. Например <xref:System.Web.UI.WebControls.GridView>, если элемент управления имеет значение, то базовый класс завершится ошибкой.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="EvaluateIsValid">
+      <MemberSignature Language="C#" Value="protected override bool EvaluateIsValid ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance bool EvaluateIsValid() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.DynamicData.DynamicValidator.EvaluateIsValid" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Function EvaluateIsValid () As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override bool EvaluateIsValid();" />
+      <MemberSignature Language="F#" Value="override this.EvaluateIsValid : unit -&gt; bool" Usage="dynamicValidator.EvaluateIsValid " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web.DynamicData</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Определяет, допустимо ли значение элемента управления для ввода.</summary>
+        <returns><see langword="true" />, если оцениваемый проверяющий элемент управления допустим; в противном случае — <see langword="false" />.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnInit">
+      <MemberSignature Language="C#" Value="protected override void OnInit (EventArgs e);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void OnInit(class System.EventArgs e) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.DynamicData.DynamicValidator.OnInit(System.EventArgs)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Sub OnInit (e As EventArgs)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override void OnInit(EventArgs ^ e);" />
+      <MemberSignature Language="F#" Value="override this.OnInit : EventArgs -&gt; unit" Usage="dynamicValidator.OnInit e" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web.DynamicData</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="e" Type="System.EventArgs" />
+      </Parameters>
+      <Docs>
+        <param name="e">Данные события.</param>
+        <summary>Создает событие <see langword="Init" /> для инициализации элемента управления <see cref="T:System.Web.DynamicData.DynamicValidator" />.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ValidateException">
+      <MemberSignature Language="C#" Value="protected virtual void ValidateException (Exception exception);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void ValidateException(class System.Exception exception) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.DynamicData.DynamicValidator.ValidateException(System.Exception)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void ValidateException(Exception ^ exception);" />
+      <MemberSignature Language="F#" Value="abstract member ValidateException : Exception -&gt; unit&#xA;override this.ValidateException : Exception -&gt; unit" Usage="dynamicValidator.ValidateException exception" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web.DynamicData</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="exception" Type="System.Exception" />
+      </Parameters>
+      <Docs>
+        <param name="exception">Выбрасываемое исключение.</param>
+        <summary>Выбрасывает исключение проверки, если в модели данных происходит исключение.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод вызывается при возникновении исключения. Проверяющий элемент управления, относящийся к определенному столбцу, завершается ошибкой, если исключение проверки содержит связанное внутреннее исключение, но при возникновении исключения без проверки происходит сбой глобального проверяющего элемента управления.  
+  
+> [!NOTE]
+>  Используйте этот метод только в том случае, если <xref:System.Web.DynamicData.DynamicValidator.ValidationException%2A>исключением является. Если исключение вызвано ошибкой базы данных, использование этого метода может вызвать ошибку конфиденциальной базы данных.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ValidationException">
+      <MemberSignature Language="C#" Value="protected virtual Exception ValidationException { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Exception ValidationException" />
+      <MemberSignature Language="DocId" Value="P:System.Web.DynamicData.DynamicValidator.ValidationException" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Property ValidationException As Exception" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual property Exception ^ ValidationException { Exception ^ get(); void set(Exception ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.ValidationException : Exception with get, set" Usage="System.Web.DynamicData.DynamicValidator.ValidationException" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web.DynamicData</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>set: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Exception</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает исключение проверки, происходящее во время проверки.</summary>
+        <value>Выбрасываемое исключение проверки.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Это свойство представляет исключение проверки, которое создается, если ошибка возникает при изменении значения или при вставке нового значения в модель данных.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

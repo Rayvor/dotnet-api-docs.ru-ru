@@ -1,0 +1,831 @@
+<Type Name="DesignerActionService" FullName="System.ComponentModel.Design.DesignerActionService">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="eb8754d9b5bbb3c103535b8eec5afaf523221d8b" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70540855" /></Metadata><TypeSignature Language="C#" Value="public class DesignerActionService : IDisposable" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit DesignerActionService extends System.Object implements class System.IDisposable" />
+  <TypeSignature Language="DocId" Value="T:System.ComponentModel.Design.DesignerActionService" />
+  <TypeSignature Language="VB.NET" Value="Public Class DesignerActionService&#xA;Implements IDisposable" />
+  <TypeSignature Language="C++ CLI" Value="public ref class DesignerActionService : IDisposable" />
+  <TypeSignature Language="F#" Value="type DesignerActionService = class&#xA;    interface IDisposable" />
+  <AssemblyInfo>
+    <AssemblyName>System.Design</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces>
+    <Interface>
+      <InterfaceName>System.IDisposable</InterfaceName>
+    </Interface>
+  </Interfaces>
+  <Docs>
+    <summary>Устанавливает службу времени разработки, которая управляет коллекцией объектов <see cref="T:System.ComponentModel.Design.DesignerActionItem" /> для компонентов.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Класс отвечает за управление <xref:System.ComponentModel.Design.DesignerActionItem> коллекцией объектов для каждого экземпляра компонента, который существует в форме во время разработки. <xref:System.ComponentModel.Design.DesignerActionService> Этот класс позволяет реализовать модель прямого push-уведомления для создания элементов и в основном предназначена для использования разработчиками инструментов времени разработки, хотя она также может использоваться разработчиками компонентов и пользовательских элементов управления.  
+  
+ Разработчикам средств времени разработки необходимо определить список элементов, которые будут отображаться для компонента, и определить, когда этот список изменится. Они также могут создавать надстройки, которые работают вместе с объектами панели смарт-тегов.  
+  
+ Разработчикам дополнительных компонентов может потребоваться динамически управлять элементами, связанными с компонентом, тем самым заменяя и дополняя стандартную модель извлечения. Например, команды панели можно изменить в зависимости от контекста их использования и состояния времени разработки компонента.  
+  
+> [!NOTE]
+>  На <xref:System.ComponentModel.Design.DesignerActionService> самом деле это управляющая служба для моделей push и Pull, однако в последнем случае она действует неявно.  
+  
+ <xref:System.ComponentModel.Design.DesignerActionService>предоставляет простой интерфейс для доступа к элементам и управления ими для каждого компонента, включая следующие методы и события:  
+  
+-   Метод определяет, управляет ли <xref:System.ComponentModel.Design.DesignerActionService> в настоящий момент конкретный компонент. <xref:System.ComponentModel.Design.DesignerActionService.Contains%2A>  
+  
+-   <xref:System.ComponentModel.Design.DesignerActionService.GetComponentActions%2A> Метод поддерживает перечисление списков элементов.  
+  
+-   Метод позволяет добавлять объект <xref:System.ComponentModel.Design.DesignerActionList> или <xref:System.ComponentModel.Design.DesignerActionListCollection> в набор существующих элементов для экземпляра компонента. <xref:System.ComponentModel.Design.DesignerActionService.Add%2A> Напротив, <xref:System.ComponentModel.Design.DesignerActionService.Remove%2A> метод удаляет один или все списки элементов, связанные с компонентом.  
+  
+    > [!NOTE]
+    >  <xref:System.ComponentModel.Design.DesignerActionService.Add%2A> Метод представляет модель Direct Push для связывания элементов панели с компонентом. В отличие от этого, модель извлечения полагается на переопределение <xref:System.ComponentModel.Design.ComponentDesigner.ActionLists%2A> свойства класса конструктора для этого компонента. Среда разработки отвечает за добавление этих элементов в текущий <xref:System.ComponentModel.Design.DesignerActionService> момент создания компонента в области конструктора.  
+  
+    > [!IMPORTANT]
+    >  Методы <xref:System.ComponentModel.Design.DesignerActionService.Add%2A>, <xref:System.ComponentModel.Design.DesignerActionService.Remove%2A>, <xref:System.ComponentModel.Design.DesignerActionService.Contains%2A>и учитывают или влияют на элементы модели push-уведомлений. <xref:System.ComponentModel.Design.DesignerActionService.Clear%2A>  
+  
+-   <xref:System.ComponentModel.Design.DesignerActionService.DesignerActionListsChanged> Событие указывает, когда коллекция элементов изменяется для компонента.  
+  
+ Поскольку часто желательно использовать одни и те же элементы панели в контекстном меню во время разработки компонента и на его панели, существует большая степень взаимодействия между <xref:System.ComponentModel.Design.DesignerActionItem> объектами и командами конструктора.  
+  
+ Если конструктор компонентов не задает <xref:System.ComponentModel.Design.DesignerActionList> явно (то есть не содержит переопределенного <xref:System.ComponentModel.Design.ComponentDesigner.ActionLists%2A> свойства), то список будет создан из существующих команд конструктора. Эти команды указываются <xref:System.ComponentModel.Design.ComponentDesigner.Verbs%2A> свойством. В этом случае класс списка внутренних команд используется для хранения коллекции записей панели элементов команд.  
+  
+ Если нужно использовать и в качестве записи панели, и в контекстном меню времени разработки, можно `includeAsDesignerVerb` задать параметр в конструкторе элемента. <xref:System.ComponentModel.Design.DesignerActionMethodItem>  
+  
+ Используйте для управления отображением  <xref:System.ComponentModel.Design.ComponentDesigner.ActionLists%2A> конструктора.  <xref:System.ComponentModel.Design.DesignerActionUIService>  
+  
+ ]]></format>
+    </remarks>
+    <altmember cref="T:System.ComponentModel.Design.DesignerActionListCollection" />
+    <altmember cref="T:System.ComponentModel.Design.ComponentDesigner" />
+    <altmember cref="T:System.ComponentModel.Design.DesignerActionItem" />
+    <altmember cref="T:System.ComponentModel.Design.DesignerActionUIService" />
+    <related type="Article" href="https://msdn.microsoft.com/library/0bad6816-922a-4845-b8e3-50e91ec60f13">Команды конструктора и объектная модель DesignerAction для Windows Forms</related>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public DesignerActionService (IServiceProvider serviceProvider);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.IServiceProvider serviceProvider) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerActionService.#ctor(System.IServiceProvider)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (serviceProvider As IServiceProvider)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; DesignerActionService(IServiceProvider ^ serviceProvider);" />
+      <MemberSignature Language="F#" Value="new System.ComponentModel.Design.DesignerActionService : IServiceProvider -&gt; System.ComponentModel.Design.DesignerActionService" Usage="new System.ComponentModel.Design.DesignerActionService serviceProvider" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="serviceProvider" Type="System.IServiceProvider" />
+      </Parameters>
+      <Docs>
+        <param name="serviceProvider">Поставщик службы для текущей среды времени разработки.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.ComponentModel.Design.DesignerActionService" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Поставщик услуг необходим для наблюдения за выбором и изменениями компонентов. Ожидается поддержка <xref:System.ComponentModel.Design.IDesignerHost> типов и <xref:System.ComponentModel.Design.IComponentChangeService> . Класс использует внутреннюю таблицу для управления компонентами и связанными <xref:System.ComponentModel.Design.DesignerActionList> с ними смарт-тегами. <xref:System.ComponentModel.Design.DesignerActionService>  
+  
+ Как правило, разработчикам компонентов не требуется создавать экземпляр этого класса. Вместо этого они могут получить существующий экземпляр посредством вызова <xref:System.ComponentModel.Component.GetService%2A?displayProperty=nameWithType> метода.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.ComponentModel.Design.DesignerActionService.Dispose" />
+        <altmember cref="T:System.ComponentModel.Design.IDesignerHost" />
+        <altmember cref="T:System.ComponentModel.Design.IComponentChangeService" />
+        <altmember cref="M:System.ComponentModel.Component.GetService(System.Type)" />
+        <related type="Article" href="https://msdn.microsoft.com/library/0bad6816-922a-4845-b8e3-50e91ec60f13">Команды конструктора и объектная модель DesignerAction для Windows Forms</related>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="Add">
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Добавляет один или несколько объектов <see cref="T:System.ComponentModel.Design.DesignerActionList" /> в текущую коллекцию управляемых смарт-тегов.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="Add">
+      <MemberSignature Language="C#" Value="public void Add (System.ComponentModel.IComponent comp, System.ComponentModel.Design.DesignerActionList actionList);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Add(class System.ComponentModel.IComponent comp, class System.ComponentModel.Design.DesignerActionList actionList) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerActionService.Add(System.ComponentModel.IComponent,System.ComponentModel.Design.DesignerActionList)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Add (comp As IComponent, actionList As DesignerActionList)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Add(System::ComponentModel::IComponent ^ comp, System::ComponentModel::Design::DesignerActionList ^ actionList);" />
+      <MemberSignature Language="F#" Value="member this.Add : System.ComponentModel.IComponent * System.ComponentModel.Design.DesignerActionList -&gt; unit" Usage="designerActionService.Add (comp, actionList)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="comp" Type="System.ComponentModel.IComponent" />
+        <Parameter Name="actionList" Type="System.ComponentModel.Design.DesignerActionList" />
+      </Parameters>
+      <Docs>
+        <param name="comp">Интерфейс <see cref="T:System.ComponentModel.IComponent" />, которому будут сопоставлены смарт-теги.</param>
+        <param name="actionList">Список <see cref="T:System.ComponentModel.Design.DesignerActionList" />, содержащий новые элементы смарт-тега, которые должны быть добавлены.</param>
+        <summary>Добавляет список <see cref="T:System.ComponentModel.Design.DesignerActionList" /> в текущую коллекцию управляемых смарт-тегов.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.ComponentModel.Design.DesignerActionService.Add%2A> Метод представляет модель отправки для добавления элементов смарт-тега. Альтернативная модель извлечения полагается на переопределение <xref:System.ComponentModel.Design.ComponentDesigner.ActionLists%2A> свойства в конструкторе для соответствующего компонента.  
+  
+ При вызове этого метода добавляемые списки проверяются на Any <xref:System.ComponentModel.Design.DesignerActionMethodItem> со свойством, для `true`которого <xref:System.ComponentModel.Design.DesignerActionMethodItem.IncludeAsDesignerVerb%2A> задано значение. Эти элементы добавляются в список команд конструктора для этого компонента с помощью вызова <xref:System.ComponentModel.Design.MenuCommandService.AddVerb%2A?displayProperty=nameWithType> метода.  
+  
+ Управление смарт-тегами осуществляется на основе экземпляра компонента. Управляемая коллекция может содержать дублирующиеся записи.  
+  
+ Этот метод вызывает <xref:System.ComponentModel.Design.DesignerActionService.DesignerActionListsChanged> событие.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Хотя бы один параметр имеет значение <see langword="null" />.</exception>
+        <altmember cref="T:System.ComponentModel.Design.DesignerActionList" />
+        <altmember cref="P:System.ComponentModel.Design.ComponentDesigner.ActionLists" />
+        <altmember cref="Overload:System.ComponentModel.Design.DesignerActionService.Remove" />
+        <altmember cref="M:System.ComponentModel.Design.DesignerActionService.Contains(System.ComponentModel.IComponent)" />
+        <related type="Article" href="https://msdn.microsoft.com/library/0bad6816-922a-4845-b8e3-50e91ec60f13">Команды конструктора и объектная модель DesignerAction для Windows Forms</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Add">
+      <MemberSignature Language="C#" Value="public void Add (System.ComponentModel.IComponent comp, System.ComponentModel.Design.DesignerActionListCollection designerActionListCollection);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Add(class System.ComponentModel.IComponent comp, class System.ComponentModel.Design.DesignerActionListCollection designerActionListCollection) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerActionService.Add(System.ComponentModel.IComponent,System.ComponentModel.Design.DesignerActionListCollection)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Add(System::ComponentModel::IComponent ^ comp, System::ComponentModel::Design::DesignerActionListCollection ^ designerActionListCollection);" />
+      <MemberSignature Language="F#" Value="member this.Add : System.ComponentModel.IComponent * System.ComponentModel.Design.DesignerActionListCollection -&gt; unit" Usage="designerActionService.Add (comp, designerActionListCollection)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="comp" Type="System.ComponentModel.IComponent" />
+        <Parameter Name="designerActionListCollection" Type="System.ComponentModel.Design.DesignerActionListCollection" />
+      </Parameters>
+      <Docs>
+        <param name="comp">Интерфейс <see cref="T:System.ComponentModel.IComponent" />, которому будут сопоставлены смарт-теги.</param>
+        <param name="designerActionListCollection">Список <see cref="T:System.ComponentModel.Design.DesignerActionListCollection" />, содержащий новые элементы смарт-тега, которые должны быть добавлены.</param>
+        <summary>Добавляет список <see cref="T:System.ComponentModel.Design.DesignerActionListCollection" /> в текущую коллекцию управляемых смарт-тегов.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.ComponentModel.Design.DesignerActionService.Add%2A> Метод представляет модель отправки для добавления элементов смарт-тега. Альтернативная модель извлечения полагается на переопределение <xref:System.ComponentModel.Design.ComponentDesigner.ActionLists%2A> свойства в конструкторе для соответствующего компонента.  
+  
+ При вызове этого метода добавляемые списки проверяются на Any <xref:System.ComponentModel.Design.DesignerActionMethodItem> со свойством, для `true`которого <xref:System.ComponentModel.Design.DesignerActionMethodItem.IncludeAsDesignerVerb%2A> задано значение. Эти элементы добавляются в список команд конструктора для этого компонента с помощью вызова <xref:System.ComponentModel.Design.MenuCommandService.AddVerb%2A?displayProperty=nameWithType> метода.  
+  
+ Управление смарт-тегами осуществляется на основе экземпляра компонента. Управляемая коллекция может содержать дублирующиеся записи.  
+  
+ Этот метод вызывает <xref:System.ComponentModel.Design.DesignerActionService.DesignerActionListsChanged> событие.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Хотя бы один параметр имеет значение <see langword="null" />.</exception>
+        <altmember cref="T:System.ComponentModel.Design.DesignerActionList" />
+        <altmember cref="P:System.ComponentModel.Design.ComponentDesigner.ActionLists" />
+        <altmember cref="Overload:System.ComponentModel.Design.DesignerActionService.Remove" />
+        <altmember cref="M:System.ComponentModel.Design.DesignerActionService.Contains(System.ComponentModel.IComponent)" />
+        <related type="Article" href="https://msdn.microsoft.com/library/0bad6816-922a-4845-b8e3-50e91ec60f13">Команды конструктора и объектная модель DesignerAction для Windows Forms</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Clear">
+      <MemberSignature Language="C#" Value="public void Clear ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Clear() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerActionService.Clear" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Clear ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Clear();" />
+      <MemberSignature Language="F#" Value="member this.Clear : unit -&gt; unit" Usage="designerActionService.Clear " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Освобождает все компоненты от управления и очищает все списки смарт-тегов модели внедрения.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.ComponentModel.Design.DesignerActionService.Clear%2A> Метод очищает внутреннюю таблицу, используемую для хранения сведений о компонентах и их списках смарт-тегов в принудительной модели.  
+  
+> [!CAUTION]
+>  Поскольку этот метод влияет на все компоненты, управляемые текущей службой, а не только на текущий компонент, этот метод следует использовать внимательно. Как правило, разработчик средства разработки использует его при сбросе области конструктора. Разработчики компонентов должны использовать один из <xref:System.ComponentModel.Design.DesignerActionService.Remove%2A> методов для удаления отдельных элементов или списков смарт-тегов.  
+  
+ <xref:System.ComponentModel.Design.DesignerActionService.DesignerActionListsChanged> Событие возникает для каждого компонента, ранее управляемого текущей службой.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="Overload:System.ComponentModel.Design.DesignerActionService.Remove" />
+        <related type="Article" href="https://msdn.microsoft.com/library/0bad6816-922a-4845-b8e3-50e91ec60f13">Команды конструктора и объектная модель DesignerAction для Windows Forms</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Contains">
+      <MemberSignature Language="C#" Value="public bool Contains (System.ComponentModel.IComponent comp);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance bool Contains(class System.ComponentModel.IComponent comp) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerActionService.Contains(System.ComponentModel.IComponent)" />
+      <MemberSignature Language="VB.NET" Value="Public Function Contains (comp As IComponent) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; bool Contains(System::ComponentModel::IComponent ^ comp);" />
+      <MemberSignature Language="F#" Value="member this.Contains : System.ComponentModel.IComponent -&gt; bool" Usage="designerActionService.Contains comp" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="comp" Type="System.ComponentModel.IComponent" />
+      </Parameters>
+      <Docs>
+        <param name="comp">Объект <see cref="T:System.ComponentModel.IComponent" />, который требуется найти.</param>
+        <summary>Определяет, управляет ли текущая служба смарт-тегов списками действий для указанного компонента.</summary>
+        <returns>Значение <see langword="true" />, если компонент управляется текущей службой; в обратном случае — значение <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод распознает только смарт-теги принудительной модели, которые связаны с компонентом <xref:System.ComponentModel.Design.DesignerActionService.Add%2A> с помощью метода. <xref:System.ComponentModel.Design.DesignerActionService.Contains%2A>  
+  
+ Несмотря на то, что количество параллельных <xref:System.ComponentModel.Design.DesignerActionService> экземпляров, создаваемых средством времени разработки, не ограничено, обычно для каждой области конструктора создается только один экземпляр службы.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="comp" /> имеет значение <see langword="null" />.</exception>
+        <altmember cref="Overload:System.ComponentModel.Design.DesignerActionService.Add" />
+        <altmember cref="Overload:System.ComponentModel.Design.DesignerActionService.Remove" />
+        <related type="Article" href="https://msdn.microsoft.com/library/0bad6816-922a-4845-b8e3-50e91ec60f13">Команды конструктора и объектная модель DesignerAction для Windows Forms</related>
+      </Docs>
+    </Member>
+    <Member MemberName="DesignerActionListsChanged">
+      <MemberSignature Language="C#" Value="public event System.ComponentModel.Design.DesignerActionListsChangedEventHandler DesignerActionListsChanged;" />
+      <MemberSignature Language="ILAsm" Value=".event class System.ComponentModel.Design.DesignerActionListsChangedEventHandler DesignerActionListsChanged" />
+      <MemberSignature Language="DocId" Value="E:System.ComponentModel.Design.DesignerActionService.DesignerActionListsChanged" />
+      <MemberSignature Language="VB.NET" Value="Public Custom Event DesignerActionListsChanged As DesignerActionListsChangedEventHandler " />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; event System::ComponentModel::Design::DesignerActionListsChangedEventHandler ^ DesignerActionListsChanged;" />
+      <MemberSignature Language="F#" Value="member this.DesignerActionListsChanged : System.ComponentModel.Design.DesignerActionListsChangedEventHandler " Usage="member this.DesignerActionListsChanged : System.ComponentModel.Design.DesignerActionListsChangedEventHandler " />
+      <MemberType>Event</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.ComponentModel.Design.DesignerActionListsChangedEventHandler</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Происходит при удалении списка <see cref="T:System.ComponentModel.Design.DesignerActionList" /> или его добавлении для любого компонента.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ В следующей таблице показан набор специализированных классов, связанных с <xref:System.ComponentModel.Design.DesignerActionService.DesignerActionListsChanged> событием.  
+  
+|Специализированный тип|Описание|  
+|----------------------|-----------------|  
+|<xref:System.ComponentModel.Design.DesignerActionListsChangedEventArgs>|Добавляет сведения, относящиеся к управлению списком смарт-тегов. Этот класс является специализированным <xref:System.EventArgs>из.|  
+|<xref:System.ComponentModel.Design.DesignerActionListsChangedEventHandler>|Подключает к <xref:System.ComponentModel.Design.DesignerActionListsChangedEventArgs> со своим обработчиком.|  
+|<xref:System.ComponentModel.Design.DesignerActionListsChangedType>|Указывает, был ли добавлен или удален список.|  
+  
+ Дополнительные сведения об обработке событий см. в разделе [обработка и вызов событий](~/docs/standard/events/index.md).  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.ComponentModel.Design.DesignerActionListsChangedEventArgs" />
+        <altmember cref="T:System.ComponentModel.Design.DesignerActionListsChangedType" />
+        <altmember cref="T:System.ComponentModel.Design.DesignerActionListsChangedEventHandler" />
+        <altmember cref="Overload:System.ComponentModel.Design.DesignerActionService.Add" />
+        <altmember cref="Overload:System.ComponentModel.Design.DesignerActionService.Remove" />
+        <altmember cref="M:System.ComponentModel.Design.DesignerActionService.Clear" />
+        <related type="Article" href="https://msdn.microsoft.com/library/0bad6816-922a-4845-b8e3-50e91ec60f13">Команды конструктора и объектная модель DesignerAction для Windows Forms</related>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="Dispose">
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Освобождает ресурсы, используемые объектом <see cref="T:System.ComponentModel.Design.DesignerActionService" />.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="Dispose">
+      <MemberSignature Language="C#" Value="public void Dispose ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void Dispose() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerActionService.Dispose" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Dispose ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void Dispose();" />
+      <MemberSignature Language="F#" Value="abstract member Dispose : unit -&gt; unit&#xA;override this.Dispose : unit -&gt; unit" Usage="designerActionService.Dispose " />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.IDisposable.Dispose</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Освобождает все ресурсы, используемые классом <see cref="T:System.ComponentModel.Design.DesignerActionService" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод — это реализация единственного метода <xref:System.IDisposable> , установленного интерфейсом. <xref:System.ComponentModel.Design.DesignerActionService.Dispose%2A> Этот метод следует вызвать по завершении использования класса <xref:System.ComponentModel.Design.DesignerActionService>. Он выполняет два основных действия:  
+  
+-   Удаляет текущую службу из списка доступных служб в среде разработки посредством вызова <xref:System.ComponentModel.Design.IServiceContainer.RemoveService%2A> метода.  
+  
+-   Отменяет подписывание событий изменения компонента из связанного <xref:System.ComponentModel.Design.IComponentChangeService> интерфейса.  
+  
+ Вызовите метод <xref:System.ComponentModel.Design.DesignerActionService.Dispose%2A> по окончании использования класса <xref:System.ComponentModel.Design.DesignerActionService>. Метод <xref:System.ComponentModel.Design.DesignerActionService.Dispose%2A> оставляет класс <xref:System.ComponentModel.Design.DesignerActionService> в непригодном для использования состоянии. После вызова <xref:System.ComponentModel.Design.DesignerActionService.Dispose%2A>необходимо освободить все ссылки <xref:System.ComponentModel.Design.DesignerActionService> на, чтобы сборщик мусора мог освободить память, которую <xref:System.ComponentModel.Design.DesignerActionService> занимают. Дополнительные сведения см. в разделе [Очистка неуправляемых ресурсов](~/docs/standard/garbage-collection/unmanaged.md) и [Реализация метода Dispose](~/docs/standard/garbage-collection/implementing-dispose.md).  
+  
+> [!NOTE]
+>  Всегда вызывайте метод <xref:System.ComponentModel.Design.DesignerActionService.Dispose%2A> перед освобождением последней ссылки на класс <xref:System.ComponentModel.Design.DesignerActionService>. В противном случае используемые им ресурсы не будут освобождены до тех пор, пока сборщик мусора не вызовет для объекта <xref:System.ComponentModel.Design.DesignerActionService> метод `Finalize`.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="Overload:System.ComponentModel.Design.IServiceContainer.RemoveService" />
+        <altmember cref="T:System.ComponentModel.Design.IComponentChangeService" />
+        <related type="Article" href="https://msdn.microsoft.com/library/0bad6816-922a-4845-b8e3-50e91ec60f13">Команды конструктора и объектная модель DesignerAction для Windows Forms</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Dispose">
+      <MemberSignature Language="C#" Value="protected virtual void Dispose (bool disposing);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void Dispose(bool disposing) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerActionService.Dispose(System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub Dispose (disposing As Boolean)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void Dispose(bool disposing);" />
+      <MemberSignature Language="F#" Value="abstract member Dispose : bool -&gt; unit&#xA;override this.Dispose : bool -&gt; unit" Usage="designerActionService.Dispose disposing" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="disposing" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="disposing">Значение <see langword="true" /> позволяет освободить управляемые и неуправляемые ресурсы; значение <see langword="false" /> позволяет освободить только неуправляемые ресурсы.</param>
+        <summary>Освобождает неуправляемые ресурсы, используемые объектом <see cref="T:System.ComponentModel.Design.DesignerActionService" />, а при необходимости освобождает также управляемые ресурсы.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод — это реализация единственного метода <xref:System.IDisposable> , установленного интерфейсом. <xref:System.ComponentModel.Design.DesignerActionService.Dispose%2A> Этот метод следует вызвать по завершении использования класса <xref:System.ComponentModel.Design.DesignerActionService>. Он выполняет два основных действия:  
+  
+-   Удаляет текущую службу из списка доступных служб в среде разработки посредством вызова <xref:System.ComponentModel.Design.IServiceContainer.RemoveService%2A> метода.  
+  
+-   Отменяет подписывание событий изменения компонента из связанного <xref:System.ComponentModel.Design.IComponentChangeService> интерфейса.  
+  
+ Этот метод вызывается открытым `Dispose()` методом <xref:System.Object.Finalize%2A> и методом. `Dispose()`вызывает защищенный `Dispose(Boolean)` метод с параметром `disposing` , для `true`которого задано значение. <xref:System.Object.Finalize%2A>вызывает метод `disposing` `false`с параметром, равным. `Dispose`  
+  
+ Если параметр `disposing` имеет значение `true`, то данный метод освобождает все ресурсы, занятые любыми управляемыми объектами, на которые ссылается этот объект <xref:System.ComponentModel.Design.DesignerActionService>. Этот метод вызывает метод `Dispose()` каждого объекта, на который есть ссылка.  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>Метод 
+            <see langword="Dispose" /> может вызываться несколько раз другими объектами. При переопределении <see langword="Dispose(Boolean)" /> следует избегать ссылок на объекты, которые были удалены ранее при предыдущем <see langword="Dispose" />вызове метода. Дополнительные сведения о реализации <see langword="Dispose(Boolean)" />см. в разделе [Реализация метода Dispose](~/docs/standard/garbage-collection/implementing-dispose.md).  
+  
+<see langword="Dispose" /> Дополнительные сведения о <see cref="M:System.Object.Finalize" />и см. в разделе [Очистка неуправляемых ресурсов](~/docs/standard/garbage-collection/unmanaged.md) и [Переопределение метода Finalize](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/ddae83kx(v=vs.100)).</para></block>
+        <altmember cref="Overload:System.ComponentModel.Design.IServiceContainer.RemoveService" />
+        <altmember cref="T:System.ComponentModel.Design.IComponentChangeService" />
+        <related type="Article" href="https://msdn.microsoft.com/library/0bad6816-922a-4845-b8e3-50e91ec60f13">Команды конструктора и объектная модель DesignerAction для Windows Forms</related>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="GetComponentActions">
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Возвращает коллекцию списков элементов смарт-тегов, сопоставленных компоненту.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="GetComponentActions">
+      <MemberSignature Language="C#" Value="public System.ComponentModel.Design.DesignerActionListCollection GetComponentActions (System.ComponentModel.IComponent component);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.ComponentModel.Design.DesignerActionListCollection GetComponentActions(class System.ComponentModel.IComponent component) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerActionService.GetComponentActions(System.ComponentModel.IComponent)" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetComponentActions (component As IComponent) As DesignerActionListCollection" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::ComponentModel::Design::DesignerActionListCollection ^ GetComponentActions(System::ComponentModel::IComponent ^ component);" />
+      <MemberSignature Language="F#" Value="member this.GetComponentActions : System.ComponentModel.IComponent -&gt; System.ComponentModel.Design.DesignerActionListCollection" Usage="designerActionService.GetComponentActions component" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.ComponentModel.Design.DesignerActionListCollection</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="component" Type="System.ComponentModel.IComponent" />
+      </Parameters>
+      <Docs>
+        <param name="component">Компонент, которому сопоставлены смарт-теги.</param>
+        <summary>Возвращает коллекцию списков элементов смарт-тегов, сопоставленных компоненту.</summary>
+        <returns>Коллекция смарт-тегов для заданного компонента.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод эквивалентен <xref:System.ComponentModel.Design.DesignerActionService.GetComponentActions%28System.ComponentModel.IComponent%2CSystem.ComponentModel.Design.ComponentActionsType%29> `type` вызову <xref:System.ComponentModel.Design.ComponentActionsType.All> метода с помощью параметра. <xref:System.ComponentModel.Design.DesignerActionService.GetComponentActions%2A> Таким образом, возвращаемая коллекция будет содержать как списки push-уведомлений, так и список принудительных последовательностей интеллектуальных тегов.  
+  
+ Возвращаемое <xref:System.ComponentModel.Design.DesignerActionListCollection> значение — это объединение списков элементов, добавленных <xref:System.ComponentModel.Design.DesignerActionService.Add%2A> с помощью методов, а также списков <xref:System.ComponentModel.Design.DesignerCommandSet> , полученных из экземпляра компонента.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="comp" /> — <see langword="null" />.</exception>
+        <altmember cref="M:System.ComponentModel.Design.DesignerActionService.GetComponentDesignerActions(System.ComponentModel.IComponent,System.ComponentModel.Design.DesignerActionListCollection)" />
+        <altmember cref="M:System.ComponentModel.Design.DesignerActionService.GetComponentServiceActions(System.ComponentModel.IComponent,System.ComponentModel.Design.DesignerActionListCollection)" />
+        <altmember cref="Overload:System.ComponentModel.Design.DesignerActionService.Add" />
+        <altmember cref="T:System.ComponentModel.Design.DesignerCommandSet" />
+        <related type="Article" href="https://msdn.microsoft.com/library/0bad6816-922a-4845-b8e3-50e91ec60f13">Команды конструктора и объектная модель DesignerAction для Windows Forms</related>
+      </Docs>
+    </Member>
+    <Member MemberName="GetComponentActions">
+      <MemberSignature Language="C#" Value="public virtual System.ComponentModel.Design.DesignerActionListCollection GetComponentActions (System.ComponentModel.IComponent component, System.ComponentModel.Design.ComponentActionsType type);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.ComponentModel.Design.DesignerActionListCollection GetComponentActions(class System.ComponentModel.IComponent component, valuetype System.ComponentModel.Design.ComponentActionsType type) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerActionService.GetComponentActions(System.ComponentModel.IComponent,System.ComponentModel.Design.ComponentActionsType)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function GetComponentActions (component As IComponent, type As ComponentActionsType) As DesignerActionListCollection" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::ComponentModel::Design::DesignerActionListCollection ^ GetComponentActions(System::ComponentModel::IComponent ^ component, System::ComponentModel::Design::ComponentActionsType type);" />
+      <MemberSignature Language="F#" Value="abstract member GetComponentActions : System.ComponentModel.IComponent * System.ComponentModel.Design.ComponentActionsType -&gt; System.ComponentModel.Design.DesignerActionListCollection&#xA;override this.GetComponentActions : System.ComponentModel.IComponent * System.ComponentModel.Design.ComponentActionsType -&gt; System.ComponentModel.Design.DesignerActionListCollection" Usage="designerActionService.GetComponentActions (component, type)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.ComponentModel.Design.DesignerActionListCollection</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="component" Type="System.ComponentModel.IComponent" Index="0" FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+        <Parameter Name="type" Type="System.ComponentModel.Design.ComponentActionsType" Index="1" FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      </Parameters>
+      <Docs>
+        <param name="component">Компонент, которому сопоставлены смарт-теги.</param>
+        <param name="type">Объект <see cref="T:System.ComponentModel.Design.ComponentActionsType" />, при помощи которого будет выполняться фильтрация сопоставленных смарт-тегов.</param>
+        <summary>Возвращает коллекцию списков элементов смарт-тегов заданного типа, сопоставленных компоненту.</summary>
+        <returns>Коллекция смарт-тегов заданного типа для заданного компонента.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Эта версия перегруженных <xref:System.ComponentModel.Design.DesignerActionService.GetComponentActions%2A> фильтров методов `type` для параметра, которая может иметь одно из следующих значений.  
+  
+|Значение|Описание|  
+|-----------|-----------------|  
+|<xref:System.ComponentModel.Design.ComponentActionsType.All>|Все связанные смарт-теги.|  
+|<xref:System.ComponentModel.Design.ComponentActionsType.Component>|Только смарт-теги модели извлечения.|  
+|<xref:System.ComponentModel.Design.ComponentActionsType.Service>|Только смарт-теги принудительной модели.|  
+  
+ Если связанный конструктор для компонента не предоставляет список смарт-тегов в модели по запросу, <xref:System.ComponentModel.Design.DesignerActionService.GetComponentActions%2A> то вместо этого метод будет использовать элементы контекстного меню времени разработки <xref:System.ComponentModel.Design.ComponentDesigner.Verbs%2A> из свойства.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="comp" /> имеет значение <see langword="null" />.</exception>
+        <altmember cref="M:System.ComponentModel.Design.DesignerActionService.GetComponentDesignerActions(System.ComponentModel.IComponent,System.ComponentModel.Design.DesignerActionListCollection)" />
+        <altmember cref="M:System.ComponentModel.Design.DesignerActionService.GetComponentServiceActions(System.ComponentModel.IComponent,System.ComponentModel.Design.DesignerActionListCollection)" />
+        <altmember cref="T:System.ComponentModel.Design.DesignerActionListCollection" />
+        <altmember cref="T:System.ComponentModel.Design.DesignerVerb" />
+        <altmember cref="T:System.ComponentModel.Design.ComponentActionsType" />
+        <related type="Article" href="https://msdn.microsoft.com/library/0bad6816-922a-4845-b8e3-50e91ec60f13">Команды конструктора и объектная модель DesignerAction для Windows Forms</related>
+      </Docs>
+    </Member>
+    <Member MemberName="GetComponentActions">
+      <MemberSignature Language="C#" Value="public virtual System.ComponentModel.Design.DesignerActionListCollection GetComponentActions (System.ComponentModel.IComponent component, System.Windows.Forms.Design.ComponentActionsType type);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.ComponentModel.Design.DesignerActionListCollection GetComponentActions(class System.ComponentModel.IComponent component, valuetype System.Windows.Forms.Design.ComponentActionsType type) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerActionService.GetComponentActions(System.ComponentModel.IComponent,System.Windows.Forms.Design.ComponentActionsType)" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function GetComponentActions (component As IComponent, type As ComponentActionsType) As DesignerActionListCollection" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::ComponentModel::Design::DesignerActionListCollection ^ GetComponentActions(System::ComponentModel::IComponent ^ component, System::Windows::Forms::Design::ComponentActionsType type);" />
+      <MemberSignature Language="F#" Value="abstract member GetComponentActions : System.ComponentModel.IComponent * System.Windows.Forms.Design.ComponentActionsType -&gt; System.ComponentModel.Design.DesignerActionListCollection&#xA;override this.GetComponentActions : System.ComponentModel.IComponent * System.Windows.Forms.Design.ComponentActionsType -&gt; System.ComponentModel.Design.DesignerActionListCollection" Usage="designerActionService.GetComponentActions (component, type)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.ComponentModel.Design.DesignerActionListCollection</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="component" Type="System.ComponentModel.IComponent" Index="0" FrameworkAlternate="netcore-3.0" />
+        <Parameter Name="type" Type="System.Windows.Forms.Design.ComponentActionsType" Index="1" FrameworkAlternate="netcore-3.0" />
+      </Parameters>
+      <Docs>
+        <param name="component">To be added.</param>
+        <param name="type">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetComponentDesignerActions">
+      <MemberSignature Language="C#" Value="protected virtual void GetComponentDesignerActions (System.ComponentModel.IComponent component, System.ComponentModel.Design.DesignerActionListCollection actionLists);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void GetComponentDesignerActions(class System.ComponentModel.IComponent component, class System.ComponentModel.Design.DesignerActionListCollection actionLists) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerActionService.GetComponentDesignerActions(System.ComponentModel.IComponent,System.ComponentModel.Design.DesignerActionListCollection)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub GetComponentDesignerActions (component As IComponent, actionLists As DesignerActionListCollection)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void GetComponentDesignerActions(System::ComponentModel::IComponent ^ component, System::ComponentModel::Design::DesignerActionListCollection ^ actionLists);" />
+      <MemberSignature Language="F#" Value="abstract member GetComponentDesignerActions : System.ComponentModel.IComponent * System.ComponentModel.Design.DesignerActionListCollection -&gt; unit&#xA;override this.GetComponentDesignerActions : System.ComponentModel.IComponent * System.ComponentModel.Design.DesignerActionListCollection -&gt; unit" Usage="designerActionService.GetComponentDesignerActions (component, actionLists)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="component" Type="System.ComponentModel.IComponent" />
+        <Parameter Name="actionLists" Type="System.ComponentModel.Design.DesignerActionListCollection" />
+      </Parameters>
+      <Docs>
+        <param name="component">Компонент, которому сопоставлены смарт-теги.</param>
+        <param name="actionLists">Коллекция, в которую будут добавлены сопоставленные смарт-теги.</param>
+        <summary>Извлекает смарт-теги модели извлечения, сопоставленные компоненту.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод является вспомогательным методом <xref:System.ComponentModel.Design.DesignerActionService.GetComponentActions%2A> для методов. <xref:System.ComponentModel.Design.DesignerActionService.GetComponentDesignerActions%2A> <xref:System.ComponentModel.Design.DesignerActionService.GetComponentDesignerActions%2A>выполняет поиск смарт-тегов модели по запросу типа <xref:System.ComponentModel.Design.ComponentActionsType.Component>, а затем добавляет их в предоставляемую `actionLists` коллекцию.  
+  
+ Если разработчик компонента явно не предоставляет коллекцию смарт-тегов с помощью <xref:System.ComponentModel.Design.ComponentDesigner.ActionLists%2A> свойства его конструктора, этот метод будет повторно использовать записи контекстного меню времени разработки, полученные <xref:System.ComponentModel.Design.ComponentDesigner.Verbs%2A> с помощью свойства элемента дизайнеров.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Хотя бы один параметр имеет значение <see langword="null" />.</exception>
+        <altmember cref="Overload:System.ComponentModel.Design.DesignerActionService.GetComponentActions" />
+        <altmember cref="M:System.ComponentModel.Design.DesignerActionService.GetComponentServiceActions(System.ComponentModel.IComponent,System.ComponentModel.Design.DesignerActionListCollection)" />
+        <altmember cref="P:System.ComponentModel.Design.ComponentDesigner.ActionLists" />
+        <altmember cref="P:System.ComponentModel.Design.ComponentDesigner.Verbs" />
+        <related type="Article" href="https://msdn.microsoft.com/library/0bad6816-922a-4845-b8e3-50e91ec60f13">Команды конструктора и объектная модель DesignerAction для Windows Forms</related>
+      </Docs>
+    </Member>
+    <Member MemberName="GetComponentServiceActions">
+      <MemberSignature Language="C#" Value="protected virtual void GetComponentServiceActions (System.ComponentModel.IComponent component, System.ComponentModel.Design.DesignerActionListCollection actionLists);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void GetComponentServiceActions(class System.ComponentModel.IComponent component, class System.ComponentModel.Design.DesignerActionListCollection actionLists) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerActionService.GetComponentServiceActions(System.ComponentModel.IComponent,System.ComponentModel.Design.DesignerActionListCollection)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub GetComponentServiceActions (component As IComponent, actionLists As DesignerActionListCollection)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void GetComponentServiceActions(System::ComponentModel::IComponent ^ component, System::ComponentModel::Design::DesignerActionListCollection ^ actionLists);" />
+      <MemberSignature Language="F#" Value="abstract member GetComponentServiceActions : System.ComponentModel.IComponent * System.ComponentModel.Design.DesignerActionListCollection -&gt; unit&#xA;override this.GetComponentServiceActions : System.ComponentModel.IComponent * System.ComponentModel.Design.DesignerActionListCollection -&gt; unit" Usage="designerActionService.GetComponentServiceActions (component, actionLists)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="component" Type="System.ComponentModel.IComponent" />
+        <Parameter Name="actionLists" Type="System.ComponentModel.Design.DesignerActionListCollection" />
+      </Parameters>
+      <Docs>
+        <param name="component">Компонент, которому сопоставлены смарт-теги.</param>
+        <param name="actionLists">Коллекция, в которую будут добавлены сопоставленные смарт-теги.</param>
+        <summary>Извлекает смарт-теги модели внедрения, сопоставленные компоненту.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод является вспомогательным методом <xref:System.ComponentModel.Design.DesignerActionService.GetComponentActions%2A> для методов. <xref:System.ComponentModel.Design.DesignerActionService.GetComponentServiceActions%2A> Он выполняет поиск смарт-тегов с типом <xref:System.ComponentModel.Design.ComponentActionsType.Service>, а затем добавляет их в предоставляемую `actionLists` коллекцию.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Хотя бы один параметр имеет значение <see langword="null" />.</exception>
+        <altmember cref="Overload:System.ComponentModel.Design.DesignerActionService.GetComponentActions" />
+        <altmember cref="M:System.ComponentModel.Design.DesignerActionService.GetComponentDesignerActions(System.ComponentModel.IComponent,System.ComponentModel.Design.DesignerActionListCollection)" />
+        <related type="Article" href="https://msdn.microsoft.com/library/0bad6816-922a-4845-b8e3-50e91ec60f13">Команды конструктора и объектная модель DesignerAction для Windows Forms</related>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="Remove">
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Отменяет сопоставление одного или нескольких списков смарт-тегов из одного или нескольких компонентов.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="Remove">
+      <MemberSignature Language="C#" Value="public void Remove (System.ComponentModel.Design.DesignerActionList actionList);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Remove(class System.ComponentModel.Design.DesignerActionList actionList) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerActionService.Remove(System.ComponentModel.Design.DesignerActionList)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Remove (actionList As DesignerActionList)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Remove(System::ComponentModel::Design::DesignerActionList ^ actionList);" />
+      <MemberSignature Language="F#" Value="member this.Remove : System.ComponentModel.Design.DesignerActionList -&gt; unit" Usage="designerActionService.Remove actionList" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="actionList" Type="System.ComponentModel.Design.DesignerActionList" />
+      </Parameters>
+      <Docs>
+        <param name="actionList">Список смарт-тегов, который следует удалить.</param>
+        <summary>Удаляет заданный список смарт-тегов из всех компонентов, управляемых текущей службой.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Эта версия <xref:System.ComponentModel.Design.DesignerActionService.Remove%2A> метода обычно используется разработчиками средств разработки, поскольку разработчики компонентов, как правило, не узнают, какие другие компоненты существуют в текущем пространстве разработки.  
+  
+ В <xref:System.ComponentModel.Design.DesignerActionService.DesignerActionListsChanged> случае успешного выполнения этот метод вызывает событие.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="actionList" /> имеет значение <see langword="null" />.</exception>
+        <altmember cref="Overload:System.ComponentModel.Design.DesignerActionService.Add" />
+        <altmember cref="M:System.ComponentModel.Design.DesignerActionUIService.HideUI(System.ComponentModel.IComponent)" />
+        <altmember cref="M:System.ComponentModel.Design.DesignerActionService.Clear" />
+        <related type="Article" href="https://msdn.microsoft.com/library/0bad6816-922a-4845-b8e3-50e91ec60f13">Команды конструктора и объектная модель DesignerAction для Windows Forms</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Remove">
+      <MemberSignature Language="C#" Value="public void Remove (System.ComponentModel.IComponent comp);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Remove(class System.ComponentModel.IComponent comp) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerActionService.Remove(System.ComponentModel.IComponent)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Remove (comp As IComponent)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Remove(System::ComponentModel::IComponent ^ comp);" />
+      <MemberSignature Language="F#" Value="member this.Remove : System.ComponentModel.IComponent -&gt; unit" Usage="designerActionService.Remove comp" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="comp" Type="System.ComponentModel.IComponent" />
+      </Parameters>
+      <Docs>
+        <param name="comp">Компонент, для которого будет отменено сопоставление смарт-тегов.</param>
+        <summary>Удаляет все списки смарт-тегов, сопоставленных заданному компоненту.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ В <xref:System.ComponentModel.Design.DesignerActionService.Remove%2A> случае успеха метод <xref:System.ComponentModel.Design.DesignerActionService.DesignerActionListsChanged> вызывает событие.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="comp" /> имеет значение <see langword="null" />.</exception>
+        <altmember cref="Overload:System.ComponentModel.Design.DesignerActionService.Add" />
+        <altmember cref="M:System.ComponentModel.Design.DesignerActionUIService.HideUI(System.ComponentModel.IComponent)" />
+        <altmember cref="M:System.ComponentModel.Design.DesignerActionService.Clear" />
+        <related type="Article" href="https://msdn.microsoft.com/library/0bad6816-922a-4845-b8e3-50e91ec60f13">Команды конструктора и объектная модель DesignerAction для Windows Forms</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Remove">
+      <MemberSignature Language="C#" Value="public void Remove (System.ComponentModel.IComponent comp, System.ComponentModel.Design.DesignerActionList actionList);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Remove(class System.ComponentModel.IComponent comp, class System.ComponentModel.Design.DesignerActionList actionList) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ComponentModel.Design.DesignerActionService.Remove(System.ComponentModel.IComponent,System.ComponentModel.Design.DesignerActionList)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Remove (comp As IComponent, actionList As DesignerActionList)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Remove(System::ComponentModel::IComponent ^ comp, System::ComponentModel::Design::DesignerActionList ^ actionList);" />
+      <MemberSignature Language="F#" Value="member this.Remove : System.ComponentModel.IComponent * System.ComponentModel.Design.DesignerActionList -&gt; unit" Usage="designerActionService.Remove (comp, actionList)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Design</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Windows.Forms.Design</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="comp" Type="System.ComponentModel.IComponent" />
+        <Parameter Name="actionList" Type="System.ComponentModel.Design.DesignerActionList" />
+      </Parameters>
+      <Docs>
+        <param name="comp">Компонент, для которого будет отменено сопоставление смарт-тегов.</param>
+        <param name="actionList">Удаляемый список смарт-тегов.</param>
+        <summary>Удаляет заданный смарт-тег из указанного компонента.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ В <xref:System.ComponentModel.Design.DesignerActionService.Remove%2A> случае успеха метод <xref:System.ComponentModel.Design.DesignerActionService.DesignerActionListsChanged> вызывает событие.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Хотя бы один параметр имеет значение <see langword="null" />.</exception>
+        <altmember cref="Overload:System.ComponentModel.Design.DesignerActionService.Add" />
+        <altmember cref="M:System.ComponentModel.Design.DesignerActionUIService.HideUI(System.ComponentModel.IComponent)" />
+        <altmember cref="M:System.ComponentModel.Design.DesignerActionService.Clear" />
+        <related type="Article" href="https://msdn.microsoft.com/library/0bad6816-922a-4845-b8e3-50e91ec60f13">Команды конструктора и объектная модель DesignerAction для Windows Forms</related>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
