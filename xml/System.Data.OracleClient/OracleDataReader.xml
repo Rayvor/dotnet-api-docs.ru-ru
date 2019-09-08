@@ -1,0 +1,1972 @@
+<Type Name="OracleDataReader" FullName="System.Data.OracleClient.OracleDataReader">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="335f641da266e49acce02bd59fa451815a99fb7a" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70684526" /></Metadata><TypeSignature Language="C#" Value="public sealed class OracleDataReader : System.Data.Common.DbDataReader" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi sealed beforefieldinit OracleDataReader extends System.Data.Common.DbDataReader" />
+  <TypeSignature Language="DocId" Value="T:System.Data.OracleClient.OracleDataReader" />
+  <TypeSignature Language="VB.NET" Value="Public NotInheritable Class OracleDataReader&#xA;Inherits DbDataReader" />
+  <TypeSignature Language="C++ CLI" Value="public ref class OracleDataReader sealed : System::Data::Common::DbDataReader" />
+  <TypeSignature Language="F#" Value="type OracleDataReader = class&#xA;    inherit DbDataReader" />
+  <AssemblyInfo>
+    <AssemblyName>System.Data.OracleClient</AssemblyName>
+    <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Data.Common.DbDataReader</BaseTypeName>
+    <BaseTypeName FrameworkAlternate="netframework-1.1">System.MarshalByRefObject</BaseTypeName>
+  </Base>
+  <Interfaces>
+  </Interfaces>
+  <Docs>
+    <summary>Предоставляет способ чтения потока строк данных из источника только в прямом порядке. Этот класс не наследуется.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Чтобы создать <xref:System.Data.OracleClient.OracleDataReader>объект, необходимо <xref:System.Data.OracleClient.OracleCommand.ExecuteReader%2A> вызвать метод <xref:System.Data.OracleClient.OracleCommand> объекта, а не напрямую использовать конструктор.  
+  
+ Изменения, внесенные в результирующий набор другим процессом или потоком во время чтения данных, могут быть видимы для пользователя <xref:System.Data.OracleClient.OracleDataReader>.  
+  
+ <xref:System.Data.OracleClient.OracleDataReader.IsClosed%2A>и <xref:System.Data.OracleClient.OracleDataReader.RecordsAffected%2A> являются единственными свойствами, которые можно вызывать <xref:System.Data.OracleClient.OracleDataReader> после закрытия. В некоторых случаях необходимо вызвать метод <xref:System.Data.OracleClient.OracleDataReader.Close%2A> , прежде чем можно будет вызвать. <xref:System.Data.OracleClient.OracleDataReader.RecordsAffected%2A>  
+  
+ В любой момент <xref:System.Data.OracleClient.OracleDataReader> времени можно открыть более одного раза.  
+  
+ В следующих двух примерах Visual Basic показано, как использовать <xref:System.Data.OracleClient.OracleDataReader> для получения Oracle. `REF CURSOR` В этих примерах используются таблицы, определенные в схеме Oracle Скотт/Tiger, и требуется следующий пакет PL/SQL и текст пакета. Их необходимо создать на сервере, чтобы использовать примеры.  
+  
+ Создайте на сервере Oracle следующий пакет Oracle.  
+  
+```  
+CREATE OR REPLACE PACKAGE CURSPKG AS   
+   TYPE T_CURSOR IS REF CURSOR;   
+   PROCEDURE OPEN_ONE_CURSOR (N_EMPNO IN NUMBER,   
+      IO_CURSOR IN OUT T_CURSOR);   
+   PROCEDURE OPEN_TWO_CURSORS (EMPCURSOR OUT T_CURSOR,   
+      DEPTCURSOR OUT T_CURSOR);  
+END CURSPKG;  
+/  
+```  
+  
+ На сервере Oracle создайте следующий текст пакета Oracle.  
+  
+```  
+  
+CREATE OR REPLACE PACKAGE BODY CURSPKG AS   
+    PROCEDURE OPEN_ONE_CURSOR (N_EMPNO IN NUMBER,   
+                               IO_CURSOR OUT T_CURSOR)   
+    IS   
+        V_CURSOR T_CURSOR;   
+    BEGIN   
+        IF N_EMPNO <> 0 THEN   
+             OPEN V_CURSOR FOR   
+             SELECT EMP.EMPNO, EMP.ENAME, DEPT.DEPTNO, DEPT.DNAME   
+                  FROM EMP, DEPT   
+                  WHERE EMP.DEPTNO = DEPT.DEPTNO   
+                        AND EMP.EMPNO = N_EMPNO;   
+        ELSE   
+             OPEN V_CURSOR FOR   
+             SELECT EMP.EMPNO, EMP.ENAME, DEPT.DEPTNO, DEPT.DNAME   
+                  FROM EMP, DEPT   
+                  WHERE EMP.DEPTNO = DEPT.DEPTNO;   
+        END IF;   
+        IO_CURSOR := V_CURSOR;   
+    END OPEN_ONE_CURSOR;   
+    PROCEDURE OPEN_TWO_CURSORS (EMPCURSOR OUT T_CURSOR,   
+                                DEPTCURSOR OUT T_CURSOR)   
+    IS   
+        V_CURSOR1 T_CURSOR;   
+        V_CURSOR2 T_CURSOR;   
+    BEGIN   
+        OPEN V_CURSOR1 FOR SELECT * FROM EMP;   
+        OPEN V_CURSOR2 FOR SELECT * FROM DEPT;   
+        EMPCURSOR  := V_CURSOR1;   
+        DEPTCURSOR := V_CURSOR2;   
+    END OPEN_TWO_CURSORS;   
+END CURSPKG;  
+/  
+```  
+  
+ В этом Visual Basic примере выполняется хранимая процедура PL/SQL, которая возвращает `REF CURSOR` параметр, и считывает значение в <xref:System.Data.OracleClient.OracleDataReader>виде.  
+  
+```vb  
+Private Sub ReadOracleData(ByVal connectionString As String)  
+   Dim connection As New OracleConnection(connectionString)  
+   Dim command As New OracleCommand()  
+   Dim reader As OracleDataReader  
+  
+   connection.Open()  
+   command.Connection = connection  
+   command.CommandText = "CURSPKG.OPEN_ONE_CURSOR"  
+   command.CommandType = CommandType.StoredProcedure  
+   command.Parameters.Add(New OracleParameter("N_EMPNO", OracleType.Number)).Value = 7369  
+   command.Parameters.Add(New OracleParameter("IO_CURSOR", OracleType.Cursor)).Direction = ParameterDirection.Output  
+  
+   reader = command.ExecuteReader()  
+   While (reader.Read())  
+      ' Do something with the values.  
+   End While  
+   reader.Close()  
+   connection.Close()  
+End Sub  
+```  
+  
+ В этом Visual Basic примере выполняется хранимая процедура PL/SQL, которая возвращает `REF CURSOR` два параметра, и считывает значения <xref:System.Data.OracleClient.OracleDataReader>с помощью.  
+  
+```vb  
+Private Sub ReadOracleData(ByVal connectionString As String)  
+   Dim dataSet As New DataSet()  
+   Dim connection As New OracleConnection(connectionString)  
+   Dim command As New OracleCommand()  
+   Dim reader As OracleDataReader  
+  
+   connection.Open()  
+   command.Connection = connection  
+   command.CommandText = "CURSPKG.OPEN_TWO_CURSORS"  
+   command.CommandType = CommandType.StoredProcedure  
+   command.Parameters.Add(New OracleParameter("EMPCURSOR", OracleType.Cursor)).Direction = ParameterDirection.Output  
+   command.Parameters.Add(New OracleParameter("DEPTCURSOR", OracleType.Cursor)).Direction = ParameterDirection.Output  
+  
+   reader = command.ExecuteReader(CommandBehavior.CloseConnection)  
+   While (reader.Read())  
+      ' Do something with the values.  
+   End While  
+   reader.NextResult()  
+   While (reader.Read())  
+        ' Do something with the values.  
+   End While  
+   reader.Close()  
+   connection.Close()  
+ End Sub  
+```  
+  
+ В C# этом примере создается таблица Oracle, которая загружается с данными. Этот пример необходимо выполнить перед выполнением следующего примера, в котором демонстрируется использование <xref:System.Data.OracleClient.OracleDataReader> для доступа к данным с помощью структур OracleType.  
+  
+```csharp  
+public void Setup(string connectionString)  
+{  
+   OracleConnection connection = new OracleConnection(connectionString);  
+   try  
+   {  
+      connection.Open();  
+      OracleCommand command = connection.CreateCommand();  
+      command.CommandText ="CREATE TABLE OracleTypesTable (MyVarchar2 varchar2(3000),MyNumber number(28,4) PRIMARY KEY,MyDate date, MyRaw raw(255))";  
+      command.ExecuteNonQuery();  
+      command.CommandText ="INSERT INTO OracleTypesTable VALUES ('test', 2, to_date('2000-01-11 12:54:01','yyyy-mm-dd hh24:mi:ss'), '0001020304')";  
+      command.ExecuteNonQuery();  
+      command.CommandText="SELECT * FROM OracleTypesTable";  
+   }  
+   catch(Exception)  
+   {  
+   }  
+   finally  
+   {  
+      connection.Close();  
+   }  
+}  
+```  
+  
+ <xref:System.Data.OracleClient.OracleDataReader> В C# этом примере используется для доступа к данным и используется несколько <xref:System.Data.OracleClient.OracleType> структур для вывода данных.  
+  
+```csharp  
+public void ReadOracleTypesExample(string connectionString)  
+{  
+   OracleConnection connection = new OracleConnection(connectionString);  
+   connection.Open();  
+   OracleCommand command = connection.CreateCommand();  
+   try  
+   {  
+      command.CommandText = "SELECT * FROM OracleTypesTable";  
+      OracleDataReader reader = command.ExecuteReader();  
+      reader.Read();  
+      //Using the Oracle specific getters for each type is faster than  
+      //using GetOracleValue.  
+      //First column, MyVarchar2, is a VARCHAR2 data type in Oracle Server  
+      //and maps to OracleString.  
+      OracleString oraclestring1 = reader.GetOracleString(0);  
+      Console.WriteLine("OracleString " + oraclestring1.ToString());  
+  
+      //Second column, MyNumber, is a NUMBER data type in Oracle Server  
+      //and maps to OracleNumber.  
+      OracleNumber oraclenumber1 = reader.GetOracleNumber(1);  
+      Console.WriteLine("OracleNumber " + oraclenumber1.ToString());  
+  
+      //Third column, MyDate, is a DATA data type in Oracle Server  
+      //and maps to OracleDateTime.  
+      OracleDateTime oracledatetime1 = reader.GetOracleDateTime(2);  
+      Console.WriteLine("OracleDateTime " + oracledatetime1.ToString());  
+  
+      //Fourth column, MyRaw, is a RAW data type in Oracle Server and  
+      //maps to OracleBinary.  
+      OracleBinary oraclebinary1 = reader.GetOracleBinary(3);  
+  
+      //Calling value on a null OracleBinary throws  
+      //OracleNullValueException; therefore, check for a null value.  
+      if (oraclebinary1.IsNull==false)  
+      {  
+         foreach(byte b in oraclebinary1.Value)  
+         {  
+            Console.WriteLine("byte " + b.ToString());  
+         }  
+      }  
+      reader.Close();  
+   }  
+   catch(Exception e)  
+   {  
+      Console.WriteLine(e.ToString());  
+   }  
+   finally  
+   {  
+      connection.Close();  
+   }  
+}  
+```  
+  
+   
+  
+## Examples  
+ В следующем примере создаются <xref:System.Data.OracleClient.OracleConnection> <xref:System.Data.OracleClient.OracleCommand>, и <xref:System.Data.OracleClient.OracleDataReader>. Пример считывает данные, записывая их на консоль. Наконец, в примере закрывается <xref:System.Data.OracleClient.OracleDataReader>, <xref:System.Data.OracleClient.OracleConnection>а затем.  
+  
+ [!code-csharp[Classic WebData OracleDataReader#1](~/samples/snippets/csharp/VS_Snippets_ADO.NET/Classic WebData OracleDataReader/CS/source.cs#1)]
+ [!code-vb[Classic WebData OracleDataReader#1](~/samples/snippets/visualbasic/VS_Snippets_ADO.NET/Classic WebData OracleDataReader/VB/source.vb#1)]  
+  
+ ]]></format>
+    </remarks>
+  </Docs>
+  <Members>
+    <Member MemberName="Close">
+      <MemberSignature Language="C#" Value="public override void Close ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void Close() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.Close" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Sub Close ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void Close();" />
+      <MemberSignature Language="F#" Value="override this.Close : unit -&gt; unit" Usage="oracleDataReader.Close " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Закрывает объект <see cref="T:System.Data.OracleClient.OracleDataReader" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ В любой момент <xref:System.Data.OracleClient.OracleDataReader> времени можно открыть более одного раза.  
+  
+> [!CAUTION]
+>  Не вызывайте `Close` или `Dispose` для соединения `Finalize`  , или любого другого управляемого объекта в `DataReader` методе класса. В методе завершения следует освобождать только неуправляемые ресурсы, непосредственно принадлежащие классу. Если класс не владеет какими-либо неуправляемыми ресурсами, не включайте в его определение метод `Finalize`. Дополнительные сведения см. в разделе [Сборка мусора](~/docs/standard/garbage-collection/index.md).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Depth">
+      <MemberSignature Language="C#" Value="public override int Depth { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 Depth" />
+      <MemberSignature Language="DocId" Value="P:System.Data.OracleClient.OracleDataReader.Depth" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides ReadOnly Property Depth As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property int Depth { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.Depth : int" Usage="System.Data.OracleClient.OracleDataReader.Depth" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, показывающее глубину вложенности для текущей строки.</summary>
+        <value>Глубина вложенности для текущей строки.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Внешняя таблица имеет нулевую глубину вложенности.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Dispose">
+      <MemberSignature Language="C#" Value="public void Dispose ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void Dispose() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.Dispose" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Dispose ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void Dispose();" />
+      <MemberSignature Language="F#" Value="abstract member Dispose : unit -&gt; unit&#xA;override this.Dispose : unit -&gt; unit" Usage="oracleDataReader.Dispose " />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.IDisposable.Dispose</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Освобождает ресурсы, используемые данным объектом.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="FieldCount">
+      <MemberSignature Language="C#" Value="public override int FieldCount { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 FieldCount" />
+      <MemberSignature Language="DocId" Value="P:System.Data.OracleClient.OracleDataReader.FieldCount" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides ReadOnly Property FieldCount As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property int FieldCount { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.FieldCount : int" Usage="System.Data.OracleClient.OracleDataReader.FieldCount" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает число столбцов в текущей строке.</summary>
+        <value>Значение 0, если столбец отсутствует в допустимом наборе записей; в противном случае — количество столбцов в текущей записи. Значение по умолчанию — -1.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Включает скрытые поля. Для исключения скрытых полей используется <xref:System.Data.Common.DbDataReader.VisibleFieldCount%2A>.  
+  
+ После выполнения запроса, который не возвращает строки, <xref:System.Data.OracleClient.OracleDataReader.FieldCount%2A> возвращает 0.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.NotSupportedException">Текущее подключение к источнику данных отсутствует.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetBoolean">
+      <MemberSignature Language="C#" Value="public override bool GetBoolean (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance bool GetBoolean(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetBoolean(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetBoolean (i As Integer) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override bool GetBoolean(int i);" />
+      <MemberSignature Language="F#" Value="override this.GetBoolean : int -&gt; bool" Usage="oracleDataReader.GetBoolean i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Возвращает значение указанного столбца в виде логического значения.</summary>
+        <returns>Логическое значение, являющееся значением столбца.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Перед вызовом этого метода необходимо проверить наличие значений NULL. <xref:System.Data.OracleClient.OracleDataReader.IsDBNull%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidCastException">Указанное приведение недопустимо.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetByte">
+      <MemberSignature Language="C#" Value="public override byte GetByte (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance unsigned int8 GetByte(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetByte(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetByte (i As Integer) As Byte" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::Byte GetByte(int i);" />
+      <MemberSignature Language="F#" Value="override this.GetByte : int -&gt; byte" Usage="oracleDataReader.GetByte i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Byte</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Возвращает значение указанного столбца в виде байта.</summary>
+        <returns>Значение заданного столбца в виде байта.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Перед вызовом этого метода необходимо проверить наличие значений NULL. <xref:System.Data.OracleClient.OracleDataReader.IsDBNull%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidCastException">Указанное приведение недопустимо.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetBytes">
+      <MemberSignature Language="C#" Value="public override long GetBytes (int i, long fieldOffset, byte[] buffer2, int bufferoffset, int length);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance int64 GetBytes(int32 i, int64 fieldOffset, unsigned int8[] buffer2, int32 bufferoffset, int32 length) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetBytes(System.Int32,System.Int64,System.Byte[],System.Int32,System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetBytes (i As Integer, fieldOffset As Long, buffer2 As Byte(), bufferoffset As Integer, length As Integer) As Long" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override long GetBytes(int i, long fieldOffset, cli::array &lt;System::Byte&gt; ^ buffer2, int bufferoffset, int length);" />
+      <MemberSignature Language="F#" Value="override this.GetBytes : int * int64 * byte[] * int * int -&gt; int64" Usage="oracleDataReader.GetBytes (i, fieldOffset, buffer2, bufferoffset, length)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int64</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+        <Parameter Name="fieldOffset" Type="System.Int64" />
+        <Parameter Name="buffer2" Type="System.Byte[]" />
+        <Parameter Name="bufferoffset" Type="System.Int32" />
+        <Parameter Name="length" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <param name="fieldOffset">Индекс в поле, с которого необходимо начать операцию чтения.</param>
+        <param name="buffer2">Буфер, в который считывается поток байтов.</param>
+        <param name="bufferoffset">Индекс, с которого <paramref name="buffer2" /> начнет операцию записи.</param>
+        <param name="length">Количество байтов, чтение которых необходимо выполнить.</param>
+        <summary>Считывает поток байтов из указанного смещения столбца в буфер в виде массива, начиная с заданного смещения буфера.</summary>
+        <returns>Число фактически считанных байтов.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Data.OracleClient.OracleDataReader.GetBytes%2A>Возвращает количество доступных байтов в поле. В большинстве случаев это точная длина поля. Однако возвращаемое число может быть меньше истинной длины поля, если `GetBytes` уже использовалось для получения байтов из поля. Это может быть, например, при <xref:System.Data.OracleClient.OracleDataReader> считывании в буфер большой структуры данных. Дополнительные сведения см `SequentialAccess` <xref:System.Data.CommandBehavior>. в описании параметра.  
+  
+ При передаче буфера, имеющего значение null, <xref:System.Data.OracleClient.OracleDataReader.GetBytes%2A> возвращает длину поля в байтах.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetChar">
+      <MemberSignature Language="C#" Value="public override char GetChar (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance char GetChar(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetChar(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetChar (i As Integer) As Char" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override char GetChar(int i);" />
+      <MemberSignature Language="F#" Value="override this.GetChar : int -&gt; char" Usage="oracleDataReader.GetChar i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Char</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Возвращает значение указанного столбца в виде символа.</summary>
+        <returns>Значение указанного столбца в виде символа.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Перед вызовом этого метода необходимо проверить наличие значений NULL. <xref:System.Data.OracleClient.OracleDataReader.IsDBNull%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidCastException">Указанное приведение недопустимо.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetChars">
+      <MemberSignature Language="C#" Value="public override long GetChars (int i, long fieldOffset, char[] buffer2, int bufferoffset, int length);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance int64 GetChars(int32 i, int64 fieldOffset, char[] buffer2, int32 bufferoffset, int32 length) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetChars(System.Int32,System.Int64,System.Char[],System.Int32,System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetChars (i As Integer, fieldOffset As Long, buffer2 As Char(), bufferoffset As Integer, length As Integer) As Long" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override long GetChars(int i, long fieldOffset, cli::array &lt;char&gt; ^ buffer2, int bufferoffset, int length);" />
+      <MemberSignature Language="F#" Value="override this.GetChars : int * int64 * char[] * int * int -&gt; int64" Usage="oracleDataReader.GetChars (i, fieldOffset, buffer2, bufferoffset, length)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int64</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+        <Parameter Name="fieldOffset" Type="System.Int64" />
+        <Parameter Name="buffer2" Type="System.Char[]" />
+        <Parameter Name="bufferoffset" Type="System.Int32" />
+        <Parameter Name="length" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <param name="fieldOffset">Индекс в строке, с которого начнется операция чтения.</param>
+        <param name="buffer2">Буфер, в который копируются данные.</param>
+        <param name="bufferoffset">Индекс, с которого <paramref name="buffer2" /> начнет операцию записи.</param>
+        <param name="length">Число символов для чтения.</param>
+        <summary>Считывает поток символов из указанного смещения столбца в буфер как массив, начиная с заданного смещения буфера.</summary>
+        <returns>Число фактически считанных символов.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Data.OracleClient.OracleDataReader.GetChars%2A>Возвращает количество доступных символов в поле. В большинстве случаев это точная длина поля. Однако возвращаемое число может быть меньше истинной длины поля, если `GetChars` уже используется для получения символов из поля. Это может быть, например, при <xref:System.Data.OracleClient.OracleDataReader> считывании в буфер большой структуры данных. Дополнительные сведения см `SequentialAccess` <xref:System.Data.CommandBehavior>. в описании параметра.  
+  
+ При передаче буфера со значением NULL. <xref:System.Data.OracleClient.OracleDataReader.GetChars%2A>Возвращает длину поля в символах.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetData">
+      <MemberSignature Language="C#" Value="public System.Data.IDataReader GetData (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Data.IDataReader GetData(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetData(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetData (i As Integer) As IDataReader" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::Data::IDataReader ^ GetData(int i);" />
+      <MemberSignature Language="F#" Value="abstract member GetData : int -&gt; System.Data.IDataReader&#xA;override this.GetData : int -&gt; System.Data.IDataReader" Usage="oracleDataReader.GetData i" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.Data.IDataRecord.GetData(System.Int32)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Data.IDataReader</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" Index="0" FrameworkAlternate="netframework-1.1" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца.</param>
+        <summary>Возвращает <see cref="T:System.Data.IDataReader" /> для указанного порядкового номера столбца.</summary>
+        <returns>Экземпляр IdataReader для заданного порядкового номера столбца.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetDataTypeName">
+      <MemberSignature Language="C#" Value="public override string GetDataTypeName (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance string GetDataTypeName(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetDataTypeName(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetDataTypeName (i As Integer) As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::String ^ GetDataTypeName(int i);" />
+      <MemberSignature Language="F#" Value="override this.GetDataTypeName : int -&gt; string" Usage="oracleDataReader.GetDataTypeName i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Получает имя исходного типа данных.</summary>
+        <returns>Имя исходного типа данных.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetDateTime">
+      <MemberSignature Language="C#" Value="public override DateTime GetDateTime (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance valuetype System.DateTime GetDateTime(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetDateTime(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetDateTime (i As Integer) As DateTime" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override DateTime GetDateTime(int i);" />
+      <MemberSignature Language="F#" Value="override this.GetDateTime : int -&gt; DateTime" Usage="oracleDataReader.GetDateTime i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.DateTime</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Возвращает значение указанного столбца в виде объекта <see langword="DateTime" />.</summary>
+        <returns>Значение заданного столбца в виде объекта <see langword="DateTime" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Перед вызовом этого метода необходимо проверить наличие значений NULL. <xref:System.Data.OracleClient.OracleDataReader.IsDBNull%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidCastException">Указанное приведение недопустимо.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetDecimal">
+      <MemberSignature Language="C#" Value="public override decimal GetDecimal (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance valuetype System.Decimal GetDecimal(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetDecimal(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetDecimal (i As Integer) As Decimal" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::Decimal GetDecimal(int i);" />
+      <MemberSignature Language="F#" Value="override this.GetDecimal : int -&gt; decimal" Usage="oracleDataReader.GetDecimal i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Decimal</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Возвращает значение указанного столбца в виде объекта <see langword="Decimal" />.</summary>
+        <returns>Значение заданного столбца в виде объекта <see langword="Decimal" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Перед вызовом этого метода необходимо проверить наличие значений NULL. <xref:System.Data.OracleClient.OracleDataReader.IsDBNull%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidCastException">Указанное приведение недопустимо.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetDouble">
+      <MemberSignature Language="C#" Value="public override double GetDouble (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance float64 GetDouble(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetDouble(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetDouble (i As Integer) As Double" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override double GetDouble(int i);" />
+      <MemberSignature Language="F#" Value="override this.GetDouble : int -&gt; double" Usage="oracleDataReader.GetDouble i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Double</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Возвращает значение заданного столбца в виде числа с плавающей запятой двойной точности.</summary>
+        <returns>Значение указанного столбца в виде числа с плавающей запятой с двойной точностью.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Перед вызовом этого метода необходимо проверить наличие значений NULL. <xref:System.Data.OracleClient.OracleDataReader.IsDBNull%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidCastException">Указанное приведение недопустимо.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetEnumerator">
+      <MemberSignature Language="C#" Value="public override System.Collections.IEnumerator GetEnumerator ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance class System.Collections.IEnumerator GetEnumerator() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetEnumerator" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetEnumerator () As IEnumerator" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::Collections::IEnumerator ^ GetEnumerator();" />
+      <MemberSignature Language="F#" Value="override this.GetEnumerator : unit -&gt; System.Collections.IEnumerator" Usage="oracleDataReader.GetEnumerator " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.IEnumerator</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Возвращает перечислитель <see cref="T:System.Collections.IEnumerator" />, который может использоваться для просмотра строк в модуле чтения данных.</summary>
+        <returns>Перечислитель <see cref="T:System.Collections.IEnumerator" />, который может использоваться для просмотра строк в модуле чтения данных.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Хотя этот метод можно использовать для получения явного перечислителя, в языках, поддерживающих конструкцию foreach, проще использовать циклическую конструкцию непосредственно для итерации по строкам в модуле чтения данных.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetFieldType">
+      <MemberSignature Language="C#" Value="public override Type GetFieldType (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance class System.Type GetFieldType(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetFieldType(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetFieldType (i As Integer) As Type" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override Type ^ GetFieldType(int i);" />
+      <MemberSignature Language="F#" Value="override this.GetFieldType : int -&gt; Type" Usage="oracleDataReader.GetFieldType i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Type</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Возвращает тип <see cref="T:System.Type" />, который является типом данных объекта.</summary>
+        <returns>Тип данных объекта (<see cref="T:System.Type" />).</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetFloat">
+      <MemberSignature Language="C#" Value="public override float GetFloat (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance float32 GetFloat(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetFloat(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetFloat (i As Integer) As Single" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override float GetFloat(int i);" />
+      <MemberSignature Language="F#" Value="override this.GetFloat : int -&gt; single" Usage="oracleDataReader.GetFloat i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Single</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Возвращает значение указанного столбца в виде числа с плавающей запятой с одиночной точностью.</summary>
+        <returns>Значение указанного столбца в виде числа с плавающей запятой с одиночной точностью.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Перед вызовом этого метода необходимо проверить наличие значений NULL. <xref:System.Data.OracleClient.OracleDataReader.IsDBNull%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidCastException">Указанное приведение недопустимо.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetGuid">
+      <MemberSignature Language="C#" Value="public override Guid GetGuid (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance valuetype System.Guid GetGuid(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetGuid(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetGuid (i As Integer) As Guid" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override Guid GetGuid(int i);" />
+      <MemberSignature Language="F#" Value="override this.GetGuid : int -&gt; Guid" Usage="oracleDataReader.GetGuid i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Guid</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Возвращает значение заданного столбца в виде глобально-уникального идентификатора GUID.</summary>
+        <returns>Значение указанного столбца в виде GUID.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Перед вызовом этого метода необходимо проверить наличие значений NULL. <xref:System.Data.OracleClient.OracleDataReader.IsDBNull%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidCastException">Указанное приведение недопустимо.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetInt16">
+      <MemberSignature Language="C#" Value="public override short GetInt16 (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance int16 GetInt16(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetInt16(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetInt16 (i As Integer) As Short" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override short GetInt16(int i);" />
+      <MemberSignature Language="F#" Value="override this.GetInt16 : int -&gt; int16" Usage="oracleDataReader.GetInt16 i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int16</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Получает значение заданного столбца в виде 16-битового целого числа со знаком.</summary>
+        <returns>Значение заданного столбца в виде 16-разрядного целого числа со знаком.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Перед вызовом этого метода необходимо проверить наличие значений NULL. <xref:System.Data.OracleClient.OracleDataReader.IsDBNull%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidCastException">Указанное приведение недопустимо.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetInt32">
+      <MemberSignature Language="C#" Value="public override int GetInt32 (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance int32 GetInt32(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetInt32(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetInt32 (i As Integer) As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override int GetInt32(int i);" />
+      <MemberSignature Language="F#" Value="override this.GetInt32 : int -&gt; int" Usage="oracleDataReader.GetInt32 i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Возвращает значение указанного столбца в виде 32-разрядного целого числа со знаком.</summary>
+        <returns>Значение заданного столбца в виде 32-разрядного целого числа со знаком.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Перед вызовом этого метода необходимо проверить наличие значений NULL. <xref:System.Data.OracleClient.OracleDataReader.IsDBNull%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidCastException">Указанное приведение недопустимо.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetInt64">
+      <MemberSignature Language="C#" Value="public override long GetInt64 (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance int64 GetInt64(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetInt64(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetInt64 (i As Integer) As Long" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override long GetInt64(int i);" />
+      <MemberSignature Language="F#" Value="override this.GetInt64 : int -&gt; int64" Usage="oracleDataReader.GetInt64 i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int64</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Возвращает значение указанного столбца в виде 64-разрядного целого числа со знаком.</summary>
+        <returns>Значение заданного столбца в виде 64-разрядного целого числа со знаком.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Перед вызовом этого метода необходимо проверить наличие значений NULL. <xref:System.Data.OracleClient.OracleDataReader.IsDBNull%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidCastException">Указанное приведение недопустимо.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetName">
+      <MemberSignature Language="C#" Value="public override string GetName (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance string GetName(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetName(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetName (i As Integer) As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::String ^ GetName(int i);" />
+      <MemberSignature Language="F#" Value="override this.GetName : int -&gt; string" Usage="oracleDataReader.GetName i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Возвращает имя заданного столбца.</summary>
+        <returns>Строка, являющаяся именем заданного столбца.</returns>
+        <remarks>To be added.</remarks>
+        <altmember cref="M:System.Data.OracleClient.OracleDataReader.GetOrdinal(System.String)" />
+      </Docs>
+    </Member>
+    <Member MemberName="GetOracleBFile">
+      <MemberSignature Language="C#" Value="public System.Data.OracleClient.OracleBFile GetOracleBFile (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.Data.OracleClient.OracleBFile GetOracleBFile(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetOracleBFile(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetOracleBFile (i As Integer) As OracleBFile" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Data::OracleClient::OracleBFile ^ GetOracleBFile(int i);" />
+      <MemberSignature Language="F#" Value="member this.GetOracleBFile : int -&gt; System.Data.OracleClient.OracleBFile" Usage="oracleDataReader.GetOracleBFile i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Data.OracleClient.OracleBFile</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Получает значение заданного столбца в виде объекта <see cref="T:System.Data.OracleClient.OracleBFile" />.</summary>
+        <returns>Значение заданного столбца в виде объекта <see cref="T:System.Data.OracleClient.OracleBFile" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Перед вызовом этого метода необходимо проверить наличие значений NULL. <xref:System.Data.OracleClient.OracleDataReader.IsDBNull%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidCastException">Указанное приведение недопустимо.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetOracleBinary">
+      <MemberSignature Language="C#" Value="public System.Data.OracleClient.OracleBinary GetOracleBinary (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance valuetype System.Data.OracleClient.OracleBinary GetOracleBinary(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetOracleBinary(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetOracleBinary (i As Integer) As OracleBinary" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Data::OracleClient::OracleBinary GetOracleBinary(int i);" />
+      <MemberSignature Language="F#" Value="member this.GetOracleBinary : int -&gt; System.Data.OracleClient.OracleBinary" Usage="oracleDataReader.GetOracleBinary i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Data.OracleClient.OracleBinary</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Получает значение заданного столбца в виде объекта <see cref="T:System.Data.OracleClient.OracleBinary" />.</summary>
+        <returns>Значение заданного столбца в виде объекта <see cref="T:System.Data.OracleClient.OracleBinary" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Перед вызовом этого метода необходимо проверить наличие значений NULL. <xref:System.Data.OracleClient.OracleDataReader.IsDBNull%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidCastException">Указанное приведение недопустимо.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetOracleDateTime">
+      <MemberSignature Language="C#" Value="public System.Data.OracleClient.OracleDateTime GetOracleDateTime (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance valuetype System.Data.OracleClient.OracleDateTime GetOracleDateTime(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetOracleDateTime(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetOracleDateTime (i As Integer) As OracleDateTime" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Data::OracleClient::OracleDateTime GetOracleDateTime(int i);" />
+      <MemberSignature Language="F#" Value="member this.GetOracleDateTime : int -&gt; System.Data.OracleClient.OracleDateTime" Usage="oracleDataReader.GetOracleDateTime i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Data.OracleClient.OracleDateTime</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Получает значение заданного столбца в виде объекта <see cref="T:System.Data.OracleClient.OracleDateTime" />.</summary>
+        <returns>Значение заданного столбца в виде объекта <see cref="T:System.Data.OracleClient.OracleDateTime" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Перед вызовом этого метода необходимо проверить наличие значений NULL. <xref:System.Data.OracleClient.OracleDataReader.IsDBNull%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidCastException">Указанное приведение недопустимо.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetOracleLob">
+      <MemberSignature Language="C#" Value="public System.Data.OracleClient.OracleLob GetOracleLob (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.Data.OracleClient.OracleLob GetOracleLob(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetOracleLob(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetOracleLob (i As Integer) As OracleLob" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Data::OracleClient::OracleLob ^ GetOracleLob(int i);" />
+      <MemberSignature Language="F#" Value="member this.GetOracleLob : int -&gt; System.Data.OracleClient.OracleLob" Usage="oracleDataReader.GetOracleLob i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Data.OracleClient.OracleLob</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Получает значение заданного столбца в виде объекта <see cref="T:System.Data.OracleClient.OracleLob" />.</summary>
+        <returns>Значение заданного столбца в виде объекта <see cref="T:System.Data.OracleClient.OracleLob" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Перед вызовом этого метода необходимо проверить наличие значений NULL. <xref:System.Data.OracleClient.OracleDataReader.IsDBNull%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidCastException">Указанное приведение недопустимо.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetOracleMonthSpan">
+      <MemberSignature Language="C#" Value="public System.Data.OracleClient.OracleMonthSpan GetOracleMonthSpan (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance valuetype System.Data.OracleClient.OracleMonthSpan GetOracleMonthSpan(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetOracleMonthSpan(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetOracleMonthSpan (i As Integer) As OracleMonthSpan" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Data::OracleClient::OracleMonthSpan GetOracleMonthSpan(int i);" />
+      <MemberSignature Language="F#" Value="member this.GetOracleMonthSpan : int -&gt; System.Data.OracleClient.OracleMonthSpan" Usage="oracleDataReader.GetOracleMonthSpan i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Data.OracleClient.OracleMonthSpan</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Получает значение заданного столбца в виде объекта <see cref="T:System.Data.OracleClient.OracleMonthSpan" />.</summary>
+        <returns>Значение заданного столбца в виде объекта <see cref="T:System.Data.OracleClient.OracleMonthSpan" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Перед вызовом этого метода необходимо проверить наличие значений NULL. <xref:System.Data.OracleClient.OracleDataReader.IsDBNull%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidCastException">Указанное приведение недопустимо.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetOracleNumber">
+      <MemberSignature Language="C#" Value="public System.Data.OracleClient.OracleNumber GetOracleNumber (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance valuetype System.Data.OracleClient.OracleNumber GetOracleNumber(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetOracleNumber(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetOracleNumber (i As Integer) As OracleNumber" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Data::OracleClient::OracleNumber GetOracleNumber(int i);" />
+      <MemberSignature Language="F#" Value="member this.GetOracleNumber : int -&gt; System.Data.OracleClient.OracleNumber" Usage="oracleDataReader.GetOracleNumber i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Data.OracleClient.OracleNumber</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Получает значение заданного столбца в виде объекта <see cref="T:System.Data.OracleClient.OracleNumber" />.</summary>
+        <returns>Значение заданного столбца в виде объекта <see cref="T:System.Data.OracleClient.OracleNumber" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Перед вызовом этого метода необходимо проверить наличие значений NULL. <xref:System.Data.OracleClient.OracleDataReader.IsDBNull%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidCastException">Указанное приведение недопустимо.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetOracleString">
+      <MemberSignature Language="C#" Value="public System.Data.OracleClient.OracleString GetOracleString (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance valuetype System.Data.OracleClient.OracleString GetOracleString(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetOracleString(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetOracleString (i As Integer) As OracleString" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Data::OracleClient::OracleString GetOracleString(int i);" />
+      <MemberSignature Language="F#" Value="member this.GetOracleString : int -&gt; System.Data.OracleClient.OracleString" Usage="oracleDataReader.GetOracleString i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Data.OracleClient.OracleString</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Получает значение заданного столбца в виде объекта <see cref="T:System.Data.OracleClient.OracleString" />.</summary>
+        <returns>Значение заданного столбца в виде объекта <see cref="T:System.Data.OracleClient.OracleString" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Перед вызовом этого метода необходимо проверить наличие значений NULL. <xref:System.Data.OracleClient.OracleDataReader.IsDBNull%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidCastException">Указанное приведение недопустимо.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetOracleTimeSpan">
+      <MemberSignature Language="C#" Value="public System.Data.OracleClient.OracleTimeSpan GetOracleTimeSpan (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance valuetype System.Data.OracleClient.OracleTimeSpan GetOracleTimeSpan(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetOracleTimeSpan(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetOracleTimeSpan (i As Integer) As OracleTimeSpan" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Data::OracleClient::OracleTimeSpan GetOracleTimeSpan(int i);" />
+      <MemberSignature Language="F#" Value="member this.GetOracleTimeSpan : int -&gt; System.Data.OracleClient.OracleTimeSpan" Usage="oracleDataReader.GetOracleTimeSpan i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Data.OracleClient.OracleTimeSpan</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Получает значение заданного столбца в виде объекта <see cref="T:System.Data.OracleClient.OracleTimeSpan" />.</summary>
+        <returns>Значение заданного столбца в виде объекта <see cref="T:System.Data.OracleClient.OracleTimeSpan" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Перед вызовом этого метода необходимо проверить наличие значений NULL. <xref:System.Data.OracleClient.OracleDataReader.IsDBNull%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidCastException">Указанное приведение недопустимо.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetOracleValue">
+      <MemberSignature Language="C#" Value="public object GetOracleValue (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance object GetOracleValue(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetOracleValue(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetOracleValue (i As Integer) As Object" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Object ^ GetOracleValue(int i);" />
+      <MemberSignature Language="F#" Value="member this.GetOracleValue : int -&gt; obj" Usage="oracleDataReader.GetOracleValue i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Object</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Возвращает значение столбца в виде заданного порядкового номера в формате Oracle.</summary>
+        <returns>Значение Oracle, которое необходимо вернуть.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод возвращает объекты <xref:System.DBNull> для столбцов базы данных со значениями NULL.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetOracleValues">
+      <MemberSignature Language="C#" Value="public int GetOracleValues (object[] values);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance int32 GetOracleValues(object[] values) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetOracleValues(System.Object[])" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetOracleValues (values As Object()) As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; int GetOracleValues(cli::array &lt;System::Object ^&gt; ^ values);" />
+      <MemberSignature Language="F#" Value="member this.GetOracleValues : obj[] -&gt; int" Usage="oracleDataReader.GetOracleValues values" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="values" Type="System.Object[]" />
+      </Parameters>
+      <Docs>
+        <param name="values">Массив типа <see cref="T:System.Object" />, в который необходимо скопировать столбцы атрибутов.</param>
+        <summary>Возвращает все столбцы атрибутов в текущей строке в формате Oracle.</summary>
+        <returns>Число экземпляров <see cref="T:System.Object" /> в массиве.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Для большинства приложений <xref:System.Data.OracleClient.OracleDataReader.GetOracleValues%2A> метод предоставляет эффективные средства для извлечения всех столбцов, а не каждый столбец по отдельности.  
+  
+ Можно передать <xref:System.Object> массив, который содержит меньшее количество столбцов, содержащихся в результирующей строке. В массив копируется только объем <xref:System.Object> данных, который содержит массив. Можно также передать <xref:System.Object> массив, длина которого превышает число столбцов, содержащихся в результирующей строке.  
+  
+ Этот метод возвращает объекты <xref:System.DBNull> для столбцов базы данных со значениями NULL.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetOrdinal">
+      <MemberSignature Language="C#" Value="public override int GetOrdinal (string name);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance int32 GetOrdinal(string name) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetOrdinal(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetOrdinal (name As String) As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override int GetOrdinal(System::String ^ name);" />
+      <MemberSignature Language="F#" Value="override this.GetOrdinal : string -&gt; int" Usage="oracleDataReader.GetOrdinal name" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="name" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="name">Имя столбца.</param>
+        <summary>Возвращает порядковый номер столбца при наличии заданного имени столбца.</summary>
+        <returns>Порядковый номер столбца (от нуля).</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Data.OracleClient.OracleDataReader.GetOrdinal%2A>сначала выполняет поиск с учетом регистра. В случае сбоя выполняется второй Поиск без учета регистра. Метод создает `IndexOutOfRange` исключение, если порядковый номер столбца, начинающийся с нуля, не найден.  
+  
+ <xref:System.Data.OracleClient.OracleDataReader.GetOrdinal%2A>не учитывается ширина японской азбуки.  
+  
+ Поскольку уточняющие запросы более эффективны, чем имена уточняющих запросов, вызов <xref:System.Data.OracleClient.OracleDataReader.GetOrdinal%2A> в цикле неэффективен. Вместо этого вызовите <xref:System.Data.OracleClient.OracleDataReader.GetOrdinal%2A> один раз и затем присвойте результаты целочисленной переменной для использования в цикле.  
+  
+   
+  
+## Examples  
+ В следующем примере показано использование метода <xref:System.Data.OracleClient.OracleDataReader.GetOrdinal%2A>.  
+  
+```vb  
+Public Sub ReadOracleData(ByVal connectionString As String)  
+  
+    Dim queryString As String = "SELECT OrderID, CustomerID FROM Orders"  
+    Dim connection As New OracleConnection(connectionString)  
+    Dim command As New OracleCommand(queryString, connectionString)  
+  
+    connection.Open()  
+  
+    Dim reader As OracleDataReader = command.ExecuteReader()  
+  
+    Dim custIdCol As Integer = reader.GetOrdinal("CustomerID")  
+  
+    Do While reader.Read()  
+        Console.WriteLine("CustomerID = {0}", reader.GetString(custIdCol))  
+    Loop  
+  
+    reader.Close()  
+    connection.Close()  
+End Sub  
+```  
+  
+```csharp  
+public void ReadOracleData(string connectionString)  
+{  
+    string queryString = "SELECT OrderID, CustomerID FROM Orders";  
+    OracleConnection connection = new OracleConnection(connectionString);  
+    OracleCommand command = new OracleCommand(queryString,connection);  
+  
+    connection.Open();  
+    OracleDataReader reader = command.ExecuteReader();  
+  
+    int custIdCol = reader.GetOrdinal("CustomerID");  
+  
+    while (reader.Read())  
+        Console.WriteLine("CustomerID = {0}", reader.GetString(custIdCol));  
+  
+    reader.Close();  
+    connection.Close();  
+}  
+```  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetProviderSpecificFieldType">
+      <MemberSignature Language="C#" Value="public override Type GetProviderSpecificFieldType (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance class System.Type GetProviderSpecificFieldType(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetProviderSpecificFieldType(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetProviderSpecificFieldType (i As Integer) As Type" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override Type ^ GetProviderSpecificFieldType(int i);" />
+      <MemberSignature Language="F#" Value="override this.GetProviderSpecificFieldType : int -&gt; Type" Usage="oracleDataReader.GetProviderSpecificFieldType i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Type</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" Index="0" FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      </Parameters>
+      <Docs>
+        <param name="i">Объект <see cref="T:System.Int32" />.</param>
+        <summary>Получает <see langword="Object" />, который представляет собой конкретный тип поля базового поставщика.</summary>
+        <returns>Получает <see cref="T:System.Object" />, который представляет собой конкретный тип поля базового поставщика.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetProviderSpecificValue">
+      <MemberSignature Language="C#" Value="public override object GetProviderSpecificValue (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance object GetProviderSpecificValue(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetProviderSpecificValue(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetProviderSpecificValue (i As Integer) As Object" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::Object ^ GetProviderSpecificValue(int i);" />
+      <MemberSignature Language="F#" Value="override this.GetProviderSpecificValue : int -&gt; obj" Usage="oracleDataReader.GetProviderSpecificValue i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Object</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" Index="0" FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      </Parameters>
+      <Docs>
+        <param name="i">Объект <see cref="T:System.Int32" />.</param>
+        <summary>Получает <see langword="Object" />, который представляет собой конкретный тип поля базового поставщика.</summary>
+        <returns>Получает <see cref="T:System.Object" />, который представляет собой конкретный тип поля базового поставщика.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetProviderSpecificValues">
+      <MemberSignature Language="C#" Value="public override int GetProviderSpecificValues (object[] values);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance int32 GetProviderSpecificValues(object[] values) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetProviderSpecificValues(System.Object[])" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetProviderSpecificValues (values As Object()) As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override int GetProviderSpecificValues(cli::array &lt;System::Object ^&gt; ^ values);" />
+      <MemberSignature Language="F#" Value="override this.GetProviderSpecificValues : obj[] -&gt; int" Usage="oracleDataReader.GetProviderSpecificValues values" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="values" Type="System.Object[]" Index="0" FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      </Parameters>
+      <Docs>
+        <param name="values">Массив дескрипторов вывода <see cref="T:System.Object" />.</param>
+        <summary>Возвращает массив объектов, которые представляют собой значения типа, специфического для базового поставщика.</summary>
+        <returns>Число экземпляров <see cref="T:System.Object" /> в массиве.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Для большинства приложений <xref:System.Data.OracleClient.OracleDataReader.GetProviderSpecificValues%2A> метод предоставляет эффективные средства для извлечения всех столбцов, а не каждый столбец по отдельности.  
+  
+ Можно передать <xref:System.Object> массив, который содержит меньшее количество столбцов, содержащихся в результирующей строке. В массив копируется только объем <xref:System.Object> данных, который содержит массив. Можно также передать <xref:System.Object> массив, длина которого превышает число столбцов, содержащихся в результирующей строке.  
+  
+ Этот метод возвращает объекты <xref:System.DBNull> для столбцов базы данных со значениями NULL.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetSchemaTable">
+      <MemberSignature Language="C#" Value="public override System.Data.DataTable GetSchemaTable ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance class System.Data.DataTable GetSchemaTable() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetSchemaTable" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetSchemaTable () As DataTable" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::Data::DataTable ^ GetSchemaTable();" />
+      <MemberSignature Language="F#" Value="override this.GetSchemaTable : unit -&gt; System.Data.DataTable" Usage="oracleDataReader.GetSchemaTable " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Data.DataTable</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Возвращает <see cref="T:System.Data.DataTable" />, описывающий метаданные о столбцах OracleDataReader.</summary>
+        <returns>Объект <see cref="T:System.Data.DataTable" />, описывающий метаданные столбцов.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Data.OracleClient.OracleDataReader.GetSchemaTable%2A> Метод возвращает метаданные о каждом столбце в следующем порядке:  
+  
+|Столбец DataReader|Описание|  
+|-----------------------|-----------------|  
+|ColumnName|Имя столбца; Это может быть неуникальным. Если имя столбца определить невозможно, возвращается значение null. Это имя всегда отражает самое последнее именование столбца в текущем представлении или тексте команды.|  
+|колумнординал|Отсчитываемый от нуля порядковый номер столбца. Этот столбец не может содержать значение null.|  
+|ColumnSize|Максимально возможная длина значения в столбце. Для столбцов, использующих тип данных фиксированной длины, это размер типа данных.|  
+|NumericPrecision|Если <xref:System.Data.OracleClient.OracleParameter.DbType%2A> является числовым типом данных, это максимальная точность столбца. Точность зависит от определения столбца. `Float`и `Double` типы данных в Oracle имеют двоичную точность.|  
+|NumericScale|Если <xref:System.Data.OracleClient.OracleParameter.DbType%2A> является числовым типом данных, количество цифр справа от десятичной запятой. `Float`и `Double` типы данных в Oracle имеют двоичный масштаб.|  
+|DataType|Сопоставляется с типом <xref:System.Data.OracleClient.OracleParameter.DbType%2A>среды CLR.|  
+|IsLong|`true`значение, если столбец содержит большой двоичный объект (BLOB), содержащий очень длинные данные.|  
+|AllowDBNull|`true`Если потребитель может задать для столбца значение null; в противном случае —. `false` Столбец может содержать значения NULL, даже если ему не может быть присвоено значение null.|  
+|IsUnique|`true`: Нет двух строк в базовой таблице — таблица, возвращаемая в <xref:System.Data.Common.SchemaTableColumn.BaseTableName> , может иметь одно и то же значение в этом столбце. **IsUnique** гарантируется `true` , если столбец является ключом самого себя или если существует ограничение типа UNIQUE, которое применяется только к этому столбцу. `false`: Столбец может содержать дублирующиеся значения в базовой таблице. Значение по умолчанию для этого столбца — false.|  
+|IsKey|`true`: Столбец является одним из набора столбцов в наборе строк, которые вместе однозначно идентифицируют строку. Набор столбцов с **IsKey** , имеющим значение true, должен однозначно идентифицировать строку в наборе строк. Нет необходимости в том, чтобы этот набор столбцов был минимальным набором столбцов. Этот набор столбцов может быть создан из первичного ключа базовой таблицы, ограничения UNIQUE или уникального индекса. `false`: Столбец не требуется для уникальной идентификации строки.|  
+|BaseTableName|Имя таблицы или представления в хранилище данных, содержащем столбец. Значение null, если имя базовой таблицы не может быть определено. Значением по умолчанию для этого столбца является значение null.|  
+|басеколумннаме|Имя столбца в хранилище данных. Это может отличаться от имени столбца, возвращенного в столбце **ColumnName** , если был использован псевдоним. Значение null, если имя базового столбца не может быть определено или если столбец набора строк является производным, но не идентичен столбцу в хранилище данных. Значением по умолчанию для этого столбца является значение null.|  
+|басесчеманаме|Имя схемы в хранилище данных, которое содержит столбец. Значение null, если имя базовой схемы не может быть определено. Значением по умолчанию для этого столбца является значение null.|  
+  
+ Для каждого столбца в результирующем наборе возвращается строка.  
+  
+> [!NOTE]
+>  Чтобы убедиться, что столбцы метаданных возвращают правильные сведения, необходимо вызвать <xref:System.Data.OracleClient.OracleCommand.ExecuteReader%2A> с параметром, для `KeyInfo`которого `behavior` задано значение. В противном случае некоторые столбцы в таблице схемы могут возвращать значения по умолчанию, null или неверные данные.  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="~/docs/framework/data/adonet/retrieving-database-schema-information.md">Извлечение сведений о схеме базы данных (ADO.NET)</related>
+      </Docs>
+    </Member>
+    <Member MemberName="GetString">
+      <MemberSignature Language="C#" Value="public override string GetString (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance string GetString(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetString(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetString (i As Integer) As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::String ^ GetString(int i);" />
+      <MemberSignature Language="F#" Value="override this.GetString : int -&gt; string" Usage="oracleDataReader.GetString i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Возвращает значение заданного столбца в виде строки.</summary>
+        <returns>Значение указанного столбца в виде строки.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Перед вызовом этого метода необходимо проверить наличие значений NULL. <xref:System.Data.OracleClient.OracleDataReader.IsDBNull%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidCastException">Указанное приведение недопустимо.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetTimeSpan">
+      <MemberSignature Language="C#" Value="public TimeSpan GetTimeSpan (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance valuetype System.TimeSpan GetTimeSpan(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetTimeSpan(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetTimeSpan (i As Integer) As TimeSpan" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; TimeSpan GetTimeSpan(int i);" />
+      <MemberSignature Language="F#" Value="member this.GetTimeSpan : int -&gt; TimeSpan" Usage="oracleDataReader.GetTimeSpan i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.TimeSpan</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Возвращает значение заданного столбца в виде объекта <see langword="System.TimeSpan" />.</summary>
+        <returns>Значение указанного столбца в виде <see cref="T:System.TimeSpan" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Перед вызовом этого метода необходимо проверить наличие значений NULL. <xref:System.Data.OracleClient.OracleDataReader.IsDBNull%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidCastException">Указанное приведение недопустимо.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetValue">
+      <MemberSignature Language="C#" Value="public override object GetValue (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance object GetValue(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetValue(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetValue (i As Integer) As Object" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::Object ^ GetValue(int i);" />
+      <MemberSignature Language="F#" Value="override this.GetValue : int -&gt; obj" Usage="oracleDataReader.GetValue i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Object</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Получает значение столбца с указанным порядковом номером в собственном формате.</summary>
+        <returns>Возвращаемое значение.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод возвращает объекты <xref:System.DBNull> для столбцов базы данных со значениями NULL. Значение, возвращаемое этим методом, может быть результатом преобразования из типа числовых данных Oracle в десятичный тип .NET. Если значение слишком велико для сохранения в десятичном формате .NET, этот метод создает <xref:System.Data.OracleClient.OracleException> исключение, которое является ошибкой переполнения.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Data.OracleClient.OracleException">Это значение слишком велико и не может храниться в десятичном формате .NET.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetValues">
+      <MemberSignature Language="C#" Value="public override int GetValues (object[] values);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance int32 GetValues(object[] values) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.GetValues(System.Object[])" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetValues (values As Object()) As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override int GetValues(cli::array &lt;System::Object ^&gt; ^ values);" />
+      <MemberSignature Language="F#" Value="override this.GetValues : obj[] -&gt; int" Usage="oracleDataReader.GetValues values" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="values" Type="System.Object[]" />
+      </Parameters>
+      <Docs>
+        <param name="values">Массив типа <see cref="T:System.Object" />, в который необходимо скопировать столбцы атрибутов.</param>
+        <summary>Заполняет массив объектов значениями столбцов текущей строки.</summary>
+        <returns>Число экземпляров <see cref="T:System.Object" /> в массиве.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Для большинства приложений <xref:System.Data.OracleClient.OracleDataReader.GetValues%2A> метод предоставляет эффективные средства для извлечения всех столбцов, а не каждый столбец по отдельности.  
+  
+ Можно передать <xref:System.Object> массив, который содержит меньшее количество столбцов, содержащихся в результирующей строке. В массив копируется только объем <xref:System.Object> данных, который содержит массив. Можно также передать <xref:System.Object> массив, длина которого превышает число столбцов, содержащихся в результирующей строке.  
+  
+ Этот метод возвращает объекты <xref:System.DBNull> для столбцов базы данных со значениями NULL. Значение, возвращаемое в <xref:System.Object> массиве, может быть результатом преобразования из типа числовых данных Oracle в десятичный тип .NET. Если значение слишком велико для сохранения в десятичном формате .NET, этот метод создает <xref:System.Data.OracleClient.OracleException> исключение, которое является ошибкой переполнения.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Data.OracleClient.OracleException">Это значение слишком велико и не может храниться в десятичном формате .NET.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="HasRows">
+      <MemberSignature Language="C#" Value="public override bool HasRows { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool HasRows" />
+      <MemberSignature Language="DocId" Value="P:System.Data.OracleClient.OracleDataReader.HasRows" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides ReadOnly Property HasRows As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property bool HasRows { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.HasRows : bool" Usage="System.Data.OracleClient.OracleDataReader.HasRows" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает значение, указывающее, содержит ли объект <see cref="T:System.Data.OracleClient.OracleDataReader" /> одну или несколько строк.</summary>
+        <value>Значение <see langword="true" />, если объект <see cref="T:System.Data.OracleClient.OracleDataReader" /> содержит одну или несколько строк; в противном случае — значение <see langword="false" />.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="IsClosed">
+      <MemberSignature Language="C#" Value="public override bool IsClosed { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool IsClosed" />
+      <MemberSignature Language="DocId" Value="P:System.Data.OracleClient.OracleDataReader.IsClosed" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides ReadOnly Property IsClosed As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property bool IsClosed { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.IsClosed : bool" Usage="System.Data.OracleClient.OracleDataReader.IsClosed" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Указывает, закрыт ли объект <see cref="T:System.Data.OracleClient.OracleDataReader" />.</summary>
+        <value>Значение <see langword="true" />, если <see cref="T:System.Data.OracleClient.OracleDataReader" /> закрыт; в противном случае — значение <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Data.OracleClient.OracleDataReader.IsClosed%2A>и <xref:System.Data.OracleClient.OracleDataReader.RecordsAffected%2A> являются единственными свойствами, которые можно вызывать <xref:System.Data.OracleClient.OracleDataReader> после закрытия.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="IsDBNull">
+      <MemberSignature Language="C#" Value="public override bool IsDBNull (int i);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance bool IsDBNull(int32 i) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.IsDBNull(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function IsDBNull (i As Integer) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override bool IsDBNull(int i);" />
+      <MemberSignature Language="F#" Value="override this.IsDBNull : int -&gt; bool" Usage="oracleDataReader.IsDBNull i" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца (от нуля).</param>
+        <summary>Получает значение, указывающее, содержит ли столбец несуществующие или пропущенные значения.</summary>
+        <returns>Значение <see langword="true" />, если значение указанного столбца эквивалентно <see cref="T:System.DBNull" />; в обратном случае — значение <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Чтобы избежать возникновения ошибки, вызовите этот метод, чтобы проверить наличие значений NULL в столбцах перед вызовом типизированных методов Get <xref:System.Data.OracleClient.OracleDataReader.GetByte%2A>( <xref:System.Data.OracleClient.OracleDataReader.GetChar%2A>например,, и т. д.).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="Item">
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Возвращает значение столбца в собственном формате.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="Item">
+      <MemberSignature Language="C#" Value="public override object this[int i] { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance object Item(int32)" />
+      <MemberSignature Language="DocId" Value="P:System.Data.OracleClient.OracleDataReader.Item(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Default Public Overrides ReadOnly Property Item(i As Integer) As Object" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::Object ^ default[int] { System::Object ^ get(int i); };" />
+      <MemberSignature Language="F#" Value="member this.Item(int) : obj" Usage="System.Data.OracleClient.OracleDataReader.Item" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Object</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="i" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="i">Порядковый номер столбца.</param>
+        <summary>Возвращает значение указанного столбца в собственном формате при наличии заданного порядкового номера столбца.</summary>
+        <value>Значение заданного столбца в собственном формате.</value>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.IndexOutOfRangeException">Переданный индекс находился вне диапазона от 0 до значения <see cref="P:System.Data.IDataRecord.FieldCount" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="Item">
+      <MemberSignature Language="C#" Value="public override object this[string name] { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance object Item(string)" />
+      <MemberSignature Language="DocId" Value="P:System.Data.OracleClient.OracleDataReader.Item(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Default Public Overrides ReadOnly Property Item(name As String) As Object" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::Object ^ default[System::String ^] { System::Object ^ get(System::String ^ name); };" />
+      <MemberSignature Language="F#" Value="member this.Item(string) : obj" Usage="System.Data.OracleClient.OracleDataReader.Item" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Object</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="name" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="name">Имя столбца.</param>
+        <summary>Возвращает значение заданного столбца в собственном формате при наличии заданного имени столбца.</summary>
+        <value>Значение заданного столбца в собственном формате.</value>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.IndexOutOfRangeException">Столбец с указанным именем не найден.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="NextResult">
+      <MemberSignature Language="C#" Value="public override bool NextResult ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance bool NextResult() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.NextResult" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function NextResult () As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override bool NextResult();" />
+      <MemberSignature Language="F#" Value="override this.NextResult : unit -&gt; bool" Usage="oracleDataReader.NextResult " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Перемещает <see cref="T:System.Data.OracleClient.OracleDataReader" /> к следующему результату.</summary>
+        <returns>Значение <see langword="true" />, если имеются и другие наборы результатов, в противном случае — значение <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ `REF CURSOR` При вызове этого метода необходимо использовать.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Read">
+      <MemberSignature Language="C#" Value="public override bool Read ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance bool Read() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.Read" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function Read () As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override bool Read();" />
+      <MemberSignature Language="F#" Value="override this.Read : unit -&gt; bool" Usage="oracleDataReader.Read " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Перемещает <see cref="T:System.Data.OracleClient.OracleDataReader" /> к следующей записи.</summary>
+        <returns>Значение <see langword="true" />, если имеются другие строки; в противном случае — значение <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ По умолчанию <xref:System.Data.OracleClient.OracleDataReader> используется расположение объекта до первой записи. Поэтому необходимо вызвать метод <xref:System.Data.OracleClient.OracleDataReader.Read%2A> , чтобы начать доступ к любым данным.  
+  
+ В любой момент <xref:System.Data.OracleClient.OracleDataReader> времени можно открыть более одного раза.  
+  
+   
+  
+## Examples  
+ В следующем примере создаются <xref:System.Data.OracleClient.OracleConnection> <xref:System.Data.OracleClient.OracleCommand>, и <xref:System.Data.OracleClient.OracleDataReader>. Пример считывает данные, записывая их на консоль. Наконец, в примере закрывается <xref:System.Data.OracleClient.OracleDataReader>, <xref:System.Data.OracleClient.OracleConnection>а затем.  
+  
+ [!code-csharp[Classic WebData IDataReader.Read Example#1](~/samples/snippets/csharp/VS_Snippets_ADO.NET/Classic WebData IDataReader.Read Example/CS/source.cs#1)]
+ [!code-vb[Classic WebData IDataReader.Read Example#1](~/samples/snippets/visualbasic/VS_Snippets_ADO.NET/Classic WebData IDataReader.Read Example/VB/source.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="RecordsAffected">
+      <MemberSignature Language="C#" Value="public override int RecordsAffected { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 RecordsAffected" />
+      <MemberSignature Language="DocId" Value="P:System.Data.OracleClient.OracleDataReader.RecordsAffected" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides ReadOnly Property RecordsAffected As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property int RecordsAffected { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.RecordsAffected : int" Usage="System.Data.OracleClient.OracleDataReader.RecordsAffected" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает число строк, которые были изменены, вставлены или удалены инструкцией SQL.</summary>
+        <value>Число измененных, вставленных или удаленных строк. Значение -1 для операторов SELECT; значение 0, если строки не изменены или оператор не выполнен.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойство не задается до тех пор, пока не будут считаны все <xref:System.Data.OracleClient.OracleDataReader>строки и вы закроете. <xref:System.Data.OracleClient.OracleDataReader.RecordsAffected%2A>  
+  
+ <xref:System.Data.OracleClient.OracleDataReader.IsClosed%2A>и <xref:System.Data.OracleClient.OracleDataReader.RecordsAffected%2A> являются единственными свойствами, которые можно вызывать <xref:System.Data.OracleClient.OracleDataReader> после закрытия.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="System.Collections.IEnumerable.GetEnumerator">
+      <MemberSignature Language="C#" Value="System.Collections.IEnumerator IEnumerable.GetEnumerator ();" />
+      <MemberSignature Language="ILAsm" Value=".method hidebysig newslot virtual instance class System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleDataReader.System#Collections#IEnumerable#GetEnumerator" />
+      <MemberSignature Language="VB.NET" Value="Function GetEnumerator () As IEnumerator Implements IEnumerable.GetEnumerator" />
+      <MemberSignature Language="C++ CLI" Value=" virtual System::Collections::IEnumerator ^ System.Collections.IEnumerable.GetEnumerator() = System::Collections::IEnumerable::GetEnumerator;" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.Collections.IEnumerable.GetEnumerator</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.IEnumerator</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Возвращает перечислитель, который осуществляет итерацию по коллекции.</summary>
+        <returns>Перечислитель, который осуществляет перебор коллекции.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

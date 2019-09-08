@@ -1,0 +1,2252 @@
+<Type Name="ActiveDirectoryMembershipProvider" FullName="System.Web.Security.ActiveDirectoryMembershipProvider">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="e7a85b7af6c0d492882e98cbb49ab2f9a86f57e5" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70702089" /></Metadata><TypeSignature Language="C#" Value="public class ActiveDirectoryMembershipProvider : System.Web.Security.MembershipProvider" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit ActiveDirectoryMembershipProvider extends System.Web.Security.MembershipProvider" />
+  <TypeSignature Language="DocId" Value="T:System.Web.Security.ActiveDirectoryMembershipProvider" />
+  <TypeSignature Language="VB.NET" Value="Public Class ActiveDirectoryMembershipProvider&#xA;Inherits MembershipProvider" />
+  <TypeSignature Language="C++ CLI" Value="public ref class ActiveDirectoryMembershipProvider : System::Web::Security::MembershipProvider" />
+  <TypeSignature Language="F#" Value="type ActiveDirectoryMembershipProvider = class&#xA;    inherit MembershipProvider" />
+  <AssemblyInfo>
+    <AssemblyName>System.Web</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Web.Security.MembershipProvider</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>Управляет памятью информации о членстве для приложений ASP.NET в Active Directory и серверах Active Directory Application Mode.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот класс используется <xref:System.Web.Security.Membership> классами и <xref:System.Web.Security.MembershipUser> для предоставления служб членства в приложении ASP.NET с помощью сервера Active Directory (AD) или режима Active Directory приложений (ADAM).  
+  
+> [!NOTE]
+>  Для использования сервера ADAM требуется определенная конфигурация. Дополнительные сведения см. в разделе конфигурации ADAM ниже.  
+  
+> [!IMPORTANT]
+>  <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Экземпляр работает только в конфигурации политики полного доверия по умолчанию для ASP.NET. Чтобы использовать <xref:System.Web.Security.ActiveDirectoryMembershipProvider> экземпляр на любом уровне частичного доверия, необходимо внести изменения в соответствующий файл политики доверия для приложения или создать сборку "песочницы", развернутую в глобальном кэше сборок.  
+>   
+>  <xref:System.DirectoryServices.DirectoryServicesPermission> Для запуска <xref:System.Web.Security.ActiveDirectoryMembershipProvider> класса требуется неограниченное разрешение. Это разрешение не добавляется ни в один из файлов политики с частичным доверием, предоставленных с помощью ASP.NET. Хотя добавление <xref:System.DirectoryServices.DirectoryServicesPermission> разрешения в файл политики с частичным доверием позволяет использовать <xref:System.Web.Security.ActiveDirectoryMembershipProvider> класс <xref:System.DirectoryServices> , это делает классы пространства имен доступными для любого кода, выполняемого на страницах ASP.NET. Этот параметр не рекомендуется использовать для веб-серверов, которые должны работать в безопасном заблокированном режиме.  
+>   
+>  В качестве альтернативы можно создать сборку "песочницы", которая вызывает <xref:System.Web.Security.ActiveDirectoryMembershipProvider> класс. Эта сборка может содержать либо класс-оболочку, который перенаправляет вызовы метода <xref:System.Web.Security.ActiveDirectoryMembershipProvider> в класс, либо класс, производный <xref:System.Web.Security.ActiveDirectoryMembershipProvider> от класса. В любом случае класс-оболочка должен утверждать неограниченное <xref:System.DirectoryServices.DirectoryServicesPermission> разрешение. Разверните сборку песочницы в глобальном кэше сборок и пометьте ее <xref:System.Security.AllowPartiallyTrustedCallersAttribute> атрибутом (APTCA). Это позволит коду с частичным доверием ASP.NET вызывать ваш класс-оболочку, а так как класс-оболочка выполняет внутреннее утверждение <xref:System.DirectoryServices.DirectoryServicesPermission> неограниченного разрешения, ваш класс-оболочка сможет успешно вызвать поставщик  
+  
+ В файле Web. config необходимо создать запись [ConnectionString (ASP.NET Settings Schema)](https://msdn.microsoft.com/library/b6ffbb2e-a4d1-410e-8f7e-9755e92c65de) , определяющую Active Directory сервер, домен Active Directory или раздел приложения ADAM для использования. Поставщик будет действовать только в области домена или в подобласти внутри домена. В следующей таблице перечислены допустимые строки подключения и используемая область.  
+  
+|Строка подключения|Область|  
+|-----------------------|-----------|  
+|>\<Домена или сервера LDAP://: [порт]<br /><br /> Номер порта является необязательным для ADAM и не требуется для Active Directory.|Поставщик выполняется для указанного домена или сервера. При использовании AD создание и удаление пользователей выполняется в контейнере Пользователи по умолчанию. Все остальные операции, в том числе любые способы поиска, будут находиться в корне контекста именования по умолчанию для домена.<br /><br /> Если в строке подключения указан Active Directory домен, а не конкретный сервер, а <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordReset%2A> свойство имеет `true`значение, то <xref:System.Web.Security.ActiveDirectoryMembershipProvider> экземпляр всегда будет подключаться к серверу с ролью PDC для домена, чтобы гарантировать, что пароль изменения вступают в <xref:System.Web.Security.ActiveDirectoryMembershipProvider.ValidateUser%2A> силу и становятся доступными при вызове метода.<br /><br /> Эта строка подключения не допускается при использовании ADAM и вызывает исключение <xref:System.NotSupportedException>.|  
+|LDAP://\<домен или сервер >: [порт]/\<DN контейнера ><br /><br /> Номер порта является необязательным для ADAM и не требуется для Active Directory.|Поставщик выполняется для указанного домена или сервера. Создание и удаление пользователей выполняется только в указанном контейнере. Все остальные операции, включая любые способы поиска, выполняют поиск в поддереве с корнем в контейнере.<br /><br /> Для серверов ADAM контейнер указывает корень раздела приложения или контейнер в разделе приложения.<br /><br /> Рекомендуется, чтобы строка подключения определяла конкретный контейнер для повышения производительности.|  
+  
+ Экземпляр сопоставляет атрибуты каталога со <xref:System.Web.Security.ActiveDirectoryMembershipUser> свойствами. <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Атрибуты по умолчанию используются, если в файле Web. config не выполняется сопоставление атрибутов. Дополнительные сведения о сопоставлении атрибутов см. в разделе отдельные свойства в <xref:System.Web.Security.ActiveDirectoryMembershipUser> документации по классу.  
+  
+ В следующей таблице перечислены <xref:System.Web.Security.ActiveDirectoryMembershipUser> свойства и их сопоставления атрибутов по умолчанию.  
+  
+> [!IMPORTANT]
+>  <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Класс не проверяет явно, что атрибуты поставщика не сопоставлены с основными атрибутами объекта пользователя в каталоге. Необходимо убедиться, что конфиденциальная информация из каталога не доступна через сопоставленные атрибуты.  
+  
+|Свойство.|Атрибут каталога по умолчанию|Можно сопоставить?|  
+|--------------|---------------------------------|--------------------|  
+|<xref:System.Web.Security.ActiveDirectoryMembershipUser.ProviderUserKey%2A>|securityIdentifier|Нет|  
+|<xref:System.Web.Security.MembershipUser.UserName%2A>|userPrincipalName|Да, но должно быть userPrincipalName или sAMAccountName|  
+|<xref:System.Web.Security.ActiveDirectoryMembershipUser.Comment%2A>|комментарий|Нет|  
+|<xref:System.Web.Security.MembershipUser.CreationDate%2A>|вхенкреатед|Нет|  
+|<xref:System.Web.Security.ActiveDirectoryMembershipUser.Email%2A>|почта|Да, но должен быть однозначным атрибутом типа String в Юникоде.|  
+|<xref:System.Web.Security.ActiveDirectoryMembershipUser.LastActivityDate%2A>|Н/Д|Не поддерживается в <xref:System.Web.Security.ActiveDirectoryMembershipProvider>.|  
+|<xref:System.Web.Security.ActiveDirectoryMembershipUser.LastLoginDate%2A>|Н/Д|Не поддерживается в <xref:System.Web.Security.ActiveDirectoryMembershipProvider>.|  
+|<xref:System.Web.Security.MembershipUser.LastPasswordChangedDate%2A>|pwdLastSet|Нет|  
+|<xref:System.Web.Security.MembershipUser.PasswordQuestion%2A>|Нет|Да, но должен быть однозначным атрибутом типа String в Юникоде.|  
+|<xref:System.Web.Security.ActiveDirectoryMembershipUser.IsApproved%2A>|Управление учетными записями пользователей (AD)<br /><br /> mDS-Усераккаунтдисаблед (Адам)|Нет|  
+|<xref:System.Web.Security.MembershipUser.IsLockedOut%2A>|вычислено из lockoutTime и длительности блокировки AD (AD в Windows 2000)<br /><br /> msDS-User-Account-Control — вычисление (AD на Windows Server 2003)<br /><br /> msDS-User-Account-Control — вычисленный (Адам)|Нет|  
+|<xref:System.Web.Security.MembershipUser.LastLockoutDate%2A>|Если пользователь заблокирован из-за слишком большого числа неудачных попыток ввода пароля, возвращается атрибут времени блокировки.<br /><br /> Если пользователь заблокирован из-за слишком большого числа неудачных попыток ответа на пароль, возвращается значение, хранящееся `attributeMapFailedPasswordAnswerLockoutTime` в атрибуте, определенном параметром.<br /><br /> Если пользователь заблокирован из-за неправильного пароля и слишком большого числа неудачных попыток ввода пароля, возвращается последнее значение даты и времени.<br /><br /> Если учетная запись не заблокирована, возвращается 1/1/1754 для совместимости с SQL.|Нет|  
+  
+ Если оба <xref:System.Web.Security.ActiveDirectoryMembershipProvider.RequiresQuestionAndAnswer%2A> свойства и <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordReset%2A> имеют `true`значение, <xref:System.Web.Security.ActiveDirectoryMembershipProvider> класс поддерживает безопасность сброса пароля, запрашивая у пользователя ответ на предварительно определенный вопрос. Чтобы обеспечить поддержку вопроса и ответа, необходимо задать следующие атрибуты конфигурации с помощью [элемента добавить для поставщиков (схема параметров ASP.NET)](https://msdn.microsoft.com/library/8423ec7f-a06d-4606-977e-a46400b2fc18) в файле конфигурации приложения.  
+  
+|Атрибут конфигурации|Тип атрибута|  
+|-----------------------------|--------------------|  
+|`attributeMapPasswordQuestion`|Должен быть однозначным атрибутом типа String в Юникоде.|  
+|`attributeMapPasswordAnswer`|Должен быть однозначным атрибутом типа String в Юникоде.|  
+|`attributeMapFailedPasswordAnswerCount`|Должен быть атрибутом с одним значением типа Integer.|  
+|`attributeMapFailedPasswordAnswerTime`|Должен быть однозначным атрибутом типа "большое целое число" или "интервал".|  
+|`attributeMapFailedPasswordAnswerLockoutTime`|Должен быть однозначным атрибутом типа "большое целое число" или "интервал".|  
+  
+ Дополнительные сведения об использовании безопасности сброса пароля см. в <xref:System.Web.Security.ActiveDirectoryMembershipProvider.RequiresQuestionAndAnswer%2A> описании свойства.  
+  
+## <a name="active-directory-connections"></a>Подключения Active Directory  
+ Если класс используется для подключения к серверу Active Directory Active Directory или ADAM `connectionProtection` , атрибут, заданный с помощью [элемента Add (схема параметров ASP.NET)](https://msdn.microsoft.com/library/8423ec7f-a06d-4606-977e-a46400b2fc18) в поле <xref:System.Web.Security.ActiveDirectoryMembershipProvider> файл конфигурации приложения может ограничивать типы операций, <xref:System.Web.Security.ActiveDirectoryMembershipProvider> которые класс может выполнять через соединение. Атрибут также определяет методы, <xref:System.Web.Security.ActiveDirectoryMembershipProvider> которые экземпляр будет использовать для создания подключения к Active Directory или серверу ADAM. `connectionProtection`  
+  
+ В следующей таблице показано воздействие `connectionProtection` атрибута при соединении с Active Directory.  
+  
+|Значение `connectionProtection`|Действие|  
+|------------------------------------|------------|  
+|<xref:System.Web.Security.ActiveDirectoryConnectionProtection.None>|<xref:System.Web.Security.ActiveDirectoryMembershipProvider> Класс будет подключаться к Active Directory с этими ограничениями.<br /><br /> — Любой метод, который задает пароль, завершится ошибкой. Active Directory требует безопасного подключения при смене паролей.<br />— `connectionUsername` Необходимо явно задать атрибуты и `connectionPassword` с помощью [элемента Add для providers для членства (схема параметров ASP.NET)](https://msdn.microsoft.com/library/8423ec7f-a06d-4606-977e-a46400b2fc18) в файле конфигурации <xref:System.Web.Security.ActiveDirectoryMembershipProvider> приложения; в противном случае экземпляр выдаст исключение  <xref:System.Configuration.Provider.ProviderException> исключение.|  
+|`Secure`|<xref:System.Web.Security.ActiveDirectoryMembershipProvider> Класс будет пытаться подключиться к Active Directory с помощью SSL. Если SSL не удается, будет выполнена вторая попытка подключения к Active Directory с помощью команды Sign-and-Seal. Если обе попытки завершатся неудачей, <xref:System.Web.Security.ActiveDirectoryMembershipProvider> экземпляр <xref:System.Configuration.Provider.ProviderException> выдаст исключение.<br /><br /> Поддерживаются учетные данные процесса и явные учетные данные.|  
+  
+ В следующей таблице показано воздействие `connectionProtection` атрибута при соединении с сервером ADAM.  
+  
+|Значение `connectionProtection`|Действие|  
+|------------------------------------|------------|  
+|<xref:System.Web.Security.ActiveDirectoryConnectionProtection.None>|<xref:System.Web.Security.ActiveDirectoryMembershipProvider> Класс будет подключаться к серверу ADAM с этим ограничением.<br /><br /> — Любой метод, устанавливающий пароли, завершится ошибкой, если только вы не настроите сервер ADAM явным образом, чтобы разрешить отправку и изменение паролей через небезопасное подключение.<br /><br /> Поддерживаются учетные данные процесса и явные учетные данные.|  
+|`Secure`|<xref:System.Web.Security.ActiveDirectoryMembershipProvider> Класс будет пытаться подключиться к серверу ADAM по протоколу SSL. Если соединение не может быть установлено, <xref:System.Web.Security.ActiveDirectoryMembershipProvider> экземпляр вызовет <xref:System.Configuration.Provider.ProviderException> исключение.<br /><br /> Поддерживаются учетные данные процесса и явные учетные данные.|  
+  
+## <a name="adam-configuration"></a>Конфигурация ADAM  
+ При использовании сервера ADAM экземпляр ADAM должен содержать схему, определяющую `User` класс. Можно импортировать `User` класс с импортом `MS-User.ldf` LDIF файла, доступного в каталоге установки ADAM.  
+  
+ <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Класс будет работать с сервером ADAM, настроенным для использования сетевых портов по умолчанию. В следующей таблице показаны значения по умолчанию, ожидаемые для сервера ADAM.  
+  
+|параметр Коннектионпротектион|Ожидаемый Порт ADAM|  
+|----------------------------------|------------------------|  
+|<xref:System.Web.Security.ActiveDirectoryConnectionProtection.None>|389|  
+|`Secure`|636|  
+  
+ Если сервер ADAM не использует порты по умолчанию, см. статью Q817583 "Active Directory Services не запрашивают безопасную авторизацию через SSL-соединение" в базе [знаний Майкрософт](https://go.microsoft.com/fwlink/?linkid=37115).  
+  
+   
+  
+## Examples  
+ В следующем примере кода показан файл Web. config для приложения ASP.NET, настроенного для использования <xref:System.Web.Security.ActiveDirectoryMembershipProvider> экземпляра. В первом примере используются сопоставления по умолчанию для атрибутов Active Directory и не поддерживается безопасность сброса пароля с вопросом и ответом, а также возможность вызова методов поиска. Во втором примере показаны все параметры атрибутов, разрешенные для <xref:System.Web.Security.ActiveDirectoryMembershipProvider> экземпляра.  
+  
+ Первый пример — это простой файл конфигурации, в котором используются сопоставления по умолчанию для Active Directory атрибутов.  
+  
+```  
+<configuration>  
+  <connectionStrings>  
+    <add name="ADService" connectionString="LDAP://ldapServer/" />  
+  </connectionStrings>  
+  <system.web>  
+    <membership defaultProvider="AspNetActiveDirectoryMembershipProvider">  
+      <providers>  
+        <add name="AspNetActiveDirectoryMembershipProvider"   
+          type="System.Web.Security.ActiveDirectoryMembershipProvider,   
+          System.Web, Version=2.0.3600, Culture=neutral,   
+          PublicKeyToken=b03f5f7f11d50a3a" />  
+      </providers>  
+    </membership>  
+  </system.web>  
+</configuration>  
+```  
+  
+ В этом примере показаны все параметры атрибутов, доступные для экземпляра <xref:System.Web.Security.ActiveDirectoryMembershipProvider>.  
+  
+```  
+<configuration>  
+  <connectionStrings>  
+    <add name="ADService" connectionString="LDAP://ldapServer/" />  
+  </connectionStrings>  
+  <system.web>  
+    <membership  
+      defaultProvider="AspNetActiveDirectoryMembershipProvider">  
+      <providers>  
+        <add name="AspNetActiveDirectoryMembershipProvider"  
+          type="System.Web.Security.ActiveDirectoryMembershipProvider,  
+          System.Web, Version=1.0.3600, Culture=neutral,  
+          PublicKeyToken=b03f5f7f11d50a3a"  
+          connectionStringName="ADService"  
+          connectionUsername="UserWithAppropriateRights"  
+          connectionPassword="PasswordForUser"  
+          connectionProtection="Secure"  
+          enablePasswordReset="true"  
+          enableSearchMethods="true"  
+          requiresQuestionAndAnswer="true"  
+          applicationName="/"  
+          description="Default AD connection"  
+          requiresUniqueEmail="false"  
+          clientSearchTimeout="30"  
+          serverSearchTimeout="30"  
+          timeoutUnit="Minutes"  
+          attributeMapPasswordQuestion="department"  
+          attributeMapPasswordAnswer="division"  
+          attributeMapFailedPasswordAnswerCount="singleIntAttribute"  
+         attributeMapFailedPasswordAnswerTime="singleLargeIntAttribute"  
+         attributeMapFailedPasswordAnswerLockoutTime="singleLargeIntAttribute"  
+          attributeMapEmail = "mail"  
+          attributeMapUsername = "userPrincipalName"  
+          maxInvalidPasswordAttempts = "5"  
+          passwordAttemptWindow = "10"  
+          passwordAnswerAttemptLockoutDuration = "30"  
+          minRequiredPasswordLength="7"  
+          minRequiredNonalphanumericCharacters="1"  
+          passwordStrengthRegularExpression="  
+          @\"(?=.{6,})(?=(.*\d){1,})(?=(.*\W){1,})" />  
+        />  
+      </providers>  
+    </membership>  
+  </system.web>  
+</configuration>  
+```  
+  
+ `clientSearchTimeout``serverSearchTimeout` по умолчанию — минуты. Чтобы изменить единицы измерения, задайте `timeoutUnit` для атрибута значение один из значений: «Days», «hours», «minutes», «Seconds» или «миллисекунды». Если атрибут не указан, значение по умолчанию — «minutes».  
+  
+ ]]></format>
+    </remarks>
+    <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+    <related type="ExternalDocumentation" href="https://go.microsoft.com/fwlink/?linkid=149233">Как использовать членство в ASP.NET 2,0</related>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public ActiveDirectoryMembershipProvider ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.ActiveDirectoryMembershipProvider.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; ActiveDirectoryMembershipProvider();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters />
+      <Docs>
+        <summary>Создает новый экземпляр класса <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Конструктор вызывается методом ASP.NET для создания экземпляра <xref:System.Web.Security.ActiveDirectoryMembershipProvider> класса, как указано в конфигурации приложения. <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Этот конструктор не предназначен для использования из кода.  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="ApplicationName">
+      <MemberSignature Language="C#" Value="public override string ApplicationName { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string ApplicationName" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.ActiveDirectoryMembershipProvider.ApplicationName" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Property ApplicationName As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::String ^ ApplicationName { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.ApplicationName : string with get, set" Usage="System.Web.Security.ActiveDirectoryMembershipProvider.ApplicationName" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Имя приложения, использующего пользовательского поставщика участия.</summary>
+        <value>Имя приложения, использующего пользовательского поставщика участия.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойству может быть присвоено имя приложения ASP.NET, однако имя приложения не используется <xref:System.Web.Security.ActiveDirectoryMembershipProvider> классом. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.ApplicationName%2A>  
+  
+ Таким образом, в отличие <xref:System.Web.Security.MembershipProvider> от других реализаций, все ASP.NET приложения, которые обращаются к одному и тому же Active Directory хранилищу данных, всегда будут использовать одни и те же данные пользователя.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.NotSupportedException">Была предпринята попытка установить свойство <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.ApplicationName" />.</exception>
+        <exception cref="T:System.InvalidOperationException">Была предпринята попытка получить доступ к свойству <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.ApplicationName" /> до того, как экземпляр <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" /> был инициализирован.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="ChangePassword">
+      <MemberSignature Language="C#" Value="public override bool ChangePassword (string username, string oldPassword, string newPassword);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance bool ChangePassword(string username, string oldPassword, string newPassword) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.ActiveDirectoryMembershipProvider.ChangePassword(System.String,System.String,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function ChangePassword (username As String, oldPassword As String, newPassword As String) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override bool ChangePassword(System::String ^ username, System::String ^ oldPassword, System::String ^ newPassword);" />
+      <MemberSignature Language="F#" Value="override this.ChangePassword : string * string * string -&gt; bool" Usage="activeDirectoryMembershipProvider.ChangePassword (username, oldPassword, newPassword)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="username" Type="System.String" />
+        <Parameter Name="oldPassword" Type="System.String" />
+        <Parameter Name="newPassword" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="username">Имя пользователя, для которого нужно изменить пароль.</param>
+        <param name="oldPassword">Текущий пароль заданного пользователя.</param>
+        <param name="newPassword">Новый пароль заданного пользователя.</param>
+        <summary>Изменяет пароль заданного пользователя.</summary>
+        <returns>Значение <see langword="true" />, если пароль был успешно обновлен; в противном случае — <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.ActiveDirectoryMembershipProvider.ChangePassword%2A> Метод используется для обновления пароля пользователя в Active Directory хранилище данных. Независимо от учетных данных, для <xref:System.Web.Security.ActiveDirectoryMembershipProvider> использования которых настроен экземпляр, поставщик подключается к серверу Active Directory, `username` используя параметры и `oldPassword` в качестве учетных данных подключения.  
+  
+ Если свойство имеет `true`значение, пользователь не может изменить свой пароль, если учетная запись была ранее заблокирована, так как пользователь сделал слишком много попыток ответить на вопрос с паролем. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordReset%2A> Перед изменением пароля пользователь должен подождать указанное в <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAnswerAttemptLockoutDuration%2A> свойстве число минут.  
+  
+ Если изменение пароля прошло удачно, а <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordReset%2A> свойство имеет `true`значение, счетчики отслеживания ответов пользователя с неверным паролем сбрасываются.  
+  
+ Поставщик находит пользовательский экземпляр для обновления, выполняя поиск по поддереву для имени пользователя, начиная с точки поиска, указанной в строке подключения. Дополнительные сведения <xref:System.Web.Security.ActiveDirectoryMembershipProvider> о строках подключения см. в разделе класс.  
+  
+ Чтобы изменить пароли на сервере Active Directory, `connectionProtection` атрибуту необходимо <xref:System.Web.Security.ActiveDirectoryConnectionProtection.SignAndSeal>присвоить значение.  
+  
+ При использовании сервера `connectionProtection` ADAM атрибут может иметь <xref:System.Web.Security.ActiveDirectoryConnectionProtection.None>значение, но только в том случае, если вы явно настроили сервер ADAM для разрешения смены пароля через незащищенные соединения.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="username" /> пустой, или превышает максимальную длину имени пользователя (обычно 256 символов).  
+  
+- или - 
+ <paramref name="username" /> содержит запятые.  
+  
+- или - 
+Имя пользователя отображается на атрибут <see langword="userPrincipalName" /> и параметр <paramref name="username" /> содержит обратные косые черты.  
+  
+- или - 
+ Параметр <paramref name="oldPassword" /> или параметр <paramref name="newPassword" /> является строкой нулевой длины.  
+  
+-или- 
+ Параметр <paramref name="oldPassword" /> или <paramref name="newPassword" /> превышает максимальную длину пароля (обычно 128 символов).  
+  
+- или - 
+ Длина параметра <paramref name="newPassword" /> меньше минимальной длины пароля, указанной в свойстве <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.MinRequiredPasswordLength" />. 
+- или - 
+ Параметр <paramref name="newPassword" /> содержит меньше нетекстовых символов, чем определено в свойстве <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.MinRequiredNonAlphanumericCharacters" />.  
+  
+- или - 
+ Параметру <paramref name="newPassword" /> не удается пройти проверку регулярным выражением, определенным в свойстве <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordStrengthRegularExpression" />.</exception>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="username" /> имеет значение <see langword="null" />.  
+  
+-или- 
+ Свойство <paramref name="oldPassword" /> имеет значение <see langword="null" />.  
+  
+- или - 
+ Свойство <paramref name="newPassword" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.Web.Security.MembershipPasswordException">Параметр <paramref name="newPassword" /> не удовлетворяет требованиям сложности, определенным сервером Active Directory.</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Нельзя создать безопасное подключение к серверу Active Directory Application Mode.</exception>
+        <exception cref="T:System.InvalidOperationException">Метод <see cref="M:System.Web.Security.ActiveDirectoryMembershipProvider.ChangePassword(System.String,System.String,System.String)" /> вызывается до инициализации экземпляра <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" />.</exception>
+        <exception cref="T:System.Exception">Произошло необработанное исключение.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="ChangePasswordQuestionAndAnswer">
+      <MemberSignature Language="C#" Value="public override bool ChangePasswordQuestionAndAnswer (string username, string password, string newPasswordQuestion, string newPasswordAnswer);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance bool ChangePasswordQuestionAndAnswer(string username, string password, string newPasswordQuestion, string newPasswordAnswer) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.ActiveDirectoryMembershipProvider.ChangePasswordQuestionAndAnswer(System.String,System.String,System.String,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function ChangePasswordQuestionAndAnswer (username As String, password As String, newPasswordQuestion As String, newPasswordAnswer As String) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override bool ChangePasswordQuestionAndAnswer(System::String ^ username, System::String ^ password, System::String ^ newPasswordQuestion, System::String ^ newPasswordAnswer);" />
+      <MemberSignature Language="F#" Value="override this.ChangePasswordQuestionAndAnswer : string * string * string * string -&gt; bool" Usage="activeDirectoryMembershipProvider.ChangePasswordQuestionAndAnswer (username, password, newPasswordQuestion, newPasswordAnswer)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="username" Type="System.String" />
+        <Parameter Name="password" Type="System.String" />
+        <Parameter Name="newPasswordQuestion" Type="System.String" />
+        <Parameter Name="newPasswordAnswer" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="username">Пользователь, для которого изменяется контрольный вопрос и ответ.</param>
+        <param name="password">Пароль заданного пользователя.</param>
+        <param name="newPasswordQuestion">Новый контрольный вопрос заданного пользователя.</param>
+        <param name="newPasswordAnswer">Новый контрольный ответ заданного пользователя.</param>
+        <summary>Обновляет запрос и ответ пароля пользователя членства в хранилище Active Directory.</summary>
+        <returns>Значение <see langword="true" />, если обновление выполнено успешно; в противном случае значение <see langword="false" />. Значение <see langword="false" /> также возвращается, если пароль неверен, пользователь заблокирован или пользователь отсутствует в хранилище данных Active Directory.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод вызывается <xref:System.Web.Security.ActiveDirectoryMembershipUser> классом для обновления вопроса и ответа пароля пользователя в Active Directory хранилище членства.  
+  
+ Запрос пароля и ответ на него обеспечивают дополнительный уровень безопасности при сбросе пароля пользователя. При создании имени пользователя пользователь может указать вопрос и ответ, которые впоследствии можно будет использовать для сброса забытого пароля. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.ChangePasswordQuestionAndAnswer%2A> Метод обновляет вопрос и ответ пароля для пользователя членства в новых значениях.  
+  
+ Чтобы использовать <xref:System.Web.Security.ActiveDirectoryMembershipProvider.ChangePasswordQuestionAndAnswer%2A> метод, необходимо задать следующие дополнительные атрибуты в файле конфигурации приложения:  
+  
+-   `requiresQuestionAndAnswer`должно быть`true.`  
+  
+-   `attributeMapPasswordQuestion`и `attributeMapPasswordAnswer` должны быть сопоставлены с атрибутами в схеме Active Directory.  
+  
+ Если указанные выше условия не выполняются, <xref:System.Configuration.Provider.ProviderException> при инициализации создается исключение.  
+  
+ Экземпляр подключается к хранилищу данных Active Directory с учетными данными, `username` указанными в параметрах и `password` , для проверки комбинации имени пользователя и пароля. <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Фактическое обновление вопроса и ответа выполняется с помощью настроенных учетных данных соединения поставщика.  
+  
+ Если <xref:System.Web.Security.ActiveDirectoryMembershipProvider.ChangePasswordQuestionAndAnswer%2A> методу передается неверный пароль, сервер каталогов увеличивает счетчики, которые отменяют попытки ввода недопустимых паролей. Это может привести к блокировке пользователя и невозможности входа в систему до тех пор, пока состояние блокировки не будет снято вызовом <xref:System.Web.Security.ActiveDirectoryMembershipProvider.UnlockUser%2A> метода или заблокированной длительностью, заданной в ходе каталога.  
+  
+ Если обновление для вопроса и ответа прошло удачно, а <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordReset%2A> свойство имеет `true`значение, счетчики отслеживания ответов пользователя с неверным паролем сбрасываются.  
+  
+ Ответ на пароль шифруется с помощью <xref:System.Web.Security.MembershipProvider.EncryptPassword%2A> метода перед его сохранением в Active Directory хранилище данных. Ключ шифрования и алгоритм задаются элементом конфигурации [элемента machineKey (схема параметров ASP.NET)](https://msdn.microsoft.com/library/4b5699a9-bc21-4c4a-85f1-8b3b8ebd2d46) . Необходимо указать атрибут расшифровки элемента [machineKey (схема параметров ASP.NET)](https://msdn.microsoft.com/library/4b5699a9-bc21-4c4a-85f1-8b3b8ebd2d46) , <xref:System.Web.Security.ActiveDirectoryMembershipProvider> но класс не поддерживает автоматически созданные ключи шифрования.  
+  
+ Максимальная длина контрольного вопроса — 256 символов. Максимальная длина ответа на пароль — 128 символов.  
+  
+ Начальные и конечные пробелы удаляются из всех значений параметров, `password`за исключением параметра.  
+  
+ Поставщик находит пользовательский экземпляр для обновления, выполняя поиск по поддереву для имени пользователя, начиная с точки поиска, указанной в строке подключения. Дополнительные сведения <xref:System.Web.Security.ActiveDirectoryMembershipProvider> о строках подключения см. в разделе класс.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.NotSupportedException">Администратор не отобразил поля запроса-ответа пароля на атрибуты схемы Active Directory.</exception>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="username" /> пустой, или превышает максимальную длину имени пользователя (обычно 256 символов).  
+  
+-или- 
+ <paramref name="username" /> содержит запятые.  
+  
+-или- 
+Имя пользователя отображается на атрибут <see langword="userPrincipalName" /> и параметр <paramref name="username" /> содержит обратные косые черты.  
+  
+- или - 
+ <paramref name="password" /> представляет собой строку нулевой длины.  
+  
+- или - 
+ Параметр <paramref name="password" /> превышает максимальную длину пароля (обычно 128 символов).  
+  
+- или - 
+ Параметр <paramref name="newPasswordQuestion" /> пустой и значение свойства <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.RequiresQuestionAndAnswer" /> равно <see langword="true" />.  
+  
+- или - 
+ Длина параметра <paramref name="newPasswordQuestion" /> превышает 256 символов.  
+  
+-или- 
+ Длина параметра <paramref name="newPasswordAnswer" /> после шифрования ответа превышает 128 символов.</exception>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="username" /> имеет значение <see langword="null" />.  
+  
+-или- 
+ Свойство <paramref name="password" /> имеет значение <see langword="null" />.  
+  
+- или - 
+ Параметр <paramref name="newPasswordQuestion" /> равен <see langword="null" /> и свойство <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.RequiresQuestionAndAnswer" /> равно <see langword="true" />.  
+  
+-или- 
+ Параметр <paramref name="newPasswordAnswer" /> равен <see langword="null" /> и свойство <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.RequiresQuestionAndAnswer" /> равно <see langword="true" />.</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Элемент конфигурации [machineKey (схема параметров ASP.NET)](https://msdn.microsoft.com/library/4b5699a9-bc21-4c4a-85f1-8b3b8ebd2d46) указывает автоматически созданный ключ шифрования компьютера. Необходимо явно установить атрибут <see langword="decryptionKey" /> элемента [machineKey (схема параметров ASP.NET)](https://msdn.microsoft.com/library/4b5699a9-bc21-4c4a-85f1-8b3b8ebd2d46) для хранения ответов пароля с поставщиком <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" />.</exception>
+        <exception cref="T:System.InvalidOperationException">Метод <see cref="M:System.Web.Security.ActiveDirectoryMembershipProvider.ChangePasswordQuestionAndAnswer(System.String,System.String,System.String,System.String)" /> вызывается до инициализации экземпляра <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" />.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="CreateUser">
+      <MemberSignature Language="C#" Value="public override System.Web.Security.MembershipUser CreateUser (string username, string password, string email, string passwordQuestion, string passwordAnswer, bool isApproved, object providerUserKey, out System.Web.Security.MembershipCreateStatus status);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance class System.Web.Security.MembershipUser CreateUser(string username, string password, string email, string passwordQuestion, string passwordAnswer, bool isApproved, object providerUserKey, [out] valuetype System.Web.Security.MembershipCreateStatus&amp; status) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.ActiveDirectoryMembershipProvider.CreateUser(System.String,System.String,System.String,System.String,System.String,System.Boolean,System.Object,System.Web.Security.MembershipCreateStatus@)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function CreateUser (username As String, password As String, email As String, passwordQuestion As String, passwordAnswer As String, isApproved As Boolean, providerUserKey As Object, ByRef status As MembershipCreateStatus) As MembershipUser" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::Web::Security::MembershipUser ^ CreateUser(System::String ^ username, System::String ^ password, System::String ^ email, System::String ^ passwordQuestion, System::String ^ passwordAnswer, bool isApproved, System::Object ^ providerUserKey, [Runtime::InteropServices::Out] System::Web::Security::MembershipCreateStatus % status);" />
+      <MemberSignature Language="F#" Value="override this.CreateUser : string * string * string * string * string * bool * obj *  -&gt; System.Web.Security.MembershipUser" Usage="activeDirectoryMembershipProvider.CreateUser (username, password, email, passwordQuestion, passwordAnswer, isApproved, providerUserKey, status)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Security.MembershipUser</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="username" Type="System.String" />
+        <Parameter Name="password" Type="System.String" />
+        <Parameter Name="email" Type="System.String" />
+        <Parameter Name="passwordQuestion" Type="System.String" />
+        <Parameter Name="passwordAnswer" Type="System.String" />
+        <Parameter Name="isApproved" Type="System.Boolean" />
+        <Parameter Name="providerUserKey" Type="System.Object" />
+        <Parameter Name="status" Type="System.Web.Security.MembershipCreateStatus" RefType="out" />
+      </Parameters>
+      <Docs>
+        <param name="username">Имя пользователя для нового пользователя.</param>
+        <param name="password">Пароль для нового пользователя.</param>
+        <param name="email">Адрес электронной почты нового пользователя.</param>
+        <param name="passwordQuestion">Вопрос пароля для нового пользователя.</param>
+        <param name="passwordAnswer">Контрольный ответ для пароля нового пользователя.</param>
+        <param name="isApproved">Утвержден ли новый пользователь для проверки.</param>
+        <param name="providerUserKey">Уникальный идентификатор из источника данных членства для пользователя. Этот параметр должен равняться <see langword="null" /> при использовании класса <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" />.</param>
+        <param name="status">Результатом выполнения этого метода является одно из значений перечисления <see cref="T:System.Web.Security.MembershipCreateStatus" />, указывающее, был ли успешно создан пользователь.</param>
+        <summary>Добавляет нового пользователя к хранилищу данных Active Directory.</summary>
+        <returns>Экземпляр <see cref="T:System.Web.Security.ActiveDirectoryMembershipUser" />, содержащий информацию о вновь созданном пользователе или значение <see langword="null" />, если пользователь не был успешно создан.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод вызывается <xref:System.Web.Security.Membership> классом для создания нового пользователя в Active Directory хранилище данных. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.CreateUser%2A>  
+  
+ Для серверов <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Active Directory и режима ADAM (Active Directory приложений) классу требуется, чтобы класс экземпляра в каталоге был `user`. Альтернативные классы пользователей, такие `inetOrgPerson` как, не поддерживаются.  
+  
+ При использовании Active Directory сервера и имени пользователя `userPrincipalName` <xref:System.Web.Security.ActiveDirectoryMembershipProvider> , сопоставленного с атрибутом, класс автоматически создает случайное 20- `sAMAccountName` символьное имя пользователя для параметра от вашего имени.  
+  
+ По умолчанию для параметров используется следующая максимальная длина.  
+  
+|Параметр|Максимальная длина|  
+|---------------|--------------------|  
+|`username`|64 символов при использовании `userPrincipalName` атрибута. При использовании `sAMAccountName` атрибута общее ограничение составляет не более 20 символов.|  
+|`password`|128 символов.|  
+|`email`|256 символов.|  
+|`passwordQuestion`|256 символов.|  
+|`passwordAnswer`|128 символов до и после шифрования.|  
+  
+ Свойство в возвращаемом <xref:System.Web.Security.ActiveDirectoryMembershipUser> экземпляре имеет ограничение в 1024 символов. <xref:System.Web.Security.ActiveDirectoryMembershipUser.Comment%2A>  
+  
+ Если схема каталога была изменена путем уменьшения максимально допустимой длины для этих атрибутов, эти значения будут иметь приоритет.  
+  
+ Перед созданием пользователя <xref:System.Web.Security.ActiveDirectoryMembershipProvider> класс должен убедиться, что имя пользователя уникально. <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Если экземпляр настроен для использования уникальных адресов электронной почты, он также обеспечит уникальность адреса электронной почты.  
+  
+ В Active Directory уникальность имени пользователя обеспечивается путем поиска GC, когда имя пользователя сопоставлено с `userPrincipalName`. Если `sAMAccountName` используется, каталог будет автоматически обеспечивать уникальность в `sAMAccountName` пределах домена Active Directory.  
+  
+ Сервер ADAM автоматически обеспечивает уникальность `userPrincipalName` имени пользователя для всех разделов приложений.  
+  
+ Уникальность адреса электронной почты обеспечивается путем выполнения поиска по поддереву для повторяющегося адреса электронной почты, начиная с корня контейнера, в котором создаются пользователи. Это контейнер пользователя по умолчанию (если он подключен к Active Directory и в строке подключения не указан контейнер) или контейнер, указанный в строке подключения.  
+  
+ <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Класс создает пользователя непосредственно в контейнере пользователя, указанном в строке подключения. Дополнительные сведения <xref:System.Web.Security.ActiveDirectoryMembershipProvider> о строках подключения см. в разделе класс.  
+  
+ Для установки паролей на Active Directory сервере `connectionProtection` атрибуту необходимо <xref:System.Web.Security.ActiveDirectoryConnectionProtection.SignAndSeal>присвоить значение.  
+  
+ При использовании `connectionProtection` сервера ADAM атрибуту можно <xref:System.Web.Security.ActiveDirectoryConnectionProtection.None>присвоить значение, но только в том случае, если вы явно настроили сервер ADAM для разрешения смены пароля по незащищенным соединениям.  
+  
+ Начальные и конечные пробелы удаляются из всех значений строковых параметров `password`, за исключением.  
+  
+> [!IMPORTANT]
+>  Вы не можете создавать новых пользователей, если учетные данные, используемые для подключения к серверу Active Directory, не имеют прав администратора домена (не рекомендуется) или "создать дочерний экземпляр", "удалить дочерний экземпляр" и "задать пароль". Право доступа "удалить дочерний экземпляр" требуется, так как создание пользователя является многоэтапным процессом, и если какой-либо шаг создания пользователя завершается <xref:System.Web.Security.ActiveDirectoryMembershipProvider> неудачей, класс удаляет пользовательский экземпляр, а не оставляет частично сконструированный пользовательский экземпляр в каталоги.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="providerUserKey" /> не равен <see langword="null" />.</exception>
+        <exception cref="T:System.NotSupportedException">Администратор не отобразил поля запроса-ответа пароля на атрибуты схемы Active Directory, и один из параметров <paramref name="passwordQuestion" /> или <paramref name="passwordAnswer" /> не равен <see langword="null" />.</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Элемент конфигурации [machineKey (схема параметров ASP.NET)](https://msdn.microsoft.com/library/4b5699a9-bc21-4c4a-85f1-8b3b8ebd2d46) указывает автоматически созданный ключ шифрования компьютера. Необходимо явно установить атрибут <see langword="decryptionKey" /> элемента [machineKey (схема параметров ASP.NET)](https://msdn.microsoft.com/library/4b5699a9-bc21-4c4a-85f1-8b3b8ebd2d46) для хранения ответов пароля с поставщиком <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" />.  
+  
+- или - 
+Поставщик <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" /> не смог установить безопасное подключение к каталогу, при попытке установить пароль для нового пользователя.</exception>
+        <exception cref="T:System.Runtime.InteropServices.COMException">Произошла ошибка при попытке создания пользователя.</exception>
+        <exception cref="T:System.InvalidOperationException">Метод <see cref="M:System.Web.Security.ActiveDirectoryMembershipProvider.CreateUser(System.String,System.String,System.String,System.String,System.String,System.Boolean,System.Object,System.Web.Security.MembershipCreateStatus@)" /> вызывается до инициализации экземпляра <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" />.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="CurrentConnectionProtection">
+      <MemberSignature Language="C#" Value="public System.Web.Security.ActiveDirectoryConnectionProtection CurrentConnectionProtection { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance valuetype System.Web.Security.ActiveDirectoryConnectionProtection CurrentConnectionProtection" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.ActiveDirectoryMembershipProvider.CurrentConnectionProtection" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property CurrentConnectionProtection As ActiveDirectoryConnectionProtection" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Web::Security::ActiveDirectoryConnectionProtection CurrentConnectionProtection { System::Web::Security::ActiveDirectoryConnectionProtection get(); };" />
+      <MemberSignature Language="F#" Value="member this.CurrentConnectionProtection : System.Web.Security.ActiveDirectoryConnectionProtection" Usage="System.Web.Security.ActiveDirectoryMembershipProvider.CurrentConnectionProtection" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Security.ActiveDirectoryConnectionProtection</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает текущий уровень безопасности, используемый для защиты связи с сервером.</summary>
+        <value>Одно из значений <see cref="T:System.Web.Security.ActiveDirectoryConnectionProtection" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойство указывает текущий уровень безопасности <xref:System.Web.Security.ActiveDirectoryMembershipProvider> , используемый экземпляром. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.CurrentConnectionProtection%2A> Свойство основано на атрибуте, заданном с помощью [элемента Add для providers для членства (схема параметров ASP.NET)](https://msdn.microsoft.com/library/8423ec7f-a06d-4606-977e-a46400b2fc18) в файле конфигурации приложения. `connnectionProtection` <xref:System.Web.Security.ActiveDirectoryMembershipProvider.CurrentConnectionProtection%2A>  
+  
+ <xref:System.Web.Security.ActiveDirectoryConnectionProtection.SignAndSeal> Для `connectionProtection` атрибута можно <xref:System.Web.Security.ActiveDirectoryConnectionProtection.None>  задать только значение или в файле конфигурации.  
+  
+ Дополнительные сведения <xref:System.Web.Security.ActiveDirectoryMembershipProvider> о строках подключения см. в разделе класс.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показана запись Web. config, которая настраивает <xref:System.Web.Security.ActiveDirectoryMembershipProvider> экземпляр для использования протокола безопасности SSL для подключения к серверу Active Directory.  
+  
+```  
+<configuration>  
+  <connectionStrings>  
+    <add name="ADService" connectionString="LDAP://ldapServer/" />  
+  </connectionStrings>  
+  <system.web>  
+    <membership defaultProvider="AspNetActiveDirectoryMembershipProvider">  
+      <providers>  
+        <add name="AspNetActiveDirectoryMembershipProvider"   
+          type="System.Web.Security.ActiveDirectoryMembershipProvider,   
+          System.Web, Version=2.0.3600, Culture=neutral,  
+          PublicKeyToken=b03f5f7f11d50a3a"  
+          connectionProtection="SignAndSeal" />  
+      </providers>  
+    </membership>  
+  </system.web>  
+</configuration>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Была предпринята попытка получить доступ к свойству <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.CurrentConnectionProtection" /> до того, как экземпляр <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" /> был инициализирован.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="DeleteUser">
+      <MemberSignature Language="C#" Value="public override bool DeleteUser (string username, bool deleteAllRelatedData);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance bool DeleteUser(string username, bool deleteAllRelatedData) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.ActiveDirectoryMembershipProvider.DeleteUser(System.String,System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function DeleteUser (username As String, deleteAllRelatedData As Boolean) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override bool DeleteUser(System::String ^ username, bool deleteAllRelatedData);" />
+      <MemberSignature Language="F#" Value="override this.DeleteUser : string * bool -&gt; bool" Usage="activeDirectoryMembershipProvider.DeleteUser (username, deleteAllRelatedData)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="username" Type="System.String" />
+        <Parameter Name="deleteAllRelatedData" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="username">Имя пользователя для удаления.</param>
+        <param name="deleteAllRelatedData">Этот параметр игнорируется методом <see cref="M:System.Web.Security.ActiveDirectoryMembershipProvider.DeleteUser(System.String,System.Boolean)" />.</param>
+        <summary>Удаляет сведения о членстве пользователя из хранилища данных Active Directory.</summary>
+        <returns><see langword="true" />, если пользователь был удален; в противном случае — <see langword="false" />, если пользователь не был найден в хранилище данных.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод немедленно удаляет пользователя, определяемого `username` параметром. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.DeleteUser%2A> Так как хранилище данных Active Directory не сохраняет сведения `deleteAllRelatedData` о пользователях в отдельных областях каталога, параметр игнорируется, хотя он должен быть установлен `true` в значение или `false` при вызове <xref:System.Web.Security.ActiveDirectoryMembershipProvider.DeleteUser%2A> метода.  
+  
+ <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Класс находит удаляемый пользовательский экземпляр, выполняя одноуровневое Поиск имени пользователя в контейнере Users, определяемого строкой подключения. Дополнительные сведения <xref:System.Web.Security.ActiveDirectoryMembershipProvider> о строках подключения см. в разделе класс.  
+  
+ `username`Длина не должна превышать 64 символов.  
+  
+> [!IMPORTANT]
+>  Нельзя удалить пользователей, если только учетные данные, используемые для подключения к серверу Active Directory, не имеют прав администратора домена (не рекомендуется) или права доступа "удалить дочерние экземпляры".  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="username" /> пустой, или превышает максимальную длину имени пользователя (обычно 256 символов).  
+  
+- или - 
+ <paramref name="username" /> содержит запятые.  
+  
+- или - 
+Имя пользователя отображается на атрибут <see langword="userPrincipalName" /> и параметр <paramref name="userName" /> содержит обратные косые черты.</exception>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="username" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.Runtime.InteropServices.COMException">Произошла ошибка при попытке удаления пользователя.</exception>
+        <exception cref="T:System.InvalidOperationException">Метод <see cref="M:System.Web.Security.ActiveDirectoryMembershipProvider.DeleteUser(System.String,System.Boolean)" /> вызывается до инициализации экземпляра <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" />.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="EnablePasswordReset">
+      <MemberSignature Language="C#" Value="public override bool EnablePasswordReset { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool EnablePasswordReset" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordReset" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides ReadOnly Property EnablePasswordReset As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property bool EnablePasswordReset { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.EnablePasswordReset : bool" Usage="System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordReset" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, показывающее, настроен ли экземпляр <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" /> на разрешение пользователям восстанавливать их пароли.</summary>
+        <value><see langword="true" />, если восстановление пароля разрешено; в противном случае — <see langword="false" />. Значение по умолчанию — <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойство указывает, можно ли <xref:System.Web.Security.ActiveDirectoryMembershipProvider.ResetPassword%2A> использовать метод для сброса пароля пользователя. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordReset%2A> Свойство задается в файле конфигурации приложения `enablePasswordReset` с помощью атрибута элемента [членства (схема параметров ASP.NET)](https://msdn.microsoft.com/library/b9c1ee8f-33ca-4361-8666-b42a0fe86049) . <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordReset%2A>  
+  
+ <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordReset%2A> Свойство `true`  можно задать, только если были выполнены следующие параметры элемента [членства (схема параметров ASP.NET)](https://msdn.microsoft.com/library/b9c1ee8f-33ca-4361-8666-b42a0fe86049) .  
+  
+-   `requiresQuestionAndAnswer`должно быть `true`.  
+  
+-   Схему Active Directory необходимо изменить, чтобы она содержала атрибуты для хранения вопроса и ответа пароля, а также три поля отслеживания для попыток изменения пароля.  
+  
+-   `attributeMapPasswordQuestion`, `attributeMapPasswordAnswer` , `attributeMapFailedPasswordAnswerCount` , и `attributeMapFailedPasswordAnswerLockoutTime`  должны быть сопоставлены с атрибутами в схеме Active Directory. `attributeMapFailedPasswordAnswerTime`  
+  
+ Если указанные выше условия не выполняются, <xref:System.Configuration.Provider.ProviderException> при инициализации создается исключение.  
+  
+ Если строка подключения в файле конфигурации приложения указывает домен Active Directory, а не конкретный сервер, <xref:System.Web.Security.ActiveDirectoryMembershipProvider> экземпляр всегда будет подключаться к контроллеру домена, имеющему роль PDC для домена, чтобы гарантировать, что изменения паролей вступают в <xref:System.Web.Security.ActiveDirectoryMembershipProvider.ValidateUser%2A> силу и становятся доступными при вызове метода.  
+  
+> [!NOTE]
+>  Даже если <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordReset%2A> свойство имеет `true`значение, нельзя сбрасывать пароли пользователей, если только учетные данные, используемые для подключения к серверу Active Directory, не имеют прав администратора домена (не рекомендуется) или права доступа "Сброс пароля".  
+  
+   
+  
+## Examples  
+ В следующем примере кода показана запись Web. config, которая настраивает <xref:System.Web.Security.ActiveDirectoryMembershipProvider> экземпляр для включения сброса пароля. Он использует явные учетные данные пользователя при наличии права доступа "Сброс пароля".  
+  
+> [!IMPORTANT]
+>  При помещении учетных данных пользователя в файл Web. config возникают потенциальные угрозы безопасности. Пользователи с правами доступа к каталогу, содержащему файл Web. config, могут прочитать файл и, таким же, просмотреть учетные данные. Дополнительные сведения о защите от этой угрозы см. в разделе [Шифрование сведений о конфигурации с помощью защищенной конфигурации](https://msdn.microsoft.com/library/51cdfe5b-9d82-458c-94ff-c551c4f38ed1).  
+  
+```  
+<configuration>  
+  <connectionStrings>  
+    <add name="ADService" connectionString="LDAP://ldapServer/" />  
+  </connectionStrings>  
+  <system.web>  
+    <membership defaultProvider="AspNetActiveDirectoryMembershipProvider">  
+      <providers>  
+        <add name="AspNetActiveDirectoryMembershipProvider"   
+          type="System.Web.Security.ActiveDirectoryMembershipProvider,   
+          System.Web, Version=2.0.3600, Culture=neutral,   
+          PublicKeyToken=b03f5f7f11d50a3a"  
+          connectionUsername="UserWithResetPasswordRights"  
+          connectionPassword="PasswordForUser"  
+          enablePasswordReset="true"  
+          requiresQuestionAndAnswer="true"  
+          attributeMapPasswordQuestion="PasswordQuestionADAttribute"  
+          attributeMapPasswordAnswer="PasswordAnswerADAttribute"  
+          attributeMapFailedPasswordAnswerCount="AnswerCountADAttribute"  
+          attributeMapFailedPasswordAnswerTime="AnswerTimeADAttribute"  
+          attributeMapFailedPasswordAnswerLockoutTime="LockOutTimeADAttribute" />  
+      </providers>  
+    </membership>  
+  </system.web>  
+</configuration>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Была предпринята попытка получить доступ к свойству <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordReset" /> до того, как экземпляр <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" /> был инициализирован.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="EnablePasswordRetrieval">
+      <MemberSignature Language="C#" Value="public override bool EnablePasswordRetrieval { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool EnablePasswordRetrieval" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordRetrieval" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides ReadOnly Property EnablePasswordRetrieval As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property bool EnablePasswordRetrieval { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.EnablePasswordRetrieval : bool" Usage="System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordRetrieval" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает значение, указывающее, может ли пароль пользователя быть извлечен из хранилища данных Active Directory. Данное свойство всегда возвращает значение <see langword="false" />.</summary>
+        <value>Значение <see langword="false" />, чтобы показать, что возврат пароля не поддерживается классом <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Класс не поддерживает извлечение паролей.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Была предпринята попытка получить доступ к свойству <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordRetrieval" /> до того, как экземпляр <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" /> был инициализирован.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="EnableSearchMethods">
+      <MemberSignature Language="C#" Value="public bool EnableSearchMethods { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool EnableSearchMethods" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.ActiveDirectoryMembershipProvider.EnableSearchMethods" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property EnableSearchMethods As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool EnableSearchMethods { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.EnableSearchMethods : bool" Usage="System.Web.Security.ActiveDirectoryMembershipProvider.EnableSearchMethods" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, указывающее, доступны ли методы <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" /> ориентированные на поиск.</summary>
+        <value><see langword="true" />, если методы поиска доступны; в противном случае — <see langword="false" />. Значение по умолчанию — <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Так как поиск на сервере Active Directory потенциально требует ресурсов, <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnableSearchMethods%2A> свойство позволяет отключить методы, ориентированные <xref:System.Web.Security.ActiveDirectoryMembershipProvider> на поиск. Свойство задается в файле конфигурации приложения `enableSearchMethods` с помощью атрибута элемента [членства (схема параметров ASP.NET)](https://msdn.microsoft.com/library/b9c1ee8f-33ca-4361-8666-b42a0fe86049) . <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnableSearchMethods%2A>  
+  
+ Если свойство имеет `false`значение, следующие методы недоступны. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnableSearchMethods%2A>  
+  
+-   <xref:System.Web.Security.ActiveDirectoryMembershipProvider.FindUsersByName%2A>  
+  
+-   <xref:System.Web.Security.ActiveDirectoryMembershipProvider.FindUsersByEmail%2A>  
+  
+-   <xref:System.Web.Security.ActiveDirectoryMembershipProvider.GetAllUsers%2A>  
+  
+ Поставщик использует поиск по поддереву, начиная с точки поиска, указанной в строке подключения. Дополнительные сведения <xref:System.Web.Security.ActiveDirectoryMembershipProvider> о строках подключения см. в разделе класс.  
+  
+ Не рекомендуется включать Поиск в рабочих системах до тех пор, пока не будет подтверждено, что запросы поиска, выданные <xref:System.Web.Security.ActiveDirectoryMembershipProvider> классом, не оказывают негативного воздействия на производительность сервера каталога. Поскольку класс предназначен для веб-среды без отслеживания состояния, он не может использовать оптимизации разбиения на страницы, предоставляемые базовыми <xref:System.DirectoryServices> API. <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Это означает, что операции подкачки во время поиска в больших каталогах очень ресурсоемки, и их следует избегать. Операции поиска всегда выдаются для сервера каталогов, настроенного в строке подключения, или автоматически выбранного сервера в случае строки подключения, указывающей на домен. Поставщик не использует глобальный каталог для своих методов поиска.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показана запись Web. config, которая настраивает <xref:System.Web.Security.ActiveDirectoryMembershipProvider> экземпляр для включения поиска на сервере Active Directory.  
+  
+```  
+<configuration>  
+  <connectionStrings>  
+    <add name="ADService" connectionString="LDAP://ldapServer/" />  
+  </connectionStrings>  
+  <system.web>  
+    <membership defaultProvider="AspNetActiveDirectoryMembershipProvider">  
+      <providers>  
+        <add name="AspNetActiveDirectoryMembershipProvider"   
+          type="System.Web.Security.ActiveDirectoryMembershipProvider,   
+          System.Web, Version=2.0.3600, Culture=neutral,   
+          PublicKeyToken=b03f5f7f11d50a3a"  
+          enableSearchMethods="true" />  
+      </providers>  
+    </membership>  
+  </system.web>  
+</configuration>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Была предпринята попытка получить доступ к свойству <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.EnableSearchMethods" /> до того, как экземпляр <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" /> был инициализирован.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="FindUsersByEmail">
+      <MemberSignature Language="C#" Value="public override System.Web.Security.MembershipUserCollection FindUsersByEmail (string emailToMatch, int pageIndex, int pageSize, out int totalRecords);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance class System.Web.Security.MembershipUserCollection FindUsersByEmail(string emailToMatch, int32 pageIndex, int32 pageSize, [out] int32&amp; totalRecords) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.ActiveDirectoryMembershipProvider.FindUsersByEmail(System.String,System.Int32,System.Int32,System.Int32@)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function FindUsersByEmail (emailToMatch As String, pageIndex As Integer, pageSize As Integer, ByRef totalRecords As Integer) As MembershipUserCollection" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::Web::Security::MembershipUserCollection ^ FindUsersByEmail(System::String ^ emailToMatch, int pageIndex, int pageSize, [Runtime::InteropServices::Out] int % totalRecords);" />
+      <MemberSignature Language="F#" Value="override this.FindUsersByEmail : string * int * int *  -&gt; System.Web.Security.MembershipUserCollection" Usage="activeDirectoryMembershipProvider.FindUsersByEmail (emailToMatch, pageIndex, pageSize, totalRecords)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Security.MembershipUserCollection</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="emailToMatch" Type="System.String" />
+        <Parameter Name="pageIndex" Type="System.Int32" />
+        <Parameter Name="pageSize" Type="System.Int32" />
+        <Parameter Name="totalRecords" Type="System.Int32" RefType="out" />
+      </Parameters>
+      <Docs>
+        <param name="emailToMatch">Адрес электронной почты (или его часть) для поиска.</param>
+        <param name="pageIndex">Индекс возвращаемой страницы результатов. Значение параметра <paramref name="pageIndex" /> отсчитывается с нуля.</param>
+        <param name="pageSize">Размер возвращаемой страницы результатов.</param>
+        <param name="totalRecords">По окончании метод возвращает общее число пользователей, возвращенных в коллекции. Этот параметр передается неинициализированным.</param>
+        <summary>Возвращает коллекцию пользователей членства из хранилища данных Active Directory, основанную на адресах электронной почты пользователей.</summary>
+        <returns>Объект <see cref="T:System.Web.Security.MembershipUserCollection" />, содержащий экземпляры <paramref name="pageSize" /><see cref="T:System.Web.Security.MembershipUser" />, начиная со страницы, определенной параметром <paramref name="pageIndex" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод возвращает объект, <xref:System.Web.Security.MembershipUserCollection> содержащий записи пользователя из хранилища `emailToMatch` Active Directory, которые соответствуют параметрам. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.FindUsersByEmail%2A> Записи пользователей возвращаются в порядке возрастания по адресу электронной почты.  
+  
+ Длина `emailToMatch` параметра ограничена 256 символами.  
+  
+ Класс выдаст Поиск, используя `clientSearchTimeout` значения конфигурации и  `serverSearchTimeout` . <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Поскольку класс выполняет поиск по серверу каталогов, используя страницы с 512 строк на страницу, время ожидания применяется к каждой странице результатов, извлекаемых <xref:System.Web.Security.ActiveDirectoryMembershipProvider> классом. <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Например, если поисковый запрос выдает 1 000 строк данных, <xref:System.Web.Security.ActiveDirectoryMembershipProvider> класс будет получать эти сведения как две страницы данных. Это означает, что время ожидания клиента и поиска начнет отсчет с нуля, когда <xref:System.Web.Security.ActiveDirectoryMembershipProvider> класс запрашивает вторую страницу данных.  
+  
+ Результаты, возвращаемые <xref:System.Web.Security.ActiveDirectoryMembershipProvider.FindUsersByEmail%2A> методом, ограничиваются `pageIndex` параметрами и `pageSize` . Параметр указывает максимальное <xref:System.Web.Security.MembershipUser> число <xref:System.Web.Security.MembershipUserCollection> экземпляров, возвращаемых в. `pageSize` `pageIndex` Параметр указывает возвращаемую страницу результатов, где 0 (ноль) указывает на первую страницу.  
+  
+ `totalRecords` Параметр — это параметр, который задает общее число соответствующих пользователей членства, найденных `out`  в Active Directory хранилище данных. Например, если для настроенного хранилища данных установлено 13 пользователей, а `pageIndex` значение равно 1 `pageSize` с 5, то <xref:System.Web.Security.MembershipUserCollection> возвращаемый объект будет содержать от шестого до десятых пользователей. `totalRecords` Параметру будет присвоено значение 13.  
+  
+ Можно указать, следует ли разрешить поиск пользователей, задав <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnableSearchMethods%2A> свойство в файле конфигурации приложения `enableSearchMethods` с помощью атрибута элемента [членства (схема параметров ASP.NET)](https://msdn.microsoft.com/library/b9c1ee8f-33ca-4361-8666-b42a0fe86049) . Если задать для `false` <xref:System.NotSupportedException> свойства значение, метод вызовет исключение. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.FindUsersByEmail%2A> <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnableSearchMethods%2A>  
+  
+ Поставщик использует поиск по поддереву, начиная с точки поиска, указанной в строке подключения. Дополнительные сведения <xref:System.Web.Security.ActiveDirectoryMembershipProvider> о строках подключения см. в разделе класс.  
+  
+ Не рекомендуется включать Поиск в рабочих системах до тех пор, пока не будет подтверждено, что запросы поиска, выданные <xref:System.Web.Security.ActiveDirectoryMembershipProvider> классом, не оказывают негативного воздействия на производительность сервера каталога. Поскольку класс предназначен для веб-среды без отслеживания состояния, он не может использовать оптимизации разбиения на страницы, предоставляемые базовыми <xref:System.DirectoryServices> API. <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Это означает, что операции подкачки во время поиска в больших каталогах очень ресурсоемки, и их следует избегать. Операции поиска всегда выдаются для сервера каталогов, настроенного в строке подключения, или автоматически выбранного сервера в случае строки подключения, указывающей на домен. Поставщик не использует глобальный каталог для своих методов поиска.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Метод <see cref="M:System.Web.Security.ActiveDirectoryMembershipProvider.FindUsersByEmail(System.String,System.Int32,System.Int32,System.Int32@)" /> вызывается до инициализации экземпляра <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" />.</exception>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="emailToMatch" /> пуст.  
+  
+- или - 
+ Длина параметра <paramref name="emailToMatch" /> превышает 256 символов.  
+  
+-или- 
+ Значение параметра <paramref name="pageIndex" /> меньше 0.  
+  
+-или- 
+ Значение параметра<paramref name="pageSize" /> меньше 1.  
+  
+-или- 
+ Значение <paramref name="pageSize" />, умноженное на <paramref name="pageIndex" />, плюс <paramref name="pageSize" /> минус 1 больше <see cref="F:System.Int32.MaxValue" />.</exception>
+        <exception cref="T:System.NotSupportedException">Значение свойства <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.EnableSearchMethods" /> — <see langword="false" />.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="FindUsersByName">
+      <MemberSignature Language="C#" Value="public override System.Web.Security.MembershipUserCollection FindUsersByName (string usernameToMatch, int pageIndex, int pageSize, out int totalRecords);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance class System.Web.Security.MembershipUserCollection FindUsersByName(string usernameToMatch, int32 pageIndex, int32 pageSize, [out] int32&amp; totalRecords) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.ActiveDirectoryMembershipProvider.FindUsersByName(System.String,System.Int32,System.Int32,System.Int32@)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function FindUsersByName (usernameToMatch As String, pageIndex As Integer, pageSize As Integer, ByRef totalRecords As Integer) As MembershipUserCollection" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::Web::Security::MembershipUserCollection ^ FindUsersByName(System::String ^ usernameToMatch, int pageIndex, int pageSize, [Runtime::InteropServices::Out] int % totalRecords);" />
+      <MemberSignature Language="F#" Value="override this.FindUsersByName : string * int * int *  -&gt; System.Web.Security.MembershipUserCollection" Usage="activeDirectoryMembershipProvider.FindUsersByName (usernameToMatch, pageIndex, pageSize, totalRecords)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Security.MembershipUserCollection</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="usernameToMatch" Type="System.String" />
+        <Parameter Name="pageIndex" Type="System.Int32" />
+        <Parameter Name="pageSize" Type="System.Int32" />
+        <Parameter Name="totalRecords" Type="System.Int32" RefType="out" />
+      </Parameters>
+      <Docs>
+        <param name="usernameToMatch">Имя пользователя (или его часть) для поиска.</param>
+        <param name="pageIndex">Индекс возвращаемой страницы результатов. Значение параметра <paramref name="pageIndex" /> отсчитывается с нуля.</param>
+        <param name="pageSize">Размер возвращаемой страницы результатов.</param>
+        <param name="totalRecords">По окончании метод возвращает общее число записей, возвращенных в коллекции. Этот параметр передается неинициализированным.</param>
+        <summary>Возвращает коллекцию пользователей из хранилища данных Active Directory, основанную на именах пользователя.</summary>
+        <returns>Объект <see cref="T:System.Web.Security.MembershipUserCollection" />, содержащий экземпляры <paramref name="pageSize" /><see cref="T:System.Web.Security.MembershipUser" />, начиная со страницы, определенной параметром <paramref name="pageIndex" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод возвращает экземпляр, содержащий записи пользователя из Active Directory хранилища данных для всех имен `userNameToMatch` пользователей, которые соответствуют параметрам. <xref:System.Web.Security.MembershipUserCollection> <xref:System.Web.Security.ActiveDirectoryMembershipProvider.FindUsersByName%2A> Записи возвращаются в алфавитном порядке по имени пользователя.  
+  
+ Результаты, возвращаемые <xref:System.Web.Security.ActiveDirectoryMembershipProvider.FindUsersByName%2A> методом, ограничиваются `pageIndex` параметрами и `pageSize` . Параметр указывает максимальное <xref:System.Web.Security.MembershipUser> число <xref:System.Web.Security.MembershipUserCollection> экземпляров, возвращаемых в. `pageSize` `pageIndex` Параметр указывает возвращаемую страницу результатов, где 0 (ноль) указывает на первую страницу.  
+  
+ `totalRecords` Параметр — это параметр, который задает общее число соответствующих пользователей членства, найденных `out`  в Active Directory хранилище данных. Например, если для настроенного хранилища данных установлено 13 пользователей, а `pageIndex` значение равно 1 `pageSize` с 5, то <xref:System.Web.Security.MembershipUserCollection> возвращаемый объект будет содержать от шестого до десятых пользователей. `totalRecords` Параметру будет присвоено значение 13.  
+  
+ Можно указать, следует ли разрешить поиск пользователей, задав <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnableSearchMethods%2A> свойство в файле конфигурации приложения `enableSearchMethods` с помощью атрибута элемента [членства (схема параметров ASP.NET)](https://msdn.microsoft.com/library/b9c1ee8f-33ca-4361-8666-b42a0fe86049) . Если задать для `false` <xref:System.NotSupportedException> свойства значение, метод вызовет исключение. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.FindUsersByName%2A> <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnableSearchMethods%2A>  
+  
+ Поставщик использует поиск по поддереву, начиная с точки поиска, указанной в строке подключения. Дополнительные сведения <xref:System.Web.Security.ActiveDirectoryMembershipProvider> о строках подключения см. в разделе класс.  
+  
+ Не рекомендуется включать Поиск в рабочих системах до тех пор, пока не будет подтверждено, что запросы поиска, выданные <xref:System.Web.Security.ActiveDirectoryMembershipProvider> классом, не оказывают негативного воздействия на производительность сервера каталога. Поскольку класс предназначен для веб-среды без отслеживания состояния, он не может использовать оптимизации разбиения на страницы, предоставляемые базовыми <xref:System.DirectoryServices> API. <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Это означает, что операции подкачки во время поиска в больших каталогах очень ресурсоемки, и их следует избегать. Операции поиска всегда выдаются для сервера каталогов, настроенного в строке подключения, или автоматически выбранного сервера в случае строки подключения, указывающей на домен. Поставщик не использует глобальный каталог для своих методов поиска.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Метод <see cref="M:System.Web.Security.ActiveDirectoryMembershipProvider.FindUsersByName(System.String,System.Int32,System.Int32,System.Int32@)" /> вызывается до инициализации экземпляра <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" />.</exception>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="usernameToMatch" /> пустой, или превышает максимальную длину имени пользователя (обычно 256 символов).  
+  
+-или- 
+ <paramref name="usernameToMatch" /> содержит запятые.  
+  
+- или - 
+ Значение параметра <paramref name="pageIndex" /> меньше 0.  
+  
+-или 
+ Значение параметра <paramref name="pageSize" /> меньше 1.  
+  
+-или- 
+ Значение <paramref name="pageSize" />, умноженное на <paramref name="pageIndex" />, плюс <paramref name="pageSize" /> минус 1 больше <see cref="F:System.Int32.MaxValue" />.</exception>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="usernameToMatch" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.NotSupportedException">Значение свойства <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.EnableSearchMethods" /> — <see langword="false" />.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="GeneratePassword">
+      <MemberSignature Language="C#" Value="public virtual string GeneratePassword ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance string GeneratePassword() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.ActiveDirectoryMembershipProvider.GeneratePassword" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable Function GeneratePassword () As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual System::String ^ GeneratePassword();" />
+      <MemberSignature Language="F#" Value="abstract member GeneratePassword : unit -&gt; string&#xA;override this.GeneratePassword : unit -&gt; string" Usage="activeDirectoryMembershipProvider.GeneratePassword " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Генерирует случайный пароль.</summary>
+        <returns>Случайный пароль.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.ActiveDirectoryMembershipProvider.GeneratePassword%2A> Метод класса вызывает <xref:System.Web.Security.Membership.GeneratePassword%2A>  метод класса для получения случайного пароля. <xref:System.Web.Security.Membership>  <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Длина пароля равна значению <xref:System.Web.Security.ActiveDirectoryMembershipProvider.MinRequiredPasswordLength%2A> свойства. Длина пароля не может быть меньше 14.  
+  
+ Можно специально вызвать <xref:System.Web.Security.Membership.GeneratePassword%2A> метод, обратившись к <xref:System.Web.Security.ActiveDirectoryMembershipProvider> классу напрямую из свойства <xref:System.Web.Security.Membership> Provider класса.  
+  
+ Созданный пароль содержит только буквенно-цифровые символы и следующие знаки пунктуации:! @ # $% ^ & * () _-+ = [{]};:&#124;< >./?. В создаваемый пароль не включаются скрытые или непечатаемые управляющие символы.  
+  
+ Созданный пароль будет содержать по крайней мере число символов, отличных от буквенно- <xref:System.Web.Security.ActiveDirectoryMembershipProvider.MinRequiredNonAlphanumericCharacters%2A> цифровых, указанных в свойстве. Созданный пароль не будет проверяться с помощью регулярного выражения в <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordStrengthRegularExpression%2A> свойстве.  
+  
+> [!NOTE]
+>  <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Класс не создает пароли, соответствующие требованиям сложности, заданным в каталоге. Можно создать случайный пароль, который не проходит правила сложности пароля, заданные в каталоге.  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="GetAllUsers">
+      <MemberSignature Language="C#" Value="public override System.Web.Security.MembershipUserCollection GetAllUsers (int pageIndex, int pageSize, out int totalRecords);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance class System.Web.Security.MembershipUserCollection GetAllUsers(int32 pageIndex, int32 pageSize, [out] int32&amp; totalRecords) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.ActiveDirectoryMembershipProvider.GetAllUsers(System.Int32,System.Int32,System.Int32@)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetAllUsers (pageIndex As Integer, pageSize As Integer, ByRef totalRecords As Integer) As MembershipUserCollection" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::Web::Security::MembershipUserCollection ^ GetAllUsers(int pageIndex, int pageSize, [Runtime::InteropServices::Out] int % totalRecords);" />
+      <MemberSignature Language="F#" Value="override this.GetAllUsers : int * int *  -&gt; System.Web.Security.MembershipUserCollection" Usage="activeDirectoryMembershipProvider.GetAllUsers (pageIndex, pageSize, totalRecords)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Security.MembershipUserCollection</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="pageIndex" Type="System.Int32" />
+        <Parameter Name="pageSize" Type="System.Int32" />
+        <Parameter Name="totalRecords" Type="System.Int32" RefType="out" />
+      </Parameters>
+      <Docs>
+        <param name="pageIndex">Индекс возвращаемой страницы результатов. Значение параметра <paramref name="pageIndex" /> отсчитывается с нуля.</param>
+        <param name="pageSize">Размер возвращаемой страницы результатов.</param>
+        <param name="totalRecords">По окончании метод возвращает общее число записей, возвращенных в коллекции. Этот параметр передается неинициализированным.</param>
+        <summary>Возвращает коллекцию всех пользователей, хранимых в источнике данных Active Directory.</summary>
+        <returns>Объект <see cref="T:System.Web.Security.MembershipUserCollection" />, содержащий экземпляры <paramref name="pageSize" /><see cref="T:System.Web.Security.MembershipUser" />, начиная со страницы, определенной параметром <paramref name="pageIndex" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод вызывается <xref:System.Web.Security.Membership> классом для получения сведений о пользователе из Active Directory хранилища данных, указанного в файле конфигурации приложения ASP.NET.  
+  
+ Результаты, возвращаемые <xref:System.Web.Security.ActiveDirectoryMembershipProvider.GetAllUsers%2A> методом, ограничиваются `pageIndex` параметрами и `pageSize` . Параметр указывает максимальное <xref:System.Web.Security.MembershipUser> число <xref:System.Web.Security.MembershipUserCollection>  экземпляров, возвращаемых в коллекцию. `pageSize` `pageIndex` Параметр указывает возвращаемую страницу результатов, где 0 (ноль) указывает на первую страницу.  
+  
+ `totalRecords` Параметр — это параметр, который задает общее число соответствующих пользователей членства, найденных `out`  в Active Directory хранилище данных. Например, если для настроенного хранилища данных установлено 13 пользователей, а `pageIndex` значение было равно 1 с La `pageSize` 5, то возвращаемый объект <xref:System.Web.Security.MembershipUserCollection> будет содержать шестую часть от десятых пользователей. `totalRecords` Параметру будет присвоено значение 13.  
+  
+ Можно указать, следует ли разрешить поиск пользователей, задав <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnableSearchMethods%2A> свойство в файле конфигурации приложения `enableSearchMethods` с помощью атрибута элемента [членства (схема параметров ASP.NET)](https://msdn.microsoft.com/library/b9c1ee8f-33ca-4361-8666-b42a0fe86049) . Если задать для `false` <xref:System.NotSupportedException> свойства значение, метод вызовет исключение. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.GetAllUsers%2A> <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnableSearchMethods%2A>  
+  
+ Поставщик использует поиск по поддереву, начиная с точки поиска, указанной в строке подключения. Дополнительные сведения <xref:System.Web.Security.ActiveDirectoryMembershipProvider> о строках подключения см. в разделе класс.  
+  
+ Не рекомендуется включать Поиск в рабочих системах до тех пор, пока не будет подтверждено, что запросы поиска, выданные <xref:System.Web.Security.ActiveDirectoryMembershipProvider> классом, не оказывают негативного воздействия на производительность сервера каталога. Поскольку класс предназначен для веб-среды без отслеживания состояния, он не может использовать оптимизации разбиения на страницы, предоставляемые базовыми <xref:System.DirectoryServices> API. <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Это означает, что операции подкачки во время поиска в больших каталогах очень ресурсоемки, и их следует избегать. Операции поиска всегда выдаются для сервера каталогов, настроенного в строке подключения, или автоматически выбранного сервера в случае строки подключения, указывающей на домен. Поставщик не использует глобальный каталог для своих методов поиска.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Метод <see cref="M:System.Web.Security.ActiveDirectoryMembershipProvider.GetAllUsers(System.Int32,System.Int32,System.Int32@)" /> вызывается до инициализации экземпляра <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" />.</exception>
+        <exception cref="T:System.ArgumentException">Значение параметра <paramref name="pageIndex" /> меньше 0.  
+  
+-или 
+ Значение параметра <paramref name="pageSize" /> меньше 1.  
+  
+- или - 
+ Значение <paramref name="pageSize" />, умноженное на <paramref name="pageIndex" />, плюс <paramref name="pageSize" /> минус 1 больше <see cref="F:System.Int32.MaxValue" />.</exception>
+        <exception cref="T:System.NotSupportedException">Значение свойства <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.EnableSearchMethods" /> — <see langword="false" />.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="GetNumberOfUsersOnline">
+      <MemberSignature Language="C#" Value="public override int GetNumberOfUsersOnline ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance int32 GetNumberOfUsersOnline() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.ActiveDirectoryMembershipProvider.GetNumberOfUsersOnline" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetNumberOfUsersOnline () As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override int GetNumberOfUsersOnline();" />
+      <MemberSignature Language="F#" Value="override this.GetNumberOfUsersOnline : unit -&gt; int" Usage="activeDirectoryMembershipProvider.GetNumberOfUsersOnline " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Во всех случаях создает исключение <see cref="T:System.NotSupportedException" />.</summary>
+        <returns>Значение <see cref="T:System.NotSupportedException" /> во всех случаях.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Класс не поддерживает возврат числа пользователей в сети.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.NotSupportedException">Любой вызов метода <see cref="M:System.Web.Security.ActiveDirectoryMembershipProvider.GetNumberOfUsersOnline" />.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="GetPassword">
+      <MemberSignature Language="C#" Value="public override string GetPassword (string username, string passwordAnswer);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance string GetPassword(string username, string passwordAnswer) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.ActiveDirectoryMembershipProvider.GetPassword(System.String,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetPassword (username As String, passwordAnswer As String) As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::String ^ GetPassword(System::String ^ username, System::String ^ passwordAnswer);" />
+      <MemberSignature Language="F#" Value="override this.GetPassword : string * string -&gt; string" Usage="activeDirectoryMembershipProvider.GetPassword (username, passwordAnswer)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="username" Type="System.String" />
+        <Parameter Name="passwordAnswer" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="username">Пользователь, для которого извлекается пароль.</param>
+        <param name="passwordAnswer">Контрольный ответ для пароля пользователя.</param>
+        <summary>Возвращает пароль указанного пользователя из базы данных. Класс <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" /> не поддерживает данный метод.</summary>
+        <returns>Всегда выдает исключение <see cref="T:System.NotSupportedException" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Класс не поддерживает возврат пароля пользователя.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.NotSupportedException">Класс <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" /> не поддерживает возврат пароля.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="GetUser">
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Возвращает сведения о членстве пользователя из хранилища данных Active Directory.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="GetUser">
+      <MemberSignature Language="C#" Value="public override System.Web.Security.MembershipUser GetUser (object providerUserKey, bool userIsOnline);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance class System.Web.Security.MembershipUser GetUser(object providerUserKey, bool userIsOnline) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.ActiveDirectoryMembershipProvider.GetUser(System.Object,System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetUser (providerUserKey As Object, userIsOnline As Boolean) As MembershipUser" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::Web::Security::MembershipUser ^ GetUser(System::Object ^ providerUserKey, bool userIsOnline);" />
+      <MemberSignature Language="F#" Value="override this.GetUser : obj * bool -&gt; System.Web.Security.MembershipUser" Usage="activeDirectoryMembershipProvider.GetUser (providerUserKey, userIsOnline)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Security.MembershipUser</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="providerUserKey" Type="System.Object" />
+        <Parameter Name="userIsOnline" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="providerUserKey">Уникальный идентификатор для пользователя.</param>
+        <param name="userIsOnline">Метод <see cref="M:System.Web.Security.ActiveDirectoryMembershipProvider.GetUser(System.Object,System.Boolean)" /> игнорирует этот параметр.</param>
+        <summary>Возвращает информацию пользователя членства, связанную с указанным ключом пользователя.</summary>
+        <returns>Экземпляр <see cref="T:System.Web.Security.MembershipUser" />, представляющий указанного пользователя. Если в хранилище данных Active Directory не найдено пользователей для заданного значения <paramref name="providerUserKey" />, то возвращается <see langword="null" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод вызывается <xref:System.Web.Security.Membership> классом для получения сведений об указанном пользователе из Active Directory хранилища данных. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.GetUser%2A>  
+  
+ При поиске выполняется поиск пользовательского экземпляра, в `objectSID` котором атрибут `providerUserKey` соответствует параметру.  
+  
+ Поставщик использует поиск по поддереву, начиная с точки поиска, указанной в строке подключения. Дополнительные сведения <xref:System.Web.Security.ActiveDirectoryMembershipProvider> о строках подключения см. в разделе класс.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Метод <see cref="M:System.Web.Security.ActiveDirectoryMembershipProvider.GetUser(System.Object,System.Boolean)" /> вызывается до инициализации экземпляра <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" />.</exception>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="providerUserKey" /> не является параметром типа <see cref="T:System.Security.Principal.SecurityIdentifier" />.</exception>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="providerUserKey" /> имеет значение <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetUser">
+      <MemberSignature Language="C#" Value="public override System.Web.Security.MembershipUser GetUser (string username, bool userIsOnline);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance class System.Web.Security.MembershipUser GetUser(string username, bool userIsOnline) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.ActiveDirectoryMembershipProvider.GetUser(System.String,System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetUser (username As String, userIsOnline As Boolean) As MembershipUser" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::Web::Security::MembershipUser ^ GetUser(System::String ^ username, bool userIsOnline);" />
+      <MemberSignature Language="F#" Value="override this.GetUser : string * bool -&gt; System.Web.Security.MembershipUser" Usage="activeDirectoryMembershipProvider.GetUser (username, userIsOnline)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Security.MembershipUser</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="username" Type="System.String" />
+        <Parameter Name="userIsOnline" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="username">Имя пользователя, для которого нужно получить информацию.</param>
+        <param name="userIsOnline">Метод <see cref="M:System.Web.Security.ActiveDirectoryMembershipProvider.GetUser(System.String,System.Boolean)" /> игнорирует этот параметр.</param>
+        <summary>Возвращает информацию пользователя членства, связанную с указанным именем пользователя.</summary>
+        <returns>Экземпляр <see cref="T:System.Web.Security.MembershipUser" />, представляющий указанного пользователя. Если в хранилище данных Active Directory не найдено пользователей для заданного значения <paramref name="username" />, то возвращается <see langword="null" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод вызывается <xref:System.Web.Security.Membership> классом для получения сведений об указанном пользователе из Active Directory хранилища данных. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.GetUser%2A>  
+  
+ Поставщик использует поиск по поддереву, начиная с точки поиска, указанной в строке подключения. Дополнительные сведения <xref:System.Web.Security.ActiveDirectoryMembershipProvider> о строках подключения см. в разделе класс.  
+  
+ Начальные и конечные пробелы удаляются из значения параметра `username`.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="username" /> пустой, или превышает максимальную длину имени пользователя (обычно 256 символов).  
+  
+- или - 
+ <paramref name="username" /> содержит запятые.  
+  
+-или- 
+Имя пользователя отображается на атрибут <see langword="userPrincipalName" /> и параметр <paramref name="username" /> содержит обратные косые черты.</exception>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="username" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.InvalidOperationException">Метод <see cref="M:System.Web.Security.ActiveDirectoryMembershipProvider.GetUser(System.String,System.Boolean)" /> вызывается до инициализации экземпляра <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" />.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="GetUserNameByEmail">
+      <MemberSignature Language="C#" Value="public override string GetUserNameByEmail (string email);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance string GetUserNameByEmail(string email) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.ActiveDirectoryMembershipProvider.GetUserNameByEmail(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetUserNameByEmail (email As String) As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::String ^ GetUserNameByEmail(System::String ^ email);" />
+      <MemberSignature Language="F#" Value="override this.GetUserNameByEmail : string -&gt; string" Usage="activeDirectoryMembershipProvider.GetUserNameByEmail email" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="email" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="email">Адрес электронной почты для поиска.</param>
+        <summary>Возвращает имя пользователя, связанное с указанным адресом электронной почты.</summary>
+        <returns>Имя пользователя, связанное с указанным адресом электронной почты.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод вызывается <xref:System.Web.Security.Membership> классом для получения имени пользователя из Active Directory хранилища данных на основе адреса электронной почты пользователя.  
+  
+ Если несколько пользователей в хранилище данных членства имеют одинаковый адрес электронной почты, возвращается первое обнаруженное имя пользователя. `requiresUniqueEmail` Атрибут элемента `true` [членства (схема параметров ASP.NET)](https://msdn.microsoft.com/library/b9c1ee8f-33ca-4361-8666-b42a0fe86049) можно задать в файле конфигурации приложения, чтобы гарантировать уникальность каждого адреса электронной почты в базе данных.  
+  
+ Начальные и конечные пробелы удаляются из значения параметра `email`. Если после усечения адрес электронной почты пуст, <xref:System.ArgumentException> создается исключение. Если адрес электронной почты — `null`, выполняется поиск всех имен пользователей в Active Directory хранилище данных и возвращается первое имя пользователя.  
+  
+ Не рекомендуется включать Поиск в рабочих системах до тех пор, пока не будет подтверждено, что запросы поиска, выданные <xref:System.Web.Security.ActiveDirectoryMembershipProvider> классом, не оказывают негативного воздействия на производительность сервера каталога.  
+  
+> [!IMPORTANT]
+>  Метод будет выполняться, даже <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnableSearchMethods%2A> если свойство имеет `false`значение. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.GetUserNameByEmail%2A>  
+  
+ Поскольку класс предназначен для веб-среды без отслеживания состояния, он не может использовать оптимизации разбиения на страницы, предоставляемые базовыми <xref:System.DirectoryServices> API. <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Это означает, что операции подкачки во время поиска в больших каталогах очень ресурсоемки, и их следует избегать. Операции поиска всегда выдаются для сервера каталогов, настроенного в строке подключения, или автоматически выбранного сервера в случае строки подключения, указывающей на домен. Поставщик не использует глобальный каталог для своих методов поиска.  
+  
+ Поставщик использует поиск по поддереву, начиная с точки поиска, указанной в строке подключения. Дополнительные сведения <xref:System.Web.Security.ActiveDirectoryMembershipProvider> о строках подключения см. в разделе класс.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Длина параметра <paramref name="email" /> превышает 256 символов. 
+- или - 
+После удаления пробелов параметр <paramref name="email" /> пустой.</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">В хранилище данных имеется более одного пользователя с одинаковым адресом электронной почты, и значение свойства <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.RequiresUniqueEmail" /> равно <see langword="true" />.</exception>
+        <exception cref="T:System.InvalidOperationException">Поставщик не инициализирован.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Initialize">
+      <MemberSignature Language="C#" Value="public override void Initialize (string name, System.Collections.Specialized.NameValueCollection config);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void Initialize(string name, class System.Collections.Specialized.NameValueCollection config) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.ActiveDirectoryMembershipProvider.Initialize(System.String,System.Collections.Specialized.NameValueCollection)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Sub Initialize (name As String, config As NameValueCollection)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void Initialize(System::String ^ name, System::Collections::Specialized::NameValueCollection ^ config);" />
+      <MemberSignature Language="F#" Value="override this.Initialize : string * System.Collections.Specialized.NameValueCollection -&gt; unit" Usage="activeDirectoryMembershipProvider.Initialize (name, config)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="name" Type="System.String" />
+        <Parameter Name="config" Type="System.Collections.Specialized.NameValueCollection" />
+      </Parameters>
+      <Docs>
+        <param name="name">Имя экземпляра <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" /> для инициализации.</param>
+        <param name="config">Коллекция <see cref="T:System.Collections.Specialized.NameValueCollection" />, которая содержит имена и значения параметров конфигурации для поставщика членства.</param>
+        <summary>Выполняет инициализацию экземпляра <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" /> со значениями свойств из файла конфигурации приложения. Этот метод не предназначен для непосредственного вызова из кода.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод инициализирует <xref:System.Web.Security.ActiveDirectoryMembershipProvider> объект со значениями свойств, указанными в файле конфигурации приложения ASP.NET (Web. config), и не предназначен для непосредственного использования в коде.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="config" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Атрибут <see langword="applicationName" />, указанный в конфигурации приложения превышает по длине 256 символов.  
+  
+-или- 
+Атрибут <see langword="connectionStringName" /> пуст или отсутствует в конфигурации приложения.  
+  
+- или - 
+Строка подключения, указанная в атрибуте <see langword="connectionStringName" /> файла конфигурации приложения пустая или не существует.  
+  
+- или - 
+Атрибут <see langword="connectionProtection" /> установлен в значение, отличное от <see cref="F:System.Web.Security.ActiveDirectoryConnectionProtection.SignAndSeal" /> или <see cref="F:System.Web.Security.ActiveDirectoryConnectionProtection.None" /> в файле конфигурации приложения.  
+  
+-или- 
+Атрибут <see langword="connectionUsername" /> определен в файле конфигурации приложения, но его значение пустое.  
+  
+- или - 
+Атрибут <see langword="connectionPassword" /> определен в файле конфигурации приложения, но его значение пустое.  
+  
+-или- 
+Один из атрибутов <see langword="connectionUsername" /> и <see langword="connectionPassword" /> определен в файле конфигурации приложения, но не оба.  
+  
+- или - 
+Атрибут <see langword="clientSearchTimeout" /> определен, но не является целым положительным числом.  
+  
+- или - 
+Атрибут <see langword="serverSearchTimeout" /> определен, но не является целым положительным числом.  
+  
+-или- 
+Атрибут <see langword="enableSearchMethods" /> определен, но не является логическим значением.  
+  
+- или - 
+Атрибут <see langword="requiresUniqueEmail" /> определен, но не является логическим значением.  
+  
+- или - 
+Атрибут <see langword="enablePasswordReset" /> определен, но не является логическим значением.  
+  
+-или- 
+Атрибут <see langword="requiresQuestionAndAnswer" /> определен, но не является логическим значением.  
+  
+-или- 
+Атрибут <see langword="minRequiredPasswordLength" /> определен, но либо отрицателен, либо больше 128.  
+  
+- или - 
+Атрибут <see langword="minRequiredNonalphanumericCharacters" /> определен, но либо отрицателен, либо больше 128.  
+  
+- или - 
+Регулярное выражение, указанное в атрибуте <see langword="passwordStrengthRegularExpression" /> в файле конфигурации приложения, не является действительным регулярным выражением. 
+- или - 
+Атрибут <see langword="attributeMapUsername" /> определен, но является пустой строкой.  
+  
+- или - 
+Атрибут <see langword="connectionString" /> не начинается с "LDAP".  
+  
+- или - 
+Строка подключения, указанная в атрибуте <see langword="connectionString" />, является недействительной.  
+  
+-или- 
+Строка подключения в атрибуте <see langword="connectionString" /> определяет привязку без сервера.  
+  
+-или- 
+Поставщик <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" /> не смог установить соединение с доменом или сервером каталогов.  
+  
+- или - 
+Атрибут <see langword="connectionProtection" /> установлен <see cref="F:System.Web.Security.ActiveDirectoryConnectionProtection.SignAndSeal" />, но, ни SSL, ни подписанное и скрепленное печатью соединение с сервером не может быть установлено.  
+  
+- или - 
+Атрибут <see langword="connectionProtection" /> установлен в <see cref="F:System.Web.Security.ActiveDirectoryConnectionProtection.None" />, атрибуты <see langword="connectionUsername" /> и <see langword="connectionPassword" /> не установлены.  
+  
+-или- 
+Атрибут <see langword="connectionProtection" /> установлен в <see cref="F:System.Web.Security.ActiveDirectoryConnectionProtection.SignAndSeal" />, но поставщик <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" /> не смог установить SSL-соединение сервером ADAM.  
+  
+-или- 
+Атрибут <see langword="connectionString" /> определяет либо глобальный каталог (GC) или порт глобального каталога SSL.  
+  
+- или - 
+Атрибут <see langword="connectionString" /> определяет сервер или домен Active Directory, но поставщик <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" /> не может извлечь контекст именования по умолчанию для домена.  
+  
+- или - 
+Атрибут <see langword="connectionString" /> определяет сервер или домен Active Directory, но поставщик <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" /> не может извлечь контейнер пользователей по умолчанию.  
+  
+- или - 
+Атрибут <see langword="connectionString" /> определяет сервер ADAM, но не указывает раздел приложения или контейнер.  
+  
+- или - 
+Атрибут <see langword="connectionString" /> определяет раздел приложения или контейнер, но указанный контейнер не существует.  
+  
+- или - 
+Атрибут <see langword="connectionString" /> определяет контейнер, которому не разрешено хранить экземпляры пользователей.  
+  
+Отображение атрибута определено, но его значение пустое.  
+  
+-или- 
+Отображение атрибута определено дважды.  
+  
+- или - 
+Отображение атрибута определено, но атрибут отсутствует в экземпляре пользователя.  
+  
+-или- 
+Отображение атрибута определено, атрибуты каталога имеют некорректный тип данных.  
+  
+- или - 
+Отображение атрибута определено, но атрибут каталога многозначен.  
+  
+- или - 
+Атрибут <see langword="attributeMapUserName" /> определен, но не был сопоставлен ни с атрибутом каталога <c>sAMAccountName</c>, ни с атрибутом каталога <c>userPrincipalName</c> при подключении к Active Directory.  
+  
+-или- 
+Атрибут <see langword="attributeMapUserName" /> определен, но не был сопоставлен с атрибутом каталога <c>userPrincipalName</c> при подключении к серверу ADAM.  
+  
+-или- 
+Атрибут <see langword="enablePasswordReset" /> равен <see langword="true" />, и атрибут <see langword="requiresQuestionAndAnswer" /> равен <see langword="false" /> в файле конфигурации приложения.  
+  
+-или- 
+Атрибут <see langword="maxInvalidPasswordAttempts" /> определен, но не является положительным целым числом, отличным от нуля.  
+  
+-или- 
+Атрибут <see langword="passwordAttemptWindow" /> определен, но не является положительным целым числом, отличным от нуля.  
+  
+- или - 
+Атрибут <see langword="passwordAnswerAttemptLockoutDuration" /> определен, но не является положительным целым числом, отличным от нуля.  
+  
+- или - 
+Атрибут <see langword="enablePasswordReset" /> равен <see langword="true" />, и каждый из атрибутов <see langword="attributeMapFailedPasswordAnswerCount" />, <see langword="attributeMapFailedPasswordAnswerTime" /> и <see langword="attributeMapFailedPasswordAnswerLockoutTime" /> пуст.  
+  
+- или - 
+Атрибут <see langword="requiresQuestionAndAnswer" /> равен <see langword="true" />, но один из атрибутов <see langword="attributeMapPasswordQuestion" /> или <see langword="attributeMapPasswordAnswer" /> пуст.  
+  
+- или - 
+Атрибут, указанный в файле конфигурации приложения, недействителен.</exception>
+        <exception cref="T:System.Web.HttpException">Приложение выполняется в среде узла и объект <see cref="T:System.Web.AspNetHostingPermissionLevel" /> установлен в <see cref="F:System.Web.AspNetHostingPermissionLevel.Minimal" />.</exception>
+        <exception cref="T:System.Runtime.InteropServices.COMException">При запросе каталога произошла ошибка.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="MaxInvalidPasswordAttempts">
+      <MemberSignature Language="C#" Value="public override int MaxInvalidPasswordAttempts { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 MaxInvalidPasswordAttempts" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.ActiveDirectoryMembershipProvider.MaxInvalidPasswordAttempts" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides ReadOnly Property MaxInvalidPasswordAttempts As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property int MaxInvalidPasswordAttempts { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.MaxInvalidPasswordAttempts : int" Usage="System.Web.Security.ActiveDirectoryMembershipProvider.MaxInvalidPasswordAttempts" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает число неудачных попыток ответ пользователя, разрешенное для запроса на восстановление пароля.</summary>
+        <value>Число неудачных попыток ответа пароля пользователя, разрешенное до блокировки учетной записи. Значение по умолчанию — <c>5</c>.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если свойство имеет `true`значение, пользователь должен ответить на вопрос с паролем, чтобы сбросить свой пароль. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordReset%2A> Пользователю разрешено ограниченное количество попыток ответа в течение временного интервала, установленного <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAttemptWindow%2A> свойством. Если число попыток ответа на пароль больше или равно значению, хранящемуся в <xref:System.Web.Security.ActiveDirectoryMembershipProvider.MaxInvalidPasswordAttempts%2A> свойстве, пользователь блокирует дальнейшие попытки в течение числа минут, хранящихся <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAnswerAttemptLockoutDuration%2A> в свойстве.  
+  
+> [!NOTE]
+>  Это свойство не управляет числом неудачных попыток входа, которые пользователь может сделать до блокировки. Сервер Active Directory обрабатывает неудачные попытки входа в систему и не влияет на значение этого свойства.  
+  
+ Свойство задается в файле конфигурации приложения `maxInvalidPasswordAttempts` с помощью атрибута элемента [членства (схема параметров ASP.NET)](https://msdn.microsoft.com/library/b9c1ee8f-33ca-4361-8666-b42a0fe86049) . <xref:System.Web.Security.ActiveDirectoryMembershipProvider.MaxInvalidPasswordAttempts%2A> Если свойство не задано в файле конфигурации приложения, <xref:System.Web.Security.ActiveDirectoryMembershipProvider.MaxInvalidPasswordAttempts%2A> для свойства задается `5`значение по умолчанию.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показана запись Web. config, которая настраивает <xref:System.Web.Security.ActiveDirectoryMembershipProvider> экземпляр для блокировки пользователей, которые пытаются выполнить три попытки ввода ответа на пароль в течение 10 минут. Если пользователь заблокирован, дальнейшая попытка ответить на этот вопрос с паролем может быть выполнена в течение 15 минут.  
+  
+```  
+<configuration>  
+  <connectionStrings>  
+    <add name="ADService" connectionString="LDAP://ldapServer/" />  
+  </connectionStrings>  
+  <system.web>  
+    <membership defaultProvider="AspNetActiveDirectoryMembershipProvider">  
+      <providers>  
+        <add name="AspNetActiveDirectoryMembershipProvider"   
+          type="System.Web.Security.ActiveDirectoryMembershipProvider,   
+          System.Web, Version=2.0.3600, Culture=neutral,  
+          PublicKeyToken=b03f5f7f11d50a3a"  
+          maxInvalidPasswordAttempts="3"  
+          passwordAttemptWindow="10"  
+          passwordAnswerAttemptLockoutDuration="15" />  
+      </providers>  
+    </membership>  
+  </system.web>  
+</configuration>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Была предпринята попытка получить доступ к свойству <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.MaxInvalidPasswordAttempts" /> до того, как экземпляр <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" /> был инициализирован.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="MinRequiredNonAlphanumericCharacters">
+      <MemberSignature Language="C#" Value="public override int MinRequiredNonAlphanumericCharacters { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 MinRequiredNonAlphanumericCharacters" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.ActiveDirectoryMembershipProvider.MinRequiredNonAlphanumericCharacters" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides ReadOnly Property MinRequiredNonAlphanumericCharacters As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property int MinRequiredNonAlphanumericCharacters { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.MinRequiredNonAlphanumericCharacters : int" Usage="System.Web.Security.ActiveDirectoryMembershipProvider.MinRequiredNonAlphanumericCharacters" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает минимальное количество специальных знаков, которые должны присутствовать в допустимом пароле.</summary>
+        <value>Минимальное количество специальных знаков, которые должны присутствовать в допустимом пароле.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.ActiveDirectoryMembershipProvider.MinRequiredNonAlphanumericCharacters%2A> Свойство возвращает минимальное число специальных, не буквенно-цифровых символов, которые необходимо указать для создания допустимого пароля.  
+  
+ Значение свойства задается в конфигурации приложения `minRequiredNonalphanumericCharacters` с помощью атрибута элемента конфигурации [элемента членства (схема параметров ASP.NET)](https://msdn.microsoft.com/library/b9c1ee8f-33ca-4361-8666-b42a0fe86049) . <xref:System.Web.Security.ActiveDirectoryMembershipProvider.MinRequiredNonAlphanumericCharacters%2A>  
+  
+ Символ, не являющийся буквенно-цифровым, является символом, `false`для которого <xref:System.Char.IsLetterOrDigit%2A> метод возвращает значение.  
+  
+   
+  
+## Examples  
+ В следующем примере показан элемент конфигурации [элемента membership (схема параметров ASP.NET)](https://msdn.microsoft.com/library/b9c1ee8f-33ca-4361-8666-b42a0fe86049) в `system.web` разделе файла Web. config приложения. Он указывает, что приложение использует экземпляр <xref:System.Web.Security.ActiveDirectoryMembershipProvider> класса для предоставления служб членства и `minRequiredNonalphanumericCharacters` задает для атрибута один символ.  
+  
+```  
+<configuration>  
+  <connectionStrings>  
+    <add name="ADService" connectionString="LDAP://ldapServer/" />  
+  </connectionStrings>  
+  <system.web>  
+    <membership defaultProvider="AspNetActiveDirectoryMembershipProvider">  
+      <providers>  
+        <add name="AspNetActiveDirectoryMembershipProvider"   
+          type="System.Web.Security.ActiveDirectoryMembershipProvider,   
+          System.Web, Version=2.0.3600, Culture=neutral,   
+          PublicKeyToken=b03f5f7f11d50a3a"  
+          minRequiredNonalphanumericCharacters = "1" />  
+      </providers>  
+    </membership>  
+  </system.web>  
+</configuration>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Доступ к свойству <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.MinRequiredNonAlphanumericCharacters" /> осуществляется до инициализации экземпляра <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" />.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="MinRequiredPasswordLength">
+      <MemberSignature Language="C#" Value="public override int MinRequiredPasswordLength { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 MinRequiredPasswordLength" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.ActiveDirectoryMembershipProvider.MinRequiredPasswordLength" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides ReadOnly Property MinRequiredPasswordLength As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property int MinRequiredPasswordLength { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.MinRequiredPasswordLength : int" Usage="System.Web.Security.ActiveDirectoryMembershipProvider.MinRequiredPasswordLength" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает минимально допустимую длину пароля.</summary>
+        <value>Минимально допустимая длина пароля.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.ActiveDirectoryMembershipProvider.MinRequiredPasswordLength%2A> Свойство возвращает минимальное число символов, которые необходимо указать для создания допустимого пароля.  
+  
+ Значение свойства задается в конфигурации приложения `minRequiredPasswordLength` с помощью атрибута элемента конфигурации [элемента членства (схема параметров ASP.NET)](https://msdn.microsoft.com/library/b9c1ee8f-33ca-4361-8666-b42a0fe86049) . <xref:System.Web.Security.ActiveDirectoryMembershipProvider.MinRequiredPasswordLength%2A>  
+  
+   
+  
+## Examples  
+ В следующем примере показан элемент конфигурации [элемента membership (схема параметров ASP.NET)](https://msdn.microsoft.com/library/b9c1ee8f-33ca-4361-8666-b42a0fe86049) в `system.web` разделе файла Web. config приложения. Он указывает, что приложение использует экземпляр <xref:System.Web.Security.ActiveDirectoryMembershipProvider> класса для предоставления служб членства и `minRequiredPasswordLength` задает для атрибута семь символов.  
+  
+```  
+<configuration>  
+  <connectionStrings>  
+    <add name="ADService" connectionString="LDAP://ldapServer/" />  
+  </connectionStrings>  
+  <system.web>  
+    <membership defaultProvider="AspNetActiveDirectoryMembershipProvider">  
+      <providers>  
+        <add name="AspNetActiveDirectoryMembershipProvider"   
+          type="System.Web.Security.ActiveDirectoryMembershipProvider,   
+          System.Web, Version=2.0.3600, Culture=neutral,   
+          PublicKeyToken=b03f5f7f11d50a3a"  
+          minRequiredPasswordLength = "7" />  
+  
+      </providers>  
+    </membership>  
+  </system.web>  
+</configuration>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Доступ к свойству <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.MinRequiredPasswordLength" /> осуществляется до инициализации экземпляра <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" />.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="PasswordAnswerAttemptLockoutDuration">
+      <MemberSignature Language="C#" Value="public int PasswordAnswerAttemptLockoutDuration { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 PasswordAnswerAttemptLockoutDuration" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAnswerAttemptLockoutDuration" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property PasswordAnswerAttemptLockoutDuration As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int PasswordAnswerAttemptLockoutDuration { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.PasswordAnswerAttemptLockoutDuration : int" Usage="System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAnswerAttemptLockoutDuration" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает интервал времени, на который блокируется учетная запись пользователя, из-за слишком большого числа попыток неправильного ввода пароля.</summary>
+        <value>Время, в минутах, на которое пользователь заблокирован, после слишком большого числа неверных ответов пароля.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если свойство имеет `true`значение, пользователь должен ответить на вопрос с паролем, чтобы сбросить свой пароль. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordReset%2A> Если пользователю не удается предоставить правильный ответ подряд, равный <xref:System.Web.Security.ActiveDirectoryMembershipProvider.MaxInvalidPasswordAttempts%2A> значению свойства в течение периода времени наблюдения, указанного <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAttemptWindow%2A> свойством, пользователь блокирует дальнейшие попытки в течение числа минут. содержится в <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAnswerAttemptLockoutDuration%2A> свойстве.  
+  
+> [!NOTE]
+>  Это свойство не задает продолжительность блокировки пользователя после неудачного ввода допустимого пароля. Сервер Active Directory обрабатывает неудачные попытки входа в систему и не влияет на значение этого свойства. Рекомендуется задать для <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAnswerAttemptLockoutDuration%2A> свойства то же значение, что и для длительности блокировки учетной записи, заданной для слишком большого числа неудачных попыток входа в конфигурацию Active Directory. Это обеспечит единообразное поведение автоматической блокировки для пользователей независимо от того, были ли они заблокированы из-за неудачных попыток входа или неправильного ответа на пароль.  
+  
+ Свойство задается в файле конфигурации приложения `passwordAnswerAttemptLockoutDuration` с помощью атрибута элемента [членства (схема параметров ASP.NET)](https://msdn.microsoft.com/library/b9c1ee8f-33ca-4361-8666-b42a0fe86049) . <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAnswerAttemptLockoutDuration%2A> Если свойство не задано в файле конфигурации приложения, <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAnswerAttemptLockoutDuration%2A> для свойства задается значение по умолчанию, равное 30 минутам.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показана запись Web. config, которая настраивает <xref:System.Web.Security.ActiveDirectoryMembershipProvider> экземпляр для блокировки пользователей, которые пытаются выполнить три попытки ввода ответа на пароль в течение 10 минут. Если пользователь заблокирован, дальнейшая попытка ответить на этот вопрос с паролем может быть выполнена в течение 15 минут.  
+  
+```  
+<configuration>  
+  <connectionStrings>  
+    <add name="ADService" connectionString="LDAP://ldapServer/" />  
+  </connectionStrings>  
+  <system.web>  
+    <membership defaultProvider="AspNetActiveDirectoryMembershipProvider">  
+      <providers>  
+        <add name="AspNetActiveDirectoryMembershipProvider"   
+          type="System.Web.Security.ActiveDirectoryMembershipProvider,   
+          System.Web, Version=2.0.3600, Culture=neutral,   
+          PublicKeyToken=b03f5f7f11d50a3a"  
+          maxInvalidPasswordAttempts="3"  
+          passwordAttemptWindow="10"  
+          passwordAnswerAttemptLockoutDuration="15" />  
+      </providers>  
+    </membership>  
+  </system.web>  
+</configuration>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Была предпринята попытка получить доступ к свойству <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAnswerAttemptLockoutDuration" /> до того, как экземпляр <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" /> был инициализирован.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="PasswordAttemptWindow">
+      <MemberSignature Language="C#" Value="public override int PasswordAttemptWindow { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 PasswordAttemptWindow" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAttemptWindow" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides ReadOnly Property PasswordAttemptWindow As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property int PasswordAttemptWindow { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.PasswordAttemptWindow : int" Usage="System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAttemptWindow" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает интервал времени, в течении которого отслеживаются последовательные попытки ввода недействительного пароля или ответа пароля.</summary>
+        <value>Интервал времени, в минутах, в течении которого отслеживаются последовательные попытки ввода недействительного пароля или ответа пароля. Значение по умолчанию — 10 минут. Если интервал между неудачными попытками больше значения свойства <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAttemptWindow" />, экземпляр <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" /> рассматривает очередную неудачную попытку как первую неудачную попытку.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойство работает вместе <xref:System.Web.Security.ActiveDirectoryMembershipProvider.MaxInvalidPasswordAttempts%2A> со свойством для защиты от нежелательного источника, отвечающего за нежелательный источник пароля или ответа на пароль пользователя членства с помощью повторяющихся попыток. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAttemptWindow%2A> Когда пользователи пытаются войти в систему, изменить пароль или сбросить пароль, в течение заданного временного интервала может быть только определенное число последовательных попыток. Длина временного окна задается <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAttemptWindow%2A> свойством, которое определяет допустимое число минут между недопустимыми попытками. Если число последовательных неудачных попыток, которые пользователь выполняет для сброса своего пароля, равен значению, <xref:System.Web.Security.ActiveDirectoryMembershipProvider.MaxInvalidPasswordAttempts%2A> хранящемуся в свойстве, и время, прошедшее с момента последней недопустимой попытки, меньше числа минут, указанных <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAttemptWindow%2A> для параметра , а затем учетная запись пользователя была заблокирована в течение числа минут, содержащихся <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAnswerAttemptLockoutDuration%2A> в свойстве. Если интервал между текущей попыткой неудачной попытки и последней неудачной попыткой <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAttemptWindow%2A> больше значения свойства, то текущая попытка будет считаться первой попыткой. Если получен допустимый ответ на пароль до достижения максимального числа допустимых попыток, то число попыток ввода пароля будет равно нулю. Если допустимый пароль предоставляется до достижения максимального разрешенного количества недопустимых попыток, число недопустимых попыток ввода пароля и число недопустимых попыток ввода пароля задаются равными нулю.  
+  
+ Рекомендуется задать для <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAnswerAttemptLockoutDuration%2A> свойства то же значение, что и для блокировки учетной записи, заданной для максимального числа неудачных попыток входа в конфигурацию Active Directory. Это обеспечит единообразное поведение автоматической блокировки для пользователей независимо от того, были ли они заблокированы из-за неудачных попыток входа или неправильного ответа на пароль.  
+  
+ Свойство задается в файле конфигурации приложения `passwordAttemptWindow` с помощью атрибута элемента [членства (схема параметров ASP.NET)](https://msdn.microsoft.com/library/b9c1ee8f-33ca-4361-8666-b42a0fe86049) . <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAnswerAttemptLockoutDuration%2A> Если свойство не задано в файле конфигурации приложения, <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAnswerAttemptLockoutDuration%2A> для свойства задается значение по умолчанию, равное 10 минутам.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показана запись Web. config, которая настраивает <xref:System.Web.Security.ActiveDirectoryMembershipProvider> экземпляр для блокировки пользователей, которые пытаются выполнить три попытки ввода ответа на пароль в течение 10 минут. Если пользователь заблокирован, дальнейшая попытка ответить на этот вопрос с паролем может быть выполнена в течение 15 минут.  
+  
+```  
+<configuration>  
+  <connectionStrings>  
+    <add name="ADService" connectionString="LDAP://ldapServer/" />  
+  </connectionStrings>  
+  <system.web>  
+    <membership defaultProvider="AspNetActiveDirectoryMembershipProvider">  
+      <providers>  
+        <add name="AspNetActiveDirectoryMembershipProvider"   
+          type="System.Web.Security.ActiveDirectoryMembershipProvider,   
+          System.Web, Version=2.0.3600, Culture=neutral,  
+          PublicKeyToken=b03f5f7f11d50a3a"  
+          maxInvalidPasswordAttempts="3"  
+          passwordAttemptWindow="10"  
+        passwordAnswerAttemptLockoutDuration="15" />  
+      </providers>  
+    </membership>  
+  </system.web>  
+</configuration>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Была предпринята попытка получить доступ к свойству <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAttemptWindow" /> до того, как экземпляр <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" /> был инициализирован.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="PasswordFormat">
+      <MemberSignature Language="C#" Value="public override System.Web.Security.MembershipPasswordFormat PasswordFormat { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance valuetype System.Web.Security.MembershipPasswordFormat PasswordFormat" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordFormat" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides ReadOnly Property PasswordFormat As MembershipPasswordFormat" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::Web::Security::MembershipPasswordFormat PasswordFormat { System::Web::Security::MembershipPasswordFormat get(); };" />
+      <MemberSignature Language="F#" Value="member this.PasswordFormat : System.Web.Security.MembershipPasswordFormat" Usage="System.Web.Security.ActiveDirectoryMembershipProvider.PasswordFormat" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Security.MembershipPasswordFormat</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, показывающее формат паролей в хранилище данных членства.</summary>
+        <value>Одно из значений перечисления <see cref="T:System.Web.Security.MembershipPasswordFormat" />. Свойство <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordFormat" /> всегда возвращает значение <see cref="F:System.Web.Security.MembershipPasswordFormat.Hashed" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Свойство не поддерживает извлечение пароля. Поведение <xref:System.Web.Security.ActiveDirectoryMembershipProvider> объекта аналогично тому, как другие поставщики, работающие с `Hashed` паролями.  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="PasswordStrengthRegularExpression">
+      <MemberSignature Language="C#" Value="public override string PasswordStrengthRegularExpression { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string PasswordStrengthRegularExpression" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordStrengthRegularExpression" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides ReadOnly Property PasswordStrengthRegularExpression As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::String ^ PasswordStrengthRegularExpression { System::String ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.PasswordStrengthRegularExpression : string" Usage="System.Web.Security.ActiveDirectoryMembershipProvider.PasswordStrengthRegularExpression" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает регулярное выражение, используемое для оценки пароля.</summary>
+        <value>Регулярное выражение, используемое для оценки пароля.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordStrengthRegularExpression%2A> Свойство получает регулярное выражение, используемое для вычисления сложности пароля.  
+  
+ Свойство не используется для проверки автоматически создаваемых паролей <xref:System.Web.Security.ActiveDirectoryMembershipProvider.ResetPassword%2A> в методе. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordStrengthRegularExpression%2A>  
+  
+ Свойство задается в конфигурации приложения `passwordStrengthRegularExpression` с помощью атрибута элемента [членства (схема параметров ASP.NET).](https://msdn.microsoft.com/library/b9c1ee8f-33ca-4361-8666-b42a0fe86049) <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordStrengthRegularExpression%2A>  
+  
+   
+  
+## Examples  
+ В следующем примере показан элемент конфигурации [элемента membership (схема параметров ASP.NET)](https://msdn.microsoft.com/library/b9c1ee8f-33ca-4361-8666-b42a0fe86049) в `system.web` разделе файла Web. config приложения. Он указывает, что приложение использует экземпляр <xref:System.Web.Security.ActiveDirectoryMembershipProvider> класса для предоставления служб членства и `passwordStrengthRegularExpression` задает для атрибута регулярное выражение, которое проверяет, соответствует ли пароль следующим критериям:  
+  
+-   Больше семи символов.  
+  
+-   Содержит по меньшей мере одну цифру.  
+  
+-   Содержит по крайней мере один специальный (не буквенно-цифровой) символ.  
+  
+ Если пароль не соответствует этим критериям, поставщик членства не принимает пароль.  
+  
+```  
+<configuration>  
+  <connectionStrings>  
+    <add name="ADService" connectionString="LDAP://ldapServer/" />  
+  </connectionStrings>  
+  <system.web>  
+    <membership defaultProvider="AspNetActiveDirectoryMembershipProvider">  
+      <providers>  
+        <add name="AspNetActiveDirectoryMembershipProvider"   
+          type="System.Web.Security.ActiveDirectoryMembershipProvider,   
+          System.Web, Version=2.0.3600, Culture=neutral,   
+          PublicKeyToken=b03f5f7f11d50a3a"  
+          passwordStrengthRegularExpression=  
+            "@\"(?=.{6,})(?=(.*\d){1,})(?=(.*\W){1,})" />  
+      </providers>  
+    </membership>  
+  </system.web>  
+</configuration>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Доступ к свойству <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordStrengthRegularExpression" /> осуществляется до инициализации экземпляра <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" />.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="RequiresQuestionAndAnswer">
+      <MemberSignature Language="C#" Value="public override bool RequiresQuestionAndAnswer { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool RequiresQuestionAndAnswer" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.ActiveDirectoryMembershipProvider.RequiresQuestionAndAnswer" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides ReadOnly Property RequiresQuestionAndAnswer As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property bool RequiresQuestionAndAnswer { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.RequiresQuestionAndAnswer : bool" Usage="System.Web.Security.ActiveDirectoryMembershipProvider.RequiresQuestionAndAnswer" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает значение, показывающее, настроен ли поставщик участия, чтобы запрашивать пароль при создании пользователя.</summary>
+        <value><see langword="true" />, если объект <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" /> сконфигурирован требовать запрос-ответ пароля; в противном случае — <see langword="false" />. Значение по умолчанию — <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойство задается в файле конфигурации приложения `requiresQuestionAndAnswer` с помощью атрибута элемента [членства (схема параметров ASP.NET)](https://msdn.microsoft.com/library/b9c1ee8f-33ca-4361-8666-b42a0fe86049) . <xref:System.Web.Security.ActiveDirectoryMembershipProvider.RequiresQuestionAndAnswer%2A> Если свойство не задано в файле конфигурации приложения, <xref:System.Web.Security.ActiveDirectoryMembershipProvider.RequiresQuestionAndAnswer%2A> для свойства задается `false`значение по умолчанию.  
+  
+ Если атрибут имеет `true`значение, необходимо также задать эти дополнительные атрибуты. `requiresQuestionAndAnswer`  
+  
+-   `attributeMapPasswordQuestion`и `attributeMapPasswordAnswer` должны быть сопоставлены с атрибутами в схеме Active Directory.  
+  
+ Если указанные выше условия не выполняются, <xref:System.Configuration.Provider.ProviderException> при инициализации создается исключение.  
+  
+> [!NOTE]
+>  При создании пользователя можно запрашивать вопрос и ответ с паролем, но задать <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordReset%2A> для `false` свойства значение, чтобы запретить пользователям <xref:System.Web.Security.ActiveDirectoryMembershipProvider> изменять пароли с помощью класса.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показана запись Web. config, которая настраивает <xref:System.Web.Security.ActiveDirectoryMembershipProvider> экземпляр для включения сброса пароля. Он использует явные учетные данные пользователя при наличии права доступа "Сброс пароля".  
+  
+> [!IMPORTANT]
+>  При помещении учетных данных пользователя в файл Web. config возникают потенциальные угрозы безопасности. Пользователи с правами доступа к каталогу, содержащему файл Web. config, могут прочитать файл и, таким же, просмотреть учетные данные. Дополнительные сведения о защите от этой угрозы см. в разделе [Шифрование сведений о конфигурации с помощью защищенной конфигурации](https://msdn.microsoft.com/library/51cdfe5b-9d82-458c-94ff-c551c4f38ed1).  
+  
+```  
+<configuration>  
+  <connectionStrings>  
+    <add name="ADService" connectionString="LDAP://ldapServer/" />  
+  </connectionStrings>  
+  <system.web>  
+    <membership defaultProvider="AspNetActiveDirectoryMembershipProvider">  
+      <providers>  
+        <add name="AspNetActiveDirectoryMembershipProvider"   
+          type="System.Web.Security.ActiveDirectoryMembershipProvider,   
+          System.Web, Version=2.0.3600, Culture=neutral,  
+          PublicKeyToken=b03f5f7f11d50a3a"  
+          connectionUsername="UserWithResetPasswordRights"  
+          connectionPassword="PasswordForUser"  
+          enablePasswordReset="true"  
+          requiresQuestionAndAnswer="true"  
+          attributeMapPasswordQuestion="PasswordQuestionADAttribute"  
+          attributeMapPasswordAnswer="PasswordAnswerADAttribute"  
+          attributeMapFailedPasswordAnswerCount="AnswerCountADAttribute"  
+          attributeMapFailedPasswordAnswerTime="AnswerTimeADAttribute"  
+          attributeMapFailedPasswordAnswerLockoutTime="LockOutTimeADAttribute" />  
+      </providers>  
+    </membership>  
+  </system.web>  
+</configuration>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Была предпринята попытка получить доступ к свойству <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.RequiresQuestionAndAnswer" /> до того, как экземпляр <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" /> был инициализирован.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="RequiresUniqueEmail">
+      <MemberSignature Language="C#" Value="public override bool RequiresUniqueEmail { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool RequiresUniqueEmail" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.ActiveDirectoryMembershipProvider.RequiresUniqueEmail" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides ReadOnly Property RequiresUniqueEmail As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property bool RequiresUniqueEmail { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.RequiresUniqueEmail : bool" Usage="System.Web.Security.ActiveDirectoryMembershipProvider.RequiresUniqueEmail" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, указывающее, должен ли быть уникальным адрес электронной почты, который хранится на сервере Active Directory.</summary>
+        <value><see langword="true" />Если адреса электронной почты должны быть уникальными; в противном случае —. <see langword="false" /> Значение по умолчанию — <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ `true` <xref:System.Web.Security.ActiveDirectoryMembershipProvider> <xref:System.Web.Security.ActiveDirectoryMembershipProvider.CreateUser%2A> Если свойство имеет значение, экземпляр гарантирует, что адрес электронной почты не будет использоваться каким-либо другим пользователем в текущей области при вызове метода  <xref:System.Web.Security.ActiveDirectoryMembershipProvider.UpdateUser%2A> или. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.RequiresUniqueEmail%2A>  
+  
+ Свойство задается в файле конфигурации приложения `requiresUniqueEmail` с помощью атрибута элемента [членства (схема параметров ASP.NET)](https://msdn.microsoft.com/library/b9c1ee8f-33ca-4361-8666-b42a0fe86049) . <xref:System.Web.Security.ActiveDirectoryMembershipProvider.RequiresUniqueEmail%2A> Если свойство не задано в файле конфигурации приложения, <xref:System.Web.Security.ActiveDirectoryMembershipProvider.RequiresUniqueEmail%2A> для свойства задается `false`значение по умолчанию.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показана запись Web. config, которая настраивает <xref:System.Web.Security.ActiveDirectoryMembershipProvider> экземпляр для запроса уникальных адресов электронной почты для пользователей, хранящихся на сервере Active Directory.  
+  
+```  
+<configuration>  
+  <connectionStrings>  
+    <add name="ADService" connectionString="LDAP://ldapServer/" />  
+  </connectionStrings>  
+  <system.web>  
+    <membership defaultProvider="AspNetActiveDirectoryMembershipProvider">  
+      <providers>  
+        <add name="AspNetActiveDirectoryMembershipProvider"   
+          type="System.Web.Security.ActiveDirectoryMembershipProvider,   
+          System.Web, Version=2.0.3600, Culture=neutral,   
+          PublicKeyToken=b03f5f7f11d50a3a"  
+          requiresUniqueEmail="true" />  
+      </providers>  
+    </membership>  
+  </system.web>  
+</configuration>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Была предпринята попытка получить доступ к свойству <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.RequiresUniqueEmail" /> до того, как экземпляр <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" /> был инициализирован.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="ResetPassword">
+      <MemberSignature Language="C#" Value="public override string ResetPassword (string username, string passwordAnswer);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance string ResetPassword(string username, string passwordAnswer) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.ActiveDirectoryMembershipProvider.ResetPassword(System.String,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function ResetPassword (username As String, passwordAnswer As String) As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::String ^ ResetPassword(System::String ^ username, System::String ^ passwordAnswer);" />
+      <MemberSignature Language="F#" Value="override this.ResetPassword : string * string -&gt; string" Usage="activeDirectoryMembershipProvider.ResetPassword (username, passwordAnswer)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="username" Type="System.String" />
+        <Parameter Name="passwordAnswer" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="username">Пользователь, для которого сбрасывается пароль.</param>
+        <param name="passwordAnswer">Контрольный ответ для пароля заданного пользователя.</param>
+        <summary>Заменяет пароль пользователя на новый, автоматически сгенерированный пароль.</summary>
+        <returns>Новый пароль заданного пользователя.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод вызывается <xref:System.Web.Security.Membership> классом для сброса пароля пользователя в Active Directory хранилище данных до нового случайного значения. Будет возвращен новый пароль.  
+  
+> [!NOTE]
+>  Случайный пароль, созданный <xref:System.Web.Security.ActiveDirectoryMembershipProvider.ResetPassword%2A> методом, не гарантирует передачу регулярного выражения <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordStrengthRegularExpression%2A> в свойство. Однако случайный пароль будет соответствовать критериям, установленным <xref:System.Web.Security.ActiveDirectoryMembershipProvider.MinRequiredPasswordLength%2A> свойствами и. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.MinRequiredNonAlphanumericCharacters%2A>  
+  
+ Если <xref:System.Web.Security.ActiveDirectoryMembershipProvider.ResetPassword%2A> методу предоставлен неверный ответ, внутренний счетчик, который отслеживает недопустимые попытки ввода пароля, увеличивается на единицу. Это может привести к тому, что пользователь не сможет войти в систему до тех пор, пока состояние блокировки не будет <xref:System.Web.Security.ActiveDirectoryMembershipProvider.UnlockUser%2A> снято вызовом метода. Если указан правильный ответ на пароль и пользователь не заблокирован, внутренний счетчик, который отслеживает попытки ввода пароля, сбрасывается в ноль. Дополнительные сведения см. в <xref:System.Web.Security.ActiveDirectoryMembershipProvider.MaxInvalidPasswordAttempts%2A> разделе Свойства и. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAttemptWindow%2A>  
+  
+ Начальные и конечные пробелы удаляются из всех значений параметров.  
+  
+ <xref:System.Web.Security.ActiveDirectoryMembershipProvider.ResetPassword%2A> Метод можно вызвать непосредственно, сначала получив ссылку <xref:System.Web.Security.ActiveDirectoryMembershipProvider> на экземпляр из <xref:System.Web.Security.Membership.Provider%2A?displayProperty=nameWithType> свойства.  
+  
+ Поставщик использует поиск по поддереву, начиная с точки поиска, указанной в строке подключения. Дополнительные сведения <xref:System.Web.Security.ActiveDirectoryMembershipProvider> о строках подключения см. в разделе класс.  
+  
+ Чтобы задать пароли на сервере Active Directory, `connectionProtection` атрибуту необходимо <xref:System.Web.Security.ActiveDirectoryConnectionProtection.SignAndSeal>присвоить значение.  
+  
+ При использовании сервера `connectionProtection` ADAM атрибут может иметь <xref:System.Web.Security.ActiveDirectoryConnectionProtection.None>значение, но только в том случае, если вы явно настроили сервер ADAM для разрешения смены пароля через незащищенные соединения.  
+  
+> [!IMPORTANT]
+>  Нельзя сбросить пароли, если только учетные данные, используемые для подключения к серверу Active Directory, не имеют прав администратора домена (не рекомендуется) или права доступа "Сброс пароля".  
+  
+ Чтобы сбросить пароль, должны быть выполнены все следующие условия.  
+  
+-   <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordReset%2A> Для `true` свойства необходимо задать значение.  
+  
+-   Схема Active Directory должна быть изменена, чтобы содержать атрибуты для хранения вопроса и ответа пароля, а также три поля отслеживания для изменения ответов на пароли.  
+  
+-   `attributeMapPasswordQuestion`Атрибуты , `attributeMapPasswordAnswer`  ,, `attributeMapFailedPasswordAnswerLockedTime`  и должны быть заданы в файле конфигурации приложения. `attributeMapFailedPasswordAnswerCount` `attributeMapFailedPasswordAnswerTime`  
+  
+-   <xref:System.Web.Security.ActiveDirectoryMembershipProvider.RequiresQuestionAndAnswer%2A> Для `true` свойства необходимо задать значение.  
+  
+-   Контекст безопасности для подключения к Active Directory хранилищу данных (учетная запись процесса или явные учетные данные) должен иметь достаточные привилегии для изменения паролей. Учетные данные, используемые для подключения к серверу Active Directory, имеют либо права администратора домена (не рекомендуется), либо право доступа "Сброс пароля".  
+  
+> [!NOTE]
+>  Политики безопасности, установленные на Active Directory сервере, могут сделать так <xref:System.Web.Security.ActiveDirectoryMembershipProvider.ResetPassword%2A> , чтобы метод не создавал пароль, соответствующий политикам. Реализация <xref:System.Web.Security.ActiveDirectoryMembershipProvider.GeneratePassword%2A> метода по умолчанию создает пароли, которые соответствуют политикам паролей по умолчанию на контроллерах домена под Windows Server 2003 с пакетом обновления 1 (SP1). Если пароль не может быть сброшен из-за политик безопасности на Active Directory сервере, <xref:System.Configuration.Provider.ProviderException> создается исключение.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Метод <see cref="M:System.Web.Security.ActiveDirectoryMembershipProvider.ResetPassword(System.String,System.String)" /> вызывается до инициализации экземпляра <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" />.</exception>
+        <exception cref="T:System.NotSupportedException">Значение свойства <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordReset" /> равно <see langword="false" />.</exception>
+        <exception cref="T:System.ArgumentNullException"><paramref name="passwordAnswer" /> — <see langword="null" />.  
+  
+- или - 
+ Свойство <paramref name="username" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException">После удаления пробелов параметр <paramref name="passwordAnswer" /> пустой. 
+-или- 
+ Длина параметра <paramref name="passwordAnswer" /> превышает 128 символов.  
+  
+- или - 
+ Параметр <paramref name="username" /> пустой, или превышает максимальную разрешенную длину имени пользователя (обычно 256 символов).  
+  
+- или - 
+ <paramref name="username" /> содержит запятые.  
+  
+-или- 
+Имя пользователя отображается на атрибут <see langword="userPrincipalName" />, но параметр <paramref name="username" /> содержит обратные косые черты.</exception>
+        <exception cref="T:System.Web.Security.MembershipPasswordException">Пользователь заблокирован из-за слишком большого числа ошибок при подключении или восстановлении запроса-ответа пароля.  
+  
+- или - 
+ Параметр <paramref name="passwordAnswer" /> не соответствует хранимому ответу пароля.</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Пользователь, указанный в параметре <paramref name="username" />, отсутствует в хранилище данных Active Directory.  
+  
+- или - 
+Сгенерированный пароль не проходит пользователь обработчик проверки.  
+  
+- или - 
+Сгенерированный пароль не достаточно сложен для удовлетворения пользовательской политики паролей, установленной на сервере Active Directory.  
+  
+- или - 
+Нельзя создать безопасное подключение к серверу Active Directory Application Mode для установки нового пароля.</exception>
+        <exception cref="T:System.Exception">Произошло необработанное исключение.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="UnlockUser">
+      <MemberSignature Language="C#" Value="public override bool UnlockUser (string username);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance bool UnlockUser(string username) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.ActiveDirectoryMembershipProvider.UnlockUser(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function UnlockUser (username As String) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override bool UnlockUser(System::String ^ username);" />
+      <MemberSignature Language="F#" Value="override this.UnlockUser : string -&gt; bool" Usage="activeDirectoryMembershipProvider.UnlockUser username" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="username" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="username">Имя пользователя членства, для которого снимается блокировка.</param>
+        <summary>Снимает блокировку так, что пользователь членства может быть проверен.</summary>
+        <returns>Значение <see langword="true" />, если пользователь членства успешно разблокирован; в противном случае — значение <see langword="false" />. Метод <see cref="M:System.Web.Security.ActiveDirectoryMembershipProvider.UnlockUser(System.String)" /> также возвращает <see langword="false" />, когда пользователь членства не найден в хранилище данных.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Чаще всего пользователи блокируются и не могут быть проверены <xref:System.Web.Security.ActiveDirectoryMembershipProvider.ValidateUser%2A> методом, <xref:System.Web.Security.ActiveDirectoryMembershipProvider.MaxInvalidPasswordAttempts%2A> если свойство превышено в течение времени, указанного в <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAttemptWindow%2A> свойстве, или если было выполнено слишком много попыток входа с использованием неправильного пароля.  
+  
+ Если свойство имеет `true`значение, то после того, как пользователь разблокирует счетчики для неверных паролей, сбрасываются. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordReset%2A>  
+  
+ Поставщик использует поиск по поддереву, начиная с точки поиска, указанной в строке подключения. Дополнительные сведения <xref:System.Web.Security.ActiveDirectoryMembershipProvider> о строках подключения см. в разделе класс.  
+  
+ Начальные и конечные пробелы удаляются из значения параметра `username`.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="username" /> пустой, или превышает максимальную разрешенную длину имени пользователя (обычно 256 символов).  
+  
+- или - 
+ <paramref name="username" /> содержит запятые.  
+  
+-или- 
+Имя пользователя отображается на атрибут <see langword="userPrincipalName" />, но параметр <paramref name="username" /> содержит обратные косые черты.</exception>
+        <exception cref="T:System.ArgumentNullException"><paramref name="username" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.InvalidOperationException">Метод <see cref="M:System.Web.Security.ActiveDirectoryMembershipProvider.UnlockUser(System.String)" /> вызывается до инициализации экземпляра <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" />.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="UpdateUser">
+      <MemberSignature Language="C#" Value="public override void UpdateUser (System.Web.Security.MembershipUser user);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void UpdateUser(class System.Web.Security.MembershipUser user) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.ActiveDirectoryMembershipProvider.UpdateUser(System.Web.Security.MembershipUser)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Sub UpdateUser (user As MembershipUser)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void UpdateUser(System::Web::Security::MembershipUser ^ user);" />
+      <MemberSignature Language="F#" Value="override this.UpdateUser : System.Web.Security.MembershipUser -&gt; unit" Usage="activeDirectoryMembershipProvider.UpdateUser user" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="user" Type="System.Web.Security.MembershipUser" />
+      </Parameters>
+      <Docs>
+        <param name="user">Экземпляр <see cref="T:System.Web.Security.MembershipUser" />, представляющий пользователя для обновления и обновленную информацию для пользователя.</param>
+        <summary>Обновляет информацию о пользователе в хранилище данных Active Directory.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод вызывается <xref:System.Web.Security.Membership> классом для обновления сведений о пользователе в Active Directory хранилище данных. Значения свойств <xref:System.Web.Security.MembershipUser.Comment%2A> , и <xref:System.Web.Security.MembershipUser.IsApproved%2A>  обновляются для указанного пользователя членства. <xref:System.Web.Security.MembershipUser.Email%2A> Все остальные свойства игнорируются.  
+  
+ Максимальная длина `username` параметра — 256 символов. Максимальная длина <xref:System.Web.Security.MembershipUser.Email%2A> свойства — 256 символов.  
+  
+ Невозможно обновить пароль для пользователя членства с помощью <xref:System.Web.Security.ActiveDirectoryMembershipProvider.UpdateUser%2A> метода. Чтобы обновить пароль для пользователя членства, используйте <xref:System.Web.Security.ActiveDirectoryMembershipProvider.ChangePassword%2A> метод.  
+  
+ Поставщик использует поиск по поддереву, начиная с точки поиска, указанной в строке подключения. Дополнительные сведения <xref:System.Web.Security.ActiveDirectoryMembershipProvider> о строках подключения см. в разделе класс.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Метод <see cref="M:System.Web.Security.ActiveDirectoryMembershipProvider.UpdateUser(System.Web.Security.MembershipUser)" /> вызывается до инициализации экземпляра <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" />.</exception>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="user" /> имеет значение <see langword="null" />.  
+  
+- или - 
+Свойство <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.RequiresUniqueEmail" /> равно <see langword="true" />, но адрес электронной почты из указанного образца <see cref="T:System.Web.Security.MembershipUser" /> равен <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException">Свойство <see cref="P:System.Web.Security.MembershipUser.Email" /> пустое после удаления пробелов.  
+  
+- или - 
+Длина свойства <see cref="P:System.Web.Security.MembershipUser.Email" /> превышает 256 знаков.  
+  
+- или - 
+Длина свойства <see cref="P:System.Web.Security.MembershipUser.Comment" /> превышает 1024 символов.  
+  
+- или - 
+свойство <see cref="P:System.Web.Security.MembershipUser.Comment" /> является пустым;  
+  
+- или - 
+Имя пользователя из указанного экземпляра <see cref="T:System.Web.Security.MembershipUser" /> пустое или превышает максимальную длину, разрешенную для имен пользователя (обычно 256 символов).  
+  
+- или - 
+Имя пользователя из указанного экземпляра <see cref="T:System.Web.Security.MembershipUser" /> содержит запятые.  
+  
+- или - 
+Имя пользователя отображается на атрибут <see langword="userPrincipalName" />, но имя пользователь из указанного экземпляра <see cref="T:System.Web.Security.MembershipUser" /> содержит обратные косые черты.</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Указанный пользователь не найден в хранилище данных Active Directory.  
+  
+-или- 
+Свойство <see cref="P:System.Web.Security.ActiveDirectoryMembershipProvider.RequiresUniqueEmail" /> равно <see langword="true" />, и новое значение свойства <see cref="P:System.Web.Security.MembershipUser.Email" /> дублирует существующий адрес электронной почты.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="ValidateUser">
+      <MemberSignature Language="C#" Value="public override bool ValidateUser (string username, string password);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance bool ValidateUser(string username, string password) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.ActiveDirectoryMembershipProvider.ValidateUser(System.String,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function ValidateUser (username As String, password As String) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override bool ValidateUser(System::String ^ username, System::String ^ password);" />
+      <MemberSignature Language="F#" Value="override this.ValidateUser : string * string -&gt; bool" Usage="activeDirectoryMembershipProvider.ValidateUser (username, password)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="username" Type="System.String" />
+        <Parameter Name="password" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="username">Имя пользователя для проверки.</param>
+        <param name="password">Пароль заданного пользователя.</param>
+        <summary>Проверяет существование указанного имени пользователя и пароля в хранилище данных Active Directory.</summary>
+        <returns>Значение <see langword="true" />, если указанные <paramref name="username" /> и <paramref name="password" /> действительны; в противном случае — <see langword="false" />. Если указанный пользователь не существует в хранилище данных Active Directory, метод <see cref="M:System.Web.Security.ActiveDirectoryMembershipProvider.ValidateUser(System.String,System.String)" /> возвращает <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод вызывается <xref:System.Web.Security.Membership> классом для проверки учетных данных пользователя в Active Directory хранилище данных.  
+  
+ Если свойство имеет `true` значение и предоставлены допустимые учетные данные, то счетчики отслеживания для неправильных ответов на пароли сбрасываются. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordReset%2A>  
+  
+ Метод может возвращать `false` данные при предоставлении правильных учетных данных в следующих случаях. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.ValidateUser%2A>  
+  
+1.  Учетная запись пользователя была заблокирована сервером каталогов из-за слишком большого числа неудачных попыток входа. Пользователь не сможет войти в систему, пока не будет пройдена длительность блокировки каталога.  
+  
+2.  Если свойство имеет `true`значение, учетная запись пользователя будет заблокирована, если пользователь слишком много раз указал недопустимый ответ на пароль. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordReset%2A> Учетная запись пользователя будет разблокирована после передачи времени, <xref:System.Web.Security.ActiveDirectoryMembershipProvider.PasswordAnswerAttemptLockoutDuration%2A> указанного в свойстве.  
+  
+3.  Пользователь должен существовать в контейнере, указанном в строке подключения. Для учетной записи пользователя, расположенной в другом контейнере или в другом домене, предоставляются действительные учетные данные. Пользователь должен существовать в контейнере, указанном в строке подключения.  
+  
+ При проверке пользователя поставщик проверяет учетные данные, подключаясь к Active Directory хранилищу данных, используя указанные имя пользователя и пароль, а не учетные данные, настроенные в файле конфигурации приложения.  
+  
+ <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Однако экземпляр будет подключаться к каталогу, используя настроенные учетные данные по следующим причинам.  
+  
+-   Чтобы убедиться, что пользователь существует в области поиска, определяемой <xref:System.Web.Security.ActiveDirectoryMembershipProvider> строкой подключения экземпляра. Поставщик использует поиск по поддереву, начиная с точки поиска, указанной в строке подключения, чтобы определить, существует ли пользователь. Пользователь должен существовать в указанном контейнере. Учетные данные, допустимые вне указанного контейнера строки подключения, не будут проверены. Дополнительные сведения <xref:System.Web.Security.ActiveDirectoryMembershipProvider> о строках подключения см. в разделе класс.  
+  
+-   Если свойство имеет `true`значение, <xref:System.Web.Security.ActiveDirectoryMembershipProvider> экземпляр будет использовать настроенные учетные данные для загрузки пользовательского экземпляра, чтобы проверить, заблокирован ли пользователь, так как он сделал слишком много неудачных попыток изменить ответ на пароль. <xref:System.Web.Security.ActiveDirectoryMembershipProvider.EnablePasswordReset%2A> .  
+  
+> [!IMPORTANT]
+>  Подключение к контроллеру домена Active Directory с включенной учетной записью "гость" является потенциальной угрозой безопасности. Все попытки проверки, выполненные на контроллере домена Active Directory с включенной учетной записью гостя, будут выполнены. Чтобы повысить безопасность при использовании Active Directory контроллера домена, необходимо отключить гостевую учетную запись на контроллере домена.  
+  
+ <xref:System.Web.Security.ActiveDirectoryMembershipProvider> Экземпляр будет пытаться выполнить одновременную привязку к Active Directory при выполнении одного из следующих условий:  
+  
+-   Свойству <xref:System.Web.Security.ActiveDirectoryMembershipProvider.CurrentConnectionProtection%2A> задано значение <xref:System.Web.Security.ActiveDirectoryConnectionProtection.None>.  
+  
+-   Свойство имеет значение, и для защиты соединения в <xref:System.Web.Security.ActiveDirectoryMembershipProvider> экземпляре выбирается SSL. <xref:System.Web.Security.ActiveDirectoryConnectionProtection.SignAndSeal> <xref:System.Web.Security.ActiveDirectoryMembershipProvider.CurrentConnectionProtection%2A>  
+  
+ Кроме того, для параллельной привязки необходимо выполнить следующие условия.  
+  
+-   Сервер каталогов должен работать под Windows Server 2003.  
+  
+-   Операционная система веб-сервера, на котором выполняется <xref:System.Web.Security.ActiveDirectoryMembershipProvider> экземпляр, должна поддерживать параллельные привязки (например, Windows Server 2003).  
+  
+ При использовании параллельной привязки Дата последнего входа пользователя в систему в каталоге не обновляется; <xref:System.Web.Security.ActiveDirectoryMembershipUser.LastLoginDate%2A> поэтому свойство не может быть полагаться на.  
+  
+ Начальные и конечные пробелы удаляются из `username` параметра.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Метод <see cref="M:System.Web.Security.ActiveDirectoryMembershipProvider.ValidateUser(System.String,System.String)" /> вызывается до инициализации экземпляра <see cref="T:System.Web.Security.ActiveDirectoryMembershipProvider" />.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/79184d17-f4c7-4c9f-a073-cec4f5543980(v=vs.100)">Введение в членство в ASP.NET</related>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

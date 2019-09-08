@@ -1,0 +1,89 @@
+<Type Name="Graphics+DrawImageAbort" FullName="System.Drawing.Graphics+DrawImageAbort">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="897738808f3fec2c7d9699cff736ff2dea3df00a" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70605776" /></Metadata><TypeSignature Language="C#" Value="public delegate bool Graphics.DrawImageAbort(IntPtr callbackdata);" />
+  <TypeSignature Language="ILAsm" Value=".class nested public auto ansi sealed Graphics/DrawImageAbort extends System.MulticastDelegate" />
+  <TypeSignature Language="DocId" Value="T:System.Drawing.Graphics.DrawImageAbort" />
+  <TypeSignature Language="VB.NET" Value="Public Delegate Function Graphics.DrawImageAbort(callbackdata As IntPtr) As Boolean " />
+  <TypeSignature Language="C++ CLI" Value="public: delegate bool Graphics::DrawImageAbort(IntPtr callbackdata);" />
+  <TypeSignature Language="F#" Value="type Graphics.DrawImageAbort = delegate of nativeint -&gt; bool" />
+  <AssemblyInfo>
+    <AssemblyName>System.Drawing</AssemblyName>
+    <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>System.Drawing.Common</AssemblyName>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.1</AssemblyVersion>
+    <AssemblyVersion>4.0.1.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Delegate</BaseTypeName>
+  </Base>
+  <Attributes>
+    <Attribute FrameworkAlternate="netframework-1.1">
+      <AttributeName>System.Runtime.InteropServices.ComVisible(false)</AttributeName>
+    </Attribute>
+  </Attributes>
+  <Parameters>
+    <Parameter Name="callbackdata" Type="System.IntPtr" />
+  </Parameters>
+  <ReturnValue>
+    <ReturnType>System.Boolean</ReturnType>
+  </ReturnValue>
+  <Docs>
+    <param name="callbackdata">Внутренний указатель, определяющий данные для метода обратного вызова. Этот параметр не передается всеми перегруженными членами <see cref="Overload:System.Drawing.Graphics.DrawImage" />. Проверить, отсутствует ли этот параметр, можно путем проверки значения <see cref="F:System.IntPtr.Zero" />.</param>
+    <summary>Предоставляет метод обратного вызова, используемый в случае, когда метод <see cref="Overload:System.Drawing.Graphics.DrawImage" /> должен преждевременно отменить выполнение и прекратить рисование изображения.</summary>
+    <returns>Данный метод возвращает значение <see langword="true" />, если принимается решение, что метод <see cref="Overload:System.Drawing.Graphics.DrawImage" /> должен преждевременно прекратить выполнение. В противном случае возвращается значение <see langword="false" />, указывающее на необходимость продолжения выполнения метода <see cref="Overload:System.Drawing.Graphics.DrawImage" />.</returns>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот метод используется в сочетании с <xref:System.Drawing.Graphics.DrawImage%2A> методом <xref:System.Drawing.Graphics> класса. Некоторые перегрузки <xref:System.Drawing.Graphics.DrawImage%2A> метода вызывают определенный приложением метод обратного вызова этого типа, чтобы определить, следует ли прекратить или продолжить выполнение перегрузок.  
+  
+ Во время выполнения соответствующие <xref:System.Drawing.Graphics.DrawImage%2A> перегрузки часто вызывают этот метод обратного вызова, чтобы определить, следует ли прекратить прорисовку указанного изображения или они должны продолжить рисование изображения. Метод <xref:System.Drawing.Graphics.DrawImageAbort> обратного вызова может определить, следует ли продолжить или не использовать выбранный в нем алгоритм, при необходимости используя данные, передаваемые им с помощью параметра каллбаккдата. Например, алгоритм может определить, прокручивается ли изображение за пределы экрана, и сигнализирует об отмене <xref:System.Drawing.Graphics.DrawImage%2A> метода для остановки рисования.  
+  
+ Объявление пользователя этого метода обработки событий должно иметь те же параметры, что <xref:System.Drawing.Graphics.DrawImageAbort> и объявление делегата.  
+  
+   
+  
+## Examples  
+ Этот пример представляет собой упрощенную реализацию <xref:System.Drawing.Graphics.DrawImageAbort> делегата. Он просто проверяет, прошли ли <xref:System.Drawing.Graphics.DrawImage%2A> метод данные, используя параметр каллбаккдата. (Некоторые <xref:System.Drawing.Graphics.DrawImage%2A> перегрузки имеют `DrawImageAbort` только параметр и не передают данные; некоторые перегрузки имеют `DrawImageAbort` и параметры `callbackdata` , и могут передавать данные.) Если данные не передавались, возвращается `true` , чтобы сообщить вызывающему <xref:System.Drawing.Graphics.DrawImage%2A> методу, что он должен отменить рисование. Если данные переданы, он возвращает `false` , чтобы сообщить, что рисование должно быть продолжено.  
+  
+ Реалистичная реализация этого обратного вызова повлечет за собой фактическую тщательность некоторых критериев для отмены или продолжения выполнения.  
+  
+```vb  
+Private Function DrawImageCallback(callBackData As IntPtr) As Boolean  
+     ' Test for call that passes callBackData parameter.  
+     If callBackData.Equals(IntPtr.Zero) Then  
+         ' If no callBackData passed, abort DrawImage method.  
+         Return True  
+     Else  
+         ' If callBackData passed, continue DrawImage method.  
+         Return False  
+     End If  
+ End Function 'DrawImageCallback  
+```  
+  
+```csharp  
+// Define DrawImageAbort callback method.  
+ private bool DrawImageCallback(IntPtr callbackdata)  
+ {  
+    // Test for call that passes callBackData parameter.  
+    if(callbackdata==IntPtr.Zero)  
+    {  
+       // If no callbackdata passed, cancel DrawImage method.  
+       return true;  
+    }  
+    else  
+    {  
+       // If callbackdata passed, continue DrawImage method.  
+       return false;  
+    }  
+ }  
+```  
+  
+ ]]></format>
+    </remarks>
+  </Docs>
+</Type>

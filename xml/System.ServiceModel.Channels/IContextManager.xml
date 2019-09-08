@@ -1,0 +1,184 @@
+<Type Name="IContextManager" FullName="System.ServiceModel.Channels.IContextManager">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="fd40311f073f441f3f8b4ab1e72b7d600d70e6d4" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70695446" /></Metadata><TypeSignature Language="C#" Value="public interface IContextManager" />
+  <TypeSignature Language="ILAsm" Value=".class public interface auto ansi abstract IContextManager" />
+  <TypeSignature Language="DocId" Value="T:System.ServiceModel.Channels.IContextManager" />
+  <TypeSignature Language="VB.NET" Value="Public Interface IContextManager" />
+  <TypeSignature Language="C++ CLI" Value="public interface class IContextManager" />
+  <TypeSignature Language="F#" Value="type IContextManager = interface" />
+  <AssemblyInfo>
+    <AssemblyName>System.ServiceModel</AssemblyName>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>System.WorkflowServices</AssemblyName>
+    <AssemblyVersion>3.5.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Interfaces />
+  <Attributes>
+    <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+      <AttributeName>System.Runtime.CompilerServices.TypeForwardedFrom("System.WorkflowServices, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35")</AttributeName>
+    </Attribute>
+  </Attributes>
+  <Docs>
+    <summary>Задает интерфейс, позволяющий получать и задавать контекст в канале.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Для каналов, использующих <xref:System.ServiceModel.WSHttpContextBinding> с заданным значением <xref:System.ServiceModel.SessionMode.NotAllowed>, извлечение контекста на клиентах, использующих <xref:System.ServiceModel.Channels.IContextManager>, невозможно, так как при каждом вызове <xref:System.ServiceModel.Channels.IChannelFactory.GetProperty%2A> создается новый канал, устанавливающий сеанс, чтобы обеспечить семантику <xref:System.ServiceModel.SessionMode.NotAllowed> в канале. Это означает, что хотя в этом случае контекст правильно распространяется назад к клиенту, его невозможно извлечь с помощью <xref:System.ServiceModel.Channels.IContextManager>. Однако его можно извлечь с помощью свойства <xref:System.ServiceModel.Channels.ContextMessageProperty>, как показано в следующем примере кода.  
+  
+```csharp  
+using (new OperationContextScope((IContextChannel)channel))  
+{  
+    channel.MyChannel("Test");  
+    ContextMessageProperty context;  
+    if (ContextMessageProperty.TryGet(OperationContext.Current.IncomingMessageProperties, out context))  
+    {  
+        Console.WriteLine(context.Count);  
+    }  
+}  
+  
+```  
+  
+ ]]></format>
+    </remarks>
+  </Docs>
+  <Members>
+    <Member MemberName="Enabled">
+      <MemberSignature Language="C#" Value="public bool Enabled { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool Enabled" />
+      <MemberSignature Language="DocId" Value="P:System.ServiceModel.Channels.IContextManager.Enabled" />
+      <MemberSignature Language="VB.NET" Value="Public Property Enabled As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool Enabled { bool get(); void set(bool value); };" />
+      <MemberSignature Language="F#" Value="member this.Enabled : bool with get, set" Usage="System.ServiceModel.Channels.IContextManager.Enabled" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.WorkflowServices</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает значение, указывающее, включено ли управление контекстом.</summary>
+        <value><see langword="true" />, если контекст включен; в противном случае <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если управление контекстом включено, канал контекста кэширует контекст в течение времени своего существования. Контекст может быть извлечен из канала с помощью свойства канала `IContextManager` путем вызова для него метода <xref:System.ServiceModel.Channels.IContextManager.GetContext%2A>. Можно также заранее инициализировать канал с контекстом до его открытия путем вызова метода <xref:System.ServiceModel.Channels.IContextManager.SetContext%2A> для свойства канала. Если канал инициализирован с контекстом, его сброс невозможен.  
+  
+ В этом режиме перечисленное ниже остается неизменным.  
+  
+-   Любой вызов <xref:System.ServiceModel.Channels.IContextManager.SetContext%2A> после открытия канала вызывает исключение `InvalidOperationException`.  
+  
+-   Любая попытка отправить контекст с помощью `ContextMessageProperty` в исходящем сообщении вызывает исключение `InvalidOperationException`.  
+  
+-   Если от сервера получено сообщение с контекстом, а канал уже инициализирован с контекстом, создается исключение `ProtocolException`. Обратите внимание, что получение исходного контекста с сервера возможно, если канала был открыт без явного задания контекста.  
+  
+-   Свойство `ContextMessageProperty` для входящего сообщения всегда имеет значение `null`.  
+  
+ Если управление контекстом не включено, контекстный канал не управляет контекстом. Ответственность за извлечение, обработку и применение контекста с помощью свойства `ContextMessageProperty` возлагается на приложение. Любая попытка вызова <xref:System.ServiceModel.Channels.IContextManager.GetContext%2A> или <xref:System.ServiceModel.Channels.IContextManager.SetContext%2A> с использованием свойства канала `IContextManager` вызывает исключение `InvalidOperationException`.  
+  
+ Все файлы cookie HTTP, кроме контекстных файлов cookie HTTP, обрабатываются на уровне канала. Контекстные файлы cookie HTTP обрабатываются на уровне приложения. Это может приводить к непредвиденным последствиям, когда каналы совместно используются для общения различными экземплярами, заданными параметром <xref:System.ServiceModel.Channels.ContextMessageProperty>. В следующей таблице показано, как влияет на файлы cookie HTTP установка для параметра <xref:System.ServiceModel.Channels.IContextManager.Enabled%2A> значения `true` или `false`.  
+  
+|Привязка|Значение IContextManager.Enabled|Областью контекстного файла cookie HTTP|Область других файлов cookie HTTP|  
+|-------------|-----------------------------------|-------------------------------|------------------------------|  
+|BasicHttpBinding|Н/Д|ChannelFactory|ChannelFactory|  
+|BasicHttpContextBinding|true|Канал|Канал|  
+|BasicHttpContextBinding|false|Для каждого сообщения (явно управляется приложением)|Канал|  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetContext">
+      <MemberSignature Language="C#" Value="public System.Collections.Generic.IDictionary&lt;string,string&gt; GetContext ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Collections.Generic.IDictionary`2&lt;string, string&gt; GetContext() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceModel.Channels.IContextManager.GetContext" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetContext () As IDictionary(Of String, String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Collections::Generic::IDictionary&lt;System::String ^, System::String ^&gt; ^ GetContext();" />
+      <MemberSignature Language="F#" Value="abstract member GetContext : unit -&gt; System.Collections.Generic.IDictionary&lt;string, string&gt;" Usage="iContextManager.GetContext " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.WorkflowServices</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.Generic.IDictionary&lt;System.String,System.String&gt;</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Возвращает контекст.</summary>
+        <returns>Объект <see cref="T:System.Collections.Generic.IDictionary`2" /> пар «ключ/значение» с пространством имен и именем контекста.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Examples  
+ Следующий код показывает, как можно получить контекст из типизованного экземпляра прокси на клиенте.  
+  
+```  
+IDictionary<string, string> context;  
+CalculatorProxy proxy;  
+IContextManager cm = proxy.InnerChannel.GetProperty<IContextManager>();  
+if (cm != null)  
+    context = cm.GetContext();  
+```  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SetContext">
+      <MemberSignature Language="C#" Value="public void SetContext (System.Collections.Generic.IDictionary&lt;string,string&gt; context);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void SetContext(class System.Collections.Generic.IDictionary`2&lt;string, string&gt; context) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceModel.Channels.IContextManager.SetContext(System.Collections.Generic.IDictionary{System.String,System.String})" />
+      <MemberSignature Language="VB.NET" Value="Public Sub SetContext (context As IDictionary(Of String, String))" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void SetContext(System::Collections::Generic::IDictionary&lt;System::String ^, System::String ^&gt; ^ context);" />
+      <MemberSignature Language="F#" Value="abstract member SetContext : System.Collections.Generic.IDictionary&lt;string, string&gt; -&gt; unit" Usage="iContextManager.SetContext context" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.WorkflowServices</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="context" Type="System.Collections.Generic.IDictionary&lt;System.String,System.String&gt;" Index="0" FrameworkAlternate="netframework-4.8" />
+      </Parameters>
+      <Docs>
+        <param name="context">Объект <see cref="T:System.Collections.Generic.IDictionary`2" /> пар «ключ/значение» с пространством имен и именем заданного контекста.</param>
+        <summary>Задает контекст.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Examples  
+ Следующий код показывает, как можно задать контекст на клиенте.  
+  
+```  
+IDictionary<string, string> context;  
+CalculatorProxy proxy;  
+IContextManager cm = proxy.InnerChannel.GetProperty<IContextManager>();  
+if (cm != null)  
+    cm.SetContext(context);  
+```  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

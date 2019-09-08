@@ -1,0 +1,1904 @@
+<Type Name="Grammar" FullName="System.Speech.Recognition.Grammar">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="4f37b1d06489a307c18e0ee456bb1ba25c871fbd" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70556545" /></Metadata><TypeSignature Language="C#" Value="public class Grammar" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit Grammar extends System.Object" />
+  <TypeSignature Language="DocId" Value="T:System.Speech.Recognition.Grammar" />
+  <TypeSignature Language="VB.NET" Value="Public Class Grammar" />
+  <TypeSignature Language="C++ CLI" Value="public ref class Grammar" />
+  <TypeSignature Language="F#" Value="type Grammar = class" />
+  <AssemblyInfo>
+    <AssemblyName>System.Speech</AssemblyName>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Attributes>
+    <Attribute>
+      <AttributeName>System.Diagnostics.DebuggerDisplay("Grammar: {(_uri != null ? "uri=" + _uri.ToString () + " " : "") + "rule=" + _ruleName }")</AttributeName>
+    </Attribute>
+  </Attributes>
+  <Docs>
+    <summary>Объект времени выполнения, который ссылается на грамматика распознавания речи, которые приложение может использовать для определения ограничений для распознавания речи.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Грамматика распознавания речи — это набор правил или ограничений, определяющих, что подсистема распознавания речи может распознать как осмысленные входные данные. Дополнительные сведения о создании и использовании грамматик распознавания речи см. в статьях [Распознавание речи](https://docs.microsoft.com/previous-versions/office/developer/speech-technologies/hh361633(v=office.14)), [Создание ГРАММАТИК с помощью XML](https://msdn.microsoft.com/library/2d799487-49c6-4cc9-b42f-f71cd3824fe1), [Создание грамматик с помощью Граммарбуилдер](https://msdn.microsoft.com/library/7e2cc577-cb05-4318-9da3-7c8675d3d9ae)и [Создание грамматик с помощью сргсграммар](https://docs.microsoft.com/previous-versions/office/developer/speech-technologies/hh361680(v%3doffice.14)).  
+  
+ После создания грамматики ее необходимо создать в <xref:System.Speech.Recognition.Grammar> объекте, который может загружаться модулем распознавания речи, а приложение может использовать во время выполнения для управления распознаванием речи. <xref:System.Speech.Recognition.Grammar.%23ctor%2A> Конструктор можно использовать для <xref:System.Speech.Recognition.Grammar> создания <xref:System.Speech.Recognition.GrammarBuilder> <xref:System.IO.Stream> экземпляра из или объекта либо из файла или, содержащего описание грамматики в поддерживаемом формате. <xref:System.Speech.Recognition.SrgsGrammar.SrgsDocument> В число поддерживаемых форматов входят следующие.  
+  
+-   XML-файлы форматирования, соответствующие [спецификации грамматики распознавания речи W3C (SRGS), версия 1,0](https://go.microsoft.com/fwlink/?LinkId=201761)  
+  
+-   Грамматики, скомпилированные в двоичный файл с расширением CFG  
+  
+ Конструкторы грамматики, которые принимают файлы грамматики формата XML в своих аргументах, компилируют грамматики XML в двоичный формат, чтобы оптимизировать их для загрузки и использования модулем распознавания речи. Можно сократить время, необходимое для создания <xref:System.Speech.Recognition.Grammar> объекта на основе грамматики в формате XML, путем компиляции грамматики заранее, используя один <xref:System.Speech.Recognition.SrgsGrammar.SrgsGrammarCompiler.Compile%2A> из методов.  
+  
+ Модуль распознавания речи приложения, управляемый <xref:System.Speech.Recognition.SpeechRecognizer> объектом или <xref:System.Speech.Recognition.SpeechRecognitionEngine> , может загружать несколько грамматик распознавания речи. Приложение может независимо включать или отключать отдельные грамматики <xref:System.Speech.Recognition.Grammar.Enabled%2A> , устанавливая свойство и изменяя поведение распознавания через <xref:System.Speech.Recognition.Grammar> <xref:System.Speech.Recognition.Grammar.Priority%2A> свойства, такие как <xref:System.Speech.Recognition.Grammar.Weight%2A> свойства и.  
+  
+ <xref:System.Speech.Recognition.Grammar.SpeechRecognized> Событие грамматики возникает, когда входные данные соответствуют пути через грамматику.  
+  
+> [!NOTE]
+>  Рекомендуется проверять безопасность любого URI или библиотеки DLL, используемой для создания <xref:System.Speech.Recognition.Grammar> объекта.  
+>   
+>  Windows и платформа обработки речи обеспечивают безопасность для приложений, которые создают <xref:System.Speech.Recognition.Grammar> экземпляр из библиотеки DLL или грамматики, поддерживающей сценарии.  
+>   
+>  Скрипты <xref:System.Speech.Recognition.Grammar> в объектах всегда запускаются так, как если бы они загружались `Internet Zone`с веб-страницы в. Среда CLR изолирует любую загруженную библиотеку DLL, чтобы получить определение грамматики.  
+  
+   
+  
+## Examples  
+ В следующем примере создается <xref:System.Speech.Recognition.Grammar> объект из грамматики распознавания речи, определенной в XML-файле (городов. XML). Содержимое файла городов. XML отображается в следующем примере XML.  
+  
+```csharp  
+// Load a cities grammar from a local file and return the grammar object.   
+private static Grammar CreateGrammarFromFile()  
+{  
+  Grammar citiesGrammar = new Grammar(@"c:\temp\cities.xml");  
+  citiesGrammar.Name = "SRGS File Cities Grammar";  
+  return citiesGrammar;  
+}  
+  
+```  
+  
+```xml  
+  
+<?xml version="1.0" encoding="UTF-8" ?>  
+<grammar version="1.0" xml:lang="en-US"  
+         xmlns="http://www.w3.org/2001/06/grammar"  
+         tag-format="semantics/1.0" root="Main">  
+  
+  <!-- cities.xml:   
+    Defines an SRGS grammar for requesting a flight. This grammar includes  
+    a Cities rule that lists the cities that can be used for departures  
+    and destinations. -->  
+  
+  <rule id="Main">  
+    <item>  
+      I would like to fly from <ruleref uri="#Cities"/>  
+      to <ruleref uri="#Cities"/>  
+    </item>  
+  </rule>  
+  
+  <rule id="Cities" scope="public">  
+    <one-of>  
+      <item> Seattle </item>  
+      <item> Los Angeles </item>  
+      <item> New York </item>  
+      <item> Miami </item>  
+    </one-of>  
+  </rule>  
+</grammar>  
+```  
+  
+ ]]></format>
+    </remarks>
+    <altmember cref="T:System.Speech.Recognition.SrgsGrammar.SrgsDocument" />
+    <altmember cref="T:System.Speech.Recognition.GrammarBuilder" />
+    <altmember cref="T:System.Speech.Recognition.SpeechRecognitionEngine" />
+    <altmember cref="T:System.Speech.Recognition.SpeechRecognizer" />
+    <related type="ExternalDocumentation" href="https://go.microsoft.com/fwlink/?LinkId=15143">Спецификация грамматики распознавания речи</related>
+  </Docs>
+  <Members>
+    <MemberGroup MemberName=".ctor">
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Speech.Recognition.Grammar" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Speech.Recognition.Grammar.%23ctor%2A> Конструктор можно использовать для <xref:System.Speech.Recognition.Grammar> создания экземпляра из <xref:System.Speech.Recognition.GrammarBuilder> объекта или <xref:System.Speech.Recognition.SrgsGrammar.SrgsDocument> или из файла или <xref:System.IO.Stream> , содержащего описание грамматики в поддерживаемом формате. В число поддерживаемых форматов входят следующие.  
+  
+-   XML-файлы форматирования, соответствующие [спецификации грамматики распознавания речи W3C (SRGS), версия 1,0](https://go.microsoft.com/fwlink/?LinkId=201761)  
+  
+-   Грамматики, скомпилированные в двоичный файл с расширением CFG  
+  
+ Конструкторы грамматики, которые принимают файлы грамматики формата XML в своих аргументах, компилируют грамматики XML в двоичный формат, чтобы оптимизировать их для загрузки и использования модулем распознавания речи. Можно сократить время, необходимое для создания <xref:System.Speech.Recognition.Grammar> объекта на основе грамматики в формате XML, путем компиляции грамматики заранее, используя один <xref:System.Speech.Recognition.SrgsGrammar.SrgsGrammarCompiler.Compile%2A> из методов.  
+  
+ Грамматика распознавания речи может определять корневое правило. Чтобы создать <xref:System.Speech.Recognition.Grammar> объект, указывающий правило, которое будет использоваться в качестве корневого правила, используйте конструктор, `ruleName` принимающий параметр.  
+  
+ Чтобы создать <xref:System.Speech.Recognition.Grammar> объект, указывающий базовый URI для разрешения ссылок на относительные правила, используйте конструктор, который `baseUri` принимает параметр.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="protected Grammar ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Speech.Recognition.Grammar.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Protected Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; Grammar();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Speech.Recognition.Grammar" />.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public Grammar (System.IO.Stream stream);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.IO.Stream stream) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Speech.Recognition.Grammar.#ctor(System.IO.Stream)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; Grammar(System::IO::Stream ^ stream);" />
+      <MemberSignature Language="F#" Value="new System.Speech.Recognition.Grammar : System.IO.Stream -&gt; System.Speech.Recognition.Grammar" Usage="new System.Speech.Recognition.Grammar stream" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters>
+        <Parameter Name="stream" Type="System.IO.Stream" />
+      </Parameters>
+      <Docs>
+        <param name="stream">Поток, описывающий грамматику для распознавания речи в поддерживаемом формате.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Speech.Recognition.Grammar" /> из <see cref="T:System.IO.Stream" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот конструктор не передает никаких параметров обработчику инициализации, а описание не должно определять обработчик инициализации, для которого требуются аргументы.  
+  
+ Этот конструктор может создать <xref:System.Speech.Recognition.Grammar> экземпляр из следующих форматов:  
+  
+-   XML-файлы форматирования, соответствующие [спецификации грамматики распознавания речи W3C (SRGS), версия 1,0](https://go.microsoft.com/fwlink/?LinkId=201761)  
+  
+-   Грамматики, скомпилированные в двоичный файл с расширением CFG  
+  
+ Этот конструктор компилирует файлы грамматики формата XML в двоичный формат, чтобы оптимизировать их для загрузки и использования модулем распознавания речи. Можно сократить время, необходимое для создания <xref:System.Speech.Recognition.Grammar> объекта на основе грамматики в формате XML, путем компиляции грамматики заранее, используя один <xref:System.Speech.Recognition.SrgsGrammar.SrgsGrammarCompiler.Compile%2A> из методов.  
+  
+ Грамматика SRGS может определять корневое правило. Чтобы создать <xref:System.Speech.Recognition.Grammar> объект из потока и указать корневое правило, <xref:System.Speech.Recognition.Grammar.%23ctor%2A> используйте конструктор или <xref:System.Speech.Recognition.Grammar.%23ctor%2A> .  
+  
+ Чтобы создать <xref:System.Speech.Recognition.Grammar> объект из потока и указать базовый URI, используемый для разрешения ссылок на относительные правила, <xref:System.Speech.Recognition.Grammar.%23ctor%2A> используйте конструктор.  
+  
+   
+  
+## Examples  
+ В следующем примере создается Грамматика распознавания речи из локального файла SRGS (городов. XML) с помощью файлового потока. Содержимое файла городов. XML отображается в следующем C# примере.  
+  
+```csharp  
+  
+// Load a cities grammar from an I/O stream and    
+// return the new grammar.   
+private static Grammar CreateGrammarFromStream()  
+{  
+  string fileName = @"c:\temp\cities.xml";  
+  Grammar citiesGrammar =  
+    new Grammar(new FileStream(fileName, FileMode.Open));  
+  citiesGrammar.Name = "Stream Cities Grammar";  
+  return citiesGrammar;  
+}  
+```  
+  
+```xml  
+  
+<?xml version="1.0" encoding="UTF-8" ?>  
+<grammar version="1.0" xml:lang="en-US"  
+         xmlns="http://www.w3.org/2001/06/grammar"  
+         tag-format="semantics/1.0" root="Main">  
+  
+  <!-- cities.xml:   
+    Defines an SRGS grammar for requesting a flight. This grammar includes  
+    a Cities rule that lists the cities that can be used for departures  
+    and destinations. -->  
+  
+  <rule id="Main">  
+    <item>  
+      I would like to fly from <ruleref uri="#Cities"/>  
+      to <ruleref uri="#Cities"/>  
+    </item>  
+  </rule>  
+  
+  <rule id="Cities" scope="public">  
+    <one-of>  
+      <item>Seattle</item>  
+      <item>Los Angeles</item>  
+      <item>New York</item>  
+      <item>Miami</item>  
+    </one-of>  
+  </rule>  
+</grammar>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException"><paramref name="stream" /> описывает грамматику, которая не содержит корневое правило.</exception>
+        <exception cref="T:System.ArgumentNullException"><paramref name="stream" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.FormatException">Поток не содержит допустимого описания грамматики или не описывает грамматику, содержащую ссылку на правило, которая не может быть разрешена.</exception>
+        <altmember cref="T:System.IO.Stream" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognitionEngine" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognizer" />
+        <related type="ExternalDocumentation" href="https://go.microsoft.com/fwlink/?LinkId=15143">Спецификация грамматики распознавания речи</related>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public Grammar (System.Speech.Recognition.GrammarBuilder builder);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.Speech.Recognition.GrammarBuilder builder) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Speech.Recognition.Grammar.#ctor(System.Speech.Recognition.GrammarBuilder)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (builder As GrammarBuilder)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; Grammar(System::Speech::Recognition::GrammarBuilder ^ builder);" />
+      <MemberSignature Language="F#" Value="new System.Speech.Recognition.Grammar : System.Speech.Recognition.GrammarBuilder -&gt; System.Speech.Recognition.Grammar" Usage="new System.Speech.Recognition.Grammar builder" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="builder" Type="System.Speech.Recognition.GrammarBuilder" />
+      </Parameters>
+      <Docs>
+        <param name="builder">Экземпляр <see cref="T:System.Speech.Recognition.GrammarBuilder" />, содержащий ограничения для грамматики распознавания речи.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Speech.Recognition.Grammar" /> из объекта <see cref="T:System.Speech.Recognition.GrammarBuilder" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Дополнительные сведения об использовании <xref:System.Speech.Recognition.GrammarBuilder> класса для определения грамматики см. в разделе [Создание грамматик с помощью граммарбуилдер](https://msdn.microsoft.com/library/7e2cc577-cb05-4318-9da3-7c8675d3d9ae).  
+  
+   
+  
+## Examples  
+ В следующем примере создается Грамматика распознавания речи с <xref:System.Speech.Recognition.Choices> помощью <xref:System.Speech.Recognition.GrammarBuilder> объектов и. Конструктор создает объект из <xref:System.Speech.Recognition.GrammarBuilder> объекта. <xref:System.Speech.Recognition.Grammar> <xref:System.Speech.Recognition.Grammar.%23ctor%2A>  
+  
+```csharp  
+  
+// Create a grammar using a GrammarBuilder and return the new grammar.   
+private static Grammar CreateGrammarBuilderGrammar()  
+{  
+  GrammarBuilder builder = new GrammarBuilder();  
+  
+  Choices cityChoice = new Choices (new string[]   
+  {"Seattle", "New York", "Miami", "Los Angeles"});  
+  
+  builder.Append("I would like to fly from");  
+  builder.Append(cityChoice);  
+  builder.Append("to");  
+  builder.Append(cityChoice);  
+  
+  Grammar citiesGrammar = new Grammar(builder);  
+  citiesGrammar.Name = "GrammarBuilder Cities Grammar";  
+  
+  return citiesGrammar;  
+}  
+```  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.Speech.Recognition.GrammarBuilder" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognitionEngine" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognizer" />
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public Grammar (System.Speech.Recognition.SrgsGrammar.SrgsDocument srgsDocument);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.Speech.Recognition.SrgsGrammar.SrgsDocument srgsDocument) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Speech.Recognition.Grammar.#ctor(System.Speech.Recognition.SrgsGrammar.SrgsDocument)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; Grammar(System::Speech::Recognition::SrgsGrammar::SrgsDocument ^ srgsDocument);" />
+      <MemberSignature Language="F#" Value="new System.Speech.Recognition.Grammar : System.Speech.Recognition.SrgsGrammar.SrgsDocument -&gt; System.Speech.Recognition.Grammar" Usage="new System.Speech.Recognition.Grammar srgsDocument" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters>
+        <Parameter Name="srgsDocument" Type="System.Speech.Recognition.SrgsGrammar.SrgsDocument" />
+      </Parameters>
+      <Docs>
+        <param name="srgsDocument">Ограничения для грамматики распознавания речи.</param>
+        <summary>Инициализируется новый экземпляр класса <see cref="T:System.Speech.Recognition.Grammar" /> из объекта <see cref="T:System.Speech.Recognition.SrgsGrammar.SrgsDocument" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот конструктор не передает никаких параметров в обработчик инициализации, а <xref:System.Speech.Recognition.SrgsGrammar.SrgsDocument> не должен содержать обработчик инициализации, для которого требуются аргументы.  
+  
+ <xref:System.Speech.Recognition.SrgsGrammar.SrgsDocument> Может иметь корневое правило. Чтобы создать <xref:System.Speech.Recognition.Grammar> объект, указывающий корневое правило, <xref:System.Speech.Recognition.Grammar.%23ctor%2A> используйте конструктор или <xref:System.Speech.Recognition.Grammar.%23ctor%2A> .  
+  
+ Чтобы создать распознавание <xref:System.Speech.Recognition.Grammar> речи <xref:System.Speech.Recognition.SrgsGrammar.SrgsDocument> из и указать базовый URI, используемый для разрешения ссылок на относительные <xref:System.Speech.Recognition.Grammar.%23ctor%2A> правила, используйте конструктор.  
+  
+   
+  
+## Examples  
+ В следующем примере создается Грамматика распознавания речи в <xref:System.Speech.Recognition.SrgsGrammar.SrgsDocument> экземпляре, который затем используется для <xref:System.Speech.Recognition.Grammar> создания объекта.  
+  
+```csharp  
+private static Grammar CreateSrgsDocumentGrammar()  
+{  
+  // Create the SrgsDocument.  
+  SrgsDocument document = new SrgsDocument();  
+  
+  // Create the Cities rule and add it to the document.  
+  SrgsRule citiesRule = new SrgsRule("Cities");  
+  
+  SrgsOneOf cityChoice = new SrgsOneOf();  
+  cityChoice.Add(new SrgsItem("Seattle"));  
+  cityChoice.Add(new SrgsItem("Los Angeles"));  
+  cityChoice.Add(new SrgsItem("New York"));  
+  cityChoice.Add(new SrgsItem("Miami"));  
+  
+  citiesRule.Add(cityChoice);  
+  document.Rules.Add(citiesRule);  
+  
+  // Create the Main rule and add it to the document.  
+  SrgsRule mainRule = new SrgsRule("Main");  
+  mainRule.Scope = SrgsRuleScope.Public;  
+  
+  SrgsItem item = new SrgsItem("I would like to fly from");  
+  item.Add(new SrgsRuleRef(citiesRule));  
+  item.Add(new SrgsText("to"));  
+  item.Add(new SrgsRuleRef(citiesRule));  
+  
+  mainRule.Add(item);  
+  document.Rules.Add(mainRule);  
+  
+  // Set the root rule.  
+  document.Root = mainRule;  
+  
+  // Create the Grammar object.  
+  Grammar citiesGrammar = new Grammar(document);  
+  citiesGrammar.Name = "SrgsDocument Cities Grammar";  
+  
+  return citiesGrammar;  
+}  
+  
+```  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException"><paramref name="srgsDocument" /> не содержит корневое правило.</exception>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="srgsDocument" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.FormatException"><paramref name="srgsDocument" /> содержит ссылку на правило, которая не может быть разрешена.</exception>
+        <altmember cref="N:System.Speech.Recognition.SrgsGrammar" />
+        <altmember cref="T:System.Speech.Recognition.SrgsGrammar.SrgsDocument" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognizer" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognitionEngine" />
+        <related type="ExternalDocumentation" href="https://go.microsoft.com/fwlink/?LinkId=15143">Спецификация грамматики распознавания речи</related>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public Grammar (string path);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(string path) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Speech.Recognition.Grammar.#ctor(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (path As String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; Grammar(System::String ^ path);" />
+      <MemberSignature Language="F#" Value="new System.Speech.Recognition.Grammar : string -&gt; System.Speech.Recognition.Grammar" Usage="new System.Speech.Recognition.Grammar path" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters>
+        <Parameter Name="path" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="path">Путь к файлу, описывающему грамматику для распознавания речи в поддерживаемом формате.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Speech.Recognition.Grammar" /> из файла.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот конструктор не передает никаких параметров обработчику инициализации, а описание не должно определять обработчик инициализации, для которого требуются аргументы.  
+  
+ Этот конструктор может создать <xref:System.Speech.Recognition.Grammar> экземпляр из следующих форматов:  
+  
+-   XML-файлы форматирования, соответствующие [спецификации грамматики распознавания речи W3C (SRGS), версия 1,0](https://go.microsoft.com/fwlink/?LinkId=201761)  
+  
+-   Грамматики, скомпилированные в двоичный файл с расширением CFG  
+  
+ Этот конструктор компилирует файлы грамматики формата XML в двоичный формат, чтобы оптимизировать их для загрузки и использования модулем распознавания речи. Можно сократить время, необходимое для создания <xref:System.Speech.Recognition.Grammar> объекта на основе грамматики в формате XML, путем компиляции грамматики заранее, используя один <xref:System.Speech.Recognition.SrgsGrammar.SrgsGrammarCompiler.Compile%2A> из методов.  
+  
+ Грамматика SRGS может определять корневое правило. Чтобы создать <xref:System.Speech.Recognition.Grammar> объект из строки и указать корневое правило, <xref:System.Speech.Recognition.Grammar.%23ctor%2A> используйте конструктор.  
+  
+ Чтобы создать <xref:System.Speech.Recognition.Grammar> объект, указывающий базовый URI, используемый для разрешения ссылок на относительные правила, откройте файл в файловом потоке и <xref:System.Speech.Recognition.Grammar.%23ctor%2A?displayProperty=nameWithType> используйте конструктор.  
+  
+   
+  
+## Examples  
+ В следующем примере загружается Грамматика распознавания речи из локального файла SRGS для создания <xref:System.Speech.Recognition.Grammar> объекта. Содержимое файла городов. XML отображается в примере XML, который следует за C# примером.  
+  
+```csharp  
+// Load a cities grammar from a local file and  
+// return the new grammar.   
+private static Grammar CreateGrammarFromFile()  
+{  
+  Grammar citiesGrammar = new Grammar(@"c:\temp\cities.xml");  
+  citiesGrammar.Name = "SRGS File Cities Grammar";  
+  return citiesGrammar;  
+}  
+  
+```  
+  
+```xml  
+  
+<?xml version="1.0" encoding="UTF-8" ?>  
+<grammar version="1.0" xml:lang="en-US"  
+         xmlns="http://www.w3.org/2001/06/grammar"  
+         tag-format="semantics/1.0" root="Main">  
+  
+  <!-- cities.xml:   
+    Defines an SRGS grammar for requesting a flight. This grammar includes  
+    a Cities rule that lists the cities that can be used for departures  
+    and destinations. -->  
+  
+  <rule id="Main">  
+    <item>  
+      I would like to fly from <ruleref uri="#Cities"/>  
+      to <ruleref uri="#Cities"/>  
+    </item>  
+  </rule>  
+  
+  <rule id="Cities" scope="public">  
+    <one-of>  
+      <item>Seattle</item>  
+      <item>Los Angeles</item>  
+      <item>New York</item>  
+      <item>Miami</item>  
+    </one-of>  
+  </rule>  
+</grammar>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException"><paramref name="path" /> содержит пустую строку ("") или файл описывает грамматику, которая не содержит корневого правила.</exception>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="path" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.FormatException">Файл не содержит допустимого описания или не описывает грамматику, содержащую ссылку на правило, которая не может быть разрешена.</exception>
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognitionEngine" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognizer" />
+        <related type="ExternalDocumentation" href="https://go.microsoft.com/fwlink/?LinkId=15143">Спецификация грамматики распознавания речи</related>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public Grammar (System.IO.Stream stream, string ruleName);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.IO.Stream stream, string ruleName) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Speech.Recognition.Grammar.#ctor(System.IO.Stream,System.String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; Grammar(System::IO::Stream ^ stream, System::String ^ ruleName);" />
+      <MemberSignature Language="F#" Value="new System.Speech.Recognition.Grammar : System.IO.Stream * string -&gt; System.Speech.Recognition.Grammar" Usage="new System.Speech.Recognition.Grammar (stream, ruleName)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters>
+        <Parameter Name="stream" Type="System.IO.Stream" />
+        <Parameter Name="ruleName" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="stream">Поток, описывающий грамматику для распознавания речи в поддерживаемом формате.</param>
+        <param name="ruleName">Идентификатор правила для использования в качестве точки входа грамматики распознавания речи или значение <see langword="null" />, чтобы использовать корневое правило по умолчанию описания грамматики.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Speech.Recognition.Grammar" /> из <see cref="T:System.IO.Stream" /> и указывает корневое правило.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот конструктор не передает никаких параметров обработчику инициализации, а описание не должно определять обработчик инициализации, для которого требуются аргументы.  
+  
+ Этот конструктор может создать <xref:System.Speech.Recognition.Grammar> экземпляр из следующих форматов:  
+  
+-   XML-файлы форматирования, соответствующие [спецификации грамматики распознавания речи W3C (SRGS), версия 1,0](https://go.microsoft.com/fwlink/?LinkId=201761)  
+  
+-   Грамматики, скомпилированные в двоичный файл с расширением CFG  
+  
+ Этот конструктор компилирует файлы грамматики формата XML в двоичный формат, чтобы оптимизировать их для загрузки и использования модулем распознавания речи. Можно сократить время, необходимое для создания <xref:System.Speech.Recognition.Grammar> объекта на основе грамматики в формате XML, путем компиляции грамматики заранее, используя один <xref:System.Speech.Recognition.SrgsGrammar.SrgsGrammarCompiler.Compile%2A> из методов.  
+  
+ Чтобы создать объект <xref:System.Speech.Recognition.Grammar> из потока и указать базовый URI, используемый для разрешения ссылок на относительные правила, <xref:System.Speech.Recognition.Grammar.%23ctor%2A> используйте конструктор.  
+  
+   
+  
+## Examples  
+ В следующем примере загружается локальный файл SRGS (городов. XML) из файлового потока и указывается правило, используемое в качестве корня грамматики. Содержимое файла городов. XML отображается в примере XML, который следует за C# примером.  
+  
+```csharp  
+  
+// Load a cities grammar from an I/O stream, use a specific  
+// rule as the root of the grammar, and return the new grammar.   
+private static Grammar CreateGrammarFromStream2()  
+{  
+  FileInfo file = new FileInfo(@"c:\temp\cities.xml");  
+  Grammar citiesGrammar = new Grammar(file.OpenRead(), "Main");  
+  citiesGrammar.Name = "Stream Cities Grammar 2";  
+  return citiesGrammar;  
+}  
+```  
+  
+```xml  
+  
+<?xml version="1.0" encoding="UTF-8" ?>  
+<grammar version="1.0" xml:lang="en-US"  
+         xmlns="http://www.w3.org/2001/06/grammar"  
+         tag-format="semantics/1.0" root="Main">  
+  
+  <!-- cities.xml:   
+    Defines an SRGS grammar for requesting a flight. This grammar includes  
+    a Cities rule that lists the cities that can be used for departures  
+    and destinations. -->  
+  
+  <rule id="Main">  
+    <item>  
+      I would like to fly from <ruleref uri="#Cities"/>  
+      to <ruleref uri="#Cities"/>  
+    </item>  
+  </rule>  
+  
+  <rule id="Cities" scope="public">  
+    <one-of>  
+      <item>Seattle</item>  
+      <item>Los Angeles</item>  
+      <item>New York</item>  
+      <item>Miami</item>  
+    </one-of>  
+  </rule>  
+</grammar>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Невозможно разрешить <paramref name="ruleName" /> или оно не является открытым или <paramref name="ruleName" /> — <see langword="null" /> и грамматическое описание не определяет корневое правило.</exception>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="stream" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.FormatException">Поток не содержит допустимого описания или не описывает грамматику, содержащую ссылку на правило, которая не может быть разрешена.</exception>
+        <altmember cref="T:System.IO.Stream" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognitionEngine" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognizer" />
+        <related type="ExternalDocumentation" href="https://go.microsoft.com/fwlink/?LinkId=15143">Спецификация грамматики распознавания речи</related>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public Grammar (System.Speech.Recognition.SrgsGrammar.SrgsDocument srgsDocument, string ruleName);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.Speech.Recognition.SrgsGrammar.SrgsDocument srgsDocument, string ruleName) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Speech.Recognition.Grammar.#ctor(System.Speech.Recognition.SrgsGrammar.SrgsDocument,System.String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; Grammar(System::Speech::Recognition::SrgsGrammar::SrgsDocument ^ srgsDocument, System::String ^ ruleName);" />
+      <MemberSignature Language="F#" Value="new System.Speech.Recognition.Grammar : System.Speech.Recognition.SrgsGrammar.SrgsDocument * string -&gt; System.Speech.Recognition.Grammar" Usage="new System.Speech.Recognition.Grammar (srgsDocument, ruleName)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters>
+        <Parameter Name="srgsDocument" Type="System.Speech.Recognition.SrgsGrammar.SrgsDocument" />
+        <Parameter Name="ruleName" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="srgsDocument">Ограничения для грамматики распознавания речи.</param>
+        <param name="ruleName">Идентификатор правила для использования в качестве точки входа грамматики распознавания речи или значение <see langword="null" />, чтобы использовать корневое правило по умолчанию описания грамматики <see cref="T:System.Speech.Recognition.SrgsGrammar.SrgsDocument" />.</param>
+        <summary>Инициализирует новый экземпляр объекта <see cref="T:System.Speech.Recognition.Grammar" /> из <see cref="T:System.Speech.Recognition.SrgsGrammar.SrgsDocument" /> и указывает корневое правило.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот конструктор не передает никаких параметров в обработчик инициализации, а <xref:System.Speech.Recognition.SrgsGrammar.SrgsDocument> не должен содержать обработчик инициализации, для которого требуются аргументы.  
+  
+ Чтобы создать <xref:System.Speech.Recognition.Grammar> объект <xref:System.Speech.Recognition.SrgsGrammar.SrgsDocument> из и указать базовый URI, используемый для разрешения ссылок на относительные <xref:System.Speech.Recognition.Grammar.%23ctor%2A> правила, используйте конструктор.  
+  
+   
+  
+## Examples  
+ В следующем примере создается Грамматика распознавания речи в <xref:System.Speech.Recognition.SrgsGrammar.SrgsDocument> экземпляре и указывается правило, используемое в качестве корневого правила грамматики. В примере создается <xref:System.Speech.Recognition.Grammar> объект <xref:System.Speech.Recognition.SrgsGrammar.SrgsDocument> из экземпляра и загружается в модуль распознавания речи.  
+  
+```csharp  
+using System;  
+using System.Speech.Recognition;  
+using System.Speech.Recognition.SrgsGrammar;  
+  
+namespace SampleRecognition  
+{  
+  class Program  
+  {  
+    static void Main(string[] args)  
+  
+    // Initialize an in-process speech recognition engine.  
+    {  
+      using (SpeechRecognitionEngine recognizer =  
+         new SpeechRecognitionEngine())  
+      {  
+  
+        // Create the SrgsDocument.  
+        SrgsDocument document = new SrgsDocument();  
+  
+        // Create the Cities rule and add it to the document.  
+        SrgsRule citiesRule = new SrgsRule("Cities");  
+        citiesRule.Scope = SrgsRuleScope.Public;  
+  
+        SrgsOneOf cityChoice = new SrgsOneOf();  
+        cityChoice.Add(new SrgsItem("Seattle"));  
+        cityChoice.Add(new SrgsItem("Los Angeles"));  
+        cityChoice.Add(new SrgsItem("New York"));  
+        cityChoice.Add(new SrgsItem("Miami"));  
+  
+        citiesRule.Add(cityChoice);  
+        document.Rules.Add(citiesRule);  
+  
+        // Create the Main rule and add it to the document.  
+        SrgsRule mainRule = new SrgsRule("Main");  
+        mainRule.Scope = SrgsRuleScope.Public;  
+  
+        mainRule.Add(new SrgsItem("I would like to fly from"));  
+        mainRule.Add(new SrgsRuleRef(citiesRule));  
+        mainRule.Add(new SrgsItem("to"));  
+        mainRule.Add(new SrgsRuleRef(citiesRule));  
+  
+        document.Rules.Add(mainRule);  
+  
+        // Create the Grammar object and specify which rule to use as the root.  
+        Grammar citiesGrammar = new Grammar(document,"Main");  
+  
+        // Load the grammar object to the recognizer.  
+        recognizer.LoadGrammarAsync(citiesGrammar);  
+  
+        // Attach a handler for the SpeechRecognized event.  
+        recognizer.SpeechRecognized +=  
+          new EventHandler<SpeechRecognizedEventArgs>(recognizer_SpeechRecognized);  
+  
+        // Set the input to the recognizer.  
+        recognizer.SetInputToDefaultAudioDevice();  
+  
+        // Start recognition.  
+        recognizer.RecognizeAsync();  
+        Console.WriteLine("Starting asynchronous recognition...");  
+  
+        // Keep the console window open.  
+        Console.ReadLine();  
+      }  
+    }  
+  
+    // Handle the SpeechRecognized event.  
+    static void recognizer_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)  
+    {  
+      Console.WriteLine("  Speech recognized: " + e.Result.Text);  
+    }  
+  }  
+}  
+  
+```  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Невозможно разрешить <paramref name="ruleName" /> или оно не является открытым или <paramref name="ruleName" /> — <see langword="null" /> и <paramref name="srgsDocument" /> не содержит корневое правило.</exception>
+        <exception cref="T:System.ArgumentNullException"><paramref name="srgsDocument" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.FormatException"><paramref name="srgsDocument" /> содержит ссылку на правило, которая не может быть разрешена.</exception>
+        <altmember cref="N:System.Speech.Recognition.SrgsGrammar" />
+        <altmember cref="T:System.Speech.Recognition.SrgsGrammar.SrgsDocument" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognizer" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognitionEngine" />
+        <related type="ExternalDocumentation" href="https://go.microsoft.com/fwlink/?LinkId=15143">Спецификация грамматики распознавания речи</related>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public Grammar (string path, string ruleName);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(string path, string ruleName) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Speech.Recognition.Grammar.#ctor(System.String,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (path As String, ruleName As String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; Grammar(System::String ^ path, System::String ^ ruleName);" />
+      <MemberSignature Language="F#" Value="new System.Speech.Recognition.Grammar : string * string -&gt; System.Speech.Recognition.Grammar" Usage="new System.Speech.Recognition.Grammar (path, ruleName)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters>
+        <Parameter Name="path" Type="System.String" />
+        <Parameter Name="ruleName" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="path">Путь к файлу, описывающему грамматику для распознавания речи в поддерживаемом формате.</param>
+        <param name="ruleName">Идентификатор правила для использования в качестве точки входа грамматики распознавания речи или значение <see langword="null" />, чтобы использовать корневое правило по умолчанию описания грамматики.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Speech.Recognition.Grammar" /> из файла и указывает корневое правило.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот конструктор не передает никаких параметров обработчику инициализации, а описание не должно определять обработчик инициализации, для которого требуются аргументы.  
+  
+ Этот конструктор может создать <xref:System.Speech.Recognition.Grammar> экземпляр из следующих форматов:  
+  
+-   XML-файлы форматирования, соответствующие [спецификации грамматики распознавания речи W3C (SRGS), версия 1,0](https://go.microsoft.com/fwlink/?LinkId=201761)  
+  
+-   Грамматики, скомпилированные в двоичный файл с расширением CFG  
+  
+ Этот конструктор компилирует файлы грамматики формата XML в двоичный формат, чтобы оптимизировать их для загрузки и использования модулем распознавания речи. Можно сократить время, необходимое для создания <xref:System.Speech.Recognition.Grammar> объекта на основе грамматики в формате XML, путем компиляции грамматики заранее, используя один <xref:System.Speech.Recognition.SrgsGrammar.SrgsGrammarCompiler.Compile%2A> из методов.  
+  
+ Чтобы создать объект <xref:System.Speech.Recognition.Grammar> , указывающий базовый URI, используемый для разрешения ссылок на относительные правила, откройте файловый поток для файла и <xref:System.Speech.Recognition.Grammar.%23ctor%2A> используйте конструктор.  
+  
+   
+  
+## Examples  
+ В следующем примере загружается локальный файл SRGS (городов. XML) из файла и указывается правило, используемое в качестве корня грамматики. Содержимое файла городов. XML отображается в примере XML, который следует за C# примером.  
+  
+```csharp  
+  
+// Load a cities grammar from a local file, use a specific  
+// rule as the root of the grammar, and return the new grammar.  
+private static Grammar CreateGrammarFromFile2()  
+{  
+  Grammar citiesGrammar = new Grammar(@"c:\temp\cities.xml", "Main");  
+  citiesGrammar.Name = "SRGS File Cities Grammar 2";  
+  return citiesGrammar;  
+}  
+```  
+  
+```xml  
+  
+<?xml version="1.0" encoding="UTF-8" ?>  
+<grammar version="1.0" xml:lang="en-US"  
+         xmlns="http://www.w3.org/2001/06/grammar"  
+         tag-format="semantics/1.0" root="Main">  
+  
+  <!-- cities.xml:   
+    Defines an SRGS grammar for requesting a flight. This grammar includes  
+    a Cities rule that lists the cities that can be used for departures  
+    and destinations. -->  
+  
+  <rule id="Main">  
+    <item>  
+      I would like to fly from <ruleref uri="#Cities"/>  
+      to <ruleref uri="#Cities"/>  
+    </item>  
+  </rule>  
+  
+  <rule id="Cities" scope="public">  
+    <one-of>  
+      <item>Seattle</item>  
+      <item>Los Angeles</item>  
+      <item>New York</item>  
+      <item>Miami</item>  
+    </one-of>  
+  </rule>  
+</grammar>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Невозможно разрешить <paramref name="ruleName" /> или оно не является открытым или <paramref name="path" /> является пустой строкой (""), или <paramref name="ruleName" /> — <see langword="null" />и грамматическое описание не определяет корневое правило.</exception>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="path" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.FormatException">Файл не содержит допустимого описания или не описывает грамматику, содержащую ссылку на правило, которая не может быть разрешена.</exception>
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognitionEngine" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognizer" />
+        <related type="ExternalDocumentation" href="https://go.microsoft.com/fwlink/?LinkId=15143">Спецификация грамматики распознавания речи</related>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public Grammar (System.IO.Stream stream, string ruleName, object[] parameters);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.IO.Stream stream, string ruleName, object[] parameters) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Speech.Recognition.Grammar.#ctor(System.IO.Stream,System.String,System.Object[])" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; Grammar(System::IO::Stream ^ stream, System::String ^ ruleName, cli::array &lt;System::Object ^&gt; ^ parameters);" />
+      <MemberSignature Language="F#" Value="new System.Speech.Recognition.Grammar : System.IO.Stream * string * obj[] -&gt; System.Speech.Recognition.Grammar" Usage="new System.Speech.Recognition.Grammar (stream, ruleName, parameters)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters>
+        <Parameter Name="stream" Type="System.IO.Stream" />
+        <Parameter Name="ruleName" Type="System.String" />
+        <Parameter Name="parameters" Type="System.Object[]" />
+      </Parameters>
+      <Docs>
+        <param name="stream">Объект <see cref="T:System.IO.Stream" />, подключенный к объекту ввода/вывода (включая файлы, ресурсы Visual Studio и DLL-библиотеки), который содержит грамматическую спецификацию.</param>
+        <param name="ruleName">Идентификатор правила для использования в качестве точки входа грамматики распознавания речи или значение <see langword="null" />, чтобы использовать корневое правило по умолчанию описания грамматики.</param>
+        <param name="parameters">Параметры, передаваемые обработчику инициализации, указанному свойством <see cref="P:System.Speech.Recognition.SrgsGrammar.SrgsRule.OnInit" /> для точки входа или корневого правила создаваемого объекта <see cref="T:System.Speech.Recognition.Grammar" />. Параметр может принимать значение NULL.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Speech.Recognition.Grammar" /> из <see cref="T:System.IO.Stream" /> и указывает корневое правило.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Также можно указать параметры для обработчика инициализации.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException"><paramref name="stream" /> подключен к грамматике, которая: 
+– не содержит правила, указанного в <paramref name="ruleName" />;  
+  
+– требует параметры инициализации отличающиеся от тех, которые определены в <paramref name="parameters" />;  
+  
+– содержит относительную ссылку на правило, которая не может быть разрешена базовым правилом <see cref="T:System.Uri" /> по умолчанию для грамматик.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public Grammar (System.IO.Stream stream, string ruleName, Uri baseUri);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.IO.Stream stream, string ruleName, class System.Uri baseUri) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Speech.Recognition.Grammar.#ctor(System.IO.Stream,System.String,System.Uri)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; Grammar(System::IO::Stream ^ stream, System::String ^ ruleName, Uri ^ baseUri);" />
+      <MemberSignature Language="F#" Value="new System.Speech.Recognition.Grammar : System.IO.Stream * string * Uri -&gt; System.Speech.Recognition.Grammar" Usage="new System.Speech.Recognition.Grammar (stream, ruleName, baseUri)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters>
+        <Parameter Name="stream" Type="System.IO.Stream" />
+        <Parameter Name="ruleName" Type="System.String" />
+        <Parameter Name="baseUri" Type="System.Uri" />
+      </Parameters>
+      <Docs>
+        <param name="stream">Поток, описывающий грамматику для распознавания речи в поддерживаемом формате.</param>
+        <param name="ruleName">Идентификатор правила для использования в качестве точки входа грамматики распознавания речи или значение <see langword="null" />, чтобы использовать корневое правило по умолчанию описания грамматики.</param>
+        <param name="baseUri">Базовый универсальный код ресурса (uri), используемый для разрешения любых относительную ссылок на правила в описании грамматики или <see langword="null" />.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Speech.Recognition.Grammar" /> из потока, определяет корневое правило и определяет базовый универсальный идентификатор ресурса (URI) для разрешения относительных ссылок на правила.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот конструктор не передает никаких параметров обработчику инициализации, а описание не должно определять обработчик инициализации, для которого требуются аргументы.  
+  
+ Этот конструктор может создать <xref:System.Speech.Recognition.Grammar> экземпляр из следующих форматов:  
+  
+-   XML-файлы форматирования, соответствующие [спецификации грамматики распознавания речи W3C (SRGS), версия 1,0](https://go.microsoft.com/fwlink/?LinkId=201761)  
+  
+-   Грамматики, скомпилированные в двоичный файл с расширением CFG  
+  
+ Этот конструктор компилирует файлы грамматики формата XML в двоичный формат, чтобы оптимизировать их для загрузки и использования модулем распознавания речи. Можно сократить время, необходимое для создания <xref:System.Speech.Recognition.Grammar> объекта на основе грамматики в формате XML, путем компиляции грамматики заранее, используя один <xref:System.Speech.Recognition.SrgsGrammar.SrgsGrammarCompiler.Compile%2A> из методов.  
+  
+ Этот конструктор не проверяется `baseUri`. `LoadGrammar` Однако метод <xref:System.Speech.Recognition.SpeechRecognitionEngine>  объекта или <xref:System.Speech.Recognition.SpeechRecognizer>  вызывает исключение, если не может разрешить все ссылки на правила в описании грамматики. Если `baseUri` `LoadGrammar` параметр не равен , метод использует универсальный код ресурса (URI) для разрешения ссылок на правила, которые не могут быть разрешены другим способом. `null` Если `baseUri` представляет файл, то `LoadGrammar` при попытке разрешить ссылки относительного правила компонент использует как назначенный файл, так и каталог файла.  
+  
+   
+  
+## Examples  
+ В следующем примере загружается локальный файл SRGS (с расширением. XML) из файлового потока. Файл содержит ссылку на правило относительного правила в файле городов. XML и указывает базовый URI, используемый для разрешения ссылки на правило. Содержимое файлов списка выбора файла. XML и городов. XML отображается в XML-примерах, следующих за C# примером.  
+  
+```csharp  
+  
+private static Grammar CreateGrammarFromStream3()  
+{  
+  FileInfo file = new FileInfo(@".\shuttle.xml");  
+  Uri baseUri = new Uri(@"file://c:\temp\");  
+  Grammar citiesGrammar = new Grammar(file.OpenRead(), null, baseUri);  
+  citiesGrammar.Name = "Stream Cities Grammar 3";  
+  return citiesGrammar;  
+}  
+```  
+  
+```xml  
+  
+<?xml version="1.0" encoding="UTF-8" ?>  
+<grammar version="1.0" xml:lang="en-US"  
+         xmlns="http://www.w3.org/2001/06/grammar"  
+         tag-format="semantics/1.0" root="Main">  
+  
+  <!-- shuttle.xml:   
+    Defines an SRGS grammar for asking about a shuttle service. This grammar  
+    references a Cities rule that is defined in the cities.xml grammar. -->  
+  
+  <rule id="Main">  
+    <item>  
+      Can I get a shuttle in  
+      <ruleref uri="cities.xml#Cities"/>  
+    </item>  
+  </rule>  
+</grammar>  
+```  
+  
+```xml  
+  
+<?xml version="1.0" encoding="UTF-8" ?>  
+<grammar version="1.0" xml:lang="en-US"  
+         xmlns="http://www.w3.org/2001/06/grammar"  
+         tag-format="semantics/1.0" root="Main">  
+  
+  <!-- cities.xml:   
+    Defines an SRGS grammar for requesting a flight. This grammar includes  
+    a Cities rule that lists the cities that can be used for departures  
+    and destinations. -->  
+  
+  <rule id="Main">  
+    <item>  
+      I would like to fly from <ruleref uri="#Cities"/>  
+      to <ruleref uri="#Cities"/>  
+    </item>  
+  </rule>  
+  
+  <rule id="Cities" scope="public">  
+    <one-of>  
+      <item>Seattle</item>  
+      <item>Los Angeles</item>  
+      <item>New York</item>  
+      <item>Miami</item>  
+    </one-of>  
+  </rule>  
+</grammar>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Невозможно разрешить <paramref name="ruleName" /> или оно не является открытым или <paramref name="ruleName" /> — <see langword="null" /> и грамматическое описание не определяет корневое правило.</exception>
+        <exception cref="T:System.ArgumentNullException"><paramref name="stream" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.FormatException">Поток не содержит допустимого описания или не описывает грамматику, содержащую ссылку на правило, которая не может быть разрешена.</exception>
+        <altmember cref="T:System.IO.Stream" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognizer" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognitionEngine" />
+        <related type="ExternalDocumentation" href="https://go.microsoft.com/fwlink/?LinkId=15143">Спецификация грамматики распознавания речи</related>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public Grammar (System.Speech.Recognition.SrgsGrammar.SrgsDocument srgsDocument, string ruleName, object[] parameters);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.Speech.Recognition.SrgsGrammar.SrgsDocument srgsDocument, string ruleName, object[] parameters) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Speech.Recognition.Grammar.#ctor(System.Speech.Recognition.SrgsGrammar.SrgsDocument,System.String,System.Object[])" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; Grammar(System::Speech::Recognition::SrgsGrammar::SrgsDocument ^ srgsDocument, System::String ^ ruleName, cli::array &lt;System::Object ^&gt; ^ parameters);" />
+      <MemberSignature Language="F#" Value="new System.Speech.Recognition.Grammar : System.Speech.Recognition.SrgsGrammar.SrgsDocument * string * obj[] -&gt; System.Speech.Recognition.Grammar" Usage="new System.Speech.Recognition.Grammar (srgsDocument, ruleName, parameters)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters>
+        <Parameter Name="srgsDocument" Type="System.Speech.Recognition.SrgsGrammar.SrgsDocument" />
+        <Parameter Name="ruleName" Type="System.String" />
+        <Parameter Name="parameters" Type="System.Object[]" />
+      </Parameters>
+      <Docs>
+        <param name="srgsDocument">Экземпляр <see cref="T:System.Speech.Recognition.SrgsGrammar.SrgsDocument" />, содержащий ограничения для грамматики распознавания речи.</param>
+        <param name="ruleName">Идентификатор правила для использования в качестве точки входа грамматики распознавания речи или значение <see langword="null" />, чтобы использовать корневое правило по умолчанию описания грамматики.</param>
+        <param name="parameters">Параметры, передаваемые обработчику инициализации, указанному свойством <see cref="P:System.Speech.Recognition.SrgsGrammar.SrgsRule.OnInit" /> для точки входа или корневого правила создаваемого объекта <see cref="T:System.Speech.Recognition.Grammar" />. Параметр может принимать значение NULL.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Speech.Recognition.Grammar" /> из экземпляра <see cref="T:System.Speech.Recognition.SrgsGrammar.SrgsDocument" />, указывает имя правила, которое должно функционировать как точка входа в грамматику.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Также можно указать параметры для обработчика инициализации.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Один из параметров содержит недопустимое значение.  
+  
+<see cref="T:System.Speech.Recognition.SrgsGrammar.SrgsDocument" />, указанный <paramref name="srgsDocument" />, не содержит правила, заданного параметром <paramref name="ruleName" />.  
+  
+Содержимое параметров массива не соответствует аргументам любого из обработчиков инициализации правила.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public Grammar (System.Speech.Recognition.SrgsGrammar.SrgsDocument srgsDocument, string ruleName, Uri baseUri);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.Speech.Recognition.SrgsGrammar.SrgsDocument srgsDocument, string ruleName, class System.Uri baseUri) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Speech.Recognition.Grammar.#ctor(System.Speech.Recognition.SrgsGrammar.SrgsDocument,System.String,System.Uri)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; Grammar(System::Speech::Recognition::SrgsGrammar::SrgsDocument ^ srgsDocument, System::String ^ ruleName, Uri ^ baseUri);" />
+      <MemberSignature Language="F#" Value="new System.Speech.Recognition.Grammar : System.Speech.Recognition.SrgsGrammar.SrgsDocument * string * Uri -&gt; System.Speech.Recognition.Grammar" Usage="new System.Speech.Recognition.Grammar (srgsDocument, ruleName, baseUri)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters>
+        <Parameter Name="srgsDocument" Type="System.Speech.Recognition.SrgsGrammar.SrgsDocument" />
+        <Parameter Name="ruleName" Type="System.String" />
+        <Parameter Name="baseUri" Type="System.Uri" />
+      </Parameters>
+      <Docs>
+        <param name="srgsDocument">Ограничения для грамматики распознавания речи.</param>
+        <param name="ruleName">Идентификатор правила для использования в качестве точки входа грамматики распознавания речи или значение <see langword="null" />, чтобы использовать корневое правило по умолчанию описания грамматики <see cref="T:System.Speech.Recognition.SrgsGrammar.SrgsDocument" />.</param>
+        <param name="baseUri">Базовый универсальный код ресурса (uri), используемый для разрешения любых относительную ссылок на правила в <see cref="T:System.Speech.Recognition.SrgsGrammar.SrgsDocument" /> или <see langword="null" />.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Speech.Recognition.Grammar" /> из объекта <see cref="T:System.Speech.Recognition.SrgsGrammar.SrgsDocument" />, определяет корневое правило и определяет базовый универсальный идентификатор ресурса (URI) для разрешения относительных ссылок на правила.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот конструктор не передает никаких параметров в обработчик инициализации, а <xref:System.Speech.Recognition.SrgsGrammar.SrgsDocument> не должен содержать обработчик инициализации, для которого требуются аргументы.  
+  
+ Этот конструктор не проверяется `baseUri`. `LoadGrammar` Однако метод <xref:System.Speech.Recognition.SpeechRecognitionEngine>  объекта или <xref:System.Speech.Recognition.SpeechRecognizer>  вызывает исключение, если не может разрешить все ссылки на правила в описании грамматики. Если `baseUri` `LoadGrammar` параметр не равен , метод использует универсальный код ресурса (URI) для разрешения ссылок на правила, которые не могут быть разрешены другим способом. `null` Если `baseUri` представляет файл, `LoadGrammar` метод использует как назначенный файл, так и каталог файла при попытке разрешить ссылки относительного правила.  
+  
+   
+  
+## Examples  
+ В следующем примере создается Грамматика распознавания речи в <xref:System.Speech.Recognition.SrgsGrammar.SrgsDocument> , которая содержит ссылку на относительное правило для файла городов. XML и указывает URI, используемый для разрешения ссылки на правило. Содержимое файла городов. XML отображается в примере XML, который следует за C# примером.  
+  
+```csharp  
+  
+private static Grammar CreateSrgsDocumentGrammar3()  
+{  
+  // Create the SrgsDocument.  
+  SrgsDocument document = new SrgsDocument();  
+  
+  // Create the Main rule and add it to the document.  
+  SrgsRule mainRule = new SrgsRule("Main");  
+  mainRule.Scope = SrgsRuleScope.Public;  
+  
+  SrgsItem item = new SrgsItem("Can I get a shuttle in");  
+  
+  // Create a relative URI for the cities rule.  
+  Uri ruleUri = new Uri("cities.xml#Cities", UriKind.Relative);  
+  
+  item.Add(new SrgsRuleRef(ruleUri));  
+  
+  mainRule.Add(item);  
+  document.Rules.Add(mainRule);  
+  
+  // Set the root rule.  
+  document.Root = mainRule;  
+  
+  // Create the grammar.  
+  Uri baseUri = new Uri(@"file://c:\temp\");  
+  Grammar citiesGrammar = new Grammar(document, null, baseUri);  
+  citiesGrammar.Name = "SrgsDocument Cities Grammar 3";  
+  
+  return citiesGrammar;  
+}  
+  
+```  
+  
+```xml  
+  
+<?xml version="1.0" encoding="UTF-8" ?>  
+<grammar version="1.0" xml:lang="en-US"  
+         xmlns="http://www.w3.org/2001/06/grammar"  
+         tag-format="semantics/1.0" root="Main">  
+  
+  <!-- cities.xml:   
+    Defines an SRGS grammar for requesting a flight. This grammar includes  
+    a Cities rule that lists the cities that can be used for departures  
+    and destinations. -->  
+  
+  <rule id="Main">  
+    <item>  
+      I would like to fly from <ruleref uri="#Cities"/>  
+      to <ruleref uri="#Cities"/>  
+    </item>  
+  </rule>  
+  
+  <rule id="Cities" scope="public">  
+    <one-of>  
+      <item>Seattle</item>  
+      <item>Los Angeles</item>  
+      <item>New York</item>  
+      <item>Miami</item>  
+    </one-of>  
+  </rule>  
+</grammar>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Невозможно разрешить <paramref name="ruleName" /> или оно не является открытым или <paramref name="ruleName" /> — <see langword="null" /> и <paramref name="srgsDocument" /> не содержит корневое правило.</exception>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="srgsDocument" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.FormatException"><paramref name="srgsDocument" /> содержит ссылку на правило, которая не может быть разрешена.</exception>
+        <altmember cref="N:System.Speech.Recognition.SrgsGrammar" />
+        <altmember cref="T:System.Speech.Recognition.SrgsGrammar.SrgsDocument" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognitionEngine" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognizer" />
+        <related type="ExternalDocumentation" href="https://go.microsoft.com/fwlink/?LinkId=15143">Спецификация грамматики распознавания речи</related>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public Grammar (string path, string ruleName, object[] parameters);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(string path, string ruleName, object[] parameters) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Speech.Recognition.Grammar.#ctor(System.String,System.String,System.Object[])" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (path As String, ruleName As String, parameters As Object())" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; Grammar(System::String ^ path, System::String ^ ruleName, cli::array &lt;System::Object ^&gt; ^ parameters);" />
+      <MemberSignature Language="F#" Value="new System.Speech.Recognition.Grammar : string * string * obj[] -&gt; System.Speech.Recognition.Grammar" Usage="new System.Speech.Recognition.Grammar (path, ruleName, parameters)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="path" Type="System.String" />
+        <Parameter Name="ruleName" Type="System.String" />
+        <Parameter Name="parameters" Type="System.Object[]" />
+      </Parameters>
+      <Docs>
+        <param name="path">Путь к файлу, включая библиотеки DLL, который содержит грамматическую спецификацию.</param>
+        <param name="ruleName">Идентификатор правила для использования в качестве точки входа грамматики распознавания речи или значение <see langword="null" />, чтобы использовать корневое правило по умолчанию описания грамматики.</param>
+        <param name="parameters">Параметры, передаваемые обработчику инициализации, указанному свойством <see cref="P:System.Speech.Recognition.SrgsGrammar.SrgsRule.OnInit" /> для точки входа или корневого правила создаваемого объекта <see cref="T:System.Speech.Recognition.Grammar" />. Параметр может принимать значение NULL.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Speech.Recognition.Grammar" /> из файла, содержащего определение грамматики, и указывает имя правила, которое должно функционировать как точка входа в грамматику.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Также можно указать параметры для обработчика инициализации.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Один из параметров содержит недопустимое значение.  
+  
+Файл, указанный в <paramref name="path" />, не содержит допустимую грамматику или правило, определенное в <paramref name="ruleName" />.  
+  
+Содержимое параметров массива не соответствует аргументам любого из обработчиков инициализации правила.  
+  
+Грамматика содержит относительную ссылку на правило, которая не может быть разрешена базовым правилом <see cref="T:System.Uri" /> по умолчанию для грамматик.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public Grammar (System.IO.Stream stream, string ruleName, Uri baseUri, object[] parameters);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.IO.Stream stream, string ruleName, class System.Uri baseUri, object[] parameters) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Speech.Recognition.Grammar.#ctor(System.IO.Stream,System.String,System.Uri,System.Object[])" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; Grammar(System::IO::Stream ^ stream, System::String ^ ruleName, Uri ^ baseUri, cli::array &lt;System::Object ^&gt; ^ parameters);" />
+      <MemberSignature Language="F#" Value="new System.Speech.Recognition.Grammar : System.IO.Stream * string * Uri * obj[] -&gt; System.Speech.Recognition.Grammar" Usage="new System.Speech.Recognition.Grammar (stream, ruleName, baseUri, parameters)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters>
+        <Parameter Name="stream" Type="System.IO.Stream" />
+        <Parameter Name="ruleName" Type="System.String" />
+        <Parameter Name="baseUri" Type="System.Uri" />
+        <Parameter Name="parameters" Type="System.Object[]" />
+      </Parameters>
+      <Docs>
+        <param name="stream">Объект <see cref="T:System.IO.Stream" />, подключенный к объекту ввода/вывода (включая файлы, ресурсы Visual Studio и DLL-библиотеки), который содержит грамматическую спецификацию.</param>
+        <param name="ruleName">Идентификатор правила для использования в качестве точки входа грамматики распознавания речи или значение <see langword="null" />, чтобы использовать корневое правило по умолчанию описания грамматики.</param>
+        <param name="baseUri">Базовый универсальный код ресурса (uri), используемый для разрешения любых относительную ссылок на правила в описании грамматики или <see langword="null" />.</param>
+        <param name="parameters">Параметры, передаваемые обработчику инициализации, указанному свойством <see cref="P:System.Speech.Recognition.SrgsGrammar.SrgsRule.OnInit" /> для точки входа или корневого правила создаваемого объекта <see cref="T:System.Speech.Recognition.Grammar" />. Параметр может принимать значение NULL.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Speech.Recognition.Grammar" /> для <see cref="T:System.IO.Stream" /> и определяет корневое правило и базовый код URI для разрешения относительных ссылок.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Также можно указать параметры для обработчика инициализации.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Один из параметров содержит недопустимое значение.  
+  
+<paramref name="stream" /> подключен к грамматике, которая не содержит правило, определенное в <paramref name="ruleName" />.  
+  
+Содержимое параметров массива не соответствует аргументам любого из обработчиков инициализации правила.  
+  
+Грамматика содержит относительную ссылку на правило, которая не может быть разрешена базовым правилом <see cref="T:System.Uri" /> по умолчанию для грамматик или URI-адресом, заданным в <paramref name="baseUri" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public Grammar (System.Speech.Recognition.SrgsGrammar.SrgsDocument srgsDocument, string ruleName, Uri baseUri, object[] parameters);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.Speech.Recognition.SrgsGrammar.SrgsDocument srgsDocument, string ruleName, class System.Uri baseUri, object[] parameters) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Speech.Recognition.Grammar.#ctor(System.Speech.Recognition.SrgsGrammar.SrgsDocument,System.String,System.Uri,System.Object[])" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; Grammar(System::Speech::Recognition::SrgsGrammar::SrgsDocument ^ srgsDocument, System::String ^ ruleName, Uri ^ baseUri, cli::array &lt;System::Object ^&gt; ^ parameters);" />
+      <MemberSignature Language="F#" Value="new System.Speech.Recognition.Grammar : System.Speech.Recognition.SrgsGrammar.SrgsDocument * string * Uri * obj[] -&gt; System.Speech.Recognition.Grammar" Usage="new System.Speech.Recognition.Grammar (srgsDocument, ruleName, baseUri, parameters)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters>
+        <Parameter Name="srgsDocument" Type="System.Speech.Recognition.SrgsGrammar.SrgsDocument" />
+        <Parameter Name="ruleName" Type="System.String" />
+        <Parameter Name="baseUri" Type="System.Uri" />
+        <Parameter Name="parameters" Type="System.Object[]" />
+      </Parameters>
+      <Docs>
+        <param name="srgsDocument">Экземпляр <see cref="T:System.Speech.Recognition.SrgsGrammar.SrgsDocument" />, содержащий ограничения для грамматики распознавания речи.</param>
+        <param name="ruleName">Идентификатор правила для использования в качестве точки входа грамматики распознавания речи или значение <see langword="null" />, чтобы использовать корневое правило по умолчанию описания грамматики.</param>
+        <param name="baseUri">Базовый универсальный код ресурса (uri), используемый для разрешения любых относительную ссылок на правила в описании грамматики или <see langword="null" />.</param>
+        <param name="parameters">Параметры, передаваемые обработчику инициализации, указанному свойством <see cref="P:System.Speech.Recognition.SrgsGrammar.SrgsRule.OnInit" /> для точки входа или корневого правила создаваемого объекта <see cref="T:System.Speech.Recognition.Grammar" />. Этот параметр может быть нулевым.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Speech.Recognition.Grammar" /> из экземпляра <see cref="T:System.Speech.Recognition.SrgsGrammar.SrgsDocument" />, указывает имя правила, которое должно функционировать как точка входа в грамматику, и базовый URI для разрешения относительных ссылок.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Также можно указать параметры для обработчика инициализации.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Один из параметров содержит недопустимое значение.  
+  
+<see cref="T:System.Speech.Recognition.SrgsGrammar.SrgsDocument" />, указанный <paramref name="srgsDocument" />, не содержит правила, заданного в <paramref name="ruleName" />.  
+  
+Содержимое параметров массива не соответствует аргументам любого из обработчиков инициализации правила.  
+  
+Грамматика содержит относительную ссылку на правило, которая не может быть разрешена базовым правилом <see cref="T:System.Uri" /> по умолчанию для грамматик или URI-адресом, заданным в <paramref name="baseUri" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="Enabled">
+      <MemberSignature Language="C#" Value="public bool Enabled { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool Enabled" />
+      <MemberSignature Language="DocId" Value="P:System.Speech.Recognition.Grammar.Enabled" />
+      <MemberSignature Language="VB.NET" Value="Public Property Enabled As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool Enabled { bool get(); void set(bool value); };" />
+      <MemberSignature Language="F#" Value="member this.Enabled : bool with get, set" Usage="System.Speech.Recognition.Grammar.Enabled" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает значение, которое определяет, может ли <see cref="T:System.Speech.Recognition.Grammar" /> использоваться распознавателем речи для выполнения распознавания.</summary>
+        <value>Свойство возвращает <see langword="true" /> значение, если распознаватель речи может выполнить распознавание с помощью грамматики распознавания речи. в противном случае свойство возвращает <see langword="false" />значение. <see langword="Enabled" /> Значение по умолчанию — <see langword="true" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Экземпляр <xref:System.Speech.Recognition.Grammar> может быть включен или отключен независимо от загрузки модулем распознавания речи.  
+  
+   
+  
+## Examples  
+ В следующем примере сведения о <xref:System.Speech.Recognition.Grammar> объекте записываются в [консоль](https://go.microsoft.com/fwlink/?LinkId=159613).  
+  
+```csharp  
+  
+private static void DumpGrammarStatus(Grammar item)  
+{  
+  Console.WriteLine("Grammar name is {0}:", item.Name);  
+  Console.WriteLine("  The Grammar {0} loaded.",  
+    item.Loaded ? "is" : "is not");  
+  Console.WriteLine("  The Grammar {0} enabled.",  
+    item.Enabled ? "is" : "is not");  
+  if (item.RuleName != null)  
+  {  
+    Console.WriteLine("  The root rule is {0}.", item.RuleName);  
+  }  
+  else  
+  {  
+    Console.WriteLine("  The Grammar does not specify a root rule.");  
+  }  
+}  
+```  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.Speech.Recognition.Grammar.Loaded" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognizer" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognitionEngine" />
+        <related type="ExternalDocumentation" href="https://go.microsoft.com/fwlink/?LinkId=15143">Спецификация грамматики распознавания речи</related>
+      </Docs>
+    </Member>
+    <Member MemberName="IsStg">
+      <MemberSignature Language="C#" Value="protected internal virtual bool IsStg { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool IsStg" />
+      <MemberSignature Language="DocId" Value="P:System.Speech.Recognition.Grammar.IsStg" />
+      <MemberSignature Language="VB.NET" Value="Protected Friend Overridable ReadOnly Property IsStg As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="protected public:&#xA; virtual property bool IsStg { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.IsStg : bool" Usage="System.Speech.Recognition.Grammar.IsStg" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает значение, указывающее является ли грамматика строго типизированной.</summary>
+        <value>Свойство <see langword="IsStg" /> возвращает значение <see langword="true" />, если грамматика строго типизированная; в противном случае возвращает значение <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Строго типизированный <xref:System.Speech.Recognition.Grammar> объект (`IsStg` Equals `true`) может возвращать строго типизированные результаты (объекты, а не необработанный текст) клиентскому приложению. Например, строго типизированная грамматика может возвращать <xref:System.DateTime> объекты, а не необработанные входные данные.  
+  
+ Вы можете реализовать строго типизированные грамматики, присоединив код к правилам грамматики. Так как подсистема распознавания обрабатывает любое заданное правило, принимая в качестве входных данных текущие частичные результаты, выполняется связанный код, а текстовая информация становится объектами расширенного типа. Это позволяет клиенту упростить использование расширенной семантической проверки, поддержки нескольких культур и внутренней логики грамматики.  
+  
+ Экземпляры строго типизированных <xref:System.Speech.Recognition.Grammar> объектов обычно получаются из ресурсов в сборке в <xref:System.Type> виде среды CLR. Примерами таких <xref:System.Speech.Recognition.Grammar> объектов являются локализованные типы, используемые для поддержки различных языков.  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>Строго типизированные грамматики <see cref="T:System.Speech.Recognition.Grammar" /> <see langword="IsStg" /> <see langword="false" />, наследуемые от, должны переопределять поведение по умолчанию, которое возвращается.</para></block>
+      </Docs>
+    </Member>
+    <Member MemberName="Loaded">
+      <MemberSignature Language="C#" Value="public bool Loaded { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool Loaded" />
+      <MemberSignature Language="DocId" Value="P:System.Speech.Recognition.Grammar.Loaded" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property Loaded As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool Loaded { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.Loaded : bool" Usage="System.Speech.Recognition.Grammar.Loaded" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает значение, указывающее загружен ли объект <see cref="T:System.Speech.Recognition.Grammar" /> распознавателем речи.</summary>
+        <value>Свойство <see langword="Loaded" /> возвращает <see langword="true" />, если указанная грамматика распознавания речи в данный момент загружена в распознаватель речи; в противном случае возвращается значение <see langword="false" />. Значение по умолчанию — <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ После загрузки <xref:System.Speech.Recognition.Grammar> объекта <xref:System.Speech.Recognition.Grammar.Weight%2A>значения и <xref:System.Speech.Recognition.Grammar.Priority%2A> не могут быть изменены.  
+  
+   
+  
+## Examples  
+ В следующем примере сведения о <xref:System.Speech.Recognition.Grammar> объекте записываются в [консоль](https://go.microsoft.com/fwlink/?LinkId=159613).  
+  
+```csharp  
+  
+private static void DumpGrammarStatus(Grammar item)  
+{  
+  Console.WriteLine("Grammar name is {0}:", item.Name);  
+  Console.WriteLine("  The Grammar {0} loaded.",  
+    item.Loaded ? "is" : "is not");  
+  Console.WriteLine("  The Grammar {0} enabled.",  
+    item.Enabled ? "is" : "is not");  
+  if (item.RuleName != null)  
+  {  
+    Console.WriteLine("  The root rule is {0}.", item.RuleName);  
+  }  
+  else  
+  {  
+    Console.WriteLine("  The Grammar does not specify a root rule.");  
+  }  
+}  
+```  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.Speech.Recognition.Grammar.Enabled" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognizer" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognitionEngine" />
+      </Docs>
+    </Member>
+    <Member MemberName="LoadLocalizedGrammarFromType">
+      <MemberSignature Language="C#" Value="public static System.Speech.Recognition.Grammar LoadLocalizedGrammarFromType (Type type, params object[] onInitParameters);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig class System.Speech.Recognition.Grammar LoadLocalizedGrammarFromType(class System.Type type, object[] onInitParameters) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Speech.Recognition.Grammar.LoadLocalizedGrammarFromType(System.Type,System.Object[])" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static System::Speech::Recognition::Grammar ^ LoadLocalizedGrammarFromType(Type ^ type, ... cli::array &lt;System::Object ^&gt; ^ onInitParameters);" />
+      <MemberSignature Language="F#" Value="static member LoadLocalizedGrammarFromType : Type * obj[] -&gt; System.Speech.Recognition.Grammar" Usage="System.Speech.Recognition.Grammar.LoadLocalizedGrammarFromType (type, onInitParameters)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Speech.Recognition.Grammar</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="type" Type="System.Type" />
+        <Parameter Name="onInitParameters" Type="System.Object[]">
+          <Attributes>
+            <Attribute FrameworkAlternate="netframework-3.0">
+              <AttributeName>System.ParamArray</AttributeName>
+            </Attribute>
+          </Attributes>
+        </Parameter>
+      </Parameters>
+      <Docs>
+        <param name="type">В сборке <see cref="T:System.Type" /> объекта, основанного на <see cref="T:System.Speech.Recognition.Grammar" />.</param>
+        <param name="onInitParameters">Параметры для передачи в метод инициализации локализованного объекта на основе <see cref="T:System.Speech.Recognition.Grammar" />. Параметр может принимать значение NULL.</param>
+        <summary>Метод <see langword="LoadLocalizedGrammarFromType" /> возвращает локализованный экземпляр объекта <see cref="T:System.Speech.Recognition.Grammar" />, который является наследником <see cref="T:System.Type" />.</summary>
+        <returns>Метод <see langword="LoadLocalizedGrammarFromType" /> возвращает допустимый объект на основе <see cref="T:System.Speech.Recognition.Grammar" /> или <see langword="null" />, если возникла ошибка.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Локализованные грамматики, `LoadLocalizedGrammarFromType` полученные с, обычно являются строго типизированными (Дополнительные сведения о строго типизированных грамматиках см. в разделе <xref:System.Speech.Recognition.Grammar.IsStg%2A> ). Если `onInitParameters` является пустой ссылкой (Nothing в Visual Basic), локализованная грамматика должна иметь либо метод инициализации, либо метод, не принимающий аргументов.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Name">
+      <MemberSignature Language="C#" Value="public string Name { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string Name" />
+      <MemberSignature Language="DocId" Value="P:System.Speech.Recognition.Grammar.Name" />
+      <MemberSignature Language="VB.NET" Value="Public Property Name As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ Name { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.Name : string with get, set" Usage="System.Speech.Recognition.Grammar.Name" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает имя объекта <see cref="T:System.Speech.Recognition.Grammar" />.</summary>
+        <value>Свойство <see langword="Name" />, возвращает имя объекта <see cref="T:System.Speech.Recognition.Grammar" />. Значение по умолчанию — <see langword="null" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Examples  
+ В следующем примере создаются два <xref:System.Speech.Recognition.Grammar> объекта: один для цифр и один для дробей. Объекты грамматики — это присвоенные имена и относительные веса и приоритеты, которые загружаются встроенным распознавателем речи. Методы `CreateDigitsGrammar`, `CreateFractionsGrammar` и `recognizer_SpeechRecognized`  не показаны здесь.  
+  
+```csharp  
+  
+// Create a Grammar for recognizing numeric digits.  
+Grammar digitsGrammar = CreateDigitsGrammar();  
+digitsGrammar.Name = "Digits Grammar";  
+digitsGrammar.Priority = 2;  
+digitsGrammar.Weight = 0.6f;  
+  
+// Create a Grammar for recognizing fractions.  
+Grammar fractionsGrammar = CreateFractionsGrammar();  
+fractionsGrammar.Name = "Fractions Grammar";  
+fractionsGrammar.Priority = 1;  
+fractionsGrammar.Weight = 1f;  
+  
+// Create an in-process speech recognizer.  
+SpeechRecognitionEngine recognizer = new SpeechRecognitionEngine();  
+  
+recognizer.SpeechRecognized +=  
+  new EventHandler<SpeechRecognizedEventArgs>(  
+    recognizer_SpeechRecognized);  
+  
+// Load the digits and fractions Grammar objects.  
+recognizer.LoadGrammar(digitsGrammar);  
+recognizer.LoadGrammar(fractionsGrammar);  
+  
+// Start recognition.  
+recognizer.SetInputToDefaultAudioDevice();  
+recognizer.RecognizeAsync(RecognizeMode.Multiple);  
+```  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognizer" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognitionEngine" />
+      </Docs>
+    </Member>
+    <Member MemberName="Priority">
+      <MemberSignature Language="C#" Value="public int Priority { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 Priority" />
+      <MemberSignature Language="DocId" Value="P:System.Speech.Recognition.Grammar.Priority" />
+      <MemberSignature Language="VB.NET" Value="Public Property Priority As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int Priority { int get(); void set(int value); };" />
+      <MemberSignature Language="F#" Value="member this.Priority : int with get, set" Usage="System.Speech.Recognition.Grammar.Priority" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает значение приоритета объекта <see cref="T:System.Speech.Recognition.Grammar" />.</summary>
+        <value>Свойство <see langword="Priority" /> возвращает целое значение, представляющее относительный приоритет конкретной грамматики <see cref="T:System.Speech.Recognition.Grammar" />. Диапазон от -128 до 127 включительно. Значение по умолчанию — 0.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ `Priority` Свойство используется для выбора грамматики, если более чем одна грамматика будет возвращать идентичный результат распознавания. Если распознаватель речи имеет более одной грамматики распознавания речи и включен, который соответствует входным данным, а совпадение является лучшим результатом распознавателя, то распознаватель использует грамматику с самым высоким значением `Priority`. Если грамматики, создающие идентичные результаты распознавания, также имеют одинаковое `Priority` значение, то грамматика, используемая распознавателем, не определена.  
+  
+   
+  
+## Examples  
+ В следующем примере создаются два <xref:System.Speech.Recognition.Grammar> объекта: один для цифр и один для дробей. <xref:System.Speech.Recognition.Grammar> Объектам присваиваются имена и относительные веса и приоритеты, которые загружаются встроенным распознавателем речи. Методы `CreateDigitsGrammar`, `CreateFractionsGrammar` и `recognizer_SpeechRecognized`  не показаны здесь.  
+  
+```csharp  
+  
+// Create a Grammar for recognizing numeric digits.  
+Grammar digitsGrammar = CreateDigitsGrammar();  
+digitsGrammar.Name = "Digits Grammar";  
+digitsGrammar.Priority = 2;  
+digitsGrammar.Weight = 0.6f;  
+  
+// Create a Grammar for recognizing fractions.  
+Grammar fractionsGrammar = CreateFractionsGrammar();  
+fractionsGrammar.Name = "Fractions Grammar";  
+fractionsGrammar.Priority = 1;  
+fractionsGrammar.Weight = 1f;  
+  
+// Create an in-process speech recognizer.  
+SpeechRecognitionEngine recognizer = new SpeechRecognitionEngine();  
+  
+recognizer.SpeechRecognized +=  
+  new EventHandler<SpeechRecognizedEventArgs>(  
+    recognizer_SpeechRecognized);  
+  
+// Load the digits and fractions Grammar objects.  
+recognizer.LoadGrammar(digitsGrammar);  
+recognizer.LoadGrammar(fractionsGrammar);  
+  
+// Start recognition.  
+recognizer.SetInputToDefaultAudioDevice();  
+recognizer.RecognizeAsync(RecognizeMode.Multiple);  
+```  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.Speech.Recognition.Grammar.Loaded" />
+        <altmember cref="P:System.Speech.Recognition.Grammar.Enabled" />
+        <altmember cref="P:System.Speech.Recognition.Grammar.Weight" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognizer" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognitionEngine" />
+      </Docs>
+    </Member>
+    <Member MemberName="ResourceName">
+      <MemberSignature Language="C#" Value="protected string ResourceName { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string ResourceName" />
+      <MemberSignature Language="DocId" Value="P:System.Speech.Recognition.Grammar.ResourceName" />
+      <MemberSignature Language="VB.NET" Value="Protected Property ResourceName As String" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; property System::String ^ ResourceName { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.ResourceName : string with get, set" Usage="System.Speech.Recognition.Grammar.ResourceName" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает значение с именем двоичного ресурса, который использовался для загрузки текущего <see cref="T:System.Speech.Recognition.Grammar" />.</summary>
+        <value>Свойство <see langword="ResourceName" /> возвращает имя двоичного ресурса, из которого была загружена строго типизированная грамматика, используемая объектом <see cref="T:System.Speech.Recognition.Grammar" />.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="RuleName">
+      <MemberSignature Language="C#" Value="public string RuleName { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string RuleName" />
+      <MemberSignature Language="DocId" Value="P:System.Speech.Recognition.Grammar.RuleName" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property RuleName As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ RuleName { System::String ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.RuleName : string" Usage="System.Speech.Recognition.Grammar.RuleName" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает имя корневого правила или точки входа объекта <see cref="T:System.Speech.Recognition.Grammar" />.</summary>
+        <value>Свойство <see langword="RuleName" /> возвращает идентификатор для корневого правила грамматики распознавания речи, на которую стоит ссылка. Значение по умолчанию — <see langword="null" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Чтобы создать <xref:System.Speech.Recognition.Grammar> объект и задать имя для его корневого правила, используйте один <xref:System.Speech.Recognition.Grammar.%23ctor%2A> из `ruleName` конструкторов, принимающих параметр.  
+  
+ Если корневое правило объекта <xref:System.Speech.Recognition.Grammar> не имеет имени, свойство возвращает `null`значение.  
+  
+ Корневые правила <xref:System.Speech.Recognition.Grammar> экземпляров, построенных <xref:System.Speech.Recognition.GrammarBuilder> на основе объектов, обычно не имеют <xref:System.Speech.Recognition.Grammar.RuleName%2A> имени `null`, поэтому возвращает.  
+  
+   
+  
+## Examples  
+ В следующем примере сведения о <xref:System.Speech.Recognition.Grammar> объекте записываются в [консоль](https://go.microsoft.com/fwlink/?LinkId=159613).  
+  
+```csharp  
+  
+private static void DumpGrammarStatus(Grammar item)  
+{  
+  Console.WriteLine("Grammar name is {0}:", item.Name);  
+  Console.WriteLine("  The Grammar {0} loaded.",  
+    item.Loaded ? "is" : "is not");  
+  Console.WriteLine("  The Grammar {0} enabled.",  
+    item.Enabled ? "is" : "is not");  
+  if (item.RuleName != null)  
+  {  
+    Console.WriteLine("  The root rule is {0}.", item.RuleName);  
+  }  
+  else  
+  {  
+    Console.WriteLine("  The Grammar does not specify a root rule.");  
+  }  
+}  
+```  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.Speech.Recognition.Grammar.#ctor(System.IO.Stream)" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognizer" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognitionEngine" />
+      </Docs>
+    </Member>
+    <Member MemberName="SpeechRecognized">
+      <MemberSignature Language="C#" Value="public event EventHandler&lt;System.Speech.Recognition.SpeechRecognizedEventArgs&gt; SpeechRecognized;" />
+      <MemberSignature Language="ILAsm" Value=".event class System.EventHandler`1&lt;class System.Speech.Recognition.SpeechRecognizedEventArgs&gt; SpeechRecognized" />
+      <MemberSignature Language="DocId" Value="E:System.Speech.Recognition.Grammar.SpeechRecognized" />
+      <MemberSignature Language="VB.NET" Value="Public Event SpeechRecognized As EventHandler(Of SpeechRecognizedEventArgs) " />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; event EventHandler&lt;System::Speech::Recognition::SpeechRecognizedEventArgs ^&gt; ^ SpeechRecognized;" />
+      <MemberSignature Language="F#" Value="member this.SpeechRecognized : EventHandler&lt;System.Speech.Recognition.SpeechRecognizedEventArgs&gt; " Usage="member this.SpeechRecognized : System.EventHandler&lt;System.Speech.Recognition.SpeechRecognizedEventArgs&gt; " />
+      <MemberType>Event</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.EventHandler&lt;System.Speech.Recognition.SpeechRecognizedEventArgs&gt;</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Вызывается, когда распознаватель речи выполняет распознавание с помощью объекта <see cref="T:System.Speech.Recognition.Grammar" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Распознаватель речи также создает `SpeechRecognized` событие при распознавании входных данных. Событие объекта возникает до `SpeechRecognized` события распознавателя речи. <xref:System.Speech.Recognition.Grammar> <xref:System.Speech.Recognition.Grammar.SpeechRecognized> Дополнительные сведения см. в <xref:System.Speech.Recognition.SpeechRecognizer.SpeechRecognized?displayProperty=nameWithType>разделе события, <xref:System.Speech.Recognition.SpeechRecognitionEngine.SpeechRecognized?displayProperty=nameWithType>и <xref:System.Speech.Recognition.SpeechRecognitionEngine.RecognizeCompleted> .  
+  
+ Все задачи, относящиеся к определенной грамматике, всегда должны обрабатываться обработчиками <xref:System.Speech.Recognition.Grammar> для <xref:System.Speech.Recognition.Grammar.SpeechRecognized> события объекта.  
+  
+   
+  
+## Examples  
+ В следующем примере показано использование обработчика событий для <xref:System.Speech.Recognition.Grammar> <xref:System.Speech.Recognition.Grammar.SpeechRecognized> события объекта. Результаты распознавания выводятся на [консоль](https://go.microsoft.com/fwlink/?LinkId=159613).  
+  
+```csharp  
+public partial class Form1 : Form  
+{  
+  SpeechRecognitionEngine sre;  
+  
+  public Form1()  
+  {  
+  InitializeComponent();  
+  
+  // Create an in-process speech recognizer.  
+  sre = new SpeechRecognitionEngine();  
+  
+  // Configure input to the speech recognizer.  
+  sre.SetInputToDefaultAudioDevice();  
+  
+  // Create a simple grammar and load it.  
+  Grammar testGrammar = new Grammar(new GrammarBuilder("testing"));  
+  sre.LoadGrammarAsync(testGrammar);  
+  
+  // Add a handler for the grammar's speech recognized event.  
+  testGrammar.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(testGrammar_SpeechRecognized);  
+  
+  // Start asynchronous speech recognition.  
+  sre.RecognizeAsync();  
+  }  
+  
+  // Handle the grammar's SpeechRecognized event, output the recognized text.  
+  void testGrammar_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)  
+  {  
+    Console.WriteLine("Recognized text: " + e.Result.Text);  
+  }  
+}  
+```  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognizer" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognitionEngine" />
+      </Docs>
+    </Member>
+    <Member MemberName="StgInit">
+      <MemberSignature Language="C#" Value="protected void StgInit (object[] parameters);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig instance void StgInit(object[] parameters) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Speech.Recognition.Grammar.StgInit(System.Object[])" />
+      <MemberSignature Language="VB.NET" Value="Protected Sub StgInit (parameters As Object())" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; void StgInit(cli::array &lt;System::Object ^&gt; ^ parameters);" />
+      <MemberSignature Language="F#" Value="member this.StgInit : obj[] -&gt; unit" Usage="grammar.StgInit parameters" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="parameters" Type="System.Object[]" />
+      </Parameters>
+      <Docs>
+        <param name="parameters">Параметры для передачи с целью инициализации строго типизированной грамматики. Этот параметр может быть нулевым.</param>
+        <summary>Метод <see langword="StgInit" /> инициализирует строго типизированную грамматику.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Строго типизированный <xref:System.Speech.Recognition.Grammar> объект (`IsStg` Equals `true`) может возвращать строго типизированные результаты (объекты, а не необработанный текст) клиентскому приложению. Например, строго типизированная грамматика может возвращать <xref:System.DateTime> объекты, а не необработанные входные данные.  
+  
+ Вы можете реализовать строго типизированные грамматики, присоединив код к правилам грамматики. Так как подсистема распознавания обрабатывает любое заданное правило, принимая в качестве входных данных текущие частичные результаты, выполняется связанный код, а текстовая информация становится объектами расширенного типа. Это позволяет клиенту упростить использование расширенной семантической проверки, поддержки нескольких культур и внутренней логики грамматики.  
+  
+ Экземпляры строго типизированных <xref:System.Speech.Recognition.Grammar> объектов обычно получаются из ресурсов в сборке в <xref:System.Type> виде среды CLR. Примерами таких <xref:System.Speech.Recognition.Grammar> объектов являются локализованные типы, используемые для поддержки различных языков.  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>Если строго типизированная грамматика требует инициализации, <see langword="StgInit" /> следует вызывать в конструкторе или методе инициализации.</para></block>
+      </Docs>
+    </Member>
+    <Member MemberName="Weight">
+      <MemberSignature Language="C#" Value="public float Weight { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance float32 Weight" />
+      <MemberSignature Language="DocId" Value="P:System.Speech.Recognition.Grammar.Weight" />
+      <MemberSignature Language="VB.NET" Value="Public Property Weight As Single" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property float Weight { float get(); void set(float value); };" />
+      <MemberSignature Language="F#" Value="member this.Weight : single with get, set" Usage="System.Speech.Recognition.Grammar.Weight" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Single</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает значение веса объекта <see cref="T:System.Speech.Recognition.Grammar" />.</summary>
+        <value><see langword="Weight" /> Свойство возвращает значение с плавающей запятой, указывающее относительный вес, который должен быть присвоен экземпляру подсистемы распознавания грамматике при обработке речевого ввода. Диапазон — от 0,0 до 1,0 включительно. Значение по умолчанию — 1,0.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Из-за сложности использования **весовых коэффициентов**механизмом распознавания, его воздействие на производительность конкретной грамматики не так, как было непосредственно предсказуемо <xref:System.Speech.Recognition.Grammar.Priority%2A>.  
+  
+ Распознавание речи — это взвешенная система. Он оценивает все возможные пути распознавания на основе сочетания веса грамматики, веса, определенных для альтернатив в грамматике, и вероятностей, определенных моделями речи. Модуль распознавания речи использует сочетание этих весов и вероятностей для ранжирования возможных альтернативных средств распознавания. Грамматики с более высокими весовыми коэффициентами применяют более высокий рейтинг вариантов распознавания, чем грамматика с более низким весом.  
+  
+ Воздействие <xref:System.Speech.Recognition.Grammar.Weight%2A> свойства на распознаватель речи зависит от реализации распознавателя. Несмотря на <xref:System.Speech.Recognition.Grammar.Weight%2A> то, что свойство можно использовать для настройки точности распознавания речи для приложения, его следует использовать только после контролируемого диагностического исследования определенной среды распознавания и получения полной информации о подсистеме распознавания. в разделе используется.  
+  
+   
+  
+## Examples  
+ В следующем примере создаются два <xref:System.Speech.Recognition.Grammar> объекта: один для цифр и один для дробей. <xref:System.Speech.Recognition.Grammar> Объектам присваиваются имена и относительные веса и приоритеты, которые загружаются встроенным распознавателем речи. Методы `CreateDigitsGrammar`, `CreateFractionsGrammar` и `recognizer_SpeechRecognized`  не показаны здесь.  
+  
+```csharp  
+  
+// Create a Grammar for recognizing numeric digits.  
+Grammar digitsGrammar = CreateDigitsGrammar();  
+digitsGrammar.Name = "Digits Grammar";  
+digitsGrammar.Priority = 2;  
+digitsGrammar.Weight = 0.6f;  
+  
+// Create a Grammar for recognizing fractions.  
+Grammar fractionsGrammar = CreateFractionsGrammar();  
+fractionsGrammar.Name = "Fractions Grammar";  
+fractionsGrammar.Priority = 1;  
+fractionsGrammar.Weight = 1f;  
+  
+// Create an in-process speech recognizer.  
+SpeechRecognitionEngine recognizer = new SpeechRecognitionEngine();  
+  
+recognizer.SpeechRecognized +=  
+  new EventHandler<SpeechRecognizedEventArgs>(  
+    recognizer_SpeechRecognized);  
+  
+// Load the digits and fractions Grammar objects.  
+recognizer.LoadGrammar(digitsGrammar);  
+recognizer.LoadGrammar(fractionsGrammar);  
+  
+// Start recognition.  
+recognizer.SetInputToDefaultAudioDevice();  
+recognizer.RecognizeAsync(RecognizeMode.Multiple);  
+```  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.Speech.Recognition.Grammar.Loaded" />
+        <altmember cref="P:System.Speech.Recognition.Grammar.Enabled" />
+        <altmember cref="P:System.Speech.Recognition.Grammar.Priority" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognizer" />
+        <altmember cref="T:System.Speech.Recognition.SpeechRecognitionEngine" />
+      </Docs>
+    </Member>
+  </Members>
+</Type>

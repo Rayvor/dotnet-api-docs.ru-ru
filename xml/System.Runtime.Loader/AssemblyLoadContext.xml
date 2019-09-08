@@ -1,0 +1,1015 @@
+<Type Name="AssemblyLoadContext" FullName="System.Runtime.Loader.AssemblyLoadContext">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="8e7d7dd6e06a3fa4c8e4e45a331de5af41dbedb1" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70691046" /></Metadata><TypeSignature Language="C#" Value="public abstract class AssemblyLoadContext" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract beforefieldinit AssemblyLoadContext extends System.Object" />
+  <TypeSignature Language="DocId" Value="T:System.Runtime.Loader.AssemblyLoadContext" />
+  <TypeSignature Language="VB.NET" Value="Public MustInherit Class AssemblyLoadContext" />
+  <TypeSignature Language="C++ CLI" Value="public ref class AssemblyLoadContext abstract" />
+  <TypeSignature Language="F#" Value="type AssemblyLoadContext = class" />
+  <AssemblyInfo>
+    <AssemblyName>System.Runtime.Loader</AssemblyName>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.2.0</AssemblyVersion>
+    <AssemblyVersion>4.0.3.0</AssemblyVersion>
+    <AssemblyVersion>4.1.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>mscorlib</AssemblyName>
+    <AssemblyVersion>2.0.5.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>Представляет концепцию области среды выполнения для привязки. Это абстрактный класс.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[
+
+## Remarks
+ Объект <xref:System.Runtime.Loader.AssemblyLoadContext> представляет контекст загрузки. По сути, контекст загрузки создает область для загрузки, разрешения и, возможно, выгрузки набора сборок.
+ 
+ <xref:System.Runtime.Loader.AssemblyLoadContext> является абстрактным классом. <xref:System.Runtime.Loader.AssemblyLoadContext.Load(System.Reflection.AssemblyName)?displayProperty=nameWithType> Необходимо реализовать для создания конкретного класса.
+ 
+ В <xref:System.Runtime.Loader.AssemblyLoadContext> основном существует для обеспечения изоляции привязки сборок. Он позволяет загружать несколько версий одной и той же сборки в одном процессе. Он заменяет механизмы изоляции, предоставляемые несколькими <xref:System.AppDomain> экземплярами в .NET Framework.
+ 
+ > [!NOTE]
+ > <xref:System.Runtime.Loader.AssemblyLoadContext>не предоставляет никаких функций безопасности. Весь код обладает полными разрешениями процесса.
+
+### <a name="usage-in-the-runtime"></a>Использование в среде выполнения
+ Среда выполнения реализует два контекста загрузки сборки:
+ * <xref:System.Runtime.Loader.AssemblyLoadContext.Default?displayProperty=nameWithType>представляет контекст привязки по умолчанию среды выполнения, используемый для основной сборки приложения и ее статических зависимостей.
+ * Метод изолирует сборки, которые он загружает, путем создания экземпляра самого базового <xref:System.Runtime.Loader.AssemblyLoadContext>класса. <xref:System.Reflection.Assembly.LoadFile(System.String)?displayProperty=nameWithType> Она имеет упрощенную схему изоляции, в которой каждая сборка загружается самостоятельно <xref:System.Runtime.Loader.AssemblyLoadContext> без разрешения зависимостей.
+ 
+### <a name="application-usage"></a>Использование приложения
+ Приложение может создать собственное <xref:System.Runtime.Loader.AssemblyLoadContext> , чтобы создать пользовательское решение для сложных сценариев привязки. Настройка нацелена на определение механизмов разрешения зависимостей.
+ 
+ <xref:System.Runtime.Loader.AssemblyLoadContext> Предоставляет две точки расширения для реализации разрешения управляемой сборки:
+ 1. Предоставляет первый шанс <xref:System.Runtime.Loader.AssemblyLoadContext> для разрешения сборки, загрузки и возврата. <xref:System.Runtime.Loader.AssemblyLoadContext.Load(System.Reflection.AssemblyName)?displayProperty=nameWithType> <xref:System.Runtime.Loader.AssemblyLoadContext.Load(System.Reflection.AssemblyName)?displayProperty=nameWithType> Если возвращается `null`, загрузчик попытается <xref:System.Runtime.Loader.AssemblyLoadContext.Default?displayProperty=nameWithType>загрузить сборку в.
+ 2. Если не удается разрешить сборку, исходный <xref:System.Runtime.Loader.AssemblyLoadContext> объект получает вторую вероятность разрешения сборки. <xref:System.Runtime.Loader.AssemblyLoadContext.Default?displayProperty=nameWithType> Среда выполнения вызывает <xref:System.Runtime.Loader.AssemblyLoadContext.Resolving> событие.
+ 
+ Кроме того <xref:System.Runtime.Loader.AssemblyLoadContext.LoadUnmanagedDll(System.String)?displayProperty=nameWithType> , виртуальный метод позволяет настраивать разрешение неуправляемой сборки по умолчанию. Реализация по умолчанию `null`возвращает, в результате которой Поиск среды выполнения использует политику поиска по умолчанию, которая достаточно для большинства сценариев.
+
+### <a name="technical-challenges"></a>Технические проблемы
+ * Невозможно загрузить несколько версий среды выполнения в одном процессе.
+     > [!CAUTION]
+     > Загрузка нескольких копий или разных версий сборок платформы может привести к непредвиденному и сложному диагностике поведения.
+     
+     > [!TIP]
+     > Используйте границы процессов для удаленного взаимодействия и (или) взаимодействия между процессами для решения этой проблемы с изоляцией.
+ 
+ * Время загрузки сборок может усложнить тестирование и отладку. Сборки обычно загружаются без немедленного разрешения зависимостей. Зависимости загружаются по мере необходимости:
+     * Когда код подразделяется на зависимую сборку.
+     * Когда код загружает ресурсы.
+     * Когда код явно загружает сборки.
+ 
+ * Реализация <xref:System.Runtime.Loader.AssemblyLoadContext.Load(System.Reflection.AssemblyName)?displayProperty=nameWithType> может добавлять новые зависимости, которые, возможно, должны быть изолированы, чтобы разрешить существование различных версий. Наиболее естественная реализация помещает эти зависимости в контексте по умолчанию. Тщательная разработка может изолировать новые зависимости.
+ 
+ * Процесс изоляции привязки создает несколько типов с одинаковым именем типа.
+     * Это может привести к путанице в сообщениях об ошибках, например "Type foo. foo не может быть приведен к типу foo. foo".
+     * Упаковка между границами изоляции не является тривиальной. Типичным решением будет использование интерфейса, определенного в сборке, которая загружается только в контекст загрузки по умолчанию.
+ 
+ ]]></format>
+    </remarks>
+    <related type="Article" href="https://github.com/dotnet/coreclr/blob/master/Documentation/design-docs/assemblyloadcontext.md">Документ по проектированию Ассемблилоадконтекст CoreCLR</related>
+    <related type="Article" href="~/docs/standard/assembly/unloadability-howto.md">Использование и отладка сборок с возможностью выгрузки в .NET Core</related>
+    <related type="Article" href="https://github.com/dotnet/coreclr/blob/master/Documentation/design-docs/unloadability.md">Документ по разработке Ассемблилоадконтекст для загрузки</related>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="protected AssemblyLoadContext ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Loader.AssemblyLoadContext.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Protected Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; AssemblyLoadContext();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+        <AssemblyVersion>4.0.3.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Runtime.Loader.AssemblyLoadContext" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
+
+Данный конструктор является защищенным. Его можно вызывать только из <xref:System.Runtime.Loader.AssemblyLoadContext> класса или его производных классов.
+
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="protected AssemblyLoadContext (bool isCollectible);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig specialname rtspecialname instance void .ctor(bool isCollectible) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Loader.AssemblyLoadContext.#ctor(System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Protected Sub New (isCollectible As Boolean)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; AssemblyLoadContext(bool isCollectible);" />
+      <MemberSignature Language="F#" Value="new System.Runtime.Loader.AssemblyLoadContext : bool -&gt; System.Runtime.Loader.AssemblyLoadContext" Usage="new System.Runtime.Loader.AssemblyLoadContext isCollectible" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="isCollectible" Type="System.Boolean" Index="0" FrameworkAlternate="netcore-3.0" />
+      </Parameters>
+      <Docs>
+        <param name="isCollectible"><see langword="true" />, чтобы включить <see cref="M:System.Runtime.Loader.AssemblyLoadContext.Unload" />; в противном случае — <see langword="false" />. Значение по умолчанию — <see langword="false" />, так как включение выгрузки снижает производительность.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Runtime.Loader.AssemblyLoadContext" /> со значением, указывающим, включена ли выгрузка.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
+
+Данный конструктор является защищенным. Его можно вызывать только из <xref:System.Runtime.Loader.AssemblyLoadContext> класса или его производных классов.
+
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public AssemblyLoadContext (string name, bool isCollectible = false);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(string name, bool isCollectible) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Loader.AssemblyLoadContext.#ctor(System.String,System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (name As String, Optional isCollectible As Boolean = false)" />
+      <MemberSignature Language="F#" Value="new System.Runtime.Loader.AssemblyLoadContext : string * bool -&gt; System.Runtime.Loader.AssemblyLoadContext" Usage="new System.Runtime.Loader.AssemblyLoadContext (name, isCollectible)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="name" Type="System.String" Index="0" FrameworkAlternate="netcore-3.0" />
+        <Parameter Name="isCollectible" Type="System.Boolean" Index="1" FrameworkAlternate="netcore-3.0" />
+      </Parameters>
+      <Docs>
+        <param name="name">Значение для <see cref="P:System.Runtime.Loader.AssemblyLoadContext.Name" /> в новом экземпляре. Это значение может быть равно <see langword="null" />.</param>
+        <param name="isCollectible"><see langword="true" />, чтобы включить <see cref="M:System.Runtime.Loader.AssemblyLoadContext.Unload" />; в противном случае — <see langword="false" />. Значение по умолчанию — <see langword="false" />, так как включение выгрузки снижает производительность.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Runtime.Loader.AssemblyLoadContext" /> с именем и значением, указывающим, включена ли выгрузка.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="All">
+      <MemberSignature Language="C#" Value="public static System.Collections.Generic.IEnumerable&lt;System.Runtime.Loader.AssemblyLoadContext&gt; All { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property class System.Collections.Generic.IEnumerable`1&lt;class System.Runtime.Loader.AssemblyLoadContext&gt; All" />
+      <MemberSignature Language="DocId" Value="P:System.Runtime.Loader.AssemblyLoadContext.All" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property All As IEnumerable(Of AssemblyLoadContext)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property System::Collections::Generic::IEnumerable&lt;System::Runtime::Loader::AssemblyLoadContext ^&gt; ^ All { System::Collections::Generic::IEnumerable&lt;System::Runtime::Loader::AssemblyLoadContext ^&gt; ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.All : seq&lt;System.Runtime.Loader.AssemblyLoadContext&gt;" Usage="System.Runtime.Loader.AssemblyLoadContext.All" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.Generic.IEnumerable&lt;System.Runtime.Loader.AssemblyLoadContext&gt;</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает коллекцию всех экземпляров класса <see cref="T:System.Runtime.Loader.AssemblyLoadContext" />.</summary>
+        <value>Коллекция всех <see cref="T:System.Runtime.Loader.AssemblyLoadContext" /> экземпляров.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Assemblies">
+      <MemberSignature Language="C#" Value="public System.Collections.Generic.IEnumerable&lt;System.Reflection.Assembly&gt; Assemblies { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Collections.Generic.IEnumerable`1&lt;class System.Reflection.Assembly&gt; Assemblies" />
+      <MemberSignature Language="DocId" Value="P:System.Runtime.Loader.AssemblyLoadContext.Assemblies" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property Assemblies As IEnumerable(Of Assembly)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Collections::Generic::IEnumerable&lt;System::Reflection::Assembly ^&gt; ^ Assemblies { System::Collections::Generic::IEnumerable&lt;System::Reflection::Assembly ^&gt; ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Assemblies : seq&lt;System.Reflection.Assembly&gt;" Usage="System.Runtime.Loader.AssemblyLoadContext.Assemblies" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.Generic.IEnumerable&lt;System.Reflection.Assembly&gt;</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает коллекцию экземпляров <see cref="T:System.Reflection.Assembly" />, загруженных в <see cref="T:System.Runtime.Loader.AssemblyLoadContext" />.</summary>
+        <value>Коллекция экземпляров, <see cref="T:System.Reflection.Assembly" /> загруженных <see cref="T:System.Runtime.Loader.AssemblyLoadContext" />в.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CurrentContextualReflectionContext">
+      <MemberSignature Language="C#" Value="public static System.Runtime.Loader.AssemblyLoadContext CurrentContextualReflectionContext { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property class System.Runtime.Loader.AssemblyLoadContext CurrentContextualReflectionContext" />
+      <MemberSignature Language="DocId" Value="P:System.Runtime.Loader.AssemblyLoadContext.CurrentContextualReflectionContext" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property CurrentContextualReflectionContext As AssemblyLoadContext" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property System::Runtime::Loader::AssemblyLoadContext ^ CurrentContextualReflectionContext { System::Runtime::Loader::AssemblyLoadContext ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.CurrentContextualReflectionContext : System.Runtime.Loader.AssemblyLoadContext" Usage="System.Runtime.Loader.AssemblyLoadContext.CurrentContextualReflectionContext" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Runtime.Loader.AssemblyLoadContext</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает <see cref="T:System.Runtime.Loader.AssemblyLoadContext" />, заданный последним вызовов к <see cref="M:System.Runtime.Loader.AssemblyLoadContext.EnterContextualReflection" />.</summary>
+        <value>Набор, заданный последним <see cref="M:System.Runtime.Loader.AssemblyLoadContext.EnterContextualReflection" />вызовом. <see cref="T:System.Runtime.Loader.AssemblyLoadContext" /> Это значение может быть равно <see langword="null" />. Значение хранится в <see cref="T:System.Threading.AsyncLocal`1" />, поэтому значение уникально для каждого асинхронного контекста.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
+Дополнительные сведения см. [в разделе ассемблилоадконтекст. куррентконтекстуалрефлектионконтекст Design doc в .NET Core](https://github.com/dotnet/coreclr/blob/master/Documentation/design-docs/AssemblyLoadContext.ContextualReflection.md).
+
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Default">
+      <MemberSignature Language="C#" Value="public static System.Runtime.Loader.AssemblyLoadContext Default { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property class System.Runtime.Loader.AssemblyLoadContext Default" />
+      <MemberSignature Language="DocId" Value="P:System.Runtime.Loader.AssemblyLoadContext.Default" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property Default As AssemblyLoadContext" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property System::Runtime::Loader::AssemblyLoadContext ^ Default { System::Runtime::Loader::AssemblyLoadContext ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Default : System.Runtime.Loader.AssemblyLoadContext" Usage="System.Runtime.Loader.AssemblyLoadContext.Default" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+        <AssemblyVersion>4.0.3.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Runtime.Loader.AssemblyLoadContext</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение по умолчанию для объекта <see cref="T:System.Runtime.Loader.AssemblyLoadContext" />. Контекст по умолчанию содержит основную сборку приложения и его статические зависимости.</summary>
+        <value>Контекст загрузки сборки по умолчанию.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="EnterContextualReflection">
+      <MemberSignature Language="C#" Value="public System.Runtime.Loader.AssemblyLoadContext.ContextualReflectionScope EnterContextualReflection ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance valuetype System.Runtime.Loader.AssemblyLoadContext/ContextualReflectionScope EnterContextualReflection() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Loader.AssemblyLoadContext.EnterContextualReflection" />
+      <MemberSignature Language="VB.NET" Value="Public Function EnterContextualReflection () As AssemblyLoadContext.ContextualReflectionScope" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Runtime::Loader::AssemblyLoadContext::ContextualReflectionScope EnterContextualReflection();" />
+      <MemberSignature Language="F#" Value="member this.EnterContextualReflection : unit -&gt; System.Runtime.Loader.AssemblyLoadContext.ContextualReflectionScope" Usage="assemblyLoadContext.EnterContextualReflection " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Runtime.Loader.AssemblyLoadContext+ContextualReflectionScope</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Задает для <see cref="P:System.Runtime.Loader.AssemblyLoadContext.CurrentContextualReflectionContext" /> значение <see langword="this" /><see cref="T:System.Runtime.Loader.AssemblyLoadContext" />.</summary>
+        <returns>Объект для восстановления предыдущего значения <see cref="P:System.Runtime.Loader.AssemblyLoadContext.CurrentContextualReflectionContext" />. Предназначен для использования в качестве <see cref="T:System.IDisposable" /> в блоке <see langword="using" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
+Дополнительные сведения см. [в разделе ассемблилоадконтекст. куррентконтекстуалрефлектионконтекст Design doc в .NET Core](https://github.com/dotnet/coreclr/blob/master/Documentation/design-docs/AssemblyLoadContext.ContextualReflection.md).
+
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="EnterContextualReflection">
+      <MemberSignature Language="C#" Value="public static System.Runtime.Loader.AssemblyLoadContext.ContextualReflectionScope EnterContextualReflection (System.Reflection.Assembly activating);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig valuetype System.Runtime.Loader.AssemblyLoadContext/ContextualReflectionScope EnterContextualReflection(class System.Reflection.Assembly activating) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Loader.AssemblyLoadContext.EnterContextualReflection(System.Reflection.Assembly)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function EnterContextualReflection (activating As Assembly) As AssemblyLoadContext.ContextualReflectionScope" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static System::Runtime::Loader::AssemblyLoadContext::ContextualReflectionScope EnterContextualReflection(System::Reflection::Assembly ^ activating);" />
+      <MemberSignature Language="F#" Value="static member EnterContextualReflection : System.Reflection.Assembly -&gt; System.Runtime.Loader.AssemblyLoadContext.ContextualReflectionScope" Usage="System.Runtime.Loader.AssemblyLoadContext.EnterContextualReflection activating" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Runtime.Loader.AssemblyLoadContext+ContextualReflectionScope</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="activating" Type="System.Reflection.Assembly" Index="0" FrameworkAlternate="netcore-3.0" />
+      </Parameters>
+      <Docs>
+        <param name="activating">Сборка, которая используется для определения запрошенного экземпляра <see cref="T:System.Runtime.Loader.AssemblyLoadContext" />.</param>
+        <summary>Задает для <see cref="P:System.Runtime.Loader.AssemblyLoadContext.CurrentContextualReflectionContext" /> значение <see cref="T:System.Runtime.Loader.AssemblyLoadContext" />, которое загрузило сборку.</summary>
+        <returns>Объект для восстановления предыдущего значения <see cref="P:System.Runtime.Loader.AssemblyLoadContext.CurrentContextualReflectionContext" />. Предназначен для использования в качестве <see cref="T:System.IDisposable" /> в блоке <see langword="using" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
+Дополнительные сведения см. [в разделе ассемблилоадконтекст. куррентконтекстуалрефлектионконтекст Design doc в .NET Core](https://github.com/dotnet/coreclr/blob/master/Documentation/design-docs/AssemblyLoadContext.ContextualReflection.md).
+
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Finalize">
+      <MemberSignature Language="C#" Value="~AssemblyLoadContext ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void Finalize() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Loader.AssemblyLoadContext.Finalize" />
+      <MemberSignature Language="VB.NET" Value="Finalize ()" />
+      <MemberSignature Language="C++ CLI" Value="!AssemblyLoadContext ()" />
+      <MemberSignature Language="F#" Value="override this.Finalize : unit -&gt; unit" Usage="assemblyLoadContext.Finalize " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Позволяет объекту пытаться освобождать ресурсы и выполнять другие операции очистки, прежде чем он будет утилизирован сборкой мусора.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetAssemblyName">
+      <MemberSignature Language="C#" Value="public static System.Reflection.AssemblyName GetAssemblyName (string assemblyPath);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig class System.Reflection.AssemblyName GetAssemblyName(string assemblyPath) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Loader.AssemblyLoadContext.GetAssemblyName(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function GetAssemblyName (assemblyPath As String) As AssemblyName" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static System::Reflection::AssemblyName ^ GetAssemblyName(System::String ^ assemblyPath);" />
+      <MemberSignature Language="F#" Value="static member GetAssemblyName : string -&gt; System.Reflection.AssemblyName" Usage="System.Runtime.Loader.AssemblyLoadContext.GetAssemblyName assemblyPath" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+        <AssemblyVersion>4.0.3.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Reflection.AssemblyName</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="assemblyPath" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="assemblyPath">Путь к сборке.</param>
+        <summary>Получает <see cref="T:System.Reflection.AssemblyName" /> для пути к сборке.</summary>
+        <returns>Объект, содержащий полностью проанализированное имя для этой сборки в <paramref name="assemblyPath" />.</returns>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="assemblyPath" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.IO.FileNotFoundException">Не удается найти сборку.</exception>
+        <exception cref="T:System.BadImageFormatException">Сборка не является допустимой.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetLoadContext">
+      <MemberSignature Language="C#" Value="public static System.Runtime.Loader.AssemblyLoadContext GetLoadContext (System.Reflection.Assembly assembly);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig class System.Runtime.Loader.AssemblyLoadContext GetLoadContext(class System.Reflection.Assembly assembly) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Loader.AssemblyLoadContext.GetLoadContext(System.Reflection.Assembly)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static System::Runtime::Loader::AssemblyLoadContext ^ GetLoadContext(System::Reflection::Assembly ^ assembly);" />
+      <MemberSignature Language="F#" Value="static member GetLoadContext : System.Reflection.Assembly -&gt; System.Runtime.Loader.AssemblyLoadContext" Usage="System.Runtime.Loader.AssemblyLoadContext.GetLoadContext assembly" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+        <AssemblyVersion>4.0.3.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Runtime.Loader.AssemblyLoadContext</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="assembly" Type="System.Reflection.Assembly" />
+      </Parameters>
+      <Docs>
+        <param name="assembly">Сборка</param>
+        <summary>Получает <see cref="T:System.Runtime.Loader.AssemblyLoadContext" /> с указанным <see cref="T:System.Reflection.Assembly" />.</summary>
+        <returns>Контекст загрузки сборки с <paramref name="assembly" />. Если <paramref name="assembly" /> не предоставляется средой выполнения, этот метод возвращает null.</returns>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="assembly" /> имеет значение <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="IsCollectible">
+      <MemberSignature Language="C#" Value="public bool IsCollectible { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool IsCollectible" />
+      <MemberSignature Language="DocId" Value="P:System.Runtime.Loader.AssemblyLoadContext.IsCollectible" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property IsCollectible As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool IsCollectible { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.IsCollectible : bool" Usage="System.Runtime.Loader.AssemblyLoadContext.IsCollectible" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает значение, указывающее, является ли контекст <see cref="T:System.Runtime.Loader.AssemblyLoadContext" /> забираемым.</summary>
+        <value><see langword="true" />значение, <see cref="T:System.Runtime.Loader.AssemblyLoadContext" /> <see langword="false" />если это значение является собираемым; в противном случае —. Если значение не указано в конструкторе, то оно имеет <see langword="false" />значение.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
+Дополнительные сведения см. [в разделе как использовать и отлаживать негрузку сборки в .NET Core](~/docs/standard/assembly/unloadability-howto.md).
+
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Load">
+      <MemberSignature Language="C#" Value="protected abstract System.Reflection.Assembly Load (System.Reflection.AssemblyName assemblyName);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance class System.Reflection.Assembly Load(class System.Reflection.AssemblyName assemblyName) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Loader.AssemblyLoadContext.Load(System.Reflection.AssemblyName)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; abstract System::Reflection::Assembly ^ Load(System::Reflection::AssemblyName ^ assemblyName);" />
+      <MemberSignature Language="F#" Value="abstract member Load : System.Reflection.AssemblyName -&gt; System.Reflection.Assembly" Usage="assemblyLoadContext.Load assemblyName" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+        <AssemblyVersion>4.0.3.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Reflection.Assembly</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="assemblyName" Type="System.Reflection.AssemblyName" />
+      </Parameters>
+      <Docs>
+        <param name="assemblyName">Объект, описывающий загружаемую сборку.</param>
+        <summary>При переопределении в производном классе позволяет сборке разрешаться и загружаться в зависимости от <see cref="T:System.Reflection.AssemblyName" />.</summary>
+        <returns>Загруженная сборка или <see langword="null" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+ 
+## Remarks
+ Во время разрешения <xref:System.Runtime.Loader.AssemblyLoadContext.Load(System.Reflection.AssemblyName)> сборки метод имеет первую возможность разрешить имя сборки в загруженную сборку. Он может либо загрузить сборку, либо вернуть `null`значение. Если он возвращает `null`, процесс разрешения продолжится. Полное <xref:System.Runtime.Loader.AssemblyLoadContext.LoadFromAssemblyName(System.Reflection.AssemblyName)> описание процесса см. в разделе.
+ 
+ > [!IMPORTANT]
+ > Чтобы предотвратить рекурсивное переполнение стека, не вызывайте <xref:System.Runtime.Loader.AssemblyLoadContext.LoadFromAssemblyName(System.Reflection.AssemblyName)> метод этого экземпляра из этого метода.
+ 
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="LoadFromAssemblyName">
+      <MemberSignature Language="C#" Value="public System.Reflection.Assembly LoadFromAssemblyName (System.Reflection.AssemblyName assemblyName);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.Reflection.Assembly LoadFromAssemblyName(class System.Reflection.AssemblyName assemblyName) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Loader.AssemblyLoadContext.LoadFromAssemblyName(System.Reflection.AssemblyName)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Reflection::Assembly ^ LoadFromAssemblyName(System::Reflection::AssemblyName ^ assemblyName);" />
+      <MemberSignature Language="F#" Value="member this.LoadFromAssemblyName : System.Reflection.AssemblyName -&gt; System.Reflection.Assembly" Usage="assemblyLoadContext.LoadFromAssemblyName assemblyName" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+        <AssemblyVersion>4.0.3.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Reflection.Assembly</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="assemblyName" Type="System.Reflection.AssemblyName" />
+      </Parameters>
+      <Docs>
+        <param name="assemblyName">Объект, который описывает сборку, подлежащую загрузке.</param>
+        <summary>Разрешает и загружает сборку в зависимости от <see cref="T:System.Reflection.AssemblyName" />.</summary>
+        <returns>Загруженная сборка или исключение.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
+
+<xref:System.Runtime.Loader.AssemblyLoadContext.LoadFromAssemblyName%2A>загружает сборку путем разрешения <xref:System.Reflection.AssemblyName>. Это активирует полное разрешение. Последовательность отката разрешения выполняется следующим образом:
+
+1. Метод вызывает <xref:System.Runtime.Loader.AssemblyLoadContext.Load(System.Reflection.AssemblyName)>.
+
+   > [!IMPORTANT]
+   > <xref:System.Runtime.Loader.AssemblyLoadContext.Load(System.Reflection.AssemblyName)>не следует вызывать этот метод для предотвращения рекурсивного переполнения стека.
+
+2. Если сборка не загружена или создается исключение, метод пытается загрузить сборку в значение по умолчанию <xref:System.Runtime.Loader.AssemblyLoadContext>.
+3. Если сборка не загружена или создается исключение, метод вызывает <xref:System.Runtime.Loader.AssemblyLoadContext.Resolving> событие.
+4. Если сборка не загружена или создается исключение, метод вызывает <xref:System.AppDomain.AssemblyResolve> событие.
+ 
+> [!NOTE]
+> <xref:System.IO.FileLoadException>вызывается, `assemblyRef` если указывает полное имя сборки, а первая сборка, которая соответствует простому имени, имеет несовместимую версию или культуру. Загрузчик не продолжает поиск других сборок, соответствующих простому имени.
+ 
+Каждый <xref:System.Runtime.Loader.AssemblyLoadContext> может загружаться только:
+ 
+* Одна версия исполняемой сборки.
+* Одна версия вспомогательной сборки для каждого языка и региональных параметров.
+ 
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="assemblyName" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.IO.FileNotFoundException"><paramref name="assemblyName" /> не найден.</exception>
+        <exception cref="T:System.BadImageFormatException"><paramref name="assemblyName" /> не является допустимой сборкой.</exception>
+        <exception cref="T:System.IO.FileLoadException">Загружены сборка или модуль, которые не соответствуют <paramref name="assemblyName" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="LoadFromAssemblyPath">
+      <MemberSignature Language="C#" Value="public System.Reflection.Assembly LoadFromAssemblyPath (string assemblyPath);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.Reflection.Assembly LoadFromAssemblyPath(string assemblyPath) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Loader.AssemblyLoadContext.LoadFromAssemblyPath(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Function LoadFromAssemblyPath (assemblyPath As String) As Assembly" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Reflection::Assembly ^ LoadFromAssemblyPath(System::String ^ assemblyPath);" />
+      <MemberSignature Language="F#" Value="member this.LoadFromAssemblyPath : string -&gt; System.Reflection.Assembly" Usage="assemblyLoadContext.LoadFromAssemblyPath assemblyPath" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+        <AssemblyVersion>4.0.3.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Reflection.Assembly</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="assemblyPath" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="assemblyPath">Полный путь к загружаемому файлу.</param>
+        <summary>Загружает содержимое файла сборки, находящегося по указанному пути.</summary>
+        <returns>Загруженная сборка.</returns>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentException">Аргумент <paramref name="assemblyPath" /> не является абсолютным путем.</exception>
+        <exception cref="T:System.ArgumentNullException">Параметр <paramref name="assemblyPath" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.IO.FileLoadException">Не удалось загрузить файл, который был найден.</exception>
+        <exception cref="T:System.IO.FileNotFoundException">Параметр <paramref name="assemblyPath" /> представляет собой пустую строку ("") или не существует.</exception>
+        <exception cref="T:System.BadImageFormatException"><paramref name="assemblyPath" /> не является допустимой сборкой.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="LoadFromNativeImagePath">
+      <MemberSignature Language="C#" Value="public System.Reflection.Assembly LoadFromNativeImagePath (string nativeImagePath, string assemblyPath);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.Reflection.Assembly LoadFromNativeImagePath(string nativeImagePath, string assemblyPath) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Loader.AssemblyLoadContext.LoadFromNativeImagePath(System.String,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Function LoadFromNativeImagePath (nativeImagePath As String, assemblyPath As String) As Assembly" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Reflection::Assembly ^ LoadFromNativeImagePath(System::String ^ nativeImagePath, System::String ^ assemblyPath);" />
+      <MemberSignature Language="F#" Value="member this.LoadFromNativeImagePath : string * string -&gt; System.Reflection.Assembly" Usage="assemblyLoadContext.LoadFromNativeImagePath (nativeImagePath, assemblyPath)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+        <AssemblyVersion>4.0.3.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Reflection.Assembly</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="nativeImagePath" Type="System.String" />
+        <Parameter Name="assemblyPath" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="nativeImagePath">Полный путь к загружаемому файлу.</param>
+        <param name="assemblyPath">Полный путь к версии IL файла для загрузки или <see langword="null" />.</param>
+        <summary>Загружает содержимое собственного образа файла управляемой сборки по указанному пути.</summary>
+        <returns>Загруженная сборка.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
+ Машинный образ управляемой сборки предварительно откомпилирован, чтобы оптимизировать выполнение на определенной платформе.
+ 
+ Путь к сборке ссылается на путь к версии IL сборки. Это необязательный аргумент, так как IL обычно включается в образ в машинном код. Он может использоваться средой выполнения в качестве резервной, если образ в машинном код не найден.
+ 
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Аргумент <paramref name="nativeImagePath" /> не является абсолютным путем.</exception>
+        <exception cref="T:System.ArgumentException">Аргумент <paramref name="assemblyPath" /> не является абсолютным путем.</exception>
+        <exception cref="T:System.ArgumentNullException">Параметр <paramref name="nativeImagePath" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.IO.FileLoadException">Не удалось загрузить файл, который был найден.</exception>
+        <exception cref="T:System.IO.FileNotFoundException">Параметр <paramref name="nativeImagePath" /> представляет собой пустую строку ("") или не существует.</exception>
+        <exception cref="T:System.BadImageFormatException"><paramref name="assemblyPath" /> не является допустимой сборкой.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="LoadFromStream">
+      <MemberSignature Language="C#" Value="public System.Reflection.Assembly LoadFromStream (System.IO.Stream assembly);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.Reflection.Assembly LoadFromStream(class System.IO.Stream assembly) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Loader.AssemblyLoadContext.LoadFromStream(System.IO.Stream)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Reflection::Assembly ^ LoadFromStream(System::IO::Stream ^ assembly);" />
+      <MemberSignature Language="F#" Value="member this.LoadFromStream : System.IO.Stream -&gt; System.Reflection.Assembly" Usage="assemblyLoadContext.LoadFromStream assembly" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+        <AssemblyVersion>4.0.3.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Reflection.Assembly</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="assembly" Type="System.IO.Stream" />
+      </Parameters>
+      <Docs>
+        <param name="assembly">Массив байтов, который является образом в формате COFF, содержащим управляемую сборку.</param>
+        <summary>Загружает сборку с образом в формате COFF, содержащим управляемую сборку.</summary>
+        <returns>Загруженная сборка.</returns>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="assembly" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.BadImageFormatException"><paramref name="assembly" /> не является допустимой сборкой.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="LoadFromStream">
+      <MemberSignature Language="C#" Value="public System.Reflection.Assembly LoadFromStream (System.IO.Stream assembly, System.IO.Stream assemblySymbols);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.Reflection.Assembly LoadFromStream(class System.IO.Stream assembly, class System.IO.Stream assemblySymbols) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Loader.AssemblyLoadContext.LoadFromStream(System.IO.Stream,System.IO.Stream)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Reflection::Assembly ^ LoadFromStream(System::IO::Stream ^ assembly, System::IO::Stream ^ assemblySymbols);" />
+      <MemberSignature Language="F#" Value="member this.LoadFromStream : System.IO.Stream * System.IO.Stream -&gt; System.Reflection.Assembly" Usage="assemblyLoadContext.LoadFromStream (assembly, assemblySymbols)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+        <AssemblyVersion>4.0.3.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Reflection.Assembly</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="assembly" Type="System.IO.Stream" />
+        <Parameter Name="assemblySymbols" Type="System.IO.Stream" />
+      </Parameters>
+      <Docs>
+        <param name="assembly">Массив байтов, который является образом в формате COFF, содержащим управляемую сборку.</param>
+        <param name="assemblySymbols">Массив байтов, содержащий необработанные байты, которые представляют символы для сборки.</param>
+        <summary>Загружает сборку с образом в формате COFF, содержащим управляемую сборку и (дополнительно) символы для сборки.</summary>
+        <returns>Загруженная сборка.</returns>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="assembly" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.BadImageFormatException"><paramref name="assembly" /> не является допустимой сборкой.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="LoadUnmanagedDll">
+      <MemberSignature Language="C#" Value="protected virtual IntPtr LoadUnmanagedDll (string unmanagedDllName);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance native int LoadUnmanagedDll(string unmanagedDllName) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Loader.AssemblyLoadContext.LoadUnmanagedDll(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Function LoadUnmanagedDll (unmanagedDllName As String) As IntPtr" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual IntPtr LoadUnmanagedDll(System::String ^ unmanagedDllName);" />
+      <MemberSignature Language="F#" Value="abstract member LoadUnmanagedDll : string -&gt; nativeint&#xA;override this.LoadUnmanagedDll : string -&gt; nativeint" Usage="assemblyLoadContext.LoadUnmanagedDll unmanagedDllName" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+        <AssemblyVersion>4.0.3.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IntPtr</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="unmanagedDllName" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="unmanagedDllName">Имя неуправляемые библиотеки. Как правило, это имя файла без пути или расширений.</param>
+        <summary>Позволяет производному классу загружать неуправляемую библиотеку по имени.</summary>
+        <returns>Дескриптор для загруженной библиотеки или <see cref="F:System.IntPtr.Zero" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
+ Реализация по умолчанию всегда возвращает значение <xref:System.IntPtr.Zero?displayProperty=nameWithType>. Когда <xref:System.IntPtr.Zero?displayProperty=nameWithType> возвращается, среда выполнения загружает библиотеку с политикой по умолчанию.
+ 
+ Этот виртуальный метод можно переопределить для настройки алгоритма поиска неуправляемой библиотеки. При переопределении имени можно использовать для обнаружения библиотеки. Загруженная библиотека не обязана соответствовать запрошенному имени, но при необходимости ее можно преобразовать. Это может включать в себя настройку имени для конкретных имен платформы.
+ 
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="LoadUnmanagedDllFromPath">
+      <MemberSignature Language="C#" Value="protected IntPtr LoadUnmanagedDllFromPath (string unmanagedDllPath);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig instance native int LoadUnmanagedDllFromPath(string unmanagedDllPath) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Loader.AssemblyLoadContext.LoadUnmanagedDllFromPath(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Protected Function LoadUnmanagedDllFromPath (unmanagedDllPath As String) As IntPtr" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; IntPtr LoadUnmanagedDllFromPath(System::String ^ unmanagedDllPath);" />
+      <MemberSignature Language="F#" Value="member this.LoadUnmanagedDllFromPath : string -&gt; nativeint" Usage="assemblyLoadContext.LoadUnmanagedDllFromPath unmanagedDllPath" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+        <AssemblyVersion>4.0.3.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IntPtr</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="unmanagedDllPath" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="unmanagedDllPath">Путь к неуправляемой библиотеке.</param>
+        <summary>Загружает неуправляемую библиотеку из указанного пути.</summary>
+        <returns>Дескриптор для загруженной библиотеки.</returns>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="unmanagedDllPath" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException">Аргумент <paramref name="unmanagedDllPath" /> не является абсолютным путем.</exception>
+        <exception cref="T:System.IO.FileNotFoundException">Не удается найти неуправляемую библиотеку.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="Name">
+      <MemberSignature Language="C#" Value="public string Name { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string Name" />
+      <MemberSignature Language="DocId" Value="P:System.Runtime.Loader.AssemblyLoadContext.Name" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property Name As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ Name { System::String ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Name : string" Usage="System.Runtime.Loader.AssemblyLoadContext.Name" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает имя <see cref="T:System.Runtime.Loader.AssemblyLoadContext" />.</summary>
+        <value>Имя <see cref="T:System.Runtime.Loader.AssemblyLoadContext" />. Это значение может быть равно <see langword="null" />.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Resolving">
+      <MemberSignature Language="C#" Value="public event Func&lt;System.Runtime.Loader.AssemblyLoadContext,System.Reflection.AssemblyName,System.Reflection.Assembly&gt; Resolving;" />
+      <MemberSignature Language="ILAsm" Value=".event class System.Func`3&lt;class System.Runtime.Loader.AssemblyLoadContext, class System.Reflection.AssemblyName, class System.Reflection.Assembly&gt; Resolving" />
+      <MemberSignature Language="DocId" Value="E:System.Runtime.Loader.AssemblyLoadContext.Resolving" />
+      <MemberSignature Language="VB.NET" Value="Public Custom Event Resolving As Func(Of AssemblyLoadContext, AssemblyName, Assembly) " />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; event Func&lt;System::Runtime::Loader::AssemblyLoadContext ^, System::Reflection::AssemblyName ^, System::Reflection::Assembly ^&gt; ^ Resolving;" />
+      <MemberSignature Language="F#" Value="member this.Resolving : Func&lt;System.Runtime.Loader.AssemblyLoadContext, System.Reflection.AssemblyName, System.Reflection.Assembly&gt; " Usage="member this.Resolving : System.Func&lt;System.Runtime.Loader.AssemblyLoadContext, System.Reflection.AssemblyName, System.Reflection.Assembly&gt; " />
+      <MemberType>Event</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+        <AssemblyVersion>4.0.3.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Func&lt;System.Runtime.Loader.AssemblyLoadContext,System.Reflection.AssemblyName,System.Reflection.Assembly&gt;</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Происходит, когда разрешение сборки завершается неудачей при попытке загрузки в этот контекст загрузки сборки.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
+ Обработчик этого события должен вернуть указанную сборку или возвратить `null` , если сборка не распознана.
+ 
+ > [!IMPORTANT]
+ >  Если для этого события зарегистрировано более одного обработчика событий, обработчики событий вызываются по порядку, пока обработчик событий не вернет значение, `null`которое не является. Последующие обработчики событий игнорируются.
+ 
+ Дополнительные сведения об обработке событий см. в разделе [обработка и вызов событий](~/docs/standard/events/index.md).
+ 
+ Следует отметить, что обработчик может быть добавлен для данного события в любом <xref:System.Runtime.Loader.AssemblyLoadContext>случае, включая контекст по умолчанию.
+ 
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ResolvingUnmanagedDll">
+      <MemberSignature Language="C#" Value="public event Func&lt;System.Reflection.Assembly,string,IntPtr&gt; ResolvingUnmanagedDll;" />
+      <MemberSignature Language="ILAsm" Value=".event class System.Func`3&lt;class System.Reflection.Assembly, string, native int&gt; ResolvingUnmanagedDll" />
+      <MemberSignature Language="DocId" Value="E:System.Runtime.Loader.AssemblyLoadContext.ResolvingUnmanagedDll" />
+      <MemberSignature Language="VB.NET" Value="Public Custom Event ResolvingUnmanagedDll As Func(Of Assembly, String, IntPtr) " />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; event Func&lt;System::Reflection::Assembly ^, System::String ^, IntPtr&gt; ^ ResolvingUnmanagedDll;" />
+      <MemberSignature Language="F#" Value="member this.ResolvingUnmanagedDll : Func&lt;System.Reflection.Assembly, string, nativeint&gt; " Usage="member this.ResolvingUnmanagedDll : System.Func&lt;System.Reflection.Assembly, System.string, System.nativeint&gt; " />
+      <MemberType>Event</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Func&lt;System.Reflection.Assembly,System.String,System.IntPtr&gt;</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Происходит, когда разрешение собственной библиотеки завершается неудачей.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+
+Это событие возникает, если собственная библиотека не может быть разрешена логикой разрешения по умолчанию <xref:System.Runtime.Loader.AssemblyLoadContext.LoadUnmanagedDll%2A>(включая).
+
+         ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SetProfileOptimizationRoot">
+      <MemberSignature Language="C#" Value="public void SetProfileOptimizationRoot (string directoryPath);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void SetProfileOptimizationRoot(string directoryPath) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Loader.AssemblyLoadContext.SetProfileOptimizationRoot(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub SetProfileOptimizationRoot (directoryPath As String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void SetProfileOptimizationRoot(System::String ^ directoryPath);" />
+      <MemberSignature Language="F#" Value="member this.SetProfileOptimizationRoot : string -&gt; unit" Usage="assemblyLoadContext.SetProfileOptimizationRoot directoryPath" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+        <AssemblyVersion>4.0.3.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="directoryPath" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="directoryPath">Полный путь к каталогу, в котором хранятся профили оптимизации.</param>
+        <summary>Задает корневой путь, по которому хранятся профили оптимизации для данного контекста загрузки.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[ 
+
+## Remarks        
+
+Оптимизация профиля повышает производительность запуска контекста загрузки на многоядерных компьютерах, выполняя фоновую компиляцию методов, которые, вероятнее всего, будут выполняться на основе профилей, созданных во время предыдущих компиляций. Для получения дополнительной информации см. <xref:System.Runtime.ProfileOptimization>.
+
+         ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="StartProfileOptimization">
+      <MemberSignature Language="C#" Value="public void StartProfileOptimization (string profile);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void StartProfileOptimization(string profile) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Loader.AssemblyLoadContext.StartProfileOptimization(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub StartProfileOptimization (profile As String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void StartProfileOptimization(System::String ^ profile);" />
+      <MemberSignature Language="F#" Value="member this.StartProfileOptimization : string -&gt; unit" Usage="assemblyLoadContext.StartProfileOptimization profile" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+        <AssemblyVersion>4.0.3.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="profile" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="profile">Имя профиля оптимизации.</param>
+        <summary>Запускает процесс оптимизации профиля для указанного профиля.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[ 
+
+## Remarks        
+
+Оптимизация профиля повышает производительность запуска контекста загрузки на многоядерных компьютерах, выполняя фоновую компиляцию методов, которые, вероятнее всего, будут выполняться на основе профилей, созданных во время предыдущих компиляций. Для получения дополнительной информации см. <xref:System.Runtime.ProfileOptimization>.
+
+         ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ToString">
+      <MemberSignature Language="C#" Value="public override string ToString ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance string ToString() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Loader.AssemblyLoadContext.ToString" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function ToString () As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::String ^ ToString();" />
+      <MemberSignature Language="F#" Value="override this.ToString : unit -&gt; string" Usage="assemblyLoadContext.ToString " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Возвращает строковое представление этого контекста загрузки.</summary>
+        <returns>Строковое представление этого контекста загрузки.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Unload">
+      <MemberSignature Language="C#" Value="public void Unload ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Unload() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Loader.AssemblyLoadContext.Unload" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Unload ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Unload();" />
+      <MemberSignature Language="F#" Value="member this.Unload : unit -&gt; unit" Usage="assemblyLoadContext.Unload " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Инициирует выгрузку <see cref="T:System.Runtime.Loader.AssemblyLoadContext" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[
+
+## Remarks
+
++ Ассемблилоадконтекст можно выгружать только в том случае, если он является собираемым.
++ Выгрузка выполняется асинхронно.
++ Выгрузка не выполняется при наличии ссылок на Ассемблилоадконтекст.
+
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Выгрузка не допускается.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="Unloading">
+      <MemberSignature Language="C#" Value="public event Action&lt;System.Runtime.Loader.AssemblyLoadContext&gt; Unloading;" />
+      <MemberSignature Language="ILAsm" Value=".event class System.Action`1&lt;class System.Runtime.Loader.AssemblyLoadContext&gt; Unloading" />
+      <MemberSignature Language="DocId" Value="E:System.Runtime.Loader.AssemblyLoadContext.Unloading" />
+      <MemberSignature Language="VB.NET" Value="Public Custom Event Unloading As Action(Of AssemblyLoadContext) " />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; event Action&lt;System::Runtime::Loader::AssemblyLoadContext ^&gt; ^ Unloading;" />
+      <MemberSignature Language="F#" Value="member this.Unloading : Action&lt;System.Runtime.Loader.AssemblyLoadContext&gt; " Usage="member this.Unloading : System.Action&lt;System.Runtime.Loader.AssemblyLoadContext&gt; " />
+      <MemberType>Event</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Loader</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
+        <AssemblyVersion>4.0.3.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>mscorlib</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Action&lt;System.Runtime.Loader.AssemblyLoadContext&gt;</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Происходит при выгрузке <see cref="T:System.Runtime.Loader.AssemblyLoadContext" />.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

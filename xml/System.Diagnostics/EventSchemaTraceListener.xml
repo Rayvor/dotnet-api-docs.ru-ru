@@ -1,0 +1,1082 @@
+<Type Name="EventSchemaTraceListener" FullName="System.Diagnostics.EventSchemaTraceListener">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="0a4a01cf09671430b8f85930f61d5340bd45bee8" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70552425" /></Metadata><TypeSignature Language="C#" Value="public class EventSchemaTraceListener : System.Diagnostics.TextWriterTraceListener" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit EventSchemaTraceListener extends System.Diagnostics.TextWriterTraceListener" />
+  <TypeSignature Language="DocId" Value="T:System.Diagnostics.EventSchemaTraceListener" />
+  <TypeSignature Language="VB.NET" Value="Public Class EventSchemaTraceListener&#xA;Inherits TextWriterTraceListener" />
+  <TypeSignature Language="C++ CLI" Value="public ref class EventSchemaTraceListener : System::Diagnostics::TextWriterTraceListener" />
+  <TypeSignature Language="F#" Value="type EventSchemaTraceListener = class&#xA;    inherit TextWriterTraceListener" />
+  <AssemblyInfo>
+    <AssemblyName>System.Core</AssemblyName>
+    <AssemblyVersion>3.5.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Diagnostics.TextWriterTraceListener</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>Направляет результаты трассировки или отладки сквозных событий в совместимый со схемой файл журнала в XML-представлении.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Diagnostics.EventSchemaTraceListener> Класс обеспечивает трассировку комплексных событий, соответствующих схеме. Можно использовать сквозную трассировку для системы с разнородными компонентами, которые пересекают границы потоков, <xref:System.AppDomain>, процессов и компьютеров. Определена стандартизированная схема событий (см. [представление событий для потребителей событий](https://go.microsoft.com/fwlink/?LinkId=78955)), чтобы включить трассировку через эти границы. Схема включает добавление пользовательских, соответствующих схеме элементов. Для вывода данных о событии можно использовать [средство Service Trace Viewer (SvcTraceViewer. exe)](https://go.microsoft.com/fwlink/p/?LinkId=240129) .  
+  
+ <xref:System.Diagnostics.EventSchemaTraceListener>настраивается для повышения производительности ведения журнала с помощью неявной поддержки трассировки без блокировки.  
+  
+ <xref:System.Diagnostics.EventSchemaTraceListener> Класс преобразует данные трассировки и отладки в поток текста в кодировке XML. Описание выходных данных XML приведено в таблицах далее в этом разделе.  
+  
+ Вы можете включить или отключить <xref:System.Diagnostics.EventSchemaTraceListener> объект через файл конфигурации приложения, а затем использовать настроенный <xref:System.Diagnostics.EventSchemaTraceListener> объект в приложении. Кроме того, можно создать <xref:System.Diagnostics.EventSchemaTraceListener> объект в коде. Рекомендуется включить прослушиватели трассировки с помощью файла конфигурации приложения. Сведения об использовании файлов конфигурации для трассировки и отладки см. в разделе [схема параметров трассировки и отладки](~/docs/framework/configure-apps/file-schema/trace-debug/index.md).  
+  
+ Чтобы настроить <xref:System.Diagnostics.EventSchemaTraceListener> объект, измените файл конфигурации, соответствующий имени приложения. В этом файле можно добавлять, удалять или задавать свойства прослушивателя. Файл конфигурации следует отформатировать следующим образом:  
+  
+```xml  
+<configuration>  
+    <system.diagnostics>  
+        <sources>  
+            <source name="TestSource" >  
+                <listeners>  
+                    <!--Remove the default trace listener for better performance.-->  
+                    <remove name="Default"/>  
+                    <!--Note: Removing the default trace listener prevents the dialog box   
+                    from being displayed for Debug.Fail or Debug.Assert commands that are   
+                    executed in user mode.-->  
+                    <add name="eventListener"   
+                      type="System.Diagnostics.EventSchemaTraceListener,  system.core"  
+                      initializeData="TraceOutput.xml"   
+                      traceOutputOptions="ProcessId, DateTime, Timestamp"   
+                      bufferSize="65536"  
+                      maximumFileSize="20480000"  
+                      logRetentionOption="LimitedCircularFiles"  
+                      maximumNumberOfFiles="2"/>  
+                </listeners>  
+            </source>  
+        </sources>  
+    </system.diagnostics>  
+```  
+  
+ Класс наследует <xref:System.Diagnostics.TraceListener.Filter%2A> свойство от базового класса  <xref:System.Diagnostics.TraceListener> .  <xref:System.Diagnostics.EventSchemaTraceListener> <xref:System.Diagnostics.TraceListener.Filter%2A> Свойство позволяет получить дополнительный уровень фильтрации выходных данных трассировки на прослушивателе. Если фильтр имеется, `Trace` методы прослушивателя трассировки <xref:System.Diagnostics.TraceFilter.ShouldTrace%2A> вызывают метод фильтра, чтобы определить, следует ли выдавать трассировку.  
+  
+ При попытке записи в файл, который используется или недоступен, суффикс GUID автоматически добавляется к имени файла.  
+  
+> [!NOTE]
+>  Методы прослушивателя предназначены для вызова методами <xref:System.Diagnostics.Debug>классов, <xref:System.Diagnostics.Trace>и <xref:System.Diagnostics.TraceSource> . Не вызывайте методы прослушивателя непосредственно из кода приложения. Прослушиватель в <xref:System.Diagnostics.EventSchemaTraceListener> основном предназначен для использования <xref:System.Diagnostics.TraceSource> классом.  
+  
+ В следующей таблице описаны элементы и атрибуты выходных данных XML.  
+  
+|Элемент|Атрибуты|Вывод|Примечания|  
+|-------------|----------------|------------|-----------|  
+|`CallStack`|Нет|Зависит от наличия <xref:System.Diagnostics.TraceOptions.Callstack> флага <xref:System.Diagnostics.TraceListener.TraceOutputOptions%2A> в свойстве.|Специальные символы, такие как > или <, заменяются escape-последовательностями. См. таблицу преобразования escape-символов в следующей таблице.|  
+|`Computer`|Нет|Всегда имеется.|Этот элемент представляет значение <xref:System.Environment.MachineName%2A> свойства.|  
+|`Correlation`|`ActivityID`|Всегда имеется.|Если `ActivityID` параметр не указан, по умолчанию используется пустой GUID.|  
+||`RelatedActivityID`|Зависит от наличия `relatedActivityId` параметра `Trace` в вызове метода.|Атрибут соответствует `relatedActivityId` параметру <xref:System.Diagnostics.EventSchemaTraceListener.TraceTransfer%2A> метода. `RelatedActivityID`|  
+|`Data`|Нет|Всегда имеется.|Этот элемент представляет входные данные`data`параметра (). Для каждого объекта данных предоставляется один элемент. В случае с журналами `Data` событий элемент содержит экранированные XML-данные. В случае с журналами `Data` данных элемент содержит неэкранированные данные. Выходные данные журнала данных используют `ToString` метод переданных объектов данных.|  
+|`Event`|Нет|Всегда имеется.|Этот элемент содержит событие трассировки.|  
+|`EventData`|Нет|Есть для журналов событий.|Этот элемент представляет входные данные`message`параметра `args`(,). Он содержит `Data` элементы с экранированными XML-данными, созданными путем <xref:System.Diagnostics.EventSchemaTraceListener.TraceEvent%2A> вызова метода.|  
+|`EventID`|Нет|Всегда имеется.|Этот элемент представляет входные данные`id`параметра ().|  
+|`Execution`|`ProcessID`|Зависит от наличия <xref:System.Diagnostics.TraceOptions.ProcessId> флага <xref:System.Diagnostics.TraceListener.TraceOutputOptions%2A> в свойстве.|Атрибут задается в  <xref:System.Diagnostics.TraceEventCache> .  `ProcessID` В операционных системах Microsoft Windows 98 и Windows Millennium Edition, если `ProcessID` значение параметра больше 2 147 483 647, оно является положительным представлением отрицательного числа и должно быть преобразовано для получения правильного идентификатора процесса.|  
+||`ThreadID`|Отображается, `ProcessID` если имеется.|Атрибут задается в  <xref:System.Diagnostics.TraceEventCache> .  `ThreadID`|  
+|`Level`|Нет|Всегда имеется.|Этот элемент представляет входные данные параметра (числовое `eventType`значение). Значения параметров, превышающие 255, выводятся как уровень 8, который представляет <xref:System.Diagnostics.TraceEventType.Information?displayProperty=nameWithType>. Типы <xref:System.Diagnostics.TraceEventType.Critical>событий трассировки <xref:System.Diagnostics.TraceEventType.Error> , <xref:System.Diagnostics.TraceEventType.Information> ,, и <xref:System.Diagnostics.TraceEventType.Verbose>  выводятся в виде уровней 1, 2, 4, 8 и 10 соответственно. <xref:System.Diagnostics.TraceEventType.Warning>|  
+|`LogicalOperationStack`|Нет|Зависит от наличия <xref:System.Diagnostics.TraceOptions.LogicalOperationStack> флага <xref:System.Diagnostics.TraceListener.TraceOutputOptions%2A> в свойстве.|Может существовать только одна логическая операция. Таким образом, значения записываются `LogicalOperation` как узлы `LogicalOperationStack` в элементе.|  
+|`OpCode`|Нет|Отображается, `Level` если больше 255.|Этот элемент представляет типы событий трассировки, имеющие числовые значения, превышающие 255. <xref:System.Diagnostics.TraceEventType.Start>, <xref:System.Diagnostics.TraceEventType.Stop> , <xref:System.Diagnostics.TraceEventType.Suspend> , или <xref:System.Diagnostics.TraceEventType.Transfer>  выводятся как уровни 1, 2, 4, 8 и 10 соответственно. <xref:System.Diagnostics.TraceEventType.Resume>|  
+|`Provider`|`GUID`|Всегда имеется.|Всегда пусто.|  
+|`RenderingInfo`|`Culture`|Всегда имеется.|Этот атрибут представляет строку ресурса для типа события. Он всегда имеет значение en-EN\\.|  
+|`System`|`Name`|Всегда имеется.||  
+|`TimeCreated`|`SystemTime`|Зависит от наличия <xref:System.Diagnostics.TraceOptions.DateTime> флага <xref:System.Diagnostics.TraceListener.TraceOutputOptions%2A> в свойстве.|Время — это значение <xref:System.Diagnostics.TraceEventCache.DateTime%2A?displayProperty=nameWithType> свойства. Это свойство представлено в формате всемирного координированного времени|  
+|`TimeStamp`|Нет|Зависит от наличия <xref:System.Diagnostics.TraceOptions.Timestamp> флага <xref:System.Diagnostics.TraceListener.TraceOutputOptions%2A> в свойстве.|Этот элемент указан в <xref:System.Diagnostics.TraceEventCache>.|  
+|`UserData`|Нет|Есть для журналов данных.|Этот элемент содержит `Data` элементы с неэкранированными, предоставленными пользователем данными <xref:System.Diagnostics.EventSchemaTraceListener.TraceData%2A> из метода.|  
+  
+ В следующей таблице показаны символы, которые экранированы в выходных данных XML. Экранирование происходит во всех элементах и атрибутах, за `UserData` исключением элемента, который содержит предоставленные пользователем неэкранированные данные. Элемент является результатом вызова <xref:System.Diagnostics.EventSchemaTraceListener.TraceData%2A> метода. `UserData`  
+  
+|Escape-символ|Значение|  
+|-----------------------|-----------|  
+|&|&amp;|  
+|\<|&lt;|  
+|>|&gt;|  
+|"|&quot;|  
+|\|&apos;|  
+|0xD|&\#XD|  
+|0xA|&\#Сообщен|  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как использовать <xref:System.Diagnostics.EventSchemaTraceListener> класс.  
+  
+ [!code-cpp[System.Diagnostics.EventSchemaTraceListener#1](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener/CPP/eventschematracelistener.cpp#1)]
+ [!code-csharp[System.Diagnostics.EventSchemaTraceListener#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener/cs/program.cs#1)]
+ [!code-vb[System.Diagnostics.EventSchemaTraceListener#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener/vb/program.vb#1)]  
+  
+ ]]></format>
+    </remarks>
+  </Docs>
+  <Members>
+    <MemberGroup MemberName=".ctor">
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Diagnostics.EventSchemaTraceListener" />.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public EventSchemaTraceListener (string fileName);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(string fileName) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Diagnostics.EventSchemaTraceListener.#ctor(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (fileName As String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; EventSchemaTraceListener(System::String ^ fileName);" />
+      <MemberSignature Language="F#" Value="new System.Diagnostics.EventSchemaTraceListener : string -&gt; System.Diagnostics.EventSchemaTraceListener" Usage="new System.Diagnostics.EventSchemaTraceListener fileName" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="fileName" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="fileName">Новый путь для файла журнала.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Diagnostics.EventSchemaTraceListener" />, используя указанный файл в качестве получателя выходных данных отладки и трассировки.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ По умолчанию в журнал заносится один файл с неограниченным размером.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как использовать <xref:System.Diagnostics.EventSchemaTraceListener.%23ctor%28System.String%29?displayProperty=nameWithType> конструктор.  
+  
+ [!code-csharp[System.Diagnostics.EventSchemaTraceListener.Ctors#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener.Ctors/CS/program.cs#1)]
+ [!code-vb[System.Diagnostics.EventSchemaTraceListener.Ctors#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener.Ctors/VB/program.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public EventSchemaTraceListener (string fileName, string name);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(string fileName, string name) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Diagnostics.EventSchemaTraceListener.#ctor(System.String,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (fileName As String, name As String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; EventSchemaTraceListener(System::String ^ fileName, System::String ^ name);" />
+      <MemberSignature Language="F#" Value="new System.Diagnostics.EventSchemaTraceListener : string * string -&gt; System.Diagnostics.EventSchemaTraceListener" Usage="new System.Diagnostics.EventSchemaTraceListener (fileName, name)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters>
+        <Parameter Name="fileName" Type="System.String" />
+        <Parameter Name="name" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="fileName">Новый путь для файла журнала.</param>
+        <param name="name">Имя прослушивателя.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Diagnostics.EventSchemaTraceListener" /> с заданным именем, используя указанный файл в качестве получателя выходных данных отладки и трассировки.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Examples  
+ В следующем примере кода показано, как использовать <xref:System.Diagnostics.EventSchemaTraceListener.%23ctor%28System.String%2CSystem.String%2CSystem.Int32%29?displayProperty=nameWithType> конструктор.  
+  
+ [!code-csharp[System.Diagnostics.EventSchemaTraceListener.Ctors#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener.Ctors/CS/program.cs#2)]
+ [!code-vb[System.Diagnostics.EventSchemaTraceListener.Ctors#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener.Ctors/VB/program.vb#2)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public EventSchemaTraceListener (string fileName, string name, int bufferSize);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(string fileName, string name, int32 bufferSize) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Diagnostics.EventSchemaTraceListener.#ctor(System.String,System.String,System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (fileName As String, name As String, bufferSize As Integer)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; EventSchemaTraceListener(System::String ^ fileName, System::String ^ name, int bufferSize);" />
+      <MemberSignature Language="F#" Value="new System.Diagnostics.EventSchemaTraceListener : string * string * int -&gt; System.Diagnostics.EventSchemaTraceListener" Usage="new System.Diagnostics.EventSchemaTraceListener (fileName, name, bufferSize)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters>
+        <Parameter Name="fileName" Type="System.String" />
+        <Parameter Name="name" Type="System.String" />
+        <Parameter Name="bufferSize" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="fileName">Новый путь для файла журнала.</param>
+        <param name="name">Имя прослушивателя.</param>
+        <param name="bufferSize">Размер буфера выходных данных (в байтах).</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Diagnostics.EventSchemaTraceListener" /> с заданным именем и указанным размером буфера, используя указанный файл в качестве получателя выходных данных отладки и трассировки.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Для соображений `bufferSize` производительности должен быть кратен 1024 байт.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как использовать <xref:System.Diagnostics.EventSchemaTraceListener.%23ctor%28System.String%2CSystem.String%2CSystem.Int32%29?displayProperty=nameWithType> конструктор.  
+  
+ [!code-csharp[System.Diagnostics.EventSchemaTraceListener.Ctors#3](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener.Ctors/CS/program.cs#3)]
+ [!code-vb[System.Diagnostics.EventSchemaTraceListener.Ctors#3](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener.Ctors/VB/program.vb#3)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public EventSchemaTraceListener (string fileName, string name, int bufferSize, System.Diagnostics.TraceLogRetentionOption logRetentionOption);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(string fileName, string name, int32 bufferSize, valuetype System.Diagnostics.TraceLogRetentionOption logRetentionOption) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Diagnostics.EventSchemaTraceListener.#ctor(System.String,System.String,System.Int32,System.Diagnostics.TraceLogRetentionOption)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (fileName As String, name As String, bufferSize As Integer, logRetentionOption As TraceLogRetentionOption)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; EventSchemaTraceListener(System::String ^ fileName, System::String ^ name, int bufferSize, System::Diagnostics::TraceLogRetentionOption logRetentionOption);" />
+      <MemberSignature Language="F#" Value="new System.Diagnostics.EventSchemaTraceListener : string * string * int * System.Diagnostics.TraceLogRetentionOption -&gt; System.Diagnostics.EventSchemaTraceListener" Usage="new System.Diagnostics.EventSchemaTraceListener (fileName, name, bufferSize, logRetentionOption)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="fileName" Type="System.String" />
+        <Parameter Name="name" Type="System.String" />
+        <Parameter Name="bufferSize" Type="System.Int32" />
+        <Parameter Name="logRetentionOption" Type="System.Diagnostics.TraceLogRetentionOption" />
+      </Parameters>
+      <Docs>
+        <param name="fileName">Новый путь для файла журнала.</param>
+        <param name="name">Имя прослушивателя.</param>
+        <param name="bufferSize">Размер буфера выходных данных (в байтах).</param>
+        <param name="logRetentionOption">Одно из значений <see cref="T:System.Diagnostics.TraceLogRetentionOption" />.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Diagnostics.EventSchemaTraceListener" /> с заданным именем и указанным размером буфера, используя указанный файл с заданной политикой хранения журнала в качестве получателя выходных данных отладки и трассировки.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Для соображений `bufferSize` производительности должен быть кратен 1024 байт.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как использовать <xref:System.Diagnostics.EventSchemaTraceListener.%23ctor%28System.String%2CSystem.String%2CSystem.Int32%2CSystem.Diagnostics.TraceLogRetentionOption%29?displayProperty=nameWithType> конструктор.  
+  
+ [!code-csharp[System.Diagnostics.EventSchemaTraceListener.Ctors#4](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener.Ctors/CS/program.cs#4)]
+ [!code-vb[System.Diagnostics.EventSchemaTraceListener.Ctors#4](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener.Ctors/VB/program.vb#4)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public EventSchemaTraceListener (string fileName, string name, int bufferSize, System.Diagnostics.TraceLogRetentionOption logRetentionOption, long maximumFileSize);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(string fileName, string name, int32 bufferSize, valuetype System.Diagnostics.TraceLogRetentionOption logRetentionOption, int64 maximumFileSize) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Diagnostics.EventSchemaTraceListener.#ctor(System.String,System.String,System.Int32,System.Diagnostics.TraceLogRetentionOption,System.Int64)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (fileName As String, name As String, bufferSize As Integer, logRetentionOption As TraceLogRetentionOption, maximumFileSize As Long)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; EventSchemaTraceListener(System::String ^ fileName, System::String ^ name, int bufferSize, System::Diagnostics::TraceLogRetentionOption logRetentionOption, long maximumFileSize);" />
+      <MemberSignature Language="F#" Value="new System.Diagnostics.EventSchemaTraceListener : string * string * int * System.Diagnostics.TraceLogRetentionOption * int64 -&gt; System.Diagnostics.EventSchemaTraceListener" Usage="new System.Diagnostics.EventSchemaTraceListener (fileName, name, bufferSize, logRetentionOption, maximumFileSize)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters>
+        <Parameter Name="fileName" Type="System.String" />
+        <Parameter Name="name" Type="System.String" />
+        <Parameter Name="bufferSize" Type="System.Int32" />
+        <Parameter Name="logRetentionOption" Type="System.Diagnostics.TraceLogRetentionOption" />
+        <Parameter Name="maximumFileSize" Type="System.Int64" />
+      </Parameters>
+      <Docs>
+        <param name="fileName">Новый путь для файла журнала.</param>
+        <param name="name">Имя прослушивателя.</param>
+        <param name="bufferSize">Размер буфера выходных данных (в байтах).</param>
+        <param name="logRetentionOption">Одно из значений перечисления <see cref="T:System.Diagnostics.TraceLogRetentionOption" />.</param>
+        <param name="maximumFileSize">Максимальный размер файла в байтах.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Diagnostics.EventSchemaTraceListener" /> с заданным именем и указанным размером буфера, используя указанный файл с заданной политикой хранения и максимальным размером журнала в качестве получателя выходных данных отладки и трассировки.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Для соображений `bufferSize` производительности и `maximumFileSize` должно быть кратным 1024 байт. `maximumFileSize`не является абсолютным значением, это пороговое значение, которое может быть превышено до размера последнего сообщения.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как использовать <xref:System.Diagnostics.EventSchemaTraceListener.%23ctor%28System.String%2CSystem.String%2CSystem.Int32%2CSystem.Diagnostics.TraceLogRetentionOption%2CSystem.Int64%29?displayProperty=nameWithType> конструктор.  
+  
+ [!code-csharp[System.Diagnostics.EventSchemaTraceListener.Ctors#5](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener.Ctors/CS/program.cs#5)]
+ [!code-vb[System.Diagnostics.EventSchemaTraceListener.Ctors#5](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener.Ctors/VB/program.vb#5)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="maximumFileSize" /> является отрицательным числом или меньшим, чем <paramref name="bufferSize" />.
+
+- или -
+
+<paramref name="bufferSize" /> является отрицательным числом.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public EventSchemaTraceListener (string fileName, string name, int bufferSize, System.Diagnostics.TraceLogRetentionOption logRetentionOption, long maximumFileSize, int maximumNumberOfFiles);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(string fileName, string name, int32 bufferSize, valuetype System.Diagnostics.TraceLogRetentionOption logRetentionOption, int64 maximumFileSize, int32 maximumNumberOfFiles) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Diagnostics.EventSchemaTraceListener.#ctor(System.String,System.String,System.Int32,System.Diagnostics.TraceLogRetentionOption,System.Int64,System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (fileName As String, name As String, bufferSize As Integer, logRetentionOption As TraceLogRetentionOption, maximumFileSize As Long, maximumNumberOfFiles As Integer)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; EventSchemaTraceListener(System::String ^ fileName, System::String ^ name, int bufferSize, System::Diagnostics::TraceLogRetentionOption logRetentionOption, long maximumFileSize, int maximumNumberOfFiles);" />
+      <MemberSignature Language="F#" Value="new System.Diagnostics.EventSchemaTraceListener : string * string * int * System.Diagnostics.TraceLogRetentionOption * int64 * int -&gt; System.Diagnostics.EventSchemaTraceListener" Usage="new System.Diagnostics.EventSchemaTraceListener (fileName, name, bufferSize, logRetentionOption, maximumFileSize, maximumNumberOfFiles)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="fileName" Type="System.String" />
+        <Parameter Name="name" Type="System.String" />
+        <Parameter Name="bufferSize" Type="System.Int32" />
+        <Parameter Name="logRetentionOption" Type="System.Diagnostics.TraceLogRetentionOption" />
+        <Parameter Name="maximumFileSize" Type="System.Int64" />
+        <Parameter Name="maximumNumberOfFiles" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="fileName">Новый путь для файла журнала.</param>
+        <param name="name">Имя прослушивателя.</param>
+        <param name="bufferSize">Размер буфера выходных данных (в байтах).</param>
+        <param name="logRetentionOption">Одно из значений перечисления <see cref="T:System.Diagnostics.TraceLogRetentionOption" />.</param>
+        <param name="maximumFileSize">Максимальный размер файла в байтах.</param>
+        <param name="maximumNumberOfFiles">Максимальное количество выходных файлов журнала.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Diagnostics.EventSchemaTraceListener" /> с заданным именем и указанным размером буфера, используя в качестве получателя выходных данных отладки и трассировки указанный файл с заданной политикой хранения и максимальным размером журнала, а также счетчиком файлов.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Для соображений `bufferSize` производительности и `maximumFileSize` должно быть кратным 1024 байт. `maximumFileSize`не является абсолютным значением; Это пороговое значение, которое может быть превышено до размера последнего сообщения.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как использовать <xref:System.Diagnostics.EventSchemaTraceListener.%23ctor%2A> конструктор. Этот пример кода является частью более крупного примера, предоставляемого для <xref:System.Diagnostics.EventSchemaTraceListener> класса.  
+  
+ [!code-csharp[System.Diagnostics.EventSchemaTraceListener#2](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener/cs/program.cs#2)]
+ [!code-vb[System.Diagnostics.EventSchemaTraceListener#2](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener/vb/program.vb#2)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="maximumFileSize" /> является отрицательным числом или меньшим, чем <paramref name="bufferSize" />.
+
+-или-
+
+Значение параметра <paramref name="maximumNumberOfFiles" /> меньше 1, а значение параметра <paramref name="logRetentionOption" /> равно <see cref="F:System.Diagnostics.TraceLogRetentionOption.LimitedSequentialFiles" />.
+
+- или -
+
+<paramref name="maximumNumberOfFiles" /> меньше 2, а <paramref name="logRetentionOption" /> равно <see cref="F:System.Diagnostics.TraceLogRetentionOption.LimitedCircularFiles" />.
+
+- или -
+
+<paramref name="bufferSize" /> является отрицательным числом.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="BufferSize">
+      <MemberSignature Language="C#" Value="public int BufferSize { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 BufferSize" />
+      <MemberSignature Language="DocId" Value="P:System.Diagnostics.EventSchemaTraceListener.BufferSize" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property BufferSize As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int BufferSize { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.BufferSize : int" Usage="System.Diagnostics.EventSchemaTraceListener.BufferSize" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает размер буфера выходных данных.</summary>
+        <value>Размер буфера выходных данных (в байтах).</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение свойства задается `bufferSize` параметром в конструкторе. По соображениям производительности размер буфера должен быть кратен 1024 байт. Для лучшей производительности рекомендуется использовать размер по умолчанию 32 * 1024 байт\*или 64 1024 байт.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как отобразить значение <xref:System.Diagnostics.EventSchemaTraceListener.BufferSize%2A> свойства. Этот пример кода является частью более крупного примера, предоставляемого для <xref:System.Diagnostics.EventSchemaTraceListener> класса.  
+  
+ [!code-csharp[System.Diagnostics.EventSchemaTraceListener#5](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener/cs/program.cs#5)]
+ [!code-vb[System.Diagnostics.EventSchemaTraceListener#5](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener/vb/program.vb#5)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Close">
+      <MemberSignature Language="C#" Value="public override void Close ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void Close() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Diagnostics.EventSchemaTraceListener.Close" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Sub Close ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void Close();" />
+      <MemberSignature Language="F#" Value="override this.Close : unit -&gt; unit" Usage="eventSchemaTraceListener.Close " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Закрывает файл журнала данного прослушивателя. Теперь этот журнал не будет получать выходные данные отладки или трассировки.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Fail">
+      <MemberSignature Language="C#" Value="public override void Fail (string message, string detailMessage);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void Fail(string message, string detailMessage) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Diagnostics.EventSchemaTraceListener.Fail(System.String,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Sub Fail (message As String, detailMessage As String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void Fail(System::String ^ message, System::String ^ detailMessage);" />
+      <MemberSignature Language="F#" Value="override this.Fail : string * string -&gt; unit" Usage="eventSchemaTraceListener.Fail (message, detailMessage)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="message" Type="System.String" />
+        <Parameter Name="detailMessage" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="message">Записываемое базовое сообщение об ошибке.</param>
+        <param name="detailMessage">Подробное сообщение об ошибке, дополняющее базовое сообщение об ошибке.</param>
+        <summary>Записывает в файл журнала сведения об ошибках, в том числе базовое и подробное сообщение об ошибке.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Flush">
+      <MemberSignature Language="C#" Value="public override void Flush ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void Flush() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Diagnostics.EventSchemaTraceListener.Flush" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Sub Flush ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void Flush();" />
+      <MemberSignature Language="F#" Value="override this.Flush : unit -&gt; unit" Usage="eventSchemaTraceListener.Flush " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Вызывает запись буферизированных данных в журнал этого прослушивателя.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetSupportedAttributes">
+      <MemberSignature Language="C#" Value="protected override string[] GetSupportedAttributes ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance string[] GetSupportedAttributes() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Diagnostics.EventSchemaTraceListener.GetSupportedAttributes" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Function GetSupportedAttributes () As String()" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override cli::array &lt;System::String ^&gt; ^ GetSupportedAttributes();" />
+      <MemberSignature Language="F#" Value="override this.GetSupportedAttributes : unit -&gt; string[]" Usage="eventSchemaTraceListener.GetSupportedAttributes " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String[]</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Возвращает настраиваемые атрибуты конфигурации XML, поддерживаемые прослушивателем трассировки.</summary>
+        <returns>Массив типа <see cref="T:System.String" />, содержащий атрибуты конфигурации XML, распознаваемые данным прослушивателем.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Пользовательские атрибуты, возвращаемые этим методом, можно использовать в XML-файле конфигурации для управления поведением экземпляра <xref:System.Diagnostics.EventSchemaTraceListener> класса. Использование любого другого атрибута вызывает исключение конфигурации. <xref:System.Diagnostics.EventSchemaTraceListener.GetSupportedAttributes%2A> Метод <xref:System.Diagnostics.EventSchemaTraceListener>  для возвращает следующие значения массива строк: "bufferSize", "логретентионоптион", "максимумфилесизе" и "максимумнумбероффилес".  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="IsThreadSafe">
+      <MemberSignature Language="C#" Value="public override bool IsThreadSafe { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool IsThreadSafe" />
+      <MemberSignature Language="DocId" Value="P:System.Diagnostics.EventSchemaTraceListener.IsThreadSafe" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides ReadOnly Property IsThreadSafe As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property bool IsThreadSafe { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.IsThreadSafe : bool" Usage="System.Diagnostics.EventSchemaTraceListener.IsThreadSafe" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает значение, указывающее, является ли прослушиватель трассировки потокобезопасным.</summary>
+        <value>Всегда возвращает значение <see langword="true" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Examples  
+ В следующем примере кода показано, как отобразить значение <xref:System.Diagnostics.EventSchemaTraceListener.IsThreadSafe%2A> свойства. Этот пример кода является частью более крупного примера, предоставляемого для <xref:System.Diagnostics.EventSchemaTraceListener> класса.  
+  
+ [!code-csharp[System.Diagnostics.EventSchemaTraceListener#4](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener/cs/program.cs#4)]
+ [!code-vb[System.Diagnostics.EventSchemaTraceListener#4](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener/vb/program.vb#4)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="MaximumFileSize">
+      <MemberSignature Language="C#" Value="public long MaximumFileSize { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int64 MaximumFileSize" />
+      <MemberSignature Language="DocId" Value="P:System.Diagnostics.EventSchemaTraceListener.MaximumFileSize" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property MaximumFileSize As Long" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property long MaximumFileSize { long get(); };" />
+      <MemberSignature Language="F#" Value="member this.MaximumFileSize : int64" Usage="System.Diagnostics.EventSchemaTraceListener.MaximumFileSize" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int64</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает максимальный размер файла журнала.</summary>
+        <value>Максимальный размер файла в байтах.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение свойства задается `maximumFileSize` параметром в конструкторе `maximumFileSize` или атрибутом в файле конфигурации. Для повышения производительности следует задать максимальный размер файла, кратный 1024 байт. Значение <xref:System.Diagnostics.EventSchemaTraceListener.MaximumFileSize%2A> свойства не является абсолютным; это пороговое значение, которое может быть превышено до размера последнего сообщения.  
+  
+ В следующей таблице показаны возможные значения и значение по умолчанию для размера файла, связанного с каждым параметром хранения журнала трассировки. Значения, помеченные как N/A, указывают <xref:System.Diagnostics.EventSchemaTraceListener.MaximumFileSize%2A> , что свойство не проверяется <xref:System.Diagnostics.TraceLogRetentionOption> на наличие этого значения.  
+  
+|трацелогретентионоптион|Максимальный размер файла|Размер файла по умолчанию|  
+|-----------------------------|-----------------------|-----------------------|  
+|<xref:System.Diagnostics.TraceLogRetentionOption.LimitedCircularFiles>|Н/Д|-1|  
+|<xref:System.Diagnostics.TraceLogRetentionOption.LimitedSequentialFiles>|>0|4 КБ|  
+|<xref:System.Diagnostics.TraceLogRetentionOption.SingleFileBoundedSize>|>0|4 КБ|  
+|<xref:System.Diagnostics.TraceLogRetentionOption.SingleFileUnboundedSize>|>0|4 КБ|  
+|<xref:System.Diagnostics.TraceLogRetentionOption.UnlimitedSequentialFiles>|>0|4 КБ|  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как отобразить значение <xref:System.Diagnostics.EventSchemaTraceListener.MaximumFileSize%2A> свойства. Этот пример кода является частью более крупного примера, предоставляемого для <xref:System.Diagnostics.EventSchemaTraceListener> класса.  
+  
+ [!code-csharp[System.Diagnostics.EventSchemaTraceListener#6](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener/cs/program.cs#6)]
+ [!code-vb[System.Diagnostics.EventSchemaTraceListener#6](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener/vb/program.vb#6)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="MaximumNumberOfFiles">
+      <MemberSignature Language="C#" Value="public int MaximumNumberOfFiles { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 MaximumNumberOfFiles" />
+      <MemberSignature Language="DocId" Value="P:System.Diagnostics.EventSchemaTraceListener.MaximumNumberOfFiles" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property MaximumNumberOfFiles As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int MaximumNumberOfFiles { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.MaximumNumberOfFiles : int" Usage="System.Diagnostics.EventSchemaTraceListener.MaximumNumberOfFiles" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает максимальное количество файлов журнала.</summary>
+        <value>Максимальное количество файлов журнала, определяемое значением свойства <see cref="P:System.Diagnostics.EventSchemaTraceListener.TraceLogRetentionOption" /> файла.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение свойства задается `maximumNumberOfFiles` параметром в конструкторе `maximumNumberOfFiles` или атрибутом в файле конфигурации.  
+  
+ В следующей таблице показаны возможные значения параметров и количества файлов по умолчанию, связанные с каждым параметром хранения журнала трассировки. Значения, помеченные как N/A, указывают <xref:System.Diagnostics.EventSchemaTraceListener.MaximumNumberOfFiles%2A> , что свойство не проверяется <xref:System.Diagnostics.TraceLogRetentionOption> на наличие этого значения.  
+  
+|трацелогретентионоптион|Максимальное число файлов|Число файлов по умолчанию|  
+|-----------------------------|-----------------------------|-----------------------------|  
+|<xref:System.Diagnostics.TraceLogRetentionOption.LimitedCircularFiles>|Н/Д|1|  
+|<xref:System.Diagnostics.TraceLogRetentionOption.LimitedSequentialFiles>|Н/Д|1|  
+|<xref:System.Diagnostics.TraceLogRetentionOption.SingleFileBoundedSize>|Н/Д|-1|  
+|<xref:System.Diagnostics.TraceLogRetentionOption.SingleFileUnboundedSize>|>0|1|  
+|<xref:System.Diagnostics.TraceLogRetentionOption.UnlimitedSequentialFiles>|>1|2|  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как отобразить значение <xref:System.Diagnostics.EventSchemaTraceListener.MaximumNumberOfFiles%2A> свойства. Этот пример кода является частью более крупного примера, предоставляемого для <xref:System.Diagnostics.EventSchemaTraceListener> класса.  
+  
+ [!code-csharp[System.Diagnostics.EventSchemaTraceListener#7](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener/cs/program.cs#7)]
+ [!code-vb[System.Diagnostics.EventSchemaTraceListener#7](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener/vb/program.vb#7)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="TraceData">
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Записывает данные трассировки в файл журнал.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="TraceData">
+      <MemberSignature Language="C#" Value="public override void TraceData (System.Diagnostics.TraceEventCache eventCache, string source, System.Diagnostics.TraceEventType eventType, int id, object data);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void TraceData(class System.Diagnostics.TraceEventCache eventCache, string source, valuetype System.Diagnostics.TraceEventType eventType, int32 id, object data) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Diagnostics.EventSchemaTraceListener.TraceData(System.Diagnostics.TraceEventCache,System.String,System.Diagnostics.TraceEventType,System.Int32,System.Object)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Sub TraceData (eventCache As TraceEventCache, source As String, eventType As TraceEventType, id As Integer, data As Object)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void TraceData(System::Diagnostics::TraceEventCache ^ eventCache, System::String ^ source, System::Diagnostics::TraceEventType eventType, int id, System::Object ^ data);" />
+      <MemberSignature Language="F#" Value="override this.TraceData : System.Diagnostics.TraceEventCache * string * System.Diagnostics.TraceEventType * int * obj -&gt; unit" Usage="eventSchemaTraceListener.TraceData (eventCache, source, eventType, id, data)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="eventCache" Type="System.Diagnostics.TraceEventCache" />
+        <Parameter Name="source" Type="System.String" />
+        <Parameter Name="eventType" Type="System.Diagnostics.TraceEventType" />
+        <Parameter Name="id" Type="System.Int32" />
+        <Parameter Name="data" Type="System.Object" />
+      </Parameters>
+      <Docs>
+        <param name="eventCache">Объект <see cref="T:System.Diagnostics.TraceEventCache" />, содержащий текущие идентификаторы процесса и потока, а также сведения трассировки стека.</param>
+        <param name="source">Имя источника.</param>
+        <param name="eventType">Одно из значений перечисления <see cref="T:System.Diagnostics.TraceEventType" />.</param>
+        <param name="id">Числовой идентификатор события.</param>
+        <param name="data">Объект данных для выдачи.</param>
+        <summary>Записывает в файл журнала сведения трассировки, единичный объект данных и сведения о событии.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Параметры `eventCache`, `source`, `eventType`и используются в верхнем и нижнем колонтитулах трассировки. `id` Перед `id` записью параметр преобразуется в целое число без знака. Таким образом, отрицательное `id` значение записывается как большое положительное целое число. Параметр записывается `Data` как узел в `UserData` элементе. `data` `ToString` Метод объекта данных используется для преобразования объекта в строку.  
+  
+> [!IMPORTANT]
+>  Этот метод не предназначен для непосредственного вызова кодом приложения. Он вызывается методами <xref:System.Diagnostics.Debug>классов, <xref:System.Diagnostics.Trace>и <xref:System.Diagnostics.TraceSource> для записи данных трассировки.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="TraceData">
+      <MemberSignature Language="C#" Value="public override void TraceData (System.Diagnostics.TraceEventCache eventCache, string source, System.Diagnostics.TraceEventType eventType, int id, params object[] data);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void TraceData(class System.Diagnostics.TraceEventCache eventCache, string source, valuetype System.Diagnostics.TraceEventType eventType, int32 id, object[] data) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Diagnostics.EventSchemaTraceListener.TraceData(System.Diagnostics.TraceEventCache,System.String,System.Diagnostics.TraceEventType,System.Int32,System.Object[])" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Sub TraceData (eventCache As TraceEventCache, source As String, eventType As TraceEventType, id As Integer, ParamArray data As Object())" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void TraceData(System::Diagnostics::TraceEventCache ^ eventCache, System::String ^ source, System::Diagnostics::TraceEventType eventType, int id, ... cli::array &lt;System::Object ^&gt; ^ data);" />
+      <MemberSignature Language="F#" Value="override this.TraceData : System.Diagnostics.TraceEventCache * string * System.Diagnostics.TraceEventType * int * obj[] -&gt; unit" Usage="eventSchemaTraceListener.TraceData (eventCache, source, eventType, id, data)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="eventCache" Type="System.Diagnostics.TraceEventCache" />
+        <Parameter Name="source" Type="System.String" />
+        <Parameter Name="eventType" Type="System.Diagnostics.TraceEventType" />
+        <Parameter Name="id" Type="System.Int32" />
+        <Parameter Name="data" Type="System.Object[]">
+          <Attributes>
+            <Attribute FrameworkAlternate="netframework-3.5">
+              <AttributeName>System.ParamArray</AttributeName>
+            </Attribute>
+          </Attributes>
+        </Parameter>
+      </Parameters>
+      <Docs>
+        <param name="eventCache">Объект <see cref="T:System.Diagnostics.TraceEventCache" />, содержащий текущие идентификаторы процесса и потока, а также сведения трассировки стека.</param>
+        <param name="source">Имя источника.</param>
+        <param name="eventType">Одно из значений перечисления <see cref="T:System.Diagnostics.TraceEventType" />.</param>
+        <param name="id">Числовой идентификатор события.</param>
+        <param name="data">Массив объектов данных для выдачи.</param>
+        <summary>Записывает в файл журнала сведения трассировки, несколько объектов данных и сведения о событии.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Параметры `eventCache`, `source`, `eventType`и используются в верхнем и нижнем колонтитулах трассировки. `id` Перед `id` записью параметр преобразуется в целое число без знака. Таким образом, отрицательное `id` значение записывается как большое положительное целое число. Объекты в `data` массиве параметров записываются как `Data` узлы в `UserData` элементе. `ToString` Метод каждого объекта данных используется для преобразования объекта в строку.  
+  
+> [!IMPORTANT]
+>  Этот метод не предназначен для непосредственного вызова кодом приложения. Он вызывается методами <xref:System.Diagnostics.Debug>классов, <xref:System.Diagnostics.Trace>и <xref:System.Diagnostics.TraceSource> для записи данных трассировки.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="TraceEvent">
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Записывает сведения трассировки в файл журнала.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="TraceEvent">
+      <MemberSignature Language="C#" Value="public override void TraceEvent (System.Diagnostics.TraceEventCache eventCache, string source, System.Diagnostics.TraceEventType eventType, int id, string message);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void TraceEvent(class System.Diagnostics.TraceEventCache eventCache, string source, valuetype System.Diagnostics.TraceEventType eventType, int32 id, string message) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Diagnostics.EventSchemaTraceListener.TraceEvent(System.Diagnostics.TraceEventCache,System.String,System.Diagnostics.TraceEventType,System.Int32,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Sub TraceEvent (eventCache As TraceEventCache, source As String, eventType As TraceEventType, id As Integer, message As String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void TraceEvent(System::Diagnostics::TraceEventCache ^ eventCache, System::String ^ source, System::Diagnostics::TraceEventType eventType, int id, System::String ^ message);" />
+      <MemberSignature Language="F#" Value="override this.TraceEvent : System.Diagnostics.TraceEventCache * string * System.Diagnostics.TraceEventType * int * string -&gt; unit" Usage="eventSchemaTraceListener.TraceEvent (eventCache, source, eventType, id, message)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="eventCache" Type="System.Diagnostics.TraceEventCache" />
+        <Parameter Name="source" Type="System.String" />
+        <Parameter Name="eventType" Type="System.Diagnostics.TraceEventType" />
+        <Parameter Name="id" Type="System.Int32" />
+        <Parameter Name="message" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="eventCache">Объект <see cref="T:System.Diagnostics.TraceEventCache" />, содержащий текущие идентификаторы процесса и потока, а также сведения трассировки стека.</param>
+        <param name="source">Имя источника.</param>
+        <param name="eventType">Одно из значений перечисления <see cref="T:System.Diagnostics.TraceEventType" />.</param>
+        <param name="id">Числовой идентификатор события.</param>
+        <param name="message">Сообщение для записи.</param>
+        <summary>Записывает сведения трассировки, сообщение и сведения о событиях в файл журнала.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Параметры `eventCache`, `source`, `eventType`и используются в верхнем и нижнем колонтитулах трассировки. `id` Перед `id` записью параметр преобразуется в целое число без знака. Таким образом, отрицательное `id` значение записывается как большое положительное целое число. Параметр записывается `Data` как узел в `EventData` элементе. `message`  
+  
+> [!IMPORTANT]
+>  Этот метод не предназначен для непосредственного вызова кодом приложения. Он вызывается методами <xref:System.Diagnostics.Debug>классов, <xref:System.Diagnostics.Trace>и <xref:System.Diagnostics.TraceSource> для записи данных трассировки.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="TraceEvent">
+      <MemberSignature Language="C#" Value="public override void TraceEvent (System.Diagnostics.TraceEventCache eventCache, string source, System.Diagnostics.TraceEventType eventType, int id, string format, params object[] args);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void TraceEvent(class System.Diagnostics.TraceEventCache eventCache, string source, valuetype System.Diagnostics.TraceEventType eventType, int32 id, string format, object[] args) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Diagnostics.EventSchemaTraceListener.TraceEvent(System.Diagnostics.TraceEventCache,System.String,System.Diagnostics.TraceEventType,System.Int32,System.String,System.Object[])" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Sub TraceEvent (eventCache As TraceEventCache, source As String, eventType As TraceEventType, id As Integer, format As String, ParamArray args As Object())" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void TraceEvent(System::Diagnostics::TraceEventCache ^ eventCache, System::String ^ source, System::Diagnostics::TraceEventType eventType, int id, System::String ^ format, ... cli::array &lt;System::Object ^&gt; ^ args);" />
+      <MemberSignature Language="F#" Value="override this.TraceEvent : System.Diagnostics.TraceEventCache * string * System.Diagnostics.TraceEventType * int * string * obj[] -&gt; unit" Usage="eventSchemaTraceListener.TraceEvent (eventCache, source, eventType, id, format, args)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="eventCache" Type="System.Diagnostics.TraceEventCache" />
+        <Parameter Name="source" Type="System.String" />
+        <Parameter Name="eventType" Type="System.Diagnostics.TraceEventType" />
+        <Parameter Name="id" Type="System.Int32" />
+        <Parameter Name="format" Type="System.String" />
+        <Parameter Name="args" Type="System.Object[]">
+          <Attributes>
+            <Attribute FrameworkAlternate="netframework-3.5">
+              <AttributeName>System.ParamArray</AttributeName>
+            </Attribute>
+          </Attributes>
+        </Parameter>
+      </Parameters>
+      <Docs>
+        <param name="eventCache">Объект <see cref="T:System.Diagnostics.TraceEventCache" />, содержащий текущие идентификаторы процесса и потока, а также сведения трассировки стека.</param>
+        <param name="source">Имя источника.</param>
+        <param name="eventType">Одно из значений <see cref="T:System.Diagnostics.TraceEventType" />.</param>
+        <param name="id">Числовой идентификатор события.</param>
+        <param name="format">Строка форматирования, содержащая 0 или несколько элементов форматирования, связанных с объектами в массиве <paramref name="args" />.</param>
+        <param name="args">Массив объектов, содержащий нуль или более форматируемых объектов.</param>
+        <summary>Записывает сведения трассировки, форматированное сообщение и сведения о событиях в файл журнала.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Параметры `eventCache`, `source`, `eventType`и используются в верхнем и нижнем колонтитулах трассировки. `id` Перед `id` записью параметр преобразуется в целое число без знака. Таким образом, отрицательное `id` значение записывается как большое положительное целое число. Вызывается `format` `args` метод, а строка и массив передаются в качестве параметров. <xref:System.String.Format%28System.String%2CSystem.Object%5B%5D%29?displayProperty=nameWithType> Этот метод форматирует `args` массив объектов и записывает форматированный массив в `Data` качестве узла в `EventData` элемент.  
+  
+> [!IMPORTANT]
+>  Этот метод не предназначен для непосредственного вызова кодом приложения. Он вызывается методами <xref:System.Diagnostics.Debug>классов, <xref:System.Diagnostics.Trace>и <xref:System.Diagnostics.TraceSource> для записи данных трассировки.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="TraceLogRetentionOption">
+      <MemberSignature Language="C#" Value="public System.Diagnostics.TraceLogRetentionOption TraceLogRetentionOption { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance valuetype System.Diagnostics.TraceLogRetentionOption TraceLogRetentionOption" />
+      <MemberSignature Language="DocId" Value="P:System.Diagnostics.EventSchemaTraceListener.TraceLogRetentionOption" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property TraceLogRetentionOption As TraceLogRetentionOption" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Diagnostics::TraceLogRetentionOption TraceLogRetentionOption { System::Diagnostics::TraceLogRetentionOption get(); };" />
+      <MemberSignature Language="F#" Value="member this.TraceLogRetentionOption : System.Diagnostics.TraceLogRetentionOption" Usage="System.Diagnostics.EventSchemaTraceListener.TraceLogRetentionOption" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Diagnostics.TraceLogRetentionOption</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает для файла параметр хранения журнала трассировки.</summary>
+        <value>Одно из значений перечисления <see cref="T:System.Diagnostics.TraceLogRetentionOption" />. Значение по умолчанию — <see cref="F:System.Diagnostics.TraceLogRetentionOption.SingleFileUnboundedSize" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Examples  
+ В следующем примере кода показано, как отобразить значение <xref:System.Diagnostics.EventSchemaTraceListener.TraceLogRetentionOption%2A> свойства. Этот пример кода является частью более крупного примера, предоставляемого для <xref:System.Diagnostics.EventSchemaTraceListener> класса.  
+  
+ [!code-csharp[System.Diagnostics.EventSchemaTraceListener#9](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener/cs/program.cs#9)]
+ [!code-vb[System.Diagnostics.EventSchemaTraceListener#9](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.Diagnostics.EventSchemaTraceListener/vb/program.vb#9)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="TraceTransfer">
+      <MemberSignature Language="C#" Value="public override void TraceTransfer (System.Diagnostics.TraceEventCache eventCache, string source, int id, string message, Guid relatedActivityId);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void TraceTransfer(class System.Diagnostics.TraceEventCache eventCache, string source, int32 id, string message, valuetype System.Guid relatedActivityId) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Diagnostics.EventSchemaTraceListener.TraceTransfer(System.Diagnostics.TraceEventCache,System.String,System.Int32,System.String,System.Guid)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Sub TraceTransfer (eventCache As TraceEventCache, source As String, id As Integer, message As String, relatedActivityId As Guid)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void TraceTransfer(System::Diagnostics::TraceEventCache ^ eventCache, System::String ^ source, int id, System::String ^ message, Guid relatedActivityId);" />
+      <MemberSignature Language="F#" Value="override this.TraceTransfer : System.Diagnostics.TraceEventCache * string * int * string * Guid -&gt; unit" Usage="eventSchemaTraceListener.TraceTransfer (eventCache, source, id, message, relatedActivityId)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="eventCache" Type="System.Diagnostics.TraceEventCache" />
+        <Parameter Name="source" Type="System.String" />
+        <Parameter Name="id" Type="System.Int32" />
+        <Parameter Name="message" Type="System.String" />
+        <Parameter Name="relatedActivityId" Type="System.Guid" />
+      </Parameters>
+      <Docs>
+        <param name="eventCache">Объект <see cref="T:System.Diagnostics.TraceEventCache" />, содержащий текущие идентификаторы процесса и потока, а также сведения трассировки стека.</param>
+        <param name="source">Имя источника.</param>
+        <param name="id">Числовой идентификатор события.</param>
+        <param name="message">Сообщение трассировки для записи.</param>
+        <param name="relatedActivityId">Структура <see cref="T:System.Guid" />, идентифицирующая сопутствующую активность.</param>
+        <summary>Записывает сведения трассировки, включая идентификацию сопутствующего действия, сообщение и сведения о событии в файл журнала.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Diagnostics.EventSchemaTraceListener.TraceTransfer%2A> Метод используется для корреляции связанных трассировок. Параметры `eventCache`, `source`, `id`и используются в верхнем и нижнем колонтитулах трассировки. `relatedActivityId` Перед `id` записью параметр преобразуется в целое число без знака. Таким образом, отрицательное `id` значение записывается как большое положительное целое число. Параметр записывается как  `Data` элемент. `message` Метод вызывается для преобразования значения в отформатированную строку "B", которая отображается в заголовке. `relatedActivityId` <xref:System.Guid.ToString%28System.String%29?displayProperty=nameWithType> Элемент в нижнем колонтитуле определяет тип события трассировки <xref:System.Diagnostics.TraceEventType.Transfer>как. `Opcode`  
+  
+> [!IMPORTANT]
+>  <xref:System.Diagnostics.EventSchemaTraceListener.TraceTransfer%2A> Метод не должен вызываться кодом приложения. Он предназначен для использования <xref:System.Diagnostics.TraceSource> объектом для выдачи сведений трассировки для своего <xref:System.Diagnostics.TraceSource.TraceTransfer%2A> метода.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Write">
+      <MemberSignature Language="C#" Value="public override void Write (string message);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void Write(string message) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Diagnostics.EventSchemaTraceListener.Write(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Sub Write (message As String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void Write(System::String ^ message);" />
+      <MemberSignature Language="F#" Value="override this.Write : string -&gt; unit" Usage="eventSchemaTraceListener.Write message" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="message" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="message">Сообщение для записи.</param>
+        <summary>Записывает сообщение в файл журнала, не указывая какой-либо дополнительной контекстной информации.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод вызывается для записи сообщения в журнал <xref:System.Diagnostics.TraceEventType.Information> как события. <xref:System.Diagnostics.EventSchemaTraceListener.TraceEvent%2A>  
+  
+> [!IMPORTANT]
+>  Этот метод не предназначен для непосредственного вызова кодом приложения. Он вызывается методами <xref:System.Diagnostics.Debug>классов, <xref:System.Diagnostics.Trace>и <xref:System.Diagnostics.TraceSource> для записи данных трассировки.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="WriteLine">
+      <MemberSignature Language="C#" Value="public override void WriteLine (string message);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void WriteLine(string message) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Diagnostics.EventSchemaTraceListener.WriteLine(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Sub WriteLine (message As String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void WriteLine(System::String ^ message);" />
+      <MemberSignature Language="F#" Value="override this.WriteLine : string -&gt; unit" Usage="eventSchemaTraceListener.WriteLine message" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="message" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="message">Сообщение для записи.</param>
+        <summary>Записывает в файл журнала сообщение, после которого следует текущий разделитель строк, без какой-либо дополнительной контекстной информации.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод вызывается для записи сообщения в журнал <xref:System.Diagnostics.TraceEventType.Information> как события. <xref:System.Diagnostics.EventSchemaTraceListener.TraceEvent%2A>  
+  
+> [!IMPORTANT]
+>  Этот метод не предназначен для непосредственного вызова кодом приложения. Он вызывается методами <xref:System.Diagnostics.Debug>классов, <xref:System.Diagnostics.Trace>и <xref:System.Diagnostics.TraceSource> для записи данных трассировки.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Writer">
+      <MemberSignature Language="C#" Value="public System.IO.TextWriter Writer { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.IO.TextWriter Writer" />
+      <MemberSignature Language="DocId" Value="P:System.Diagnostics.EventSchemaTraceListener.Writer" />
+      <MemberSignature Language="VB.NET" Value="Public Property Writer As TextWriter" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::IO::TextWriter ^ Writer { System::IO::TextWriter ^ get(); void set(System::IO::TextWriter ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.Writer : System.IO.TextWriter with get, set" Usage="System.Diagnostics.EventSchemaTraceListener.Writer" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>3.5.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>get: System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.IO.TextWriter</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает основной модуль записи текста, записывающий данные в файл журнала.</summary>
+        <value>Объект <see cref="T:System.IO.TextWriter" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Попытка использовать метод доступа set для <xref:System.Diagnostics.EventSchemaTraceListener.Writer%2A> свойства <xref:System.NotSupportedException>вызывает исключение.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.NotSupportedException">Предпринята попытка присвоить значение свойству <see cref="P:System.Diagnostics.EventSchemaTraceListener.Writer" />.</exception>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
