@@ -1,0 +1,1272 @@
+<Type Name="ServiceBase" FullName="System.ServiceProcess.ServiceBase">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="a9f9c0589c228e3c4dfc0dcc9de08488d92bee1b" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70511125" /></Metadata><TypeSignature Language="C#" Value="public class ServiceBase : System.ComponentModel.Component" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit ServiceBase extends System.ComponentModel.Component" />
+  <TypeSignature Language="DocId" Value="T:System.ServiceProcess.ServiceBase" />
+  <TypeSignature Language="VB.NET" Value="Public Class ServiceBase&#xA;Inherits Component" />
+  <TypeSignature Language="C++ CLI" Value="public ref class ServiceBase : System::ComponentModel::Component" />
+  <TypeSignature Language="F#" Value="type ServiceBase = class&#xA;    inherit Component" />
+  <AssemblyInfo>
+    <AssemblyName>System.ServiceProcess</AssemblyName>
+    <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+    <AssemblyVersion>4.2.1.0</AssemblyVersion>
+    <AssemblyVersion>4.2.2.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.ComponentModel.Component</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Attributes>
+    <Attribute FrameworkAlternate="netframework-1.1;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+      <AttributeName>System.ComponentModel.InstallerType(typeof(System.ServiceProcess.ServiceProcessInstaller))</AttributeName>
+    </Attribute>
+    <Attribute FrameworkAlternate="netframework-1.1">
+      <AttributeName>System.ComponentModel.Designer("Microsoft.VisualStudio.Install.UserNTServiceDesigner, Microsoft.VisualStudio, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "System.ComponentModel.Design.IRootDesigner")</AttributeName>
+    </Attribute>
+  </Attributes>
+  <Docs>
+    <summary>Предоставляет базовый класс для службы, которая будет существовать в рамках служебного приложения. При создании нового класса службы необходимо наследовать от класса <see cref="T:System.ServiceProcess.ServiceBase" />.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Наследование от <xref:System.ServiceProcess.ServiceBase> при определении класса службы в приложении службы. Любая полезная служба переопределяет <xref:System.ServiceProcess.ServiceBase.OnStart%2A> методы <xref:System.ServiceProcess.ServiceBase.OnStop%2A> и. Для дополнительных функций можно переопределить <xref:System.ServiceProcess.ServiceBase.OnPause%2A> и <xref:System.ServiceProcess.ServiceBase.OnContinue%2A> с конкретным поведением в ответ на изменения в состоянии службы.  
+  
+ Служба — это длительно выполняемый исполняемый файл, который не поддерживает пользовательский интерфейс и который может не запускаться под учетной записью пользователя, выполнившего вход. Служба может запускаться без входа пользователя в систему на компьютере.  
+  
+ По умолчанию службы выполняются под системной учетной записью, которая не совпадает с учетной записью администратора. Права системной учетной записи изменить нельзя. Кроме того, можно использовать <xref:System.ServiceProcess.ServiceProcessInstaller> для указания учетной записи пользователя, под которой будет выполняться служба.  
+  
+ Исполняемый объект может содержать более одной службы, но должен содержать отдельную <xref:System.ServiceProcess.ServiceInstaller> для каждой службы. <xref:System.ServiceProcess.ServiceInstaller> Экземпляр регистрирует службу в системе. Установщик также связывает каждую службу с журналом событий, который можно использовать для записи команд службы. `main()` Функция в исполняемом файле определяет, какие службы должны запускаться. Текущим рабочим каталогом службы является системный каталог, а не каталог, в котором находится исполняемый файл.  
+  
+ При запуске службы система находит исполняемый файл и выполняет <xref:System.ServiceProcess.ServiceBase.OnStart%2A> метод для этой службы, который содержится в исполняемом файле. Однако запуск службы не совпадает с запуском исполняемого файла. Исполняемый файл загружает только службу. Служба доступна (например, запущена и остановлена) через диспетчер управления службами.  
+  
+ Исполняемый объект вызывает <xref:System.ServiceProcess.ServiceBase> конструктор производного класса при первом вызове Start в службе. Метод <xref:System.ServiceProcess.ServiceBase.OnStart%2A> обработки команд вызывается сразу после выполнения конструктора. Конструктор не выполняется снова после первого момента загрузки службы, поэтому необходимо отделить обработку, выполняемую конструктором, от той, которая выполнялась <xref:System.ServiceProcess.ServiceBase.OnStart%2A>. Все ресурсы, которые можно освободить, <xref:System.ServiceProcess.ServiceBase.OnStop%2A> должны быть созданы в <xref:System.ServiceProcess.ServiceBase.OnStart%2A>. Создание ресурсов в конструкторе предотвращает их правильное создание, если служба запускается снова после <xref:System.ServiceProcess.ServiceBase.OnStop%2A> освобождения ресурсов.  
+  
+ Диспетчер управления службами (SCM) предоставляет способ взаимодействия со службой. С помощью SCM можно передавать в службу запуск, остановку, приостановку, продолжение или пользовательские команды. SCM использует значения <xref:System.ServiceProcess.ServiceBase.CanStop%2A> и <xref:System.ServiceProcess.ServiceBase.CanPauseAndContinue%2A> для определения того, принимает ли служба команды остановить, приостановить или продолжить. Команды остановить, приостановить и продолжить включаются в контекстных меню SCM только в том случае, если <xref:System.ServiceProcess.ServiceBase.CanStop%2A> соответствующее <xref:System.ServiceProcess.ServiceBase.CanPauseAndContinue%2A> свойство `true` или находится в классе службы. Если параметр включен, команда передается в службу, <xref:System.ServiceProcess.ServiceBase.OnStop%2A>вызывается метод, <xref:System.ServiceProcess.ServiceBase.OnContinue%2A> <xref:System.ServiceProcess.ServiceBase.OnPause%2A>или. Если <xref:System.ServiceProcess.ServiceBase.CanStop%2A>параметр <xref:System.ServiceProcess.ServiceBase.CanShutdown%2A>, или <xref:System.ServiceProcess.ServiceBase.CanPauseAndContinue%2A> имеет значение `false` , соответствующий метод обработки команд (например, <xref:System.ServiceProcess.ServiceBase.OnStop%2A>) не будет обрабатываться, даже если был реализован метод.  
+  
+ <xref:System.ServiceProcess.ServiceController> Класс можно использовать для программного управления тем, что SCM использует пользовательский интерфейс. Задачи, доступные в консоли, можно автоматизировать. Если <xref:System.ServiceProcess.ServiceBase.CanStop%2A>, <xref:System.ServiceProcess.ServiceBase.CanShutdown%2A>или имеет <xref:System.ServiceProcess.ServiceBase.CanPauseAndContinue%2A>  <xref:System.ServiceProcess.ServiceBase.OnStop%2A>значение , но не реализован соответствующий метод обработки команд (например,), система создает исключение и игнорирует команду. `true`  
+  
+ Не требуется реализовывать <xref:System.ServiceProcess.ServiceBase.OnStart%2A>, <xref:System.ServiceProcess.ServiceBase.OnStop%2A>или любой другой метод в <xref:System.ServiceProcess.ServiceBase>. Однако поведение службы описывается в <xref:System.ServiceProcess.ServiceBase.OnStart%2A>, поэтому, как минимум, этот член должен быть переопределен. Функция исполняемого файла регистрирует службу в исполняемом файле с помощью диспетчера управления службами путем <xref:System.ServiceProcess.ServiceBase.Run%2A> вызова метода. `main()` Свойство объекта, передаваемое <xref:System.ServiceProcess.ServiceBase.Run%2A> в метод, должно соответствовать <xref:System.ServiceProcess.ServiceInstaller.ServiceName%2A> свойству установщика службы для этой службы. <xref:System.ServiceProcess.ServiceBase> <xref:System.ServiceProcess.ServiceBase.ServiceName%2A>  
+  
+ Для установки служб `InstallUtil.exe` в системе можно использовать.  
+  
+> [!NOTE]
+>  Для получения уведомлений о вызовах служб можно указать журнал, отличный от журнала событий приложений, но ни <xref:System.ServiceProcess.ServiceBase.AutoLog%2A> <xref:System.ServiceProcess.ServiceBase.EventLog%2A> свойство, ни свойства не могут записывать в пользовательский журнал. Задайте <xref:System.ServiceProcess.ServiceBase.AutoLog%2A> значение `false` , если не нужно использовать автоматическое ведение журнала.  
+  
+ ]]></format>
+    </remarks>
+    <altmember cref="T:System.ServiceProcess.ServiceProcessInstaller" />
+    <altmember cref="T:System.ServiceProcess.ServiceInstaller" />
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public ServiceBase ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceProcess.ServiceBase.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; ServiceBase();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters />
+      <Docs>
+        <summary>Создает новый экземпляр класса <see cref="T:System.ServiceProcess.ServiceBase" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Не создавайте экземпляр <xref:System.ServiceProcess.ServiceBase> класса. Вместо этого следует создать производный класс от <xref:System.ServiceProcess.ServiceBase> класса и экземпляр. Минимальное значение, которое необходимо реализовать в конструкторе для класса, унаследованного <xref:System.ServiceProcess.ServiceBase> от, — это <xref:System.ServiceProcess.ServiceBase.ServiceName%2A> установка в компоненте. В конструкторе не требуется никакая другая обработка. Большую инициализацию следует выполнять в <xref:System.ServiceProcess.ServiceBase.OnStart%2A> , а не в конструкторе. В противном случае нет гарантии, что объекты будут повторно инициализированы при перезапуске службы после ее остановки.  
+  
+ При переопределении конструктора в производном классе вызовите конструктор базового класса в коде.  
+  
+ Конструктор задает <xref:System.ServiceProcess.ServiceBase.AutoLog%2A> для значение `true` . <xref:System.ServiceProcess.ServiceBase> Если вы не хотите автоматически регистрировать вызовы службы из диспетчера управления службами (SCM), задайте для <xref:System.ServiceProcess.ServiceBase.AutoLog%2A> `false`параметра значение.  
+  
+ Если исполняемый объект содержит одну службу, система вызывает конструктор службы при выборе Start из SCM и запускает деструктор, если вызывается метод остановке.  
+  
+ Если исполняемый объект содержит несколько служб, вызов команды Start в одной службе приводит к вызову конструкторов для всех служб в исполняемом файле, но запускается только указанная служба. Деструкторы для служб выполняются вместе, когда все службы остановлены, а не по отдельности при остановке каждой службы.  
+  
+> [!NOTE]
+>  При переопределении конструктора базового класса необходимо явно вызвать его в конструкторе производного класса.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnStart(System.String[])" />
+        <altmember cref="P:System.ServiceProcess.ServiceBase.AutoLog" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.Run(System.ServiceProcess.ServiceBase[])" />
+      </Docs>
+    </Member>
+    <Member MemberName="AutoLog">
+      <MemberSignature Language="C#" Value="public bool AutoLog { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool AutoLog" />
+      <MemberSignature Language="DocId" Value="P:System.ServiceProcess.ServiceBase.AutoLog" />
+      <MemberSignature Language="VB.NET" Value="Public Property AutoLog As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool AutoLog { bool get(); void set(bool value); };" />
+      <MemberSignature Language="F#" Value="member this.AutoLog : bool with get, set" Usage="System.ServiceProcess.ServiceBase.AutoLog" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-1.1;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.ComponentModel.DefaultValue(true)</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-1.1;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.ServiceProcess.ServiceProcessDescription("SBAutoLog")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Определяет необходимость записи в журнал событий команд запуска, останова, паузы и возобновления.</summary>
+        <value><see langword="true" /> — данные должны записываться в журнал событий; в противном случае — <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.ServiceProcess.ServiceBase.AutoLog%2A> Указывает, что служба должна использовать журнал событий приложений для сообщения об ошибках команд, а также сведения об изменении состояния для событий запуска, остановки, приостановки и `true`  продолжения работы службы. В качестве журнала <xref:System.Diagnostics.EventLog.Source%2A?displayProperty=nameWithType>используется имя службы.  
+  
+ Для отправки сведений в пользовательский журнал событий, а не в журнал приложений, задайте <xref:System.ServiceProcess.ServiceBase.AutoLog%2A> для `false` значение и напишите инструкции в методах <xref:System.ServiceProcess.ServiceBase.OnContinue%2A>обработки команд, <xref:System.ServiceProcess.ServiceBase.OnPause%2A>или <xref:System.ServiceProcess.ServiceBase.OnStop%2A> для публикации в соответствующем журнале.  
+  
+> [!NOTE]
+>  Объект <xref:System.ServiceProcess.ServiceBase.ServiceName%2A>, предоставляющий исходную строку для журнала событий, должен быть задан до того, как служба попытается выполнить запись в журнал событий. Попытка получить доступ к журналу событий до того, как имя источника будет задано, вызывает исключение.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.ServiceProcess.ServiceBase.EventLog" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnStart(System.String[])" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnStop" />
+      </Docs>
+    </Member>
+    <Member MemberName="CanHandlePowerEvent">
+      <MemberSignature Language="C#" Value="public bool CanHandlePowerEvent { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool CanHandlePowerEvent" />
+      <MemberSignature Language="DocId" Value="P:System.ServiceProcess.ServiceBase.CanHandlePowerEvent" />
+      <MemberSignature Language="VB.NET" Value="Public Property CanHandlePowerEvent As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool CanHandlePowerEvent { bool get(); void set(bool value); };" />
+      <MemberSignature Language="F#" Value="member this.CanHandlePowerEvent : bool with get, set" Usage="System.ServiceProcess.ServiceBase.CanHandlePowerEvent" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-1.1;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;dotnet-plat-ext-2.1;netcore-2.1;netcore-2.2;netcore-3.0;dotnet-plat-ext-2.2;dotnet-plat-ext-3.0">
+          <AttributeName>System.ComponentModel.DefaultValue(false)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает значение, указывающее, может ли служба обрабатывать уведомления об изменениях состояния питания компьютера.</summary>
+        <value><see langword="true" />, если служба обрабатывает изменения состояния питания, указанные в классе <see cref="T:System.ServiceProcess.PowerBroadcastStatus" />; в противном случае — <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ При изменении состояния электропитания компьютера диспетчер управления службами (SCM) проверяет, принимает ли служба команды событий питания, используя значение <xref:System.ServiceProcess.ServiceBase.CanHandlePowerEvent%2A>.  
+  
+ Если <xref:System.ServiceProcess.ServiceBase.CanHandlePowerEvent%2A> параметр `true`имеет значение, команда передается в службу, <xref:System.ServiceProcess.ServiceBase.OnPowerEvent%2A> а метод вызывается, если он определен. Если <xref:System.ServiceProcess.ServiceBase.OnPowerEvent%2A> не реализован в производном классе, SCM обрабатывает событие питания с помощью пустого метода базового класса <xref:System.ServiceProcess.ServiceBase.OnPowerEvent%2A?displayProperty=nameWithType> .  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Это свойство изменено после запуска службы.</exception>
+        <altmember cref="T:System.ServiceProcess.PowerBroadcastStatus" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnPowerEvent(System.ServiceProcess.PowerBroadcastStatus)" />
+        <altmember cref="P:System.ServiceProcess.ServiceBase.CanPauseAndContinue" />
+        <altmember cref="P:System.ServiceProcess.ServiceBase.CanShutdown" />
+        <altmember cref="P:System.ServiceProcess.ServiceBase.CanStop" />
+      </Docs>
+    </Member>
+    <Member MemberName="CanHandleSessionChangeEvent">
+      <MemberSignature Language="C#" Value="public bool CanHandleSessionChangeEvent { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool CanHandleSessionChangeEvent" />
+      <MemberSignature Language="DocId" Value="P:System.ServiceProcess.ServiceBase.CanHandleSessionChangeEvent" />
+      <MemberSignature Language="VB.NET" Value="Public Property CanHandleSessionChangeEvent As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool CanHandleSessionChangeEvent { bool get(); void set(bool value); };" />
+      <MemberSignature Language="F#" Value="member this.CanHandleSessionChangeEvent : bool with get, set" Usage="System.ServiceProcess.ServiceBase.CanHandleSessionChangeEvent" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;dotnet-plat-ext-2.1;netcore-2.1;netcore-2.2;netcore-3.0;dotnet-plat-ext-2.2;dotnet-plat-ext-3.0">
+          <AttributeName>System.ComponentModel.DefaultValue(false)</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Runtime.InteropServices.ComVisible(false)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает значение, показывающее, может ли служба обрабатывать события изменения сеанса, принимаемые от сеанса сервера терминалов.</summary>
+        <value><see langword="true" />, если служба может обрабатывать события изменения сеанса сервера терминалов; в противном случае — <see langword="false" />.</value>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.InvalidOperationException">Это свойство изменено после запуска службы.</exception>
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnSessionChange(System.ServiceProcess.SessionChangeDescription)" />
+        <altmember cref="P:System.ServiceProcess.ServiceBase.CanShutdown" />
+        <altmember cref="P:System.ServiceProcess.ServiceBase.CanStop" />
+        <altmember cref="P:System.ServiceProcess.ServiceBase.CanHandlePowerEvent" />
+      </Docs>
+    </Member>
+    <Member MemberName="CanPauseAndContinue">
+      <MemberSignature Language="C#" Value="public bool CanPauseAndContinue { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool CanPauseAndContinue" />
+      <MemberSignature Language="DocId" Value="P:System.ServiceProcess.ServiceBase.CanPauseAndContinue" />
+      <MemberSignature Language="VB.NET" Value="Public Property CanPauseAndContinue As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool CanPauseAndContinue { bool get(); void set(bool value); };" />
+      <MemberSignature Language="F#" Value="member this.CanPauseAndContinue : bool with get, set" Usage="System.ServiceProcess.ServiceBase.CanPauseAndContinue" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-1.1;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;dotnet-plat-ext-2.1;netcore-2.1;netcore-2.2;netcore-3.0;dotnet-plat-ext-2.2;dotnet-plat-ext-3.0">
+          <AttributeName>System.ComponentModel.DefaultValue(false)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает значение, определяющее возможность приостановки и возобновления работы службы.</summary>
+        <value><see langword="true" />, если работу службы можно приостановить; в противном случае — <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Задайте значение <xref:System.ServiceProcess.ServiceBase.CanPauseAndContinue%2A> свойства в конструкторе для службы.  
+  
+ Когда служба приостанавливается, она останавливается. При продолжении работы службы (с помощью диспетчера управления службами или программно) <xref:System.ServiceProcess.ServiceBase.OnContinue%2A> выполняется.  
+  
+ Отправка запроса на приостановку в службу может сэкономить системные ресурсы. Приостановка может привести к освобождению всех системных ресурсов, но остановить. <xref:System.ServiceProcess.ServiceBase.OnPause%2A>и <xref:System.ServiceProcess.ServiceBase.OnContinue%2A> часто реализуются для меньшей обработки, чем <xref:System.ServiceProcess.ServiceBase.OnStop%2A> и <xref:System.ServiceProcess.ServiceBase.OnStart%2A>.  
+  
+ Если <xref:System.ServiceProcess.ServiceBase.CanPauseAndContinue%2A> имеет `true`значение, <xref:System.ServiceProcess.ServiceBase.OnPause%2A> Переопределите и <xref:System.ServiceProcess.ServiceBase.OnContinue%2A> укажите обработку, которая должна произойти, когда диспетчер управления службами (SCM) передает запрос на приостановку или продолжение работы службы. <xref:System.ServiceProcess.ServiceBase.OnContinue%2A>должен быть реализован для отмены обработки в <xref:System.ServiceProcess.ServiceBase.OnPause%2A>.  
+  
+ Если <xref:System.ServiceProcess.ServiceBase.CanPauseAndContinue%2A> имеет `false`значение, SCM не будет передавать запросы на приостановку или продолжение работы службы, <xref:System.ServiceProcess.ServiceBase.OnPause%2A> поэтому <xref:System.ServiceProcess.ServiceBase.OnContinue%2A> методы и не будут вызываться, даже если они реализованы. В SCM элементы `Pause` управления и `Continue` отключаются, если <xref:System.ServiceProcess.ServiceBase.CanPauseAndContinue%2A> имеет `false`значение.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Служба уже запущена. После запуска службы свойство <see cref="P:System.ServiceProcess.ServiceBase.CanPauseAndContinue" /> изменить нельзя.</exception>
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnPause" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnContinue" />
+        <altmember cref="P:System.ServiceProcess.ServiceBase.CanShutdown" />
+        <altmember cref="P:System.ServiceProcess.ServiceBase.CanStop" />
+        <altmember cref="P:System.ServiceProcess.ServiceBase.CanHandlePowerEvent" />
+      </Docs>
+    </Member>
+    <Member MemberName="CanShutdown">
+      <MemberSignature Language="C#" Value="public bool CanShutdown { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool CanShutdown" />
+      <MemberSignature Language="DocId" Value="P:System.ServiceProcess.ServiceBase.CanShutdown" />
+      <MemberSignature Language="VB.NET" Value="Public Property CanShutdown As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool CanShutdown { bool get(); void set(bool value); };" />
+      <MemberSignature Language="F#" Value="member this.CanShutdown : bool with get, set" Usage="System.ServiceProcess.ServiceBase.CanShutdown" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-1.1;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;dotnet-plat-ext-2.1;netcore-2.1;netcore-2.2;netcore-3.0;dotnet-plat-ext-2.2;dotnet-plat-ext-3.0">
+          <AttributeName>System.ComponentModel.DefaultValue(false)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает значение, определяющее необходимость уведомления службы о завершении работы системы.</summary>
+        <value><see langword="true" />, если служба должна получать уведомление о завершении работы системы; в противном случае — <see langword="false" />.  Значение по умолчанию — <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если <xref:System.ServiceProcess.ServiceBase.CanShutdown%2A> имеет `true`значение, служба получает уведомления о завершении работы системы. При завершении работы <xref:System.ServiceProcess.ServiceBase.OnShutdown%2A> метод вызывается, если он был реализован в производном классе.  
+  
+> [!NOTE]
+>  Только система должна вызвать <xref:System.ServiceProcess.ServiceBase.OnShutdown%2A> выполнение метода; служба может вызвать ее, но это не рекомендуется.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Служба уже запущена. После запуска службы свойство <see cref="P:System.ServiceProcess.ServiceBase.CanShutdown" /> изменить нельзя.</exception>
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnShutdown" />
+        <altmember cref="P:System.ServiceProcess.ServiceBase.CanPauseAndContinue" />
+        <altmember cref="P:System.ServiceProcess.ServiceBase.CanStop" />
+        <altmember cref="P:System.ServiceProcess.ServiceBase.CanHandlePowerEvent" />
+      </Docs>
+    </Member>
+    <Member MemberName="CanStop">
+      <MemberSignature Language="C#" Value="public bool CanStop { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool CanStop" />
+      <MemberSignature Language="DocId" Value="P:System.ServiceProcess.ServiceBase.CanStop" />
+      <MemberSignature Language="VB.NET" Value="Public Property CanStop As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool CanStop { bool get(); void set(bool value); };" />
+      <MemberSignature Language="F#" Value="member this.CanStop : bool with get, set" Usage="System.ServiceProcess.ServiceBase.CanStop" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-1.1;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;dotnet-plat-ext-2.1;netcore-2.1;netcore-2.2;netcore-3.0;dotnet-plat-ext-2.2;dotnet-plat-ext-3.0">
+          <AttributeName>System.ComponentModel.DefaultValue(true)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает значение, определяющее, можно ли остановить работу службы после ее запуска.</summary>
+        <value><see langword="true" />, если возможны останов службы и вызов метода <see cref="M:System.ServiceProcess.ServiceBase.OnStop" />; в противном случае — <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если для службы вызывается метод "остановку", диспетчер управления службами (SCM) проверяет, принимает ли служба команды "запретить", <xref:System.ServiceProcess.ServiceBase.CanStop%2A>используя значение. Для большинства служб значение <xref:System.ServiceProcess.ServiceBase.CanStop%2A> равно `true`, но некоторые службы операционной системы, например, не позволяют пользователю их прекращать.  
+  
+ Если <xref:System.ServiceProcess.ServiceBase.CanStop%2A> параметр `true`имеет значение, команда останавливает передается в службу, <xref:System.ServiceProcess.ServiceBase.OnStop%2A> а метод вызывается, если он определен. Если <xref:System.ServiceProcess.ServiceBase.OnStop%2A> не реализован в производном классе, SCM обрабатывает команду «Завершение» с помощью пустого метода базового <xref:System.ServiceProcess.ServiceBase.OnStop%2A?displayProperty=nameWithType> класса.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Служба уже запущена. После запуска службы свойство <see cref="P:System.ServiceProcess.ServiceBase.CanStop" /> изменить нельзя.</exception>
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnStop" />
+        <altmember cref="P:System.ServiceProcess.ServiceBase.CanPauseAndContinue" />
+        <altmember cref="P:System.ServiceProcess.ServiceBase.CanShutdown" />
+        <altmember cref="P:System.ServiceProcess.ServiceBase.CanHandlePowerEvent" />
+      </Docs>
+    </Member>
+    <Member MemberName="Dispose">
+      <MemberSignature Language="C#" Value="protected override void Dispose (bool disposing);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void Dispose(bool disposing) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceProcess.ServiceBase.Dispose(System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Sub Dispose (disposing As Boolean)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override void Dispose(bool disposing);" />
+      <MemberSignature Language="F#" Value="override this.Dispose : bool -&gt; unit" Usage="serviceBase.Dispose disposing" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="disposing" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="disposing">Значение <see langword="true" /> позволяет освободить управляемые и неуправляемые ресурсы; значение <see langword="false" /> позволяет освободить только неуправляемые ресурсы.</param>
+        <summary>Уничтожает ресурсы (кроме памяти), используемые классом <see cref="T:System.ServiceProcess.ServiceBase" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вызовите <xref:System.ServiceProcess.ServiceBase.Dispose%2A> в производном классе (и через него <xref:System.ServiceProcess.ServiceBase> в классе) по завершении использования производного класса. <xref:System.ServiceProcess.ServiceBase.Dispose%2A> Метод оставляет производный класс в непригодном для использования состоянии. После вызова <xref:System.ServiceProcess.ServiceBase.Dispose%2A>необходимо освободить все ссылки на производный <xref:System.ServiceProcess.ServiceBase> класс, поэтому память, которую они занимают, может быть освобождена при сборке мусора.  
+  
+> [!NOTE]
+>  Всегда вызывайте метод <xref:System.ServiceProcess.ServiceBase.Dispose%2A> перед тем, как освободить последнюю ссылку на класс <xref:System.ServiceProcess.ServiceBase>, производный от. В противном случае <xref:System.ServiceProcess.ServiceBase> ресурсы и производный класс будут освобождены до тех пор, пока сборка мусора не вызовет деструкторы объектов.  
+  
+ <xref:System.ServiceProcess.ServiceBase.OnStop%2A>часто реализуется для обработки кода в, <xref:System.ServiceProcess.ServiceBase.OnPause%2A>в сочетании с <xref:System.ServiceProcess.ServiceBase.Dispose%2A>вызовом. Если вы решите сделать это в производном классе, его можно реализовать <xref:System.ServiceProcess.ServiceBase.OnStart%2A> , чтобы выделить все <xref:System.ServiceProcess.ServiceBase.Dispose%2A> выпущенные.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.ServiceProcess.ServiceBase.#ctor" />
+      </Docs>
+    </Member>
+    <Member MemberName="EventLog">
+      <MemberSignature Language="C#" Value="public virtual System.Diagnostics.EventLog EventLog { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Diagnostics.EventLog EventLog" />
+      <MemberSignature Language="DocId" Value="P:System.ServiceProcess.ServiceBase.EventLog" />
+      <MemberSignature Language="VB.NET" Value="Public Overridable ReadOnly Property EventLog As EventLog" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::Diagnostics::EventLog ^ EventLog { System::Diagnostics::EventLog ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.EventLog : System.Diagnostics.EventLog" Usage="System.ServiceProcess.ServiceBase.EventLog" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-1.1;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.ComponentModel.Browsable(false)</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-1.1;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Diagnostics.EventLog</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает журнал событий, который можно использовать для записи в журнал событий приложения уведомлений о вызовах команд службы, например, команд запуска и останова.</summary>
+        <value>Экземпляр <see cref="T:System.Diagnostics.EventLog" />, источник которого регистрируется в журнале приложения.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Конструктор инициализирует <xref:System.ServiceProcess.ServiceBase.EventLog%2A> свойство экземпляром <xref:System.Diagnostics.EventLog.Source%2A?displayProperty=nameWithType> с заданными свойствами и <xref:System.Diagnostics.EventLog.Log%2A?displayProperty=nameWithType> . Источником является <xref:System.ServiceProcess.ServiceBase.ServiceName%2A> служба, а журнал — журнал приложения компьютера. Эти значения задаются автоматически и не могут быть изменены для автоматического ведения журнала команд службы.  
+  
+ Если <xref:System.ServiceProcess.ServiceBase.AutoLog%2A> задано значение `true`, запуск, остановка, приостановка, продолжение и пользовательские команды записываются автоматически в журнал событий приложений. Кроме того, можно <xref:System.ServiceProcess.ServiceBase.EventLog%2A> использовать свойство для записи дополнительных сообщений в этот журнал. Компонент вызывает <xref:System.Diagnostics.EventLog.WriteEntry%2A?displayProperty=nameWithType> с помощью этого <xref:System.ServiceProcess.ServiceBase.EventLog%2A> члена.  
+  
+ Для отправки сведений в пользовательский журнал событий, а не в журнал приложений, задайте <xref:System.ServiceProcess.ServiceBase.AutoLog%2A> для `false` значение и напишите инструкции в методах <xref:System.ServiceProcess.ServiceBase.OnContinue%2A>обработки команд, <xref:System.ServiceProcess.ServiceBase.OnPause%2A>или <xref:System.ServiceProcess.ServiceBase.OnStop%2A> для публикации в соответствующем журнале.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.ServiceProcess.ServiceBase.AutoLog" />
+        <altmember cref="P:System.Diagnostics.EventLog.Source" />
+        <altmember cref="T:System.Diagnostics.EventLog" />
+      </Docs>
+    </Member>
+    <Member MemberName="ExitCode">
+      <MemberSignature Language="C#" Value="public int ExitCode { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 ExitCode" />
+      <MemberSignature Language="DocId" Value="P:System.ServiceProcess.ServiceBase.ExitCode" />
+      <MemberSignature Language="VB.NET" Value="Public Property ExitCode As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int ExitCode { int get(); void set(int value); };" />
+      <MemberSignature Language="F#" Value="member this.ExitCode : int with get, set" Usage="System.ServiceProcess.ServiceBase.ExitCode" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Runtime.InteropServices.ComVisible(false)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает код завершения для службы.</summary>
+        <value>Код завершения для службы.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Присвойте <xref:System.ServiceProcess.ServiceBase.ExitCode%2A> свойству ненулевое значение перед остановкой службы, чтобы указать ошибку в диспетчере управления службами.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="MaxNameLength">
+      <MemberSignature Language="C#" Value="public const int MaxNameLength = 80;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal int32 MaxNameLength = (80)" />
+      <MemberSignature Language="DocId" Value="F:System.ServiceProcess.ServiceBase.MaxNameLength" />
+      <MemberSignature Language="VB.NET" Value="Public Const MaxNameLength As Integer  = 80" />
+      <MemberSignature Language="C++ CLI" Value="public: int MaxNameLength = 80;" />
+      <MemberSignature Language="F#" Value="val mutable MaxNameLength : int" Usage="System.ServiceProcess.ServiceBase.MaxNameLength" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <MemberValue>80</MemberValue>
+      <Docs>
+        <summary>Указывает максимальный размер имени службы.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ ServiceName и DisplayName имеют ограничения на размер, которые необходимо наблюдать при задании свойств для класса службы.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.ServiceProcess.ServiceBase.ServiceName" />
+      </Docs>
+    </Member>
+    <Member MemberName="OnContinue">
+      <MemberSignature Language="C#" Value="protected virtual void OnContinue ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void OnContinue() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceProcess.ServiceBase.OnContinue" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub OnContinue ()" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void OnContinue();" />
+      <MemberSignature Language="F#" Value="abstract member OnContinue : unit -&gt; unit&#xA;override this.OnContinue : unit -&gt; unit" Usage="serviceBase.OnContinue " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Если метод <see cref="M:System.ServiceProcess.ServiceBase.OnContinue" /> реализован в производном классе, он запускается при передаче службе команды возобновления диспетчером служб. Задает действия, подлежащие выполнению при возобновлении нормальной работы службы после ее приостановки.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализуйте <xref:System.ServiceProcess.ServiceBase.OnContinue%2A> , чтобы отразить ответ приложения <xref:System.ServiceProcess.ServiceBase.OnPause%2A>на. При продолжении работы службы (с помощью консоли службы или программно) <xref:System.ServiceProcess.ServiceBase.OnContinue%2A> выполняется обработка и служба снова активируется.  
+  
+ <xref:System.ServiceProcess.ServiceBase.OnContinue%2A>должен быть переопределен, если <xref:System.ServiceProcess.ServiceBase.CanPauseAndContinue%2A> свойство имеет `true`значение.  
+  
+ Если <xref:System.ServiceProcess.ServiceBase.CanPauseAndContinue%2A> имеет `false`значение, SCM не будет передавать запросы на приостановку или продолжение работы службы, <xref:System.ServiceProcess.ServiceBase.OnPause%2A> поэтому <xref:System.ServiceProcess.ServiceBase.OnContinue%2A> методы и не будут вызываться, даже если они реализованы. В SCM элементы `Pause` управления и `Continue` отключаются, если <xref:System.ServiceProcess.ServiceBase.CanPauseAndContinue%2A> имеет `false`значение.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.ServiceProcess.ServiceBase.CanPauseAndContinue" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnPause" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnPowerEvent(System.ServiceProcess.PowerBroadcastStatus)" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnShutdown" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnStart(System.String[])" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnStop" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnCustomCommand(System.Int32)" />
+      </Docs>
+    </Member>
+    <Member MemberName="OnCustomCommand">
+      <MemberSignature Language="C#" Value="protected virtual void OnCustomCommand (int command);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void OnCustomCommand(int32 command) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceProcess.ServiceBase.OnCustomCommand(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub OnCustomCommand (command As Integer)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void OnCustomCommand(int command);" />
+      <MemberSignature Language="F#" Value="abstract member OnCustomCommand : int -&gt; unit&#xA;override this.OnCustomCommand : int -&gt; unit" Usage="serviceBase.OnCustomCommand command" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="command" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="command">Сообщение команды, направляемое службе.</param>
+        <summary>Если метод <see cref="M:System.ServiceProcess.ServiceBase.OnCustomCommand(System.Int32)" /> реализован в производном классе, он выполняется при передаче службе пользовательской команды диспетчером служб. Задает действия, подлежащие выполнению при появлении команды с указанным значением параметра.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.ServiceProcess.ServiceBase.OnCustomCommand%2A>позволяет указать дополнительные функциональные возможности, помимо запуска, остановки, приостановки и продолжения работы служб.  
+  
+ SCM не проверяет пользовательскую команду, чтобы проверить, поддерживает `command` ли служба переданный параметр. Она передает пользовательскую команду непосредственно в службу. Если служба не распознает `command` параметр, она не выполняет никаких действий.  
+  
+ Пользовательские команды вызываются <xref:System.ServiceProcess.ServiceController.ExecuteCommand%2A> оператором <xref:System.ServiceProcess.ServiceController> в компоненте. Используйте оператор switch или if.. Затем условие для обработки настраиваемых команд, определенных в службе.  
+  
+ Единственными значениями для настраиваемой команды, которые можно определить в приложении или использовать в, <xref:System.ServiceProcess.ServiceBase.OnCustomCommand%2A> являются значения в диапазоне от 128 до 255. Целые числа ниже 128 соответствуют зарезервированным в системе значениям.  
+  
+ Если свойство имеет `true`значение, пользовательские команды, как и все остальные команды, записывают записи в журнал событий, чтобы сообщить о том, успешно ли выполнено выполнение метода. <xref:System.ServiceProcess.ServiceBase.AutoLog%2A>  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnContinue" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnPause" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnPowerEvent(System.ServiceProcess.PowerBroadcastStatus)" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnShutdown" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnStart(System.String[])" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnStop" />
+      </Docs>
+    </Member>
+    <Member MemberName="OnPause">
+      <MemberSignature Language="C#" Value="protected virtual void OnPause ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void OnPause() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceProcess.ServiceBase.OnPause" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub OnPause ()" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void OnPause();" />
+      <MemberSignature Language="F#" Value="abstract member OnPause : unit -&gt; unit&#xA;override this.OnPause : unit -&gt; unit" Usage="serviceBase.OnPause " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Если этот метод реализован в производном классе, он выполняется при передаче службе команды паузы диспетчером служб. Задает действия, подлежащие выполнению при приостановке работы службы.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Используется <xref:System.ServiceProcess.ServiceBase.OnPause%2A> для указания обработки, выполняемой при получении службой команды Pause. <xref:System.ServiceProcess.ServiceBase.OnPause%2A>должен быть переопределен, если <xref:System.ServiceProcess.ServiceBase.CanPauseAndContinue%2A> свойство имеет `true`значение.  
+  
+ При продолжении работы приостановленной службы (либо через консоль службы, <xref:System.ServiceProcess.ServiceBase.OnContinue%2A> либо программно) обработка выполняется и служба снова становится активной.  
+  
+ Команда Pause позволяет приложению реагировать только на определенное событие. <xref:System.ServiceProcess.ServiceBase.OnPause%2A>не выполняет никаких действий со службой, которую вы не определили.  
+  
+ Отправка запроса на приостановку в службу может сэкономить системные ресурсы, поскольку приостановке не требует освобождения всех системных ресурсов. Например, если в процессе были открыты потоки, приостановка службы вместо ее остановки может позволить потокам оставаться открытыми, избегая необходимость перераспределения их при продолжении службы. Если вы определяете приостановку для освобождения всех системных ресурсов, она ведет себя как команда остановки.  
+  
+ Задайте <xref:System.ServiceProcess.ServiceBase.CanPauseAndContinue%2A> для `true`значение, а <xref:System.ServiceProcess.ServiceBase.OnPause%2A> Переопределите и <xref:System.ServiceProcess.ServiceBase.OnContinue%2A> , чтобы указать обработку, которая должна произойти, когда SCM передает запрос на приостановку или продолжение работы службы. <xref:System.ServiceProcess.ServiceBase.OnContinue%2A>должен быть реализован для отмены обработки в <xref:System.ServiceProcess.ServiceBase.OnPause%2A>.  
+  
+ Если <xref:System.ServiceProcess.ServiceBase.CanPauseAndContinue%2A> имеет `false`значение, SCM не будет передавать запросы на приостановку или продолжение работы службы, <xref:System.ServiceProcess.ServiceBase.OnPause%2A> поэтому <xref:System.ServiceProcess.ServiceBase.OnContinue%2A> методы и не будут вызываться, даже если они реализованы. В SCM элементы `Pause` управления и `Continue` отключаются, если <xref:System.ServiceProcess.ServiceBase.CanPauseAndContinue%2A> имеет `false`значение.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.ServiceProcess.ServiceBase.CanPauseAndContinue" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnContinue" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnPowerEvent(System.ServiceProcess.PowerBroadcastStatus)" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnShutdown" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnStart(System.String[])" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnStop" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnCustomCommand(System.Int32)" />
+      </Docs>
+    </Member>
+    <Member MemberName="OnPowerEvent">
+      <MemberSignature Language="C#" Value="protected virtual bool OnPowerEvent (System.ServiceProcess.PowerBroadcastStatus powerStatus);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance bool OnPowerEvent(valuetype System.ServiceProcess.PowerBroadcastStatus powerStatus) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceProcess.ServiceBase.OnPowerEvent(System.ServiceProcess.PowerBroadcastStatus)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Function OnPowerEvent (powerStatus As PowerBroadcastStatus) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual bool OnPowerEvent(System::ServiceProcess::PowerBroadcastStatus powerStatus);" />
+      <MemberSignature Language="F#" Value="abstract member OnPowerEvent : System.ServiceProcess.PowerBroadcastStatus -&gt; bool&#xA;override this.OnPowerEvent : System.ServiceProcess.PowerBroadcastStatus -&gt; bool" Usage="serviceBase.OnPowerEvent powerStatus" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="powerStatus" Type="System.ServiceProcess.PowerBroadcastStatus" />
+      </Parameters>
+      <Docs>
+        <param name="powerStatus">Класс <see cref="T:System.ServiceProcess.PowerBroadcastStatus" />, определяющий выдаваемое системой уведомление о состоянии питания.</param>
+        <summary>Если этот метод реализован в производном классе, он выполняется при изменении состояния питания компьютера. Это применимо для переносных компьютеров, когда они переходят в режим приостановки (этот режим отличается от режима завершения работы системы).</summary>
+        <returns>Если этот метод реализован в производном классе, возвращаемое значение определяется требованиями приложения. Например, если передается состояние широковещания <see langword="QuerySuspend" />, можно заставить приложение отклонять запрос с возвратом значения <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Используется <xref:System.ServiceProcess.ServiceBase.OnPowerEvent%2A> для указания обработки, выполняемой при возникновении системного события, указанного <xref:System.ServiceProcess.PowerBroadcastStatus> в перечислении, например, когда компьютер переводится в режим приостановки или указывает на энергию низкого заряда батареи.  
+  
+ <xref:System.ServiceProcess.ServiceBase.OnPowerEvent%2A>должен быть переопределен, если <xref:System.ServiceProcess.ServiceBase.CanHandlePowerEvent%2A> свойство имеет `true`значение.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.ServiceProcess.ServiceBase.CanHandlePowerEvent" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnContinue" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnPause" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnShutdown" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnStart(System.String[])" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnStop" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnCustomCommand(System.Int32)" />
+      </Docs>
+    </Member>
+    <Member MemberName="OnSessionChange">
+      <MemberSignature Language="C#" Value="protected virtual void OnSessionChange (System.ServiceProcess.SessionChangeDescription changeDescription);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void OnSessionChange(valuetype System.ServiceProcess.SessionChangeDescription changeDescription) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceProcess.ServiceBase.OnSessionChange(System.ServiceProcess.SessionChangeDescription)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub OnSessionChange (changeDescription As SessionChangeDescription)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void OnSessionChange(System::ServiceProcess::SessionChangeDescription changeDescription);" />
+      <MemberSignature Language="F#" Value="abstract member OnSessionChange : System.ServiceProcess.SessionChangeDescription -&gt; unit&#xA;override this.OnSessionChange : System.ServiceProcess.SessionChangeDescription -&gt; unit" Usage="serviceBase.OnSessionChange changeDescription" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="changeDescription" Type="System.ServiceProcess.SessionChangeDescription" Index="0" FrameworkAlternate="dotnet-plat-ext-2.1;dotnet-plat-ext-2.2;dotnet-plat-ext-3.0;netcore-2.1;netcore-2.2;netcore-3.0;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      </Parameters>
+      <Docs>
+        <param name="changeDescription">Структура, определяющая тип изменения.</param>
+        <summary>Выполняется при получении события изменения от сеанса сервера терминалов.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Необходимо задать <xref:System.ServiceProcess.ServiceBase.CanHandleSessionChangeEvent%2A> для `true` свойства значение, чтобы разрешить выполнение этого метода.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.ServiceProcess.ServiceBase.CanHandleSessionChangeEvent" />
+        <altmember cref="T:System.ServiceProcess.SessionChangeDescription" />
+      </Docs>
+    </Member>
+    <Member MemberName="OnShutdown">
+      <MemberSignature Language="C#" Value="protected virtual void OnShutdown ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void OnShutdown() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceProcess.ServiceBase.OnShutdown" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub OnShutdown ()" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void OnShutdown();" />
+      <MemberSignature Language="F#" Value="abstract member OnShutdown : unit -&gt; unit&#xA;override this.OnShutdown : unit -&gt; unit" Usage="serviceBase.OnShutdown " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Если этот метод реализован в производном классе, он выполняется при завершении работы системы. Задает действия, выполняемые непосредственно перед завершением работы системы.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Используется <xref:System.ServiceProcess.ServiceBase.OnShutdown%2A> для указания обработки, выполняемой при завершении работы системы.  
+  
+ Это событие возникает только при завершении работы операционной системы, а не при выключении компьютера.  
+  
+ <xref:System.ServiceProcess.ServiceBase.OnShutdown%2A>должен быть переопределен, если <xref:System.ServiceProcess.ServiceBase.CanShutdown%2A> свойство имеет `true`значение.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.ServiceProcess.ServiceBase.CanShutdown" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnContinue" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnPause" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnPowerEvent(System.ServiceProcess.PowerBroadcastStatus)" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnStart(System.String[])" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnStop" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnCustomCommand(System.Int32)" />
+      </Docs>
+    </Member>
+    <Member MemberName="OnStart">
+      <MemberSignature Language="C#" Value="protected virtual void OnStart (string[] args);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void OnStart(string[] args) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceProcess.ServiceBase.OnStart(System.String[])" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub OnStart (args As String())" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void OnStart(cli::array &lt;System::String ^&gt; ^ args);" />
+      <MemberSignature Language="F#" Value="abstract member OnStart : string[] -&gt; unit&#xA;override this.OnStart : string[] -&gt; unit" Usage="serviceBase.OnStart args" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="args" Type="System.String[]" />
+      </Parameters>
+      <Docs>
+        <param name="args">Данные, передаваемые командой запуска.</param>
+        <summary>Если этот метод реализован в производном классе, он выполняется при передаче службе команды запуска диспетчером служб или при запуске операционной системы (для служб, запускаемых автоматически). Задает действия, подлежащие выполнению при запуске службы.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Используется <xref:System.ServiceProcess.ServiceBase.OnStart%2A> для указания обработки, выполняемой при получении службой команды запуска. <xref:System.ServiceProcess.ServiceBase.OnStart%2A>метод, в котором указывается поведение службы. <xref:System.ServiceProcess.ServiceBase.OnStart%2A>может принимать аргументы в качестве способа передачи данных, но такое использование является редким.  
+  
+> [!CAUTION]
+>  Не используйте конструктор для выполнения обработки, которая должна быть в <xref:System.ServiceProcess.ServiceBase.OnStart%2A>. Используйте <xref:System.ServiceProcess.ServiceBase.OnStart%2A> для управления всеми инициализациями службы. Конструктор вызывается при запуске исполняемого файла приложения, а не при запуске службы. Исполняемый объект запускается <xref:System.ServiceProcess.ServiceBase.OnStart%2A>раньше. Если продолжить, например, конструктор еще не вызывается, так как SCM уже содержит объект в памяти. Если <xref:System.ServiceProcess.ServiceBase.OnStop%2A> освобождает ресурсы, выделенные в конструкторе, <xref:System.ServiceProcess.ServiceBase.OnStart%2A>а не в, необходимые ресурсы не создавались повторно при втором вызове службы.  
+  
+ Службы могут быть настроены на автоматический запуск при перезагрузке компьютера путем установки <xref:System.ServiceProcess.ServiceInstaller.StartType%2A> для <xref:System.ServiceProcess.ServiceStartMode.Automatic>установщика службы значения. В такой ситуации <xref:System.ServiceProcess.ServiceBase.OnStart%2A> вызов будет вызываться при запуске системы.  
+  
+ <xref:System.ServiceProcess.ServiceBase.OnStart%2A>должен быть переопределен в производном классе. Чтобы служба была полезной, <xref:System.ServiceProcess.ServiceBase.OnStart%2A> и <xref:System.ServiceProcess.ServiceBase.OnStop%2A> должна быть реализована в классе службы.  
+  
+ Аргументы инициализации процесса для службы в <xref:System.ServiceProcess.ServiceBase.OnStart%2A> методе, а не в методе Main. Аргументы в `args` массиве параметров можно задать вручную в окне Свойства для службы в консоли службы. Аргументы, указанные в консоли, не сохраняются. они передаются в службу однократно при запуске службы из панели управления. Аргументы, которые должны присутствовать при автоматическом запуске службы, могут быть помещены в строковое значение ImagePath для раздела реестра службы (HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\\*\<Service Name >* ). Получить аргументы из реестра можно с помощью <xref:System.Environment.GetCommandLineArgs%2A> метода, например:. `string[] imagePathArgs = Environment.GetCommandLineArgs();`  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnContinue" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnPause" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnPowerEvent(System.ServiceProcess.PowerBroadcastStatus)" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnShutdown" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnStop" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnCustomCommand(System.Int32)" />
+      </Docs>
+    </Member>
+    <Member MemberName="OnStop">
+      <MemberSignature Language="C#" Value="protected virtual void OnStop ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void OnStop() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceProcess.ServiceBase.OnStop" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub OnStop ()" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void OnStop();" />
+      <MemberSignature Language="F#" Value="abstract member OnStop : unit -&gt; unit&#xA;override this.OnStop : unit -&gt; unit" Usage="serviceBase.OnStop " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Если этот метод реализован в производном классе, он выполняется при передаче службе команды останова диспетчером служб. Задает действия, подлежащие выполнению при останове службы.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Используется <xref:System.ServiceProcess.ServiceBase.OnStop%2A> для указания обработки, выполняемой при получении службой команды "прерывать".  
+  
+ Когда SCM получает команду «Завершение», он использует значение <xref:System.ServiceProcess.ServiceBase.CanStop%2A> , чтобы проверить, принимает ли служба команды «остановку». Если <xref:System.ServiceProcess.ServiceBase.CanStop%2A> параметр `true`имеет значение, команда останавливает передается в службу, а <xref:System.ServiceProcess.ServiceBase.OnStop%2A> метод вызывается, если он определен. Если <xref:System.ServiceProcess.ServiceBase.OnStop%2A> в службе не реализована, SCM обрабатывает команду «Завершение».  
+  
+ Если <xref:System.ServiceProcess.ServiceBase.CanStop%2A> имеет `false`значение, SCM игнорирует команду «остановку». Он не передается в службу. Команда «завершение» возвращает и создает исключение.  
+  
+ <xref:System.ServiceProcess.ServiceBase.OnStop%2A>должен быть переопределен в производном классе. Чтобы служба была полезной, <xref:System.ServiceProcess.ServiceBase.OnStart%2A> и <xref:System.ServiceProcess.ServiceBase.OnStop%2A> должна быть реализована в классе службы.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.ServiceProcess.ServiceBase.CanStop" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnContinue" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnPowerEvent(System.ServiceProcess.PowerBroadcastStatus)" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnPause" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnShutdown" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnStart(System.String[])" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnCustomCommand(System.Int32)" />
+      </Docs>
+    </Member>
+    <Member MemberName="RequestAdditionalTime">
+      <MemberSignature Language="C#" Value="public void RequestAdditionalTime (int milliseconds);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void RequestAdditionalTime(int32 milliseconds) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceProcess.ServiceBase.RequestAdditionalTime(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub RequestAdditionalTime (milliseconds As Integer)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void RequestAdditionalTime(int milliseconds);" />
+      <MemberSignature Language="F#" Value="member this.RequestAdditionalTime : int -&gt; unit" Usage="serviceBase.RequestAdditionalTime milliseconds" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Runtime.InteropServices.ComVisible(false)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="milliseconds" Type="System.Int32" Index="0" FrameworkAlternate="dotnet-plat-ext-2.1;dotnet-plat-ext-2.2;dotnet-plat-ext-3.0;netcore-2.1;netcore-2.2;netcore-3.0;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      </Parameters>
+      <Docs>
+        <param name="milliseconds">Запрашиваемое время в миллисекундах.</param>
+        <summary>Запрашивает дополнительное время для отложенной операции.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.ServiceProcess.ServiceBase.OnContinue%2A> <xref:System.ServiceProcess.ServiceBase.OnStart%2A> <xref:System.ServiceProcess.ServiceBase.OnStop%2A> Метод предназначен для вызова <xref:System.ServiceProcess.ServiceBase.OnPause%2A> переопределенными методами,, или, чтобы запросить дополнительное время для ожидающей операции, чтобы диспетчер управления службами (SCM) не пометил <xref:System.ServiceProcess.ServiceBase.RequestAdditionalTime%2A> Служба не отвечает.  Если операция, ожидающая выполнения, не является операцией продолжения, приостановки, запуска <xref:System.InvalidOperationException> или остановки, создается исключение.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Служба не находится в состоянии ожидания.</exception>
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnContinue" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnPause" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnStart(System.String[])" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnStop" />
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="Run">
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Предоставляет основную точку входа для исполняемого файла службы.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="Run">
+      <MemberSignature Language="C#" Value="public static void Run (System.ServiceProcess.ServiceBase service);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void Run(class System.ServiceProcess.ServiceBase service) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceProcess.ServiceBase.Run(System.ServiceProcess.ServiceBase)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Sub Run (service As ServiceBase)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static void Run(System::ServiceProcess::ServiceBase ^ service);" />
+      <MemberSignature Language="F#" Value="static member Run : System.ServiceProcess.ServiceBase -&gt; unit" Usage="System.ServiceProcess.ServiceBase.Run service" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="service" Type="System.ServiceProcess.ServiceBase" />
+      </Parameters>
+      <Docs>
+        <param name="service">Класс <see cref="T:System.ServiceProcess.ServiceBase" />, определяющий службу для запуска.</param>
+        <summary>Регистрирует исполняемый файл для службы с помощью диспетчера служб.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вызовите эту перегрузку в `main()` функции исполняемого файла службы, чтобы зарегистрировать службу в диспетчере управления службами. После вызова <xref:System.ServiceProcess.ServiceBase.Run%28System.ServiceProcess.ServiceBase%29>диспетчер управления службами выдает команду запуска, которая приводит <xref:System.ServiceProcess.ServiceBase.OnStart%2A> к вызову метода в службе. Служба не запускается до выполнения команды Start.  
+  
+ Метод вызывается во многом так же, как <xref:System.Windows.Forms.Application.Run%2A?displayProperty=nameWithType> и для Windows Forms приложений. <xref:System.ServiceProcess.ServiceBase.Run%2A?displayProperty=nameWithType>  
+  
+ Если <xref:System.ServiceProcess.ServiceBase.AutoLog%2A> имеет `true`значение, запись записывается в журнал событий, если не удается запустить службу `service` , заданную параметром.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Свойство <paramref name="service" /> имеет значение <see langword="null" />.</exception>
+        <altmember cref="M:System.ServiceProcess.ServiceBase.#ctor" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnStart(System.String[])" />
+      </Docs>
+    </Member>
+    <Member MemberName="Run">
+      <MemberSignature Language="C#" Value="public static void Run (System.ServiceProcess.ServiceBase[] services);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void Run(class System.ServiceProcess.ServiceBase[] services) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceProcess.ServiceBase.Run(System.ServiceProcess.ServiceBase[])" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Sub Run (services As ServiceBase())" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static void Run(cli::array &lt;System::ServiceProcess::ServiceBase ^&gt; ^ services);" />
+      <MemberSignature Language="F#" Value="static member Run : System.ServiceProcess.ServiceBase[] -&gt; unit" Usage="System.ServiceProcess.ServiceBase.Run services" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="services" Type="System.ServiceProcess.ServiceBase[]" />
+      </Parameters>
+      <Docs>
+        <param name="services">Массив экземпляров ServiceBase, определяющих службы для запуска.</param>
+        <summary>Регистрирует исполняемый файл для нескольких служб с помощью диспетчера служб.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вызовите эту перегрузку в `main()` функции исполняемого файла службы, чтобы зарегистрировать службы с помощью диспетчера управления службами. После вызова <xref:System.ServiceProcess.ServiceBase.Run%28System.ServiceProcess.ServiceBase%5B%5D%29>диспетчер управления службами выдает команды запуска, что приводит <xref:System.ServiceProcess.ServiceBase.OnStart%2A> к вызову методов в службах. Службы не запускаются до тех пор, пока не будут выполнены команды запуска.  
+  
+ Метод вызывается во многом так же, как и <xref:System.Windows.Forms.Application.Run%2A?displayProperty=nameWithType> метод для Windows Forms приложений. <xref:System.ServiceProcess.ServiceBase.Run%2A?displayProperty=nameWithType>  
+  
+ Если <xref:System.ServiceProcess.ServiceBase.AutoLog%2A> имеет `true`значение, запись записывается в журнал событий, если не удается запустить какую-либо службу в массиве.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentException">Отсутствует служба для запуска. Массив может иметь значение <see langword="null" /> или быть пустым.</exception>
+        <altmember cref="M:System.ServiceProcess.ServiceBase.#ctor" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnStart(System.String[])" />
+      </Docs>
+    </Member>
+    <Member MemberName="ServiceHandle">
+      <MemberSignature Language="C#" Value="protected IntPtr ServiceHandle { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance native int ServiceHandle" />
+      <MemberSignature Language="DocId" Value="P:System.ServiceProcess.ServiceBase.ServiceHandle" />
+      <MemberSignature Language="VB.NET" Value="Protected ReadOnly Property ServiceHandle As IntPtr" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; property IntPtr ServiceHandle { IntPtr get(); };" />
+      <MemberSignature Language="F#" Value="member this.ServiceHandle : nativeint" Usage="System.ServiceProcess.ServiceBase.ServiceHandle" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;dotnet-plat-ext-2.1;netcore-2.1;netcore-2.2;dotnet-plat-ext-2.2;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netcore-3.0;dotnet-plat-ext-3.0">
+          <AttributeName>System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.IntPtr</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает дескриптор управления службой.</summary>
+        <value>Структура <see cref="T:System.IntPtr" />, содержащая дескриптор управления службой.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Маркер управления службами используется для взаимодействия с диспетчером управления службами (SCM).  Этот маркер можно использовать для обновления сведений о состоянии диспетчера управления службами для вызывающей службы с помощью неуправляемой `SetServiceStatus` функции.  
+  
+ ]]></format>
+        </remarks>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">для доступа к неуправляемому коду. Связанное перечисление: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" />.</permission>
+      </Docs>
+    </Member>
+    <Member MemberName="ServiceMainCallback">
+      <MemberSignature Language="C#" Value="public void ServiceMainCallback (int argCount, IntPtr argPointer);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void ServiceMainCallback(int32 argCount, native int argPointer) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceProcess.ServiceBase.ServiceMainCallback(System.Int32,System.IntPtr)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub ServiceMainCallback (argCount As Integer, argPointer As IntPtr)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void ServiceMainCallback(int argCount, IntPtr argPointer);" />
+      <MemberSignature Language="F#" Value="member this.ServiceMainCallback : int * nativeint -&gt; unit" Usage="serviceBase.ServiceMainCallback (argCount, argPointer)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Runtime.InteropServices.ComVisible(false)</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;dotnet-plat-ext-2.1;netcore-2.1;netcore-2.2;dotnet-plat-ext-2.2;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netcore-3.0;dotnet-plat-ext-3.0">
+          <AttributeName>System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="argCount" Type="System.Int32" Index="0" FrameworkAlternate="dotnet-plat-ext-2.1;dotnet-plat-ext-2.2;dotnet-plat-ext-3.0;netcore-2.1;netcore-2.2;netcore-3.0;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+        <Parameter Name="argPointer" Type="System.IntPtr" Index="1" FrameworkAlternate="dotnet-plat-ext-2.1;dotnet-plat-ext-2.2;dotnet-plat-ext-3.0;netcore-2.1;netcore-2.2;netcore-3.0;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      </Parameters>
+      <Docs>
+        <param name="argCount">Число аргументов в массиве аргументов.</param>
+        <param name="argPointer">Структура <see cref="T:System.IntPtr" />, указывающая на массив аргументов.</param>
+        <summary>Регистрирует обработчик команд и запускает службу.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ServiceName">
+      <MemberSignature Language="C#" Value="public string ServiceName { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string ServiceName" />
+      <MemberSignature Language="DocId" Value="P:System.ServiceProcess.ServiceBase.ServiceName" />
+      <MemberSignature Language="VB.NET" Value="Public Property ServiceName As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ ServiceName { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.ServiceName : string with get, set" Usage="System.ServiceProcess.ServiceBase.ServiceName" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.ComponentModel.TypeConverter("System.Diagnostics.Design.StringValueConverter, System.Design, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-1.1;netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.ServiceProcess.ServiceProcessDescription("SBServiceName")</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-1.1">
+          <AttributeName>System.ComponentModel.TypeConverter("System.Diagnostics.Design.StringValueConverter, System.Design, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5">
+          <AttributeName>System.ComponentModel.TypeConverter("System.Diagnostics.Design.StringValueConverter, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает короткое имя, используемое для идентификации службы в системе.</summary>
+        <value>Имя службы.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.ServiceProcess.ServiceBase.ServiceName%2A> Определяет службу для диспетчера управления службами. Значение этого свойства должно быть идентично имени, записанному для службы, в <xref:System.ServiceProcess.ServiceInstaller.ServiceName%2A?displayProperty=nameWithType> свойстве соответствующего класса установщика. В коде <xref:System.ServiceProcess.ServiceBase.ServiceName%2A> для службы обычно задается `main()` функция исполняемого файла.  
+  
+ Объект <xref:System.ServiceProcess.ServiceBase.ServiceName%2A> также используется для указания, <xref:System.Diagnostics.EventLog.Source%2A?displayProperty=nameWithType> связанного со <xref:System.ServiceProcess.ServiceBase.EventLog%2A> свойством. Это <xref:System.ServiceProcess.ServiceBase.EventLog%2A> экземпляр, который записывает сведения о команде службы в журнал приложений.  
+  
+ Объект <xref:System.ServiceProcess.ServiceBase.ServiceName%2A>, предоставляющий исходную строку для журнала событий, должен быть задан до того, как служба запишет в журнал событий. Попытка получить доступ к журналу событий до установки имени источника приведет к возникновению исключения.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Служба уже запущена. После запуска службы свойство <see cref="P:System.ServiceProcess.ServiceBase.ServiceName" /> изменить нельзя.</exception>
+        <exception cref="T:System.ArgumentException">Указанное имя представляет собой строку нулевой длины или больше, чем <see cref="F:System.ServiceProcess.ServiceBase.MaxNameLength" />, либо указанное имя содержит прямую или обратную косую черту.</exception>
+        <altmember cref="P:System.ServiceProcess.ServiceInstaller.ServiceName" />
+        <altmember cref="P:System.Diagnostics.EventLog.Source" />
+      </Docs>
+    </Member>
+    <Member MemberName="Stop">
+      <MemberSignature Language="C#" Value="public void Stop ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Stop() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceProcess.ServiceBase.Stop" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Stop ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Stop();" />
+      <MemberSignature Language="F#" Value="member this.Stop : unit -&gt; unit" Usage="serviceBase.Stop " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceProcess.ServiceController</AssemblyName>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Останавливает работающую службу.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод задает состояние службы, чтобы указать, что ожидание останавливается, и <xref:System.ServiceProcess.ServiceBase.OnStop%2A> вызывает метод. <xref:System.ServiceProcess.ServiceBase.Stop%2A>  После остановки приложения состояние службы будет равно Stopped. Если приложение является размещенной службой, то домен приложения выгружается.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.ServiceProcess.ServiceBase.CanStop" />
+        <altmember cref="M:System.ServiceProcess.ServiceBase.OnStop" />
+      </Docs>
+    </Member>
+  </Members>
+</Type>

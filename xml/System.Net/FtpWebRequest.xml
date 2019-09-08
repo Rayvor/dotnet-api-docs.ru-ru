@@ -1,0 +1,1782 @@
+<Type Name="FtpWebRequest" FullName="System.Net.FtpWebRequest">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="9c49f50c0cd66d2e16a249b769d840807e011c17" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70568325" /></Metadata><TypeSignature Language="C#" Value="public sealed class FtpWebRequest : System.Net.WebRequest" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi sealed beforefieldinit FtpWebRequest extends System.Net.WebRequest" />
+  <TypeSignature Language="DocId" Value="T:System.Net.FtpWebRequest" />
+  <TypeSignature Language="VB.NET" Value="Public NotInheritable Class FtpWebRequest&#xA;Inherits WebRequest" />
+  <TypeSignature Language="C++ CLI" Value="public ref class FtpWebRequest sealed : System::Net::WebRequest" />
+  <TypeSignature Language="F#" Value="type FtpWebRequest = class&#xA;    inherit WebRequest" />
+  <AssemblyInfo>
+    <AssemblyName>System</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>2.0.5.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>netstandard</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>System.Net.Requests</AssemblyName>
+    <AssemblyVersion>4.1.0.0</AssemblyVersion>
+    <AssemblyVersion>4.1.1.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Net.WebRequest</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>Реализует FTP-клиент.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks
+
+> [!IMPORTANT]
+>  Мы не рекомендуем использовать `FtpWebRequest` класс для новой разработки. Дополнительные сведения и альтернативные варианты для `FtpWebRequest`см. в разделе [WebRequest не должен использоваться](https://github.com/dotnet/platform-compat/blob/master/docs/DE0003.md) на GitHub.
+
+ Чтобы получить экземпляр <xref:System.Net.FtpWebRequest>, <xref:System.Net.WebRequest.Create%2A> используйте метод. Также можно использовать <xref:System.Net.WebClient> класс для передачи и загрузки сведений с FTP-сервера. При использовании любого из этих подходов при указании сетевого ресурса, использующего схему FTP (например, `"ftp://contoso.com"`), <xref:System.Net.FtpWebRequest> класс предоставляет возможность программно взаимодействовать с FTP-серверами.  
+  
+ URI может быть относительным или абсолютным. Если URI имеет форму `"ftp://contoso.com/%2fpath"` (% 2F является экранированным символом "/"), то URI является абсолютным, а текущим каталогом является. `/path` Однако если URI имеет форму `"ftp://contoso.com/path"`, сначала .NET Framework входит в систему на FTP-сервере (используя имя пользователя и пароль, заданные <xref:System.Net.FtpWebRequest.Credentials%2A> свойством), а затем `<UserLoginDirectory>/path`текущему каталогу присваивается значение.  
+  
+ Необходимо иметь допустимые имя пользователя и пароль для сервера, либо сервер должен разрешить анонимный вход в систему. Можно указать учетные данные, используемые для подключения к серверу, задав <xref:System.Net.FtpWebRequest.Credentials%2A> свойство, или включить их <xref:System.Uri.UserInfo%2A> в часть URI, передаваемой <xref:System.Net.WebRequest.Create%2A> методу. Если включить <xref:System.Uri.UserInfo%2A> сведения в универсальный код ресурса (URI <xref:System.Net.FtpWebRequest.Credentials%2A> ), для свойства задаются новые сетевые учетные данные с указанными именем пользователя и паролем.  
+  
+> [!CAUTION]
+>  Если свойство не имеет `true`значение, все данные и команды, включая сведения об имени пользователя и пароле, отправляются на сервер в виде открытого текста. <xref:System.Net.FtpWebRequest.EnableSsl%2A> Любой пользователь, отслеживающий сетевой трафик, может просматривать ваши учетные данные и использовать их для подключения к серверу. Если вы подключаетесь к FTP-серверу, которому требуются учетные данные и поддерживает SSL (SSL), <xref:System.Net.FtpWebRequest.EnableSsl%2A> необходимо `true`задать для значение.  
+  
+ Необходимо иметь <xref:System.Net.WebPermission> доступ к ресурсу FTP; в противном случае <xref:System.Security.SecurityException> создается исключение.  
+  
+ Укажите команду FTP для отправки на сервер, задав <xref:System.Net.FtpWebRequest.Method%2A> свойству значение, определенное <xref:System.Net.WebRequestMethods.Ftp> в структуре. Чтобы передать текстовые данные, измените <xref:System.Net.FtpWebRequest.UseBinary%2A> свойство со значения по умолчанию (`true`) на. `false` Дополнительные сведения и ограничения см. <xref:System.Net.FtpWebRequest.Method%2A>в разделе.  
+  
+ При использовании <xref:System.Net.FtpWebRequest> объекта для передачи файла на сервер необходимо записать содержимое файла в поток запроса, полученный путем <xref:System.Net.FtpWebRequest.GetRequestStream%2A> вызова метода или его <xref:System.Net.FtpWebRequest.BeginGetRequestStream%2A> асинхронных аналогов, методов и <xref:System.Net.FtpWebRequest.EndGetRequestStream%2A> . Перед отправкой запроса необходимо выполнить запись в поток и закрыть поток.  
+  
+ Запросы отправляются на сервер путем вызова <xref:System.Net.FtpWebRequest.GetResponse%2A> метода или его асинхронных аналогов <xref:System.Net.FtpWebRequest.BeginGetResponse%2A> , методов и <xref:System.Net.FtpWebRequest.EndGetResponse%2A> . По завершении <xref:System.Net.FtpWebResponse> запрошенной операции возвращается объект. <xref:System.Net.FtpWebResponse> Объект предоставляет состояние операции и все данные, загруженные с сервера.  
+  
+ Можно задать значение времени ожидания для чтения или записи на сервере с помощью <xref:System.Net.FtpWebRequest.ReadWriteTimeout%2A> свойства. При превышении времени ожидания вызывающий метод создает <xref:System.Net.WebException> с параметром со <xref:System.Net.WebExceptionStatus> значением <xref:System.Net.WebExceptionStatus.Timeout>.  
+  
+ При загрузке файла с FTP-сервера, если команда выполнена успешно, содержимое запрошенного файла будет доступно в потоке объекта ответа. Доступ к этому потоку можно получить, <xref:System.Net.FtpWebResponse.GetResponseStream%2A> вызвав метод. Для получения дополнительной информации см. <xref:System.Net.FtpWebResponse>.  
+  
+ <xref:System.Net.FtpWebRequest.Proxy%2A> Если свойство задано как непосредственно, так и в файле конфигурации, связь с FTP-сервером выполняется через указанный прокси-сервер. Если указанный прокси-сервер является прокси-сервером HTTP, <xref:System.Net.WebRequestMethods.Ftp.DownloadFile>поддерживаются только <xref:System.Net.WebRequestMethods.Ftp.ListDirectoryDetails> команды, <xref:System.Net.WebRequestMethods.Ftp.ListDirectory>и.  
+  
+ Кэшируется только загруженное двоичное содержимое. то есть содержимое, полученное с <xref:System.Net.WebRequestMethods.Ftp.DownloadFile> помощью команды <xref:System.Net.FtpWebRequest.UseBinary%2A> со свойством, `true`для которого задано значение.  
+  
+ Несколько <xref:System.Net.FtpWebRequest>раз повторно используйте существующие подключения, если это возможно.  
+  
+ Дополнительные сведения об FTP-протоколе см. в [документе RFC 959: протокол FTP](https://www.ietf.org/rfc/rfc959.txt).  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано удаление файла с FTP-сервера.  
+  
+ [!code-cpp[NCLFtpClient#4](~/samples/snippets/cpp/VS_Snippets_Remoting/NCLFtpClient/CPP/ftptests.cpp#4)]
+ [!code-csharp[NCLFtpClient#4](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLFtpClient/CS/ftptests.cs#4)]  
+  
+ В следующем примере кода демонстрируется загрузка файла с FTP-сервера с помощью <xref:System.Net.WebClient> класса.  
+  
+ [!code-cpp[NCLFtpClient#5](~/samples/snippets/cpp/VS_Snippets_Remoting/NCLFtpClient/CPP/ftptests.cpp#5)]
+ [!code-csharp[NCLFtpClient#5](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLFtpClient/CS/ftptests.cs#5)]  
+  
+ В следующем примере кода показано использование асинхронных операций для передачи файла на FTP-сервер.  
+  
+ [!code-cpp[NCLFtpAsync#1](~/samples/snippets/cpp/VS_Snippets_Remoting/NCLFtpAsync/CPP/async.cpp#1)]
+ [!code-csharp[NCLFtpAsync#1](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLFtpAsync/CS/async.cs#1)]  
+  
+ ]]></format>
+    </remarks>
+    <permission cref="T:System.Net.WebPermission">для доступа к ресурсу, на который ссылается этот запрос. Связанное перечисление: <see cref="F:System.Net.NetworkAccess.Connect" />.</permission>
+    <altmember cref="T:System.Net.FtpWebResponse" />
+    <altmember cref="T:System.Net.FtpStatusCode" />
+    <altmember cref="T:System.Net.WebRequestMethods.Ftp" />
+    <altmember cref="T:System.Net.WebRequest" />
+    <altmember cref="T:System.Net.WebResponse" />
+    <altmember cref="T:System.Net.WebClient" />
+  </Docs>
+  <Members>
+    <Member MemberName="Abort">
+      <MemberSignature Language="C#" Value="public override void Abort ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void Abort() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Net.FtpWebRequest.Abort" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Sub Abort ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override void Abort();" />
+      <MemberSignature Language="F#" Value="override this.Abort : unit -&gt; unit" Usage="ftpWebRequest.Abort " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Прерывает асинхронную FTP-операцию.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если нет выполняющихся операций, этот метод не выполняет никаких действий. Если выполняется перенос файла, этот метод прерывает перемещение.  
+  
+> [!NOTE]
+>  Данный член генерирует сведения трассировки, если в приложении включена трассировка сети. Дополнительные сведения см. [в разделе Сетевая трассировка в .NET Framework](~/docs/framework/network-programming/network-tracing.md).  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как пользователь может завершить асинхронную отправку файла из локального каталога на сервер.  
+  
+ [!code-cpp[NCLFtpClient#10](~/samples/snippets/cpp/VS_Snippets_Remoting/NCLFtpClient/CPP/ftptests.cpp#10)]
+ [!code-csharp[NCLFtpClient#10](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLFtpClient/CS/ftptests.cs#10)]  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.Net.FtpWebResponse" />
+        <altmember cref="T:System.Net.FtpStatusCode" />
+        <altmember cref="T:System.Net.WebRequestMethods.Ftp" />
+        <altmember cref="T:System.Net.WebRequest" />
+        <altmember cref="T:System.Net.WebResponse" />
+        <altmember cref="T:System.Net.WebClient" />
+      </Docs>
+    </Member>
+    <Member MemberName="BeginGetRequestStream">
+      <MemberSignature Language="C#" Value="public override IAsyncResult BeginGetRequestStream (AsyncCallback callback, object state);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance class System.IAsyncResult BeginGetRequestStream(class System.AsyncCallback callback, object state) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Net.FtpWebRequest.BeginGetRequestStream(System.AsyncCallback,System.Object)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function BeginGetRequestStream (callback As AsyncCallback, state As Object) As IAsyncResult" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override IAsyncResult ^ BeginGetRequestStream(AsyncCallback ^ callback, System::Object ^ state);" />
+      <MemberSignature Language="F#" Value="override this.BeginGetRequestStream : AsyncCallback * obj -&gt; IAsyncResult" Usage="ftpWebRequest.BeginGetRequestStream (callback, state)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IAsyncResult</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="callback" Type="System.AsyncCallback" />
+        <Parameter Name="state" Type="System.Object" />
+      </Parameters>
+      <Docs>
+        <param name="callback">Делегат <see cref="T:System.AsyncCallback" />, ссылающийся на метод, вызываемый по завершении данной операции.</param>
+        <param name="state">Пользовательский объект, содержащий сведения об операции. Этот объект передается делегату <paramref name="callback" /> после завершения операции.</param>
+        <summary>Начинает асинхронное открытие потока с содержимым запроса для записи.</summary>
+        <returns>Экземпляр <see cref="T:System.IAsyncResult" />, представляющий состояние операции.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Необходимо выполнить асинхронную операцию, вызвав <xref:System.Net.FtpWebRequest.EndGetRequestStream%2A> метод. Обычно вызывается методом, `callback`на который ссылается. <xref:System.Net.FtpWebRequest.EndGetRequestStream%2A> Чтобы определить состояние операции, проверьте свойства в <xref:System.IAsyncResult> объекте, возвращаемом этим методом.  
+  
+ Этот метод не блокируется при ожидании потока. Чтобы заблокировать, вызовите <xref:System.Net.FtpWebRequest.GetRequestStream%2A> метод вместо этого метода.  
+  
+ Подробные сведения об использовании асинхронной модели программирования см. в разделе [асинхронный вызов синхронных методов](~/docs/standard/asynchronous-programming-patterns/calling-synchronous-methods-asynchronously.md).  
+  
+> [!NOTE]
+>  Данный член генерирует сведения трассировки, если в приложении включена трассировка сети. Дополнительные сведения см. [в разделе Сетевая трассировка в .NET Framework](~/docs/framework/network-programming/network-tracing.md).  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как начать асинхронную операцию для получения потока запроса. Этот пример кода является частью большого примера, приведенного в <xref:System.Net.FtpWebRequest> разделе Общие сведения о классе.  
+  
+ [!code-cpp[NCLFtpAsync#4](~/samples/snippets/cpp/VS_Snippets_Remoting/NCLFtpAsync/CPP/async.cpp#4)]
+ [!code-csharp[NCLFtpAsync#4](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLFtpAsync/CS/async.cs#4)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Предыдущий вызов этого метода или потока <see cref="M:System.Net.FtpWebRequest.GetRequestStream" /> еще не был завершен.</exception>
+        <exception cref="T:System.Net.WebException">Не удается установить подключение к FTP-серверу.</exception>
+        <exception cref="T:System.Net.ProtocolViolationException">Свойству <see cref="P:System.Net.FtpWebRequest.Method" /> невозможно присвоить значение <see cref="F:System.Net.WebRequestMethods.Ftp.UploadFile" />.</exception>
+        <block subset="none" type="usage"><para>Этот метод создает сетевой трафик.</para></block>
+        <altmember cref="T:System.Net.FtpWebResponse" />
+        <altmember cref="T:System.Net.FtpStatusCode" />
+        <altmember cref="T:System.Net.WebRequestMethods.Ftp" />
+        <altmember cref="T:System.Net.WebRequest" />
+        <altmember cref="T:System.Net.WebResponse" />
+        <altmember cref="T:System.Net.WebClient" />
+      </Docs>
+    </Member>
+    <Member MemberName="BeginGetResponse">
+      <MemberSignature Language="C#" Value="public override IAsyncResult BeginGetResponse (AsyncCallback callback, object state);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance class System.IAsyncResult BeginGetResponse(class System.AsyncCallback callback, object state) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Net.FtpWebRequest.BeginGetResponse(System.AsyncCallback,System.Object)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function BeginGetResponse (callback As AsyncCallback, state As Object) As IAsyncResult" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override IAsyncResult ^ BeginGetResponse(AsyncCallback ^ callback, System::Object ^ state);" />
+      <MemberSignature Language="F#" Value="override this.BeginGetResponse : AsyncCallback * obj -&gt; IAsyncResult" Usage="ftpWebRequest.BeginGetResponse (callback, state)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IAsyncResult</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="callback" Type="System.AsyncCallback" />
+        <Parameter Name="state" Type="System.Object" />
+      </Parameters>
+      <Docs>
+        <param name="callback">Делегат <see cref="T:System.AsyncCallback" />, ссылающийся на метод, вызываемый по завершении данной операции.</param>
+        <param name="state">Пользовательский объект, содержащий сведения об операции. Этот объект передается делегату <paramref name="callback" /> после завершения операции.</param>
+        <summary>Начинает асинхронно отправлять запрос и получать ответ с FTP-сервера.</summary>
+        <returns>Экземпляр <see cref="T:System.IAsyncResult" />, представляющий состояние операции.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Необходимо выполнить асинхронную операцию, вызвав <xref:System.Net.FtpWebRequest.EndGetResponse%2A> метод. Обычно вызывается методом, `callback`на который ссылается. <xref:System.Net.FtpWebRequest.EndGetResponse%2A> Чтобы определить состояние операции, проверьте свойства в <xref:System.IAsyncResult> объекте, возвращаемом <xref:System.Net.FtpWebRequest.BeginGetResponse%2A> методом.  
+  
+ <xref:System.Net.FtpWebRequest.Proxy%2A> Если свойство задано как непосредственно, так и в файле конфигурации, связь с FTP-сервером выполняется через указанный прокси-сервер.  
+  
+ <xref:System.Net.FtpWebRequest.BeginGetResponse%2A>не блокируется при ожидании ответа от сервера. Для блокировки вызовите <xref:System.Net.FtpWebRequest.GetResponse%2A> метод <xref:System.Net.FtpWebRequest.BeginGetResponse%2A>вместо.  
+  
+ Дополнительные сведения об использовании асинхронной модели программирования см. в разделе [асинхронный вызов синхронных методов](~/docs/standard/asynchronous-programming-patterns/calling-synchronous-methods-asynchronously.md).  
+  
+ Данный член генерирует сведения трассировки, если в приложении включена трассировка сети. Дополнительные сведения см. [в разделе Сетевая трассировка в .NET Framework](~/docs/framework/network-programming/network-tracing.md).  
+  
+> [!NOTE]
+>  При возникновении исключения <xref:System.Net.WebException.Response%2A> используйте свойства и <xref:System.Net.WebException.Status%2A> исключения, чтобы определить ответ от сервера. <xref:System.Net.WebException>  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как завершить асинхронную операцию для получения потока запроса, а затем запустить запрос на получение ответа. Этот пример кода является частью большого примера, приведенного в <xref:System.Net.FtpWebRequest> разделе Общие сведения о классе.  
+  
+ [!code-cpp[NCLFtpAsync#5](~/samples/snippets/cpp/VS_Snippets_Remoting/NCLFtpAsync/CPP/async.cpp#5)]
+ [!code-csharp[NCLFtpAsync#5](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLFtpAsync/CS/async.cs#5)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException"><see cref="M:System.Net.FtpWebRequest.GetResponse" /> или <see cref="M:System.Net.FtpWebRequest.BeginGetResponse(System.AsyncCallback,System.Object)" /> уже был вызван для этого экземпляра.</exception>
+        <block subset="none" type="usage"><para>Этот метод создает сетевой трафик.</para></block>
+        <altmember cref="T:System.Net.FtpWebResponse" />
+        <altmember cref="T:System.Net.FtpStatusCode" />
+        <altmember cref="T:System.Net.WebRequestMethods.Ftp" />
+        <altmember cref="T:System.Net.WebRequest" />
+        <altmember cref="T:System.Net.WebResponse" />
+        <altmember cref="T:System.Net.WebClient" />
+      </Docs>
+    </Member>
+    <Member MemberName="ClientCertificates">
+      <MemberSignature Language="C#" Value="public System.Security.Cryptography.X509Certificates.X509CertificateCollection ClientCertificates { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Security.Cryptography.X509Certificates.X509CertificateCollection ClientCertificates" />
+      <MemberSignature Language="DocId" Value="P:System.Net.FtpWebRequest.ClientCertificates" />
+      <MemberSignature Language="VB.NET" Value="Public Property ClientCertificates As X509CertificateCollection" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Security::Cryptography::X509Certificates::X509CertificateCollection ^ ClientCertificates { System::Security::Cryptography::X509Certificates::X509CertificateCollection ^ get(); void set(System::Security::Cryptography::X509Certificates::X509CertificateCollection ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.ClientCertificates : System.Security.Cryptography.X509Certificates.X509CertificateCollection with get, set" Usage="System.Net.FtpWebRequest.ClientCertificates" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0">
+          <AttributeName>System.MonoTODO</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Security.Cryptography.X509Certificates.X509CertificateCollection</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает сертификаты, используемые для установки и шифрования подключения к FTP-серверу.</summary>
+        <value>Объект <see cref="T:System.Security.Cryptography.X509Certificates.X509CertificateCollection" />, который содержит сертификаты клиента.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Сертификаты клиента используются для проверки подлинности клиента во время первоначального согласования SSL-подключения. Для получения дополнительной информации см. <xref:System.Net.FtpWebRequest.EnableSsl%2A>.  
+  
+> [!NOTE]
+>  .NET Framework кэширует сеансы SSL по мере их создания и пытается повторно использовать кэшированный сеанс для нового запроса, если это возможно. При попытке повторного использования сеанса SSL .NET Framework использует первый элемент <xref:System.Net.HttpWebRequest.ClientCertificates%2A> (если таковой имеется) или пытается повторно использовать анонимный сеанс, если <xref:System.Net.HttpWebRequest.ClientCertificates%2A> является пустым.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Для операции задания указано значение <see langword="null" />.</exception>
+        <altmember cref="T:System.Net.FtpWebResponse" />
+        <altmember cref="T:System.Net.FtpStatusCode" />
+        <altmember cref="T:System.Net.WebRequestMethods.Ftp" />
+        <altmember cref="T:System.Net.WebRequest" />
+        <altmember cref="T:System.Net.WebResponse" />
+        <altmember cref="T:System.Net.WebClient" />
+      </Docs>
+    </Member>
+    <Member MemberName="ConnectionGroupName">
+      <MemberSignature Language="C#" Value="public override string ConnectionGroupName { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string ConnectionGroupName" />
+      <MemberSignature Language="DocId" Value="P:System.Net.FtpWebRequest.ConnectionGroupName" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Property ConnectionGroupName As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::String ^ ConnectionGroupName { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.ConnectionGroupName : string with get, set" Usage="System.Net.FtpWebRequest.ConnectionGroupName" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0">
+          <AttributeName>System.MonoTODO</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает имя группы подключения, которая содержит точка обслуживания, используемую для отправки текущего запроса.</summary>
+        <value>Значение <see cref="T:System.String" />, которое содержит имя группы подключения.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Группы соединений связывают набор запросов с определенным соединением или набором соединений. Соединения в группе соединений могут повторно использоваться только запросами, происходящими в том же домене приложения, если учетные данные запроса совпадают, а запрос указывает имя группы соединения. Если в запросе не указано имя группы подключения, можно использовать любое существующее подключение к запрошенному серверу, не связанное с группой соединений. Если учетные данные не совпадают, существующее соединение закрывается, а новый запрос должен пройти повторную проверку подлинности.  
+  
+ Использование групп соединений может повысить производительность, так как это позволяет всем запросам пользователя повторно использовать подключение, прошедшее проверку подлинности с учетными данными пользователя.  
+  
+ <xref:System.Net.FtpWebRequest.GetRequestStream%2A> <xref:System.Net.FtpWebRequest.BeginGetRequestStream%2A> <xref:System.Net.FtpWebRequest.GetResponse%2A>Изменение свойства после вызова метода,, или <xref:System.Net.FtpWebRequest.BeginGetResponse%2A>  вызывает <xref:System.InvalidOperationException>  исключение. <xref:System.Net.FtpWebRequest.ConnectionGroupName%2A>  
+  
+   
+  
+## Examples  
+ В следующем примере кода извлекается значение этого свойства.  
+  
+ [!code-cpp[NCLFtpClient#16](~/samples/snippets/cpp/VS_Snippets_Remoting/NCLFtpClient/CPP/ftptests.cpp#16)]
+ [!code-csharp[NCLFtpClient#16](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLFtpClient/CS/ftptests.cs#16)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Для этого свойства задано новое значение для уже выполняющегося запроса.</exception>
+        <altmember cref="T:System.Net.FtpWebResponse" />
+        <altmember cref="T:System.Net.FtpStatusCode" />
+        <altmember cref="T:System.Net.WebRequestMethods.Ftp" />
+        <altmember cref="T:System.Net.WebRequest" />
+        <altmember cref="T:System.Net.WebResponse" />
+        <altmember cref="T:System.Net.WebClient" />
+        <related type="Article" href="~/docs/framework/network-programming/managing-connections.md">Управление подключениями</related>
+      </Docs>
+    </Member>
+    <Member MemberName="ContentLength">
+      <MemberSignature Language="C#" Value="public override long ContentLength { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int64 ContentLength" />
+      <MemberSignature Language="DocId" Value="P:System.Net.FtpWebRequest.ContentLength" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Property ContentLength As Long" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property long ContentLength { long get(); void set(long value); };" />
+      <MemberSignature Language="F#" Value="member this.ContentLength : int64 with get, set" Usage="System.Net.FtpWebRequest.ContentLength" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>set: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Int64</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает значение, игнорируемое классом <see cref="T:System.Net.FtpWebRequest" />.</summary>
+        <value>Значение <see cref="T:System.Int64" />, которое следует игнорировать.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойство предоставляется только для обеспечения совместимости с другими реализациями <xref:System.Net.WebRequest> классов и  <xref:System.Net.WebResponse> . <xref:System.Net.FtpWebRequest.ContentLength%2A> Нет причин использовать <xref:System.Net.FtpWebRequest.ContentLength%2A>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ContentOffset">
+      <MemberSignature Language="C#" Value="public long ContentOffset { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int64 ContentOffset" />
+      <MemberSignature Language="DocId" Value="P:System.Net.FtpWebRequest.ContentOffset" />
+      <MemberSignature Language="VB.NET" Value="Public Property ContentOffset As Long" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property long ContentOffset { long get(); void set(long value); };" />
+      <MemberSignature Language="F#" Value="member this.ContentOffset : int64 with get, set" Usage="System.Net.FtpWebRequest.ContentOffset" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Int64</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает смещение в байтах для файла, загружаемого через этот запрос.</summary>
+        <value>Экземпляр <see cref="T:System.Int64" />, указывающий смещение файла в байтах. Значение по умолчанию равно нулю.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Net.FtpWebRequest.ContentOffset%2A> Задайте свойство при скачивании файла с FTP-сервера. Это смещение указывает на расположение в файле сервера, которое отмечает начало данных для загрузки. Смещение указывается как число байтов с начала файла; смещение первого байта равно нулю.  
+  
+ Параметр <xref:System.Net.FtpWebRequest.ContentOffset%2A> `REST`вызывает отправку команды перезапуска () на сервер. <xref:System.Net.FtpWebRequest> Эта команда игнорируется большинством реализаций FTP-сервера при отправке данных на сервер.  
+  
+ Изменение <xref:System.Net.FtpWebRequest.ContentOffset%2A> <xref:System.Net.FtpWebRequest.BeginGetRequestStream%2A>после <xref:System.Net.FtpWebRequest.GetRequestStream%2A>вызова метода, , <xref:System.Net.FtpWebRequest.GetResponse%2A>  или <xref:System.Net.FtpWebRequest.BeginGetResponse%2A>  вызывает исключение <xref:System.InvalidOperationException>  .  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как загрузить часть файла с сервера и присоединить Скачанные данные к локальному файлу.  
+  
+ [!code-cpp[NclFtpClient#7](~/samples/snippets/cpp/VS_Snippets_Remoting/NCLFtpClient/CPP/ftptests.cpp#7)]
+ [!code-csharp[NclFtpClient#7](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLFtpClient/CS/ftptests.cs#7)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Для этого свойства задано новое значение для уже выполняющегося запроса.</exception>
+        <exception cref="T:System.ArgumentOutOfRangeException">Заданное для этого свойства значение меньше нуля.</exception>
+        <altmember cref="T:System.Net.FtpWebResponse" />
+        <altmember cref="T:System.Net.FtpStatusCode" />
+        <altmember cref="T:System.Net.WebRequestMethods.Ftp" />
+        <altmember cref="T:System.Net.WebRequest" />
+        <altmember cref="T:System.Net.WebResponse" />
+        <altmember cref="T:System.Net.WebClient" />
+      </Docs>
+    </Member>
+    <Member MemberName="ContentType">
+      <MemberSignature Language="C#" Value="public override string ContentType { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string ContentType" />
+      <MemberSignature Language="DocId" Value="P:System.Net.FtpWebRequest.ContentType" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Property ContentType As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::String ^ ContentType { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.ContentType : string with get, set" Usage="System.Net.FtpWebRequest.ContentType" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Всегда создает исключение <see cref="T:System.NotSupportedException" />.</summary>
+        <value>Всегда создает исключение <see cref="T:System.NotSupportedException" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойство предоставляется только для обеспечения совместимости с другими реализациями <xref:System.Net.WebRequest> классов и  <xref:System.Net.WebResponse> . <xref:System.Net.FtpWebRequest.ContentType%2A> Нет причин использовать <xref:System.Net.FtpWebRequest.ContentType%2A>.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.NotSupportedException">Сведения о типе содержимого не поддерживается для FTP.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="Credentials">
+      <MemberSignature Language="C#" Value="public override System.Net.ICredentials Credentials { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Net.ICredentials Credentials" />
+      <MemberSignature Language="DocId" Value="P:System.Net.FtpWebRequest.Credentials" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Property Credentials As ICredentials" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::Net::ICredentials ^ Credentials { System::Net::ICredentials ^ get(); void set(System::Net::ICredentials ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.Credentials : System.Net.ICredentials with get, set" Usage="System.Net.FtpWebRequest.Credentials" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Net.ICredentials</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает учетные данные, используемые для связи с FTP-сервером.</summary>
+        <value>Экземпляр <see cref="T:System.Net.ICredentials" />; в противном случае — <see langword="null" />, если свойство не было задано.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Указывать учетные данные при соединении с использованием анонимного входа не требуется. <xref:System.Net.FtpWebRequest.Credentials%2A> Свойство необходимо задать с помощью учетных данных типа <xref:System.Net.NetworkCredential>. Это гарантирует, что имя пользователя и пароль могут быть прочитаны и отправлены на сервер.  
+  
+> [!CAUTION]
+>  Учетные данные не шифруются при передаче на сервер, если <xref:System.Net.FtpWebRequest.EnableSsl%2A> только свойство не имеет `true`значение.  
+  
+ Изменение <xref:System.Net.FtpWebRequest.Credentials%2A> <xref:System.Net.FtpWebRequest.BeginGetRequestStream%2A>после <xref:System.Net.FtpWebRequest.GetRequestStream%2A>вызова метода, , <xref:System.Net.FtpWebRequest.GetResponse%2A>  или <xref:System.Net.FtpWebRequest.BeginGetResponse%2A>  вызывает исключение <xref:System.InvalidOperationException>  .  
+  
+   
+  
+## Examples  
+ Следующий пример кода извлекает значение этого свойства и использует его для вывода имени пользователя.  
+  
+ [!code-cpp[NCLFtpClient#14](~/samples/snippets/cpp/VS_Snippets_Remoting/NCLFtpClient/CPP/ftptests.cpp#14)]
+ [!code-csharp[NCLFtpClient#14](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLFtpClient/CS/ftptests.cs#14)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Для операции задания указано значение <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException">Для операции присвоения был указан тип <see cref="T:System.Net.ICredentials" />, отличный от <see cref="T:System.Net.NetworkCredential" />.</exception>
+        <exception cref="T:System.InvalidOperationException">Для этого свойства задано новое значение для уже выполняющегося запроса.</exception>
+        <altmember cref="T:System.Net.FtpWebResponse" />
+        <altmember cref="T:System.Net.FtpStatusCode" />
+        <altmember cref="T:System.Net.WebRequestMethods.Ftp" />
+        <altmember cref="T:System.Net.WebRequest" />
+        <altmember cref="T:System.Net.WebResponse" />
+        <altmember cref="T:System.Net.WebClient" />
+      </Docs>
+    </Member>
+    <Member MemberName="DefaultCachePolicy">
+      <MemberSignature Language="C#" Value="public static System.Net.Cache.RequestCachePolicy DefaultCachePolicy { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property class System.Net.Cache.RequestCachePolicy DefaultCachePolicy" />
+      <MemberSignature Language="DocId" Value="P:System.Net.FtpWebRequest.DefaultCachePolicy" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Property DefaultCachePolicy As RequestCachePolicy" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property System::Net::Cache::RequestCachePolicy ^ DefaultCachePolicy { System::Net::Cache::RequestCachePolicy ^ get(); void set(System::Net::Cache::RequestCachePolicy ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.DefaultCachePolicy : System.Net.Cache.RequestCachePolicy with get, set" Usage="System.Net.FtpWebRequest.DefaultCachePolicy" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="xamarinmac-3.0">
+          <AttributeName>System.MonoTODO</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Net.Cache.RequestCachePolicy</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Определяет политику кэширования по умолчанию для всех FTP-запросов.</summary>
+        <value><see cref="T:System.Net.Cache.RequestCachePolicy" />, который определяет политику кэширования для FTP-запросов.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Кэшируется только содержимое, <xref:System.Net.WebRequestMethods.Ftp.DownloadFile> полученное с помощью команды.  
+  
+ В следующей таблице описаны последствия применения политик кэширования FTP в <xref:System.Net.FtpWebRequest>.  
+  
+|Политика|Действие|  
+|------------|------------|  
+|<xref:System.Net.Cache.RequestCacheLevel.Default>|Возвращает кэшированный ресурс, если ресурс является актуальным, длина содержимого является точной, а атрибуты срока действия, изменения и длины содержимого существуют.|  
+|<xref:System.Net.Cache.RequestCacheLevel.BypassCache>|Возвращает ресурс с сервера.|  
+|<xref:System.Net.Cache.RequestCacheLevel.CacheOnly>|Возвращает кэшированный ресурс, если длина содержимого имеется и соответствует размеру записи; в противном случае <xref:System.Net.WebException>создает исключение.|  
+|<xref:System.Net.Cache.RequestCacheLevel.CacheIfAvailable>|Возвращает кэшированный ресурс, если длина содержимого указана и соответствует размеру записи. в противном случае ресурс загружается с сервера и возвращается вызывающему объекту.|  
+|<xref:System.Net.Cache.RequestCacheLevel.Revalidate>|Возвращает кэшированный ресурс, если отметка времени кэшированного ресурса совпадает с меткой времени ресурса на сервере. в противном случае ресурс загружается с сервера, хранится в кэше и возвращается вызывающему объекту.|  
+|<xref:System.Net.Cache.RequestCacheLevel.Reload>|Скачивает ресурс с сервера, сохраняет его в кэше и возвращает ресурс вызывающему объекту.|  
+|<xref:System.Net.Cache.RequestCacheLevel.NoCacheNoStore>|Если кэшированный ресурс существует, он удаляется. Ресурс загружается с сервера и возвращается вызывающему.|  
+  
+> [!NOTE]
+>  Параметр <xref:System.Net.FtpWebRequest.DefaultCachePolicy%2A> переопределяет любой параметр конфигурации.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Вызывающий объект пытался установить значение этого свойства, равное <see langword="null" />.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/0eb0c5cb-dd97-484d-8614-785e88877abb">Дефаултфтпкачеполици (параметры сети)</related>
+      </Docs>
+    </Member>
+    <Member MemberName="EnableSsl">
+      <MemberSignature Language="C#" Value="public bool EnableSsl { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool EnableSsl" />
+      <MemberSignature Language="DocId" Value="P:System.Net.FtpWebRequest.EnableSsl" />
+      <MemberSignature Language="VB.NET" Value="Public Property EnableSsl As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool EnableSsl { bool get(); void set(bool value); };" />
+      <MemberSignature Language="F#" Value="member this.EnableSsl : bool with get, set" Usage="System.Net.FtpWebRequest.EnableSsl" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает объект <see cref="T:System.Boolean" />, который указывает, что необходимо использовать SSL-подключение.</summary>
+        <value>Значение <see langword="true" />, если передачи управления и данных шифруются; в противном случае — <see langword="false" />. Значение по умолчанию — <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+  
+> [!CAUTION]
+>  Если свойство не имеет `true`значение, все данные и команды, включая сведения об имени пользователя и пароле, отправляются на сервер в виде открытого текста. <xref:System.Net.FtpWebRequest.EnableSsl%2A> Любой пользователь, отслеживающий сетевой трафик, может просматривать ваши учетные данные и использовать их для подключения к серверу. При подключении к FTP-серверу, который требует учетные данные и поддерживает протокол SSL, необходимо <xref:System.Net.FtpWebRequest.EnableSsl%2A> задать `true`для значение.  
+  
+ `"AUTH TLS"` Команда отправляется на сервер для запроса зашифрованного сеанса. Если сервер не распознает эту команду, вы получаете <xref:System.Net.WebException> исключение.  
+  
+   
+  
+## Examples  
+ В следующем примере кода используется зашифрованное соединение для загрузки списка каталогов с FTP-сервера.  
+  
+ [!code-cpp[NCLFtpClient#8](~/samples/snippets/cpp/VS_Snippets_Remoting/NCLFtpClient/CPP/ftptests.cpp#8)]
+ [!code-csharp[NCLFtpClient#8](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLFtpClient/CS/ftptests.cs#8)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Подключение к FTP-серверу уже было установлено.</exception>
+        <altmember cref="T:System.Net.FtpWebResponse" />
+        <altmember cref="T:System.Net.FtpStatusCode" />
+        <altmember cref="T:System.Net.WebRequestMethods.Ftp" />
+        <altmember cref="T:System.Net.WebRequest" />
+        <altmember cref="T:System.Net.WebResponse" />
+        <altmember cref="T:System.Net.WebClient" />
+      </Docs>
+    </Member>
+    <Member MemberName="EndGetRequestStream">
+      <MemberSignature Language="C#" Value="public override System.IO.Stream EndGetRequestStream (IAsyncResult asyncResult);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance class System.IO.Stream EndGetRequestStream(class System.IAsyncResult asyncResult) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Net.FtpWebRequest.EndGetRequestStream(System.IAsyncResult)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function EndGetRequestStream (asyncResult As IAsyncResult) As Stream" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::IO::Stream ^ EndGetRequestStream(IAsyncResult ^ asyncResult);" />
+      <MemberSignature Language="F#" Value="override this.EndGetRequestStream : IAsyncResult -&gt; System.IO.Stream" Usage="ftpWebRequest.EndGetRequestStream asyncResult" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IO.Stream</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="asyncResult" Type="System.IAsyncResult" />
+      </Parameters>
+      <Docs>
+        <param name="asyncResult">Объект <see cref="T:System.IAsyncResult" />, который был возвращен при начале операции.</param>
+        <summary>Завершает асинхронную операцию в очереди, начинавшуюся с <see cref="M:System.Net.FtpWebRequest.BeginGetRequestStream(System.AsyncCallback,System.Object)" />.</summary>
+        <returns>Доступный для записи экземпляр <see cref="T:System.IO.Stream" />, который связан с этим экземпляром.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если операция не завершена, <xref:System.Net.FtpWebRequest.EndGetRequestStream%2A> метод блокируется до завершения операции. Чтобы определить, завершена ли операция, проверьте <xref:System.IAsyncResult.IsCompleted%2A> свойство перед вызовом метода. <xref:System.Net.FtpWebRequest.EndGetRequestStream%2A>  
+  
+ Помимо исключений, указанных в "исключениях" <xref:System.Net.FtpWebRequest.EndGetRequestStream%2A> , повторно создает исключения, которые были созданы при открытии потока для записи.  
+  
+> [!NOTE]
+>  Данный член генерирует сведения трассировки, если в приложении включена трассировка сети. Дополнительные сведения см. [в разделе Сетевая трассировка в .NET Framework](~/docs/framework/network-programming/network-tracing.md).  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано завершение асинхронной операции для получения потока запроса. Этот пример кода является частью большого примера, приведенного в <xref:System.Net.FtpWebRequest> разделе Общие сведения о классе.  
+  
+ [!code-cpp[NCLFtpAsync#5](~/samples/snippets/cpp/VS_Snippets_Remoting/NCLFtpAsync/CPP/async.cpp#5)]
+ [!code-csharp[NCLFtpAsync#5](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLFtpAsync/CS/async.cs#5)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="asyncResult" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="asyncResult" /> не был получен путем вызова <see cref="M:System.Net.FtpWebRequest.BeginGetRequestStream(System.AsyncCallback,System.Object)" />.</exception>
+        <exception cref="T:System.InvalidOperationException">Этот метод уже был вызван для операции, указанной в параметре <paramref name="asyncResult" />.</exception>
+        <altmember cref="T:System.Net.FtpWebResponse" />
+        <altmember cref="T:System.Net.FtpStatusCode" />
+        <altmember cref="T:System.Net.WebRequestMethods.Ftp" />
+        <altmember cref="T:System.Net.WebRequest" />
+        <altmember cref="T:System.Net.WebResponse" />
+        <altmember cref="T:System.Net.WebClient" />
+      </Docs>
+    </Member>
+    <Member MemberName="EndGetResponse">
+      <MemberSignature Language="C#" Value="public override System.Net.WebResponse EndGetResponse (IAsyncResult asyncResult);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance class System.Net.WebResponse EndGetResponse(class System.IAsyncResult asyncResult) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Net.FtpWebRequest.EndGetResponse(System.IAsyncResult)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function EndGetResponse (asyncResult As IAsyncResult) As WebResponse" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::Net::WebResponse ^ EndGetResponse(IAsyncResult ^ asyncResult);" />
+      <MemberSignature Language="F#" Value="override this.EndGetResponse : IAsyncResult -&gt; System.Net.WebResponse" Usage="ftpWebRequest.EndGetResponse asyncResult" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Net.WebResponse</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="asyncResult" Type="System.IAsyncResult" />
+      </Parameters>
+      <Docs>
+        <param name="asyncResult">Объект <see cref="T:System.IAsyncResult" />, который был возвращен при начале операции.</param>
+        <summary>Завершает асинхронную операцию в очереди, начинавшуюся с <see cref="M:System.Net.FtpWebRequest.BeginGetResponse(System.AsyncCallback,System.Object)" />.</summary>
+        <returns>Ссылка <see cref="T:System.Net.WebResponse" />, которая содержит экземпляр <see cref="T:System.Net.FtpWebResponse" />. Этот объект содержит ответ FTP-сервера на запрос.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если операция не завершилась в момент <xref:System.Net.FtpWebRequest.EndGetResponse%2A> вызова метода, <xref:System.Net.FtpWebRequest.EndGetResponse%2A> блокируется до завершения операции. Чтобы предотвратить блокировку, проверьте <xref:System.IAsyncResult.IsCompleted%2A> свойство перед вызовом метода. <xref:System.Net.FtpWebRequest.EndGetResponse%2A>  
+  
+ Помимо исключений, указанных в "исключениях" <xref:System.Net.FtpWebRequest.EndGetResponse%2A> , повторно создает исключения, которые были созданы при взаимодействии с сервером.  
+  
+> [!NOTE]
+>  Данный член генерирует сведения трассировки, если в приложении включена трассировка сети. Дополнительные сведения см. [в разделе Сетевая трассировка в .NET Framework](~/docs/framework/network-programming/network-tracing.md).  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано завершение асинхронной операции для получения ответа. Этот пример кода является частью большого примера, приведенного в <xref:System.Net.FtpWebRequest> разделе Общие сведения о классе.  
+  
+ [!code-cpp[NCLFtpAsync#6](~/samples/snippets/cpp/VS_Snippets_Remoting/NCLFtpAsync/CPP/async.cpp#6)]
+ [!code-csharp[NCLFtpAsync#6](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLFtpAsync/CS/async.cs#6)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="asyncResult" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="asyncResult" /> не был получен путем вызова <see cref="M:System.Net.FtpWebRequest.BeginGetResponse(System.AsyncCallback,System.Object)" />.</exception>
+        <exception cref="T:System.InvalidOperationException">Этот метод уже был вызван для операции, указанной в параметре <paramref name="asyncResult" />.</exception>
+        <exception cref="T:System.Net.WebException">Произошла ошибка при использовании прокси-сервера HTTP.</exception>
+        <block subset="none" type="usage"><para>Этот метод создает сетевой трафик.</para></block>
+        <altmember cref="T:System.Net.FtpWebResponse" />
+        <altmember cref="T:System.Net.FtpStatusCode" />
+        <altmember cref="T:System.Net.WebRequestMethods.Ftp" />
+        <altmember cref="T:System.Net.WebRequest" />
+        <altmember cref="T:System.Net.WebResponse" />
+        <altmember cref="T:System.Net.WebClient" />
+        <altmember cref="M:System.Net.FtpWebRequest.GetResponse" />
+      </Docs>
+    </Member>
+    <Member MemberName="GetRequestStream">
+      <MemberSignature Language="C#" Value="public override System.IO.Stream GetRequestStream ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance class System.IO.Stream GetRequestStream() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Net.FtpWebRequest.GetRequestStream" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetRequestStream () As Stream" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::IO::Stream ^ GetRequestStream();" />
+      <MemberSignature Language="F#" Value="override this.GetRequestStream : unit -&gt; System.IO.Stream" Usage="ftpWebRequest.GetRequestStream " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.IO.Stream</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Получает поток, используемый для выгрузки данных на FTP-сервер.</summary>
+        <returns>Доступный для записи экземпляр <see cref="T:System.IO.Stream" />, используемый для хранения данных, отправляемых на сервер текущим запросом.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Задайте свойства запроса перед вызовом <xref:System.Net.FtpWebRequest.GetRequestStream%2A> метода. После записи данных в поток необходимо закрыть поток перед отправкой запроса.  
+  
+ Если <xref:System.Net.FtpWebRequest.Method%2A> свойство не задано равным <xref:System.Net.WebRequestMethods.Ftp.UploadFile> или <xref:System.Net.WebRequestMethods.Ftp.AppendFile>, то невозможно получить поток.  
+  
+ <xref:System.Net.FtpWebRequest.GetRequestStream%2A>блокируется при ожидании потока. Чтобы избежать этого, вызовите <xref:System.Net.FtpWebRequest.BeginGetRequestStream%2A> метод <xref:System.Net.FtpWebRequest.GetRequestStream%2A>вместо.  
+  
+> [!NOTE]
+>  Данный член генерирует сведения трассировки, если в приложении включена трассировка сети. Дополнительные сведения см. [в разделе Сетевая трассировка в .NET Framework](~/docs/framework/network-programming/network-tracing.md).  
+  
+   
+  
+## Examples  
+ В следующем примере кода демонстрируется копирование файла в поток данных запроса и отправка запроса на сервер для передачи данных и добавления в файл.  
+  
+ [!code-cpp[NCLFtpClient#3](~/samples/snippets/cpp/VS_Snippets_Remoting/NCLFtpClient/CPP/ftptests.cpp#3)]
+ [!code-csharp[NCLFtpClient#3](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLFtpClient/CS/ftptests.cs#3)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Метод <see cref="M:System.Net.FtpWebRequest.BeginGetRequestStream(System.AsyncCallback,System.Object)" /> был вызван, но не был завершен.  
+  
+- или - 
+Прокси-сервер HTTP включен, и была предпринята попытка использования FTP-команды, отличной от <see cref="F:System.Net.WebRequestMethods.Ftp.DownloadFile" />, <see cref="F:System.Net.WebRequestMethods.Ftp.ListDirectory" /> или <see cref="F:System.Net.WebRequestMethods.Ftp.ListDirectoryDetails" />.</exception>
+        <exception cref="T:System.Net.WebException">Не удается установить подключение к FTP-серверу.</exception>
+        <exception cref="T:System.Net.ProtocolViolationException">Свойству <see cref="P:System.Net.FtpWebRequest.Method" /> не присвоено значение <see cref="F:System.Net.WebRequestMethods.Ftp.UploadFile" /> или <see cref="F:System.Net.WebRequestMethods.Ftp.AppendFile" />.</exception>
+        <block subset="none" type="usage"><para>Этот метод создает сетевой трафик.</para></block>
+        <altmember cref="T:System.Net.FtpWebResponse" />
+        <altmember cref="T:System.Net.FtpStatusCode" />
+        <altmember cref="T:System.Net.WebRequestMethods.Ftp" />
+        <altmember cref="T:System.Net.WebRequest" />
+        <altmember cref="T:System.Net.WebResponse" />
+        <altmember cref="T:System.Net.WebClient" />
+      </Docs>
+    </Member>
+    <Member MemberName="GetResponse">
+      <MemberSignature Language="C#" Value="public override System.Net.WebResponse GetResponse ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance class System.Net.WebResponse GetResponse() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Net.FtpWebRequest.GetResponse" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function GetResponse () As WebResponse" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::Net::WebResponse ^ GetResponse();" />
+      <MemberSignature Language="F#" Value="override this.GetResponse : unit -&gt; System.Net.WebResponse" Usage="ftpWebRequest.GetResponse " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Net.WebResponse</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Возвращает ответ FTP-сервера.</summary>
+        <returns>Ссылка <see cref="T:System.Net.WebResponse" />, которая содержит экземпляр <see cref="T:System.Net.FtpWebResponse" />. Этот объект содержит ответ FTP-сервера на запрос.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Для доступа к свойствам, относящимся к FTP, необходимо <xref:System.Net.WebResponse> привести объект, возвращаемый этим <xref:System.Net.FtpWebResponse>методом, к.  
+  
+ <xref:System.Net.FtpWebRequest.GetResponse%2A>вызывает установку соединения с элементом управления и может также создать подключение к данным. <xref:System.Net.FtpWebRequest.GetResponse%2A>блокируется до получения ответа. Чтобы избежать этого, эту операцию можно выполнить асинхронно, вызвав <xref:System.Net.FtpWebRequest.BeginGetResponse%2A> методы <xref:System.Net.FtpWebRequest.GetResponse%2A>и <xref:System.Net.FtpWebRequest.EndGetResponse%2A> вместо.  
+  
+ <xref:System.Net.FtpWebRequest.Proxy%2A> Если свойство задано как непосредственно, так и в файле конфигурации, связь с FTP-сервером выполняется через прокси-сервер.  
+  
+ При возникновении исключения <xref:System.Net.WebException.Response%2A> используйте свойства и <xref:System.Net.WebException.Status%2A> исключения, чтобы определить ответ от сервера. <xref:System.Net.WebException>  
+  
+ Данный член генерирует сведения трассировки, если в приложении включена трассировка сети. Дополнительные сведения см. [в разделе Сетевая трассировка в .NET Framework](~/docs/framework/network-programming/network-tracing.md).  
+  
+> [!NOTE]
+>  Несколько вызовов <xref:System.Net.FtpWebRequest.GetResponse%2A> возвращают один и тот же объект ответа; запрос не выдается повторно.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано копирование файла в поток данных запроса и отправка запроса на добавление данных в файл на сервер. В примере вызывается метод <xref:System.Net.FtpWebRequest.GetResponse%2A> для отправки запроса и блокировки до тех пор, пока сервер не вернет ответ.  
+  
+ [!code-cpp[NCLFtpClient#3](~/samples/snippets/cpp/VS_Snippets_Remoting/NCLFtpClient/CPP/ftptests.cpp#3)]
+ [!code-csharp[NCLFtpClient#3](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLFtpClient/CS/ftptests.cs#3)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException"><see cref="M:System.Net.FtpWebRequest.GetResponse" /> или <see cref="M:System.Net.FtpWebRequest.BeginGetResponse(System.AsyncCallback,System.Object)" /> уже был вызван для этого экземпляра.  
+  
+-или- 
+Прокси-сервер HTTP включен, и была предпринята попытка использования FTP-команды, отличной от <see cref="F:System.Net.WebRequestMethods.Ftp.DownloadFile" />, <see cref="F:System.Net.WebRequestMethods.Ftp.ListDirectory" /> или <see cref="F:System.Net.WebRequestMethods.Ftp.ListDirectoryDetails" />.</exception>
+        <exception cref="T:System.Net.WebException">Значение свойства <see cref="P:System.Net.FtpWebRequest.EnableSsl" /> равно <see langword="true" />, однако сервер не поддерживает эту функциональную возможность.  
+  
+- или - 
+Срок ожидания <see cref="P:System.Net.FtpWebRequest.Timeout" /> был указан и истек.</exception>
+        <block subset="none" type="usage"><para>Этот метод создает сетевой трафик.</para></block>
+        <altmember cref="T:System.Net.FtpWebResponse" />
+        <altmember cref="T:System.Net.FtpStatusCode" />
+        <altmember cref="T:System.Net.WebRequestMethods.Ftp" />
+        <altmember cref="T:System.Net.WebRequest" />
+        <altmember cref="T:System.Net.WebResponse" />
+        <altmember cref="T:System.Net.WebClient" />
+      </Docs>
+    </Member>
+    <Member MemberName="Headers">
+      <MemberSignature Language="C#" Value="public override System.Net.WebHeaderCollection Headers { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Net.WebHeaderCollection Headers" />
+      <MemberSignature Language="DocId" Value="P:System.Net.FtpWebRequest.Headers" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Property Headers As WebHeaderCollection" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::Net::WebHeaderCollection ^ Headers { System::Net::WebHeaderCollection ^ get(); void set(System::Net::WebHeaderCollection ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.Headers : System.Net.WebHeaderCollection with get, set" Usage="System.Net.FtpWebRequest.Headers" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0">
+          <AttributeName>System.MonoTODO</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Net.WebHeaderCollection</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает пустой объект <see cref="T:System.Net.WebHeaderCollection" />.</summary>
+        <value>Пустой объект <see cref="T:System.Net.WebHeaderCollection" /></value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойство предоставляется только для обеспечения совместимости с другими реализациями <xref:System.Net.WebRequest> классов и  <xref:System.Net.WebResponse> . <xref:System.Net.FtpWebRequest.Headers%2A> Нет причин использовать <xref:System.Net.FtpWebRequest.Headers%2A>.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="KeepAlive">
+      <MemberSignature Language="C#" Value="public bool KeepAlive { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool KeepAlive" />
+      <MemberSignature Language="DocId" Value="P:System.Net.FtpWebRequest.KeepAlive" />
+      <MemberSignature Language="VB.NET" Value="Public Property KeepAlive As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool KeepAlive { bool get(); void set(bool value); };" />
+      <MemberSignature Language="F#" Value="member this.KeepAlive : bool with get, set" Usage="System.Net.FtpWebRequest.KeepAlive" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0">
+          <AttributeName>System.MonoTODO("We don't support KeepAlive = true")</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает значение <see cref="T:System.Boolean" />, которое указывает, следует ли закрывать управляющее подключение к FTP-серверу после завершения запроса.</summary>
+        <value>Значение <see langword="true" />, если подключение к серверу не должно быть уничтожено; в противном случае — <see langword="false" />. Значение по умолчанию — <see langword="true" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если свойство имеет `false`значение, соединение элемента управления <xref:System.Net.FtpWebResponse.Close%2A> закрывается при вызове метода. <xref:System.Net.FtpWebRequest.KeepAlive%2A>  
+  
+ Изменение <xref:System.Net.FtpWebRequest.KeepAlive%2A> <xref:System.Net.FtpWebRequest.BeginGetRequestStream%2A>после <xref:System.Net.FtpWebRequest.GetRequestStream%2A>вызова метода, , <xref:System.Net.FtpWebRequest.GetResponse%2A>  или <xref:System.Net.FtpWebRequest.BeginGetResponse%2A>  вызывает исключение <xref:System.InvalidOperationException>  .  
+  
+   
+  
+## Examples  
+ В следующем примере кода извлекаются и отображаются значения свойств для <xref:System.Net.FtpWebRequest> указанного объекта.  
+  
+ [!code-cpp[NCLFtpClient#15](~/samples/snippets/cpp/VS_Snippets_Remoting/NCLFtpClient/CPP/ftptests.cpp#15)]
+ [!code-csharp[NCLFtpClient#15](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLFtpClient/CS/ftptests.cs#15)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Для этого свойства задано новое значение для уже выполняющегося запроса.</exception>
+        <altmember cref="T:System.Net.FtpWebResponse" />
+        <altmember cref="T:System.Net.FtpStatusCode" />
+        <altmember cref="T:System.Net.WebRequestMethods.Ftp" />
+        <altmember cref="T:System.Net.WebRequest" />
+        <altmember cref="T:System.Net.WebResponse" />
+        <altmember cref="T:System.Net.WebClient" />
+      </Docs>
+    </Member>
+    <Member MemberName="Method">
+      <MemberSignature Language="C#" Value="public override string Method { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string Method" />
+      <MemberSignature Language="DocId" Value="P:System.Net.FtpWebRequest.Method" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Property Method As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::String ^ Method { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.Method : string with get, set" Usage="System.Net.FtpWebRequest.Method" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает команду, которая будет отправлена на FTP-сервер.</summary>
+        <value>Значение <see cref="T:System.String" />, содержащее FTP-команду для отправки на сервер. Значение по умолчанию — <see cref="F:System.Net.WebRequestMethods.Ftp.DownloadFile" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Net.FtpWebRequest.Method%2A> Свойство определяет, какая команда отправляется на сервер. Значение задается <xref:System.Net.FtpWebRequest.Method%2A> с помощью строк, определенных в общих элементах <xref:System.Net.WebRequestMethods.Ftp> поля класса. Обратите внимание, что строки, <xref:System.Net.WebRequestMethods.Ftp> определенные в классе, являются единственными поддерживаемыми <xref:System.Net.FtpWebRequest.Method%2A> для свойства параметрами. Если задать для <xref:System.ArgumentException> Свойства любое другое значение, будет <xref:System.Net.FtpWebRequest.Method%2A>  вызвано исключение.  
+  
+ Если задано <xref:System.Net.WebRequestMethods.Ftp.UploadFile>значение <xref:System.Net.FtpWebRequest.Method%2A> , необходимо <xref:System.Net.FtpWebRequest.GetRequestStream%2A> сделать это перед вызовом метода. Сбой при вызове этих элементов в правильном порядке приводит <xref:System.Net.ProtocolViolationException> к исключению при попытке получить поток запроса.  
+  
+ Учетные данные, предоставленные для <xref:System.Net.FtpWebRequest> объекта, должны иметь разрешение на выполнение указанного метода. В противном случае команда FTP завершится ошибкой.  
+  
+ Чтобы определить успешность или сбой команды, проверьте <xref:System.Net.FtpWebResponse.StatusCode%2A> свойства и. <xref:System.Net.FtpWebResponse.StatusDescription%2A>  
+  
+   
+  
+## Examples  
+ В следующем примере кода этому свойству присваивается значение <xref:System.Net.WebRequestMethods.Ftp.DeleteFile>.  
+  
+ [!code-cpp[NCLFtpClient#4](~/samples/snippets/cpp/VS_Snippets_Remoting/NCLFtpClient/CPP/ftptests.cpp#4)]
+ [!code-csharp[NCLFtpClient#4](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLFtpClient/CS/ftptests.cs#4)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Для этого свойства задано новое значение для уже выполняющегося запроса.</exception>
+        <exception cref="T:System.ArgumentException">Метод является недопустимым.  
+  
+-или-
+  
+ Метод не поддерживается.  
+  
+- или -
+  
+ Было указано несколько методов.</exception>
+        <altmember cref="T:System.Net.FtpWebResponse" />
+        <altmember cref="T:System.Net.FtpStatusCode" />
+        <altmember cref="T:System.Net.WebRequestMethods.Ftp" />
+        <altmember cref="T:System.Net.WebRequest" />
+        <altmember cref="T:System.Net.WebResponse" />
+        <altmember cref="T:System.Net.WebClient" />
+      </Docs>
+    </Member>
+    <Member MemberName="PreAuthenticate">
+      <MemberSignature Language="C#" Value="public override bool PreAuthenticate { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool PreAuthenticate" />
+      <MemberSignature Language="DocId" Value="P:System.Net.FtpWebRequest.PreAuthenticate" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Property PreAuthenticate As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property bool PreAuthenticate { bool get(); void set(bool value); };" />
+      <MemberSignature Language="F#" Value="member this.PreAuthenticate : bool with get, set" Usage="System.Net.FtpWebRequest.PreAuthenticate" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Всегда создает исключение <see cref="T:System.NotSupportedException" />.</summary>
+        <value>Всегда создает исключение <see cref="T:System.NotSupportedException" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойство предоставляется только для обеспечения совместимости с другими реализациями <xref:System.Net.WebRequest> классов и  <xref:System.Net.WebResponse> . <xref:System.Net.FtpWebRequest.PreAuthenticate%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.NotSupportedException">Предварительная проверка подлинности для FTP не поддерживается.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="Proxy">
+      <MemberSignature Language="C#" Value="public override System.Net.IWebProxy Proxy { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Net.IWebProxy Proxy" />
+      <MemberSignature Language="DocId" Value="P:System.Net.FtpWebRequest.Proxy" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Property Proxy As IWebProxy" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::Net::IWebProxy ^ Proxy { System::Net::IWebProxy ^ get(); void set(System::Net::IWebProxy ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.Proxy : System.Net.IWebProxy with get, set" Usage="System.Net.FtpWebRequest.Proxy" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Net.IWebProxy</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает прокси-сервер, используемый для связи с FTP-сервером.</summary>
+        <value>Экземпляр <see cref="T:System.Net.IWebProxy" />, ответственный за связь с FTP-сервером. В .NET Core его значение — <see langword="null" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+
+### <a name="on-net-framework"></a>На .NET Framework
+
+ <xref:System.Net.FtpWebRequest.Proxy%2A> Свойство <xref:System.Net.IWebProxy>  определяет экземпляр, который взаимодействует с FTP-сервером. Прокси-сервер задается системой с помощью файлов конфигурации и параметров локальной сети Internet Explorer. Чтобы указать, что прокси-сервер не должен использоваться <xref:System.Net.FtpWebRequest.Proxy%2A> , задайте экземпляру прокси, возвращаемому <xref:System.Net.GlobalProxySelection.GetEmptyWebProxy%2A?displayProperty=nameWithType> методом. Дополнительные сведения об автоматическом обнаружении прокси-сервера см. в разделе [Автоматическое обнаружение прокси-сервера](~/docs/framework/network-programming/automatic-proxy-detection.md).  
+  
+ Необходимо задать <xref:System.Net.FtpWebRequest.Proxy%2A> перед записью данных в поток запроса или получения ответа. Изменение <xref:System.Net.FtpWebRequest.Proxy%2A> <xref:System.Net.FtpWebRequest.BeginGetRequestStream%2A>после <xref:System.Net.FtpWebRequest.GetRequestStream%2A>вызова метода, , <xref:System.Net.FtpWebRequest.GetResponse%2A>  или <xref:System.Net.FtpWebRequest.BeginGetResponse%2A>  вызывает исключение <xref:System.InvalidOperationException>  .  
+  
+ <xref:System.Net.FtpWebRequest> Класс поддерживает прокси-серверы клиента брандмауэра HTTP и ISA.  
+  
+ Если указанный прокси-сервер является прокси-сервером HTTP, <xref:System.Net.WebRequestMethods.Ftp.DownloadFile>поддерживаются только <xref:System.Net.WebRequestMethods.Ftp.ListDirectoryDetails> команды, <xref:System.Net.WebRequestMethods.Ftp.ListDirectory>и.  
+  
+### <a name="on-net-core"></a>В .NET Core   
+
+`FtpWebRequest.Proxy` Свойство не поддерживается. Установка свойства не оказывает никакого влияния. При получении значения свойства возвращается `null`значение. 
+
+
+## Examples  
+ В следующем примере кода показано это значение свойства.  
+  
+ [!code-cpp[NCLFtpClient#16](~/samples/snippets/cpp/VS_Snippets_Remoting/NCLFtpClient/CPP/ftptests.cpp#16)]
+ [!code-csharp[NCLFtpClient#16](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLFtpClient/CS/ftptests.cs#16)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Значением этого свойства не может быть <see langword="null" />.</exception>
+        <exception cref="T:System.InvalidOperationException">Для этого свойства задано новое значение для уже выполняющегося запроса.</exception>
+        <altmember cref="T:System.Net.FtpWebResponse" />
+        <altmember cref="T:System.Net.FtpStatusCode" />
+        <altmember cref="T:System.Net.WebRequestMethods.Ftp" />
+        <altmember cref="T:System.Net.WebRequest" />
+        <altmember cref="T:System.Net.WebResponse" />
+        <altmember cref="T:System.Net.WebClient" />
+        <altmember cref="T:System.Net.WebProxy" />
+        <altmember cref="T:System.Net.GlobalProxySelection" />
+      </Docs>
+    </Member>
+    <Member MemberName="ReadWriteTimeout">
+      <MemberSignature Language="C#" Value="public int ReadWriteTimeout { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 ReadWriteTimeout" />
+      <MemberSignature Language="DocId" Value="P:System.Net.FtpWebRequest.ReadWriteTimeout" />
+      <MemberSignature Language="VB.NET" Value="Public Property ReadWriteTimeout As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int ReadWriteTimeout { int get(); void set(int value); };" />
+      <MemberSignature Language="F#" Value="member this.ReadWriteTimeout : int with get, set" Usage="System.Net.FtpWebRequest.ReadWriteTimeout" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает время ожидания при записи в поток или при чтении из него.</summary>
+        <value>Число миллисекунд до истечения времени чтения или записи. Значение по умолчанию — 300 000 миллисекунд (5 минут).</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Используется при записи в поток, возвращаемый <xref:System.Net.FtpWebRequest.GetRequestStream%2A> методом, или при считывании из потока, возвращенного <xref:System.Net.FtpWebResponse.GetResponseStream%2A> методом. <xref:System.Net.FtpWebRequest.ReadWriteTimeout%2A>  
+  
+ В частности, <xref:System.Net.FtpWebRequest.ReadWriteTimeout%2A> свойство управляет временем ожидания <xref:System.IO.Stream.Read%2A> для метода, который используется для чтения потока, возвращаемого <xref:System.Net.FtpWebResponse.GetResponseStream%2A> методом, и для <xref:System.IO.Stream.Write%2A> метода, который используется для записи в поток, возвращаемый <xref:System.Net.FtpWebRequest.GetRequestStream%2A>метод. При превышении времени ожидания вызывающий метод создает <xref:System.Net.WebException> с параметром со <xref:System.Net.WebExceptionStatus> значением <xref:System.Net.WebExceptionStatus.Timeout>.  
+  
+ Чтобы указать количество времени ожидания завершения запроса, используйте <xref:System.Net.FtpWebRequest.Timeout%2A> свойство.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Запрос уже был отправлен.</exception>
+        <exception cref="T:System.ArgumentOutOfRangeException">Указанное значение для операции присвоения меньше или равно нулю и не равно <see cref="F:System.Threading.Timeout.Infinite" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="RenameTo">
+      <MemberSignature Language="C#" Value="public string RenameTo { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string RenameTo" />
+      <MemberSignature Language="DocId" Value="P:System.Net.FtpWebRequest.RenameTo" />
+      <MemberSignature Language="VB.NET" Value="Public Property RenameTo As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ RenameTo { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.RenameTo : string with get, set" Usage="System.Net.FtpWebRequest.RenameTo" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает новое имя переименовываемого файла.</summary>
+        <value>Новая имя переименовываемого файла.</value>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentException">Значение, указанное для операции Set, равно <see langword="null" /> или пустой строке.</exception>
+        <exception cref="T:System.InvalidOperationException">Для этого свойства задано новое значение для уже выполняющегося запроса.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="RequestUri">
+      <MemberSignature Language="C#" Value="public override Uri RequestUri { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Uri RequestUri" />
+      <MemberSignature Language="DocId" Value="P:System.Net.FtpWebRequest.RequestUri" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides ReadOnly Property RequestUri As Uri" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property Uri ^ RequestUri { Uri ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.RequestUri : Uri" Usage="System.Net.FtpWebRequest.RequestUri" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Uri</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает URI, запрошенный этим экземпляром.</summary>
+        <value>Экземпляр <see cref="T:System.Uri" />, который идентифицирует ресурс, доступ к которому предоставляется посредством FTP.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значением <xref:System.Net.FtpWebRequest.RequestUri%2A> свойства является URI, указанный <xref:System.Net.WebRequest.Create%2A> при вызове метода для получения этого экземпляра.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано это значение свойства.  
+  
+ [!code-cpp[NCLFtpClient#14](~/samples/snippets/cpp/VS_Snippets_Remoting/NCLFtpClient/CPP/ftptests.cpp#14)]
+ [!code-csharp[NCLFtpClient#14](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLFtpClient/CS/ftptests.cs#14)]  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.Net.FtpWebResponse" />
+        <altmember cref="T:System.Net.FtpStatusCode" />
+        <altmember cref="T:System.Net.WebRequestMethods.Ftp" />
+        <altmember cref="T:System.Net.WebRequest" />
+        <altmember cref="T:System.Net.WebResponse" />
+        <altmember cref="T:System.Net.WebClient" />
+      </Docs>
+    </Member>
+    <Member MemberName="ServicePoint">
+      <MemberSignature Language="C#" Value="public System.Net.ServicePoint ServicePoint { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Net.ServicePoint ServicePoint" />
+      <MemberSignature Language="DocId" Value="P:System.Net.FtpWebRequest.ServicePoint" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property ServicePoint As ServicePoint" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Net::ServicePoint ^ ServicePoint { System::Net::ServicePoint ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.ServicePoint : System.Net.ServicePoint" Usage="System.Net.FtpWebRequest.ServicePoint" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Net.ServicePoint</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает объект <see cref="T:System.Net.ServicePoint" />, используемый для подключения к FTP-серверу.</summary>
+        <value>Объект <see cref="T:System.Net.ServicePoint" /> может использоваться для настройки поведения при подключении.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если объект <xref:System.Net.ServicePoint> не существует, он создается для FTP-сервера. Чтобы задать максимальное число соединений, которые могут быть открыты для FTP-сервера, задайте <xref:System.Net.ServicePoint.ConnectionLimit%2A> свойство <xref:System.Net.ServicePoint> экземпляра, возвращаемое этим свойством.  
+  
+   
+  
+## Examples  
+ В следующем примере кода точка обслуживания извлекается из запроса и задается максимальное число подключений к одному.  
+  
+ [!code-cpp[NCLFtpClient#1](~/samples/snippets/cpp/VS_Snippets_Remoting/NCLFtpClient/CPP/ftptests.cpp#1)]
+ [!code-csharp[NCLFtpClient#1](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLFtpClient/CS/ftptests.cs#1)]  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.Net.FtpWebResponse" />
+        <altmember cref="T:System.Net.FtpStatusCode" />
+        <altmember cref="T:System.Net.WebRequestMethods.Ftp" />
+        <altmember cref="T:System.Net.WebRequest" />
+        <altmember cref="T:System.Net.WebResponse" />
+        <altmember cref="T:System.Net.WebClient" />
+      </Docs>
+    </Member>
+    <Member MemberName="Timeout">
+      <MemberSignature Language="C#" Value="public override int Timeout { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 Timeout" />
+      <MemberSignature Language="DocId" Value="P:System.Net.FtpWebRequest.Timeout" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Property Timeout As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property int Timeout { int get(); void set(int value); };" />
+      <MemberSignature Language="F#" Value="member this.Timeout : int with get, set" Usage="System.Net.FtpWebRequest.Timeout" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает количество миллисекунд для ожидания запроса.</summary>
+        <value><see cref="T:System.Int32" /> Значение типа, содержащее число миллисекунд ожидания перед истечением времени ожидания запроса. Значение по умолчанию <see cref="F:System.Threading.Timeout.Infinite" />—.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Чтобы указать бесконечное значение, установите <xref:System.Net.FtpWebRequest.Timeout%2A> свойство в <xref:System.Threading.Timeout.Infinite> (-1). Это значение по умолчанию.  
+  
+ <xref:System.Net.FtpWebRequest.Timeout%2A>число миллисекунд, в течение которых синхронный запрос, выполненный с <xref:System.Net.FtpWebRequest.GetResponse%2A> помощью метода <xref:System.Net.FtpWebRequest.GetRequestStream%2A> , ожидает ответа, а метод ожидает поток. Если ресурс не отвечает в течение времени ожидания, запрос создает исключение <xref:System.Net.WebException> со свойством, для <xref:System.Net.WebExceptionStatus.Timeout>которого <xref:System.Net.WebException.Status%2A> задано значение.  
+  
+ Изменение <xref:System.Net.FtpWebRequest.Timeout%2A> <xref:System.Net.FtpWebRequest.BeginGetRequestStream%2A>после <xref:System.Net.FtpWebRequest.GetRequestStream%2A>вызова метода, , <xref:System.Net.FtpWebRequest.GetResponse%2A>  или <xref:System.Net.FtpWebRequest.BeginGetResponse%2A>  вызывает исключение <xref:System.InvalidOperationException>  .  
+  
+ Возврат или истечение времени ожидания запроса службы доменных имен (DNS) может занять до 15 секунд. Если запрос содержит имя узла, требующее разрешения, и для него <xref:System.Net.FtpWebRequest.Timeout%2A> задано значение менее 15 секунд, это может занять 15 секунд или более, <xref:System.Net.WebException> прежде чем будет создано исключение, указывающее время ожидания запроса.  
+  
+   
+  
+## Examples  
+ В следующем примере кода задается это свойство.  
+  
+ [!code-cpp[NCLFtpClient#23](~/samples/snippets/cpp/VS_Snippets_Remoting/NCLFtpClient/CPP/ftptests.cpp#23)]
+ [!code-csharp[NCLFtpClient#23](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLFtpClient/CS/ftptests.cs#23)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentOutOfRangeException">Указанное значение меньше нуля и не равно <see cref="F:System.Threading.Timeout.Infinite" />.</exception>
+        <exception cref="T:System.InvalidOperationException">Для этого свойства задано новое значение для уже выполняющегося запроса.</exception>
+        <altmember cref="T:System.Net.FtpWebResponse" />
+        <altmember cref="T:System.Net.FtpStatusCode" />
+        <altmember cref="T:System.Net.WebRequestMethods.Ftp" />
+        <altmember cref="T:System.Net.WebRequest" />
+        <altmember cref="T:System.Net.WebResponse" />
+        <altmember cref="T:System.Net.WebClient" />
+      </Docs>
+    </Member>
+    <Member MemberName="UseBinary">
+      <MemberSignature Language="C#" Value="public bool UseBinary { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool UseBinary" />
+      <MemberSignature Language="DocId" Value="P:System.Net.FtpWebRequest.UseBinary" />
+      <MemberSignature Language="VB.NET" Value="Public Property UseBinary As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool UseBinary { bool get(); void set(bool value); };" />
+      <MemberSignature Language="F#" Value="member this.UseBinary : bool with get, set" Usage="System.Net.FtpWebRequest.UseBinary" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает значение <see cref="T:System.Boolean" />, которое указывает тип данных для передачи файлов.</summary>
+        <value>Значение <see langword="true" />, чтобы указать серверу, что передаваемые данные являются двоичными; значение <see langword="false" />, чтобы указать передачу текстовых данных. Значение по умолчанию — <see langword="true" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если вы отправляете двоичные данные, например изображение, присвойте этому свойству `true`значение. При отправке текста задайте для `false`свойства значение. Указание `true` приводит к <xref:System.Net.FtpWebRequest> тому, что `"TYPE I"` отправляет команду на сервер. Указание `false` приводит к <xref:System.Net.FtpWebRequest> тому, что `"Type A"` отправляет команду на сервер. FTP-серверы могут игнорировать эти команды.  
+  
+ Изменение <xref:System.Net.FtpWebRequest.UseBinary%2A> <xref:System.Net.FtpWebRequest.BeginGetRequestStream%2A>после <xref:System.Net.FtpWebRequest.GetRequestStream%2A>вызова метода, , <xref:System.Net.FtpWebRequest.GetResponse%2A>  или <xref:System.Net.FtpWebRequest.BeginGetResponse%2A>  вызывает исключение <xref:System.InvalidOperationException>  .  
+  
+   
+  
+## Examples  
+ В следующем примере кода извлекаются и отображаются значения свойств для <xref:System.Net.FtpWebRequest> указанного объекта.  
+  
+ [!code-cpp[NCLFtpClient#15](~/samples/snippets/cpp/VS_Snippets_Remoting/NCLFtpClient/CPP/ftptests.cpp#15)]
+ [!code-csharp[NCLFtpClient#15](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLFtpClient/CS/ftptests.cs#15)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Для этого свойства задано новое значение для уже выполняющегося запроса.</exception>
+        <altmember cref="T:System.Net.FtpWebResponse" />
+        <altmember cref="T:System.Net.FtpStatusCode" />
+        <altmember cref="T:System.Net.WebRequestMethods.Ftp" />
+        <altmember cref="T:System.Net.WebRequest" />
+        <altmember cref="T:System.Net.WebResponse" />
+        <altmember cref="T:System.Net.WebClient" />
+      </Docs>
+    </Member>
+    <Member MemberName="UseDefaultCredentials">
+      <MemberSignature Language="C#" Value="public override bool UseDefaultCredentials { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool UseDefaultCredentials" />
+      <MemberSignature Language="DocId" Value="P:System.Net.FtpWebRequest.UseDefaultCredentials" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Property UseDefaultCredentials As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property bool UseDefaultCredentials { bool get(); void set(bool value); };" />
+      <MemberSignature Language="F#" Value="member this.UseDefaultCredentials : bool with get, set" Usage="System.Net.FtpWebRequest.UseDefaultCredentials" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0">
+          <AttributeName>System.MonoTODO</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Всегда создает исключение <see cref="T:System.NotSupportedException" />.</summary>
+        <value>Всегда создает исключение <see cref="T:System.NotSupportedException" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойство предоставляется только для обеспечения совместимости с другими реализациями <xref:System.Net.WebRequest> классов и  <xref:System.Net.WebResponse> . <xref:System.Net.FtpWebRequest.UseDefaultCredentials%2A> Нет причин использовать <xref:System.Net.FtpWebRequest.UseDefaultCredentials%2A>.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.NotSupportedException">Учетные данные по умолчанию для FTP не поддерживаются.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="UsePassive">
+      <MemberSignature Language="C#" Value="public bool UsePassive { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool UsePassive" />
+      <MemberSignature Language="DocId" Value="P:System.Net.FtpWebRequest.UsePassive" />
+      <MemberSignature Language="VB.NET" Value="Public Property UsePassive As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool UsePassive { bool get(); void set(bool value); };" />
+      <MemberSignature Language="F#" Value="member this.UsePassive : bool with get, set" Usage="System.Net.FtpWebRequest.UsePassive" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Net.Requests</AssemblyName>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.1.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает поведение процесса передачи данных в клиентском приложении.</summary>
+        <value>Значение <see langword="false" />, если процесс передачи данных в клиентском приложении прослушивает подключение на порту данных; в противном случае — <see langword="true" />, если клиент должен начать подключение по порту данных. Значение по умолчанию — <see langword="true" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Установка свойства для `true`  отправки `PASV"`  команды на сервер. <xref:System.Net.FtpWebRequest.UsePassive%2A> Эта команда запрашивает сервер на прослушивание порта данных и ожидает подключения, а не инициирует его при получении команды передачи.  
+  
+ Описание поведений, заданных с помощью <xref:System.Net.FtpWebRequest.UsePassive%2A>, см. в [документе RFC 959: "протокол FTP", раздел 3,2: "Установка подключений к данным" и раздел 4.1.2: "команды параметра" переносить параметры "](https://www.ietf.org/rfc/rfc959.txt).  
+  
+ Изменение <xref:System.Net.FtpWebRequest.UsePassive%2A> <xref:System.Net.FtpWebRequest.BeginGetRequestStream%2A>после <xref:System.Net.FtpWebRequest.GetRequestStream%2A>вызова метода, , <xref:System.Net.FtpWebRequest.GetResponse%2A>  или <xref:System.Net.FtpWebRequest.BeginGetResponse%2A>  вызывает исключение <xref:System.InvalidOperationException>  .  
+  
+ Если <xref:System.Net.FtpWebRequest.UsePassive%2A> параметр имеет `true`значение, FTP-сервер не может отправить размер файла, а ход загрузки всегда равен нулю. Если <xref:System.Net.FtpWebRequest.UsePassive%2A> параметр имеет `false`значение, брандмауэр может вызвать предупреждение и заблокировать скачивание файла.  
+  
+   
+  
+## Examples  
+ В следующем примере кода извлекаются и отображаются значения свойств для <xref:System.Net.FtpWebRequest> указанного объекта.  
+  
+ [!code-cpp[NCLFtpClient#6](~/samples/snippets/cpp/VS_Snippets_Remoting/NCLFtpClient/CPP/ftptests.cpp#6)]
+ [!code-csharp[NCLFtpClient#6](~/samples/snippets/csharp/VS_Snippets_Remoting/NCLFtpClient/CS/ftptests.cs#6)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Для этого свойства задано новое значение для уже выполняющегося запроса.</exception>
+        <altmember cref="T:System.Net.FtpWebResponse" />
+        <altmember cref="T:System.Net.FtpStatusCode" />
+        <altmember cref="T:System.Net.WebRequestMethods.Ftp" />
+        <altmember cref="T:System.Net.WebRequest" />
+        <altmember cref="T:System.Net.WebResponse" />
+        <altmember cref="T:System.Net.WebClient" />
+      </Docs>
+    </Member>
+  </Members>
+</Type>
