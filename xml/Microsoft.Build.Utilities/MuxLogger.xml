@@ -1,0 +1,275 @@
+<Type Name="MuxLogger" FullName="Microsoft.Build.Utilities.MuxLogger">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="f0c1bac8025c518b15c3a4195610e83185d7213e" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70558655" /></Metadata><TypeSignature Language="C#" Value="public class MuxLogger : Microsoft.Build.Framework.INodeLogger" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit MuxLogger extends System.Object implements class Microsoft.Build.Framework.ILogger, class Microsoft.Build.Framework.INodeLogger" />
+  <TypeSignature Language="DocId" Value="T:Microsoft.Build.Utilities.MuxLogger" />
+  <TypeSignature Language="VB.NET" Value="Public Class MuxLogger&#xA;Implements INodeLogger" />
+  <TypeSignature Language="C++ CLI" Value="public ref class MuxLogger : Microsoft::Build::Framework::INodeLogger" />
+  <TypeSignature Language="F#" Value="type MuxLogger = class&#xA;    interface INodeLogger&#xA;    interface ILogger" />
+  <AssemblyInfo>
+    <AssemblyName>Microsoft.Build.Utilities.v4.0</AssemblyName>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces>
+    <Interface>
+      <InterfaceName>Microsoft.Build.Framework.ILogger</InterfaceName>
+    </Interface>
+    <Interface>
+      <InterfaceName>Microsoft.Build.Framework.INodeLogger</InterfaceName>
+    </Interface>
+  </Interfaces>
+  <Docs>
+    <summary><span data-ttu-id="a2d5d-101">Представляет средство ведения журнала мультиплексирования.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-101">Represents a multiplexing logger.</span></span> <span data-ttu-id="a2d5d-102">Назначение данного средства ведения журнала состоит в регистрации и отмене регистрации нескольким средствам ведения журналов во время построения.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-102">The purpose of this logger is to register and unregister multiple loggers during the build.</span></span> <span data-ttu-id="a2d5d-103">Поддерживает сценарий интегрированной среды разработки Visual Studio, в котором средства ведения журнала регистрируются и отменяют регистрацию для каждого запроса на сборку системы проектов.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-103">Supports the Visual Studio IDE scenario in which loggers are registered and unregistered for each project system's build request.</span></span> <span data-ttu-id="a2d5d-104">Одно физическое построение может иметь несколько логических построений, каждое из которых будет иметь собственный набор средств записи в журнал.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-104">One physical build can have multiple logical builds, each with its own set of loggers.</span></span>  
+  
+<span data-ttu-id="a2d5d-105"><see langword="MuxLogger" /> самостоятельно регистрируется в диспетчере сборок как стандартное центральное средство ведения журнала в стиле /l.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-105">The <see langword="MuxLogger" /> registers itself with the build manager as a regular central /l style logger.</span></span> <span data-ttu-id="a2d5d-106">Получает сообщения от диспетчера построений и маршрутизирует их в нужное средство записи в журнал с учетом логического построения, из которого было получено сообщение.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-106">It receives messages from the build manager and routes them to the correct logger, based on the logical build that the message came from.</span></span></summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <span data-ttu-id="a2d5d-107">`MuxLogger` Обычно функции выводятся следующим образом:</span><span class="sxs-lookup"><span data-stu-id="a2d5d-107">The `MuxLogger` generally functions as follows:</span></span>  
+  
+-   <span data-ttu-id="a2d5d-108">`MuxLogger` Регистрируется в начале сборки начала построения диспетчера сборок.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-108">The `MuxLogger` is registered at the beginning of the build manager's Begin build.</span></span>  
+  
+     <span data-ttu-id="a2d5d-109">Все средства ведения журнала, зарегистрированные до диспетчера сборок, запускают событие Build-Started одновременно `MuxLogger`с.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-109">Any loggers registered before the build manager starts the build get the build-started event at the same time as the `MuxLogger`.</span></span>  
+  
+     <span data-ttu-id="a2d5d-110">Все средства ведения журнала, зарегистрированные после запуска сборки диспетчером сборки, получают событие, запущенное сборкой.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-110">Any loggers registered after the build manager starts the build get a synthesized build-started event.</span></span> <span data-ttu-id="a2d5d-111">Событие не может быть кэшировано, так как метка времени события начала сборки определяется при создании события, а кэширование события приводит к `MuxLogger`неправильному времени сборки в средствах ведения журнала, зарегистрированных в.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-111">The event cannot be cached because the timestamp of the build-started event is determined when the event is created, and caching the event would give incorrect build times in the loggers registered to the `MuxLogger`.</span></span>  
+  
+-   <span data-ttu-id="a2d5d-112">`MuxLogger` Инициализация диспетчером сборки</span><span class="sxs-lookup"><span data-stu-id="a2d5d-112">The `MuxLogger` is initialized by the build manager</span></span>  
+  
+     <span data-ttu-id="a2d5d-113">Компонент `MuxLogger` прослушивает все события источника событий от диспетчера сборок и правильно направляет события в зарегистрированные средства ведения журнала.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-113">The `MuxLogger` listens to all events on the event source from the build manager and routes events correctly to the registered loggers.</span></span>  
+  
+-   <span data-ttu-id="a2d5d-114">`MuxLogger` При завершении сборки завершается завершение работы.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-114">The `MuxLogger` is shutdown when the build is finished in end build.</span></span> <span data-ttu-id="a2d5d-115">В настоящее время она отменяет регистрацию всех прикрепленных к нему средств ведения журнала.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-115">At this time, it unregisters any loggers attached to it.</span></span>  
+  
+-   <span data-ttu-id="a2d5d-116">`MuxLogger` Регистрирует событие Build-Finished, когда для каждого средства ведения журнала отображается событие завершено проектом для первого события, запущенного проектом.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-116">The `MuxLogger` logs the build-finished event when the project-finished event for the first project-started event is seen for each logger.</span></span>  
+  
+ <span data-ttu-id="a2d5d-117">Регистраторы `MuxLogger` регистрируются следующим образом:</span><span class="sxs-lookup"><span data-stu-id="a2d5d-117">The `MuxLogger` registers loggers in the following way:</span></span>  
+  
+1.  <span data-ttu-id="a2d5d-118">Средство ведения журнала передается `MuxLogger.RegisterLogger` в метод с идентификатором отправки, который используется для маршрутизации сообщения в это средство ведения журнала.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-118">The logger is passed to the `MuxLogger.RegisterLogger` method with a submission ID that is used to route a message to that logger.</span></span>  
+  
+2.  <span data-ttu-id="a2d5d-119">Объект `MuxLogger` регистрирует средство ведения журнала `MuxLogger` в источнике событий.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-119">The `MuxLogger` registers the logger to the `MuxLogger` event source.</span></span>  
+  
+3.  <span data-ttu-id="a2d5d-120">Если событие, запущенное при сборке, уже зарегистрировано, `MuxLogger` то создает новое событие, запущенное при сборке, и отправляет его в источник событий средства ведения журнала.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-120">If the build-started event has already been logged, the `MuxLogger` creates a new build-started event and sends it to the logger's event source.</span></span>  
+  
+ <span data-ttu-id="a2d5d-121">`MuxLogger` Отменяет регистрацию средств ведения журнала в следующем виде:</span><span class="sxs-lookup"><span data-stu-id="a2d5d-121">The `MuxLogger` unregisters loggers in the following way:</span></span>  
+  
+1.  <span data-ttu-id="a2d5d-122">После завершения `MuxLogger.UnregisterLogger` отправки сборки метод вызывается с идентификатором отправки для средства ведения журнала.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-122">When a build submission is completed, the `MuxLogger.UnregisterLogger` method is called with the submission ID for the logger.</span></span>  
+  
+2.  <span data-ttu-id="a2d5d-123">`MuxLogger` Выполняет поиск состояния успешного выполнения события завершено проекта для идентификатора отправки и регистрирует событие завершения сборки в средстве ведения журнала.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-123">The `MuxLogger` looks up the success state of the project-finished event for the submission ID and logs a build-finished event to the logger.</span></span>  
+  
+3.  <span data-ttu-id="a2d5d-124">`MuxLogger` Удаляет источник события.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-124">The `MuxLogger` cleans up the event source.</span></span>  
+  
+     <span data-ttu-id="a2d5d-125">Обратите внимание, что отмена регистрации происходит из потока, отличного от потока ведения журнала, и если при регистрации событий вызывается ошибка синхронизации, это может произойти.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-125">Note that the unregister comes from a thread other than the logging thread and a synchronization issue could occur if unregister is called while events are being logged.</span></span>  
+  
+ ]]></format>
+    </remarks>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public MuxLogger ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:Microsoft.Build.Utilities.MuxLogger.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; MuxLogger();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>Microsoft.Build.Utilities.v4.0</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters />
+      <Docs>
+        <summary><span data-ttu-id="a2d5d-126">Создает новый экземпляр средства ведения журнала мультиплексирования.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-126">Creates a new instance of the multiplexing logger.</span></span></summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="Initialize">
+      <AssemblyInfo>
+        <AssemblyName>Microsoft.Build.Utilities.v4.0</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary><span data-ttu-id="a2d5d-127">Инициализирует экземпляр <see langword="MuxLogger" />.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-127">Initializes the <see langword="MuxLogger" /> instance.</span></span></summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="Initialize">
+      <MemberSignature Language="C#" Value="public void Initialize (Microsoft.Build.Framework.IEventSource eventSource);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void Initialize(class Microsoft.Build.Framework.IEventSource eventSource) cil managed" />
+      <MemberSignature Language="DocId" Value="M:Microsoft.Build.Utilities.MuxLogger.Initialize(Microsoft.Build.Framework.IEventSource)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Initialize (eventSource As IEventSource)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void Initialize(Microsoft::Build::Framework::IEventSource ^ eventSource);" />
+      <MemberSignature Language="F#" Value="abstract member Initialize : Microsoft.Build.Framework.IEventSource -&gt; unit&#xA;override this.Initialize : Microsoft.Build.Framework.IEventSource -&gt; unit" Usage="muxLogger.Initialize eventSource" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:Microsoft.Build.Framework.ILogger.Initialize(Microsoft.Build.Framework.IEventSource)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>Microsoft.Build.Utilities.v4.0</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="eventSource" Type="Microsoft.Build.Framework.IEventSource" />
+      </Parameters>
+      <Docs>
+        <param name="eventSource"><span data-ttu-id="a2d5d-128">Источник события.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-128">The event source.</span></span></param>
+        <summary><span data-ttu-id="a2d5d-129">Инициализируйте экземпляр <see langword="MuxLogger" /> с указанным источником событий.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-129">Initialize the <see langword="MuxLogger" /> instance with the specified event source.</span></span></summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Initialize">
+      <MemberSignature Language="C#" Value="public void Initialize (Microsoft.Build.Framework.IEventSource eventSource, int maxNodeCount);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void Initialize(class Microsoft.Build.Framework.IEventSource eventSource, int32 maxNodeCount) cil managed" />
+      <MemberSignature Language="DocId" Value="M:Microsoft.Build.Utilities.MuxLogger.Initialize(Microsoft.Build.Framework.IEventSource,System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Initialize (eventSource As IEventSource, maxNodeCount As Integer)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void Initialize(Microsoft::Build::Framework::IEventSource ^ eventSource, int maxNodeCount);" />
+      <MemberSignature Language="F#" Value="abstract member Initialize : Microsoft.Build.Framework.IEventSource * int -&gt; unit&#xA;override this.Initialize : Microsoft.Build.Framework.IEventSource * int -&gt; unit" Usage="muxLogger.Initialize (eventSource, maxNodeCount)" />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:Microsoft.Build.Framework.INodeLogger.Initialize(Microsoft.Build.Framework.IEventSource,System.Int32)</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>Microsoft.Build.Utilities.v4.0</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="eventSource" Type="Microsoft.Build.Framework.IEventSource" />
+        <Parameter Name="maxNodeCount" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="eventSource"><span data-ttu-id="a2d5d-130">Источник события.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-130">The event source.</span></span></param>
+        <param name="maxNodeCount"><span data-ttu-id="a2d5d-131">Максимальное количество узлов.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-131">The maximum number of nodes.</span></span></param>
+        <summary><span data-ttu-id="a2d5d-132">Инициализируйте экземпляр <see langword="MuxLogger" /> с указанным источником событий и заданным максимальным количеством узлов.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-132">Initialize the <see langword="MuxLogger" /> instance with the specified event source and specified maximum number of nodes.</span></span></summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Parameters">
+      <MemberSignature Language="C#" Value="public string Parameters { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string Parameters" />
+      <MemberSignature Language="DocId" Value="P:Microsoft.Build.Utilities.MuxLogger.Parameters" />
+      <MemberSignature Language="VB.NET" Value="Public Property Parameters As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ Parameters { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.Parameters : string with get, set" Usage="Microsoft.Build.Utilities.MuxLogger.Parameters" />
+      <MemberType>Property</MemberType>
+      <Implements>
+        <InterfaceMember>P:Microsoft.Build.Framework.ILogger.Parameters</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>Microsoft.Build.Utilities.v4.0</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary><span data-ttu-id="a2d5d-133">Получает или задает атрибут Parameters, требуемый интерфейсу <see langword="ILogger" />.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-133">Gets or sets the Parameters attribute, required by the <see langword="ILogger" /> interface.</span></span></summary>
+        <value><span data-ttu-id="a2d5d-134">Атрибут Parameters.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-134">The Parameters attribute.</span></span></value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="RegisterLogger">
+      <MemberSignature Language="C#" Value="public void RegisterLogger (int submissionId, Microsoft.Build.Framework.ILogger logger);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void RegisterLogger(int32 submissionId, class Microsoft.Build.Framework.ILogger logger) cil managed" />
+      <MemberSignature Language="DocId" Value="M:Microsoft.Build.Utilities.MuxLogger.RegisterLogger(System.Int32,Microsoft.Build.Framework.ILogger)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub RegisterLogger (submissionId As Integer, logger As ILogger)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void RegisterLogger(int submissionId, Microsoft::Build::Framework::ILogger ^ logger);" />
+      <MemberSignature Language="F#" Value="member this.RegisterLogger : int * Microsoft.Build.Framework.ILogger -&gt; unit" Usage="muxLogger.RegisterLogger (submissionId, logger)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>Microsoft.Build.Utilities.v4.0</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="submissionId" Type="System.Int32" />
+        <Parameter Name="logger" Type="Microsoft.Build.Framework.ILogger" />
+      </Parameters>
+      <Docs>
+        <param name="submissionId"><span data-ttu-id="a2d5d-135">Идентификатор отправки регистрируемого средства ведения журнала.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-135">The submission ID of the logger being registered.</span></span></param>
+        <param name="logger"><span data-ttu-id="a2d5d-136">Регистрируемое средство ведения журнала.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-136">The logger to register.</span></span></param>
+        <summary><span data-ttu-id="a2d5d-137">Регистрирует средство ведения журнала на <see langword="MuxLogger" /> и вызывает событие начавшегося построения, если оно уже было внесено в журнал.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-137">Registers a logger on the <see langword="MuxLogger" /> and raises a build-started event if the build-started event has already been logged.</span></span></summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Shutdown">
+      <MemberSignature Language="C#" Value="public void Shutdown ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void Shutdown() cil managed" />
+      <MemberSignature Language="DocId" Value="M:Microsoft.Build.Utilities.MuxLogger.Shutdown" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Shutdown ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void Shutdown();" />
+      <MemberSignature Language="F#" Value="abstract member Shutdown : unit -&gt; unit&#xA;override this.Shutdown : unit -&gt; unit" Usage="muxLogger.Shutdown " />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:Microsoft.Build.Framework.ILogger.Shutdown</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>Microsoft.Build.Utilities.v4.0</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary><span data-ttu-id="a2d5d-138">Выключает <see langword="MuxLogger" /> и очищает любое состояние.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-138">Shuts down the <see langword="MuxLogger" /> and clears out any state.</span></span></summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="UnregisterLoggers">
+      <MemberSignature Language="C#" Value="public bool UnregisterLoggers (int submissionId);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance bool UnregisterLoggers(int32 submissionId) cil managed" />
+      <MemberSignature Language="DocId" Value="M:Microsoft.Build.Utilities.MuxLogger.UnregisterLoggers(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Function UnregisterLoggers (submissionId As Integer) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; bool UnregisterLoggers(int submissionId);" />
+      <MemberSignature Language="F#" Value="member this.UnregisterLoggers : int -&gt; bool" Usage="muxLogger.UnregisterLoggers submissionId" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>Microsoft.Build.Utilities.v4.0</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="submissionId" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="submissionId"><span data-ttu-id="a2d5d-139">Идентификатор отправки удаляемого средства ведения журнала.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-139">The submission ID of the logger to be removed.</span></span></param>
+        <summary><span data-ttu-id="a2d5d-140">Удаляет указанное средство регистрации в журнале из MuxLogger.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-140">Removes the specified logger from the MuxLogger.</span></span></summary>
+        <returns><span data-ttu-id="a2d5d-141">Значение <see langword="true" />, если метод удалил средство ведения журнала; в противном случае — значение <see langword="false" />.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-141"><see langword="true" /> if the method is successful in removing the logger; otherwise, <see langword="false" />.</span></span></returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Verbosity">
+      <MemberSignature Language="C#" Value="public Microsoft.Build.Framework.LoggerVerbosity Verbosity { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance valuetype Microsoft.Build.Framework.LoggerVerbosity Verbosity" />
+      <MemberSignature Language="DocId" Value="P:Microsoft.Build.Utilities.MuxLogger.Verbosity" />
+      <MemberSignature Language="VB.NET" Value="Public Property Verbosity As LoggerVerbosity" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property Microsoft::Build::Framework::LoggerVerbosity Verbosity { Microsoft::Build::Framework::LoggerVerbosity get(); void set(Microsoft::Build::Framework::LoggerVerbosity value); };" />
+      <MemberSignature Language="F#" Value="member this.Verbosity : Microsoft.Build.Framework.LoggerVerbosity with get, set" Usage="Microsoft.Build.Utilities.MuxLogger.Verbosity" />
+      <MemberType>Property</MemberType>
+      <Implements>
+        <InterfaceMember>P:Microsoft.Build.Framework.ILogger.Verbosity</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>Microsoft.Build.Utilities.v4.0</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Microsoft.Build.Framework.LoggerVerbosity</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary><span data-ttu-id="a2d5d-142">Получает или задает атрибут Verbosity, требуемый интерфейсу <see langword="ILogger" />.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-142">Gets or sets the Verbosity attribute, required by the <see langword="ILogger" /> interface.</span></span></summary>
+        <value><span data-ttu-id="a2d5d-143">Атрибут детализации.</span><span class="sxs-lookup"><span data-stu-id="a2d5d-143">The Verbosity attribute.</span></span></value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
