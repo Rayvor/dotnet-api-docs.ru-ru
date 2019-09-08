@@ -1,0 +1,955 @@
+<Type Name="OracleCommandBuilder" FullName="System.Data.OracleClient.OracleCommandBuilder">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="45f8ebc287c7035ebd23985d973df51ac94d7c8b" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70711539" /></Metadata><TypeSignature Language="C#" Value="public sealed class OracleCommandBuilder : System.Data.Common.DbCommandBuilder" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi sealed beforefieldinit OracleCommandBuilder extends System.Data.Common.DbCommandBuilder" />
+  <TypeSignature Language="DocId" Value="T:System.Data.OracleClient.OracleCommandBuilder" />
+  <TypeSignature Language="VB.NET" Value="Public NotInheritable Class OracleCommandBuilder&#xA;Inherits DbCommandBuilder" />
+  <TypeSignature Language="C++ CLI" Value="public ref class OracleCommandBuilder sealed : System::Data::Common::DbCommandBuilder" />
+  <TypeSignature Language="F#" Value="type OracleCommandBuilder = class&#xA;    inherit DbCommandBuilder" />
+  <AssemblyInfo>
+    <AssemblyName>System.Data.OracleClient</AssemblyName>
+    <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Data.Common.DbCommandBuilder</BaseTypeName>
+    <BaseTypeName FrameworkAlternate="netframework-1.1">System.ComponentModel.Component</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Attributes>
+    <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+      <AttributeName>System.Obsolete("OracleCommandBuilder has been deprecated. http://go.microsoft.com/fwlink/?LinkID=144260", false)</AttributeName>
+    </Attribute>
+  </Attributes>
+  <Docs>
+    <summary>Автоматически создает однотабличные команды, которые позволяют согласовать изменения, внесенные в <see cref="T:System.Data.DataSet" />, со связанной базой данных. Этот класс не наследуется.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот тип является устаревшим и будет удален в следующей версии .NET Framework. Дополнительные сведения см. в разделе [Oracle и ADO.NET](~/docs/framework/data/adonet/oracle-and-adonet.md).  
+  
+ Не создает автоматически инструкции SQL, необходимые для согласования изменений, внесенных в объект <xref:System.Data.DataSet> , связанный с базой данных. <xref:System.Data.OracleClient.OracleDataAdapter> Однако можно создать <xref:System.Data.OracleClient.OracleCommandBuilder> объект, который формирует инструкции SQL для однотабличных обновлений, <xref:System.Data.OracleClient.OracleDataAdapter.SelectCommand%2A> задав свойство объекта <xref:System.Data.OracleClient.OracleDataAdapter>. <xref:System.Data.OracleClient.OracleCommandBuilder> Затем создает все дополнительные инструкции SQL, которые не заданы.  
+  
+ Отношение между <xref:System.Data.OracleClient.OracleDataAdapter> и соответствующим <xref:System.Data.OracleClient.OracleCommandBuilder> ему всегда равно «один к одному». Для создания этой корреспонденции задается <xref:System.Data.OracleClient.OracleDataAdapter> свойство <xref:System.Data.OracleClient.OracleCommandBuilder> объекта. Это приводит к <xref:System.Data.OracleClient.OracleCommandBuilder> тому, что объект регистрируется в качестве прослушивателя, который <xref:System.Data.OracleClient.OracleDataAdapter.RowUpdating> создает выходные данные событий <xref:System.Data.DataSet>, влияющих на.  
+  
+ Чтобы создать инструкции INSERT, UPDATE или DELETE, <xref:System.Data.OracleClient.OracleCommandBuilder> <xref:System.Data.OracleClient.OracleDataAdapter.SelectCommand%2A> компонент использует свойство для получения требуемого набора метаданных.  
+  
+ В <xref:System.Data.OracleClient.OracleCommandBuilder> <xref:System.Data.OracleClient.OracleCommand.Transaction%2A> также <xref:System.Data.OracleClient.OracleDataAdapter.SelectCommand%2A> используются свойства <xref:System.Data.OracleClient.OracleCommand.Connection%2A>, и, на которые ссылается.  
+  
+ При вызове <xref:System.Data.Common.DbDataAdapter.Dispose%2A>метод <xref:System.Data.OracleClient.OracleCommandBuilder> не связывается с , а созданные команды больше не используются. <xref:System.Data.OracleClient.OracleDataAdapter>  
+  
+   
+  
+## Examples  
+ В следующем примере метод <xref:System.Data.OracleClient.OracleCommand>, вместе с <xref:System.Data.OracleClient.OracleDataAdapter> и <xref:System.Data.OracleClient.OracleConnection>, используется для выбора строк из базы данных. В примере передается инициализированный <xref:System.Data.DataSet>, строка подключения, строка запроса, которая является инструкцией SQL SELECT, и строка, которая является именем таблицы базы данных. Затем в примере создается объект <xref:System.Data.OracleClient.OracleCommandBuilder>.  
+  
+```vb  
+Private Function SelectOracleRows(connection As String, queryString As String, tableName As String) As DataSet  
+  
+   Dim connection As New OracleConnection(connection)  
+   Dim dataAdapter As New OracleDataAdapter()  
+   Dim dataSet As DataSet = New DataSet  
+  
+   dataAdapter.SelectCommand = New OracleCommand(queryString, connection)  
+  
+   Dim cmdBuilder As OracleCommandBuilder = New OracleCommandBuilder(dataAdapter)  
+  
+   connection.Open()  
+   dataAdapter.Fill(dataSet, tableName)  
+      ' Code to modify data in DataSet here   
+      ' Without the OracleCommandBuilder this line would fail.  
+   dataAdapter.Update(dataSet, tableName)  
+   connection.Close()  
+End Function  
+```  
+  
+```csharp  
+public static DataSet SelectOracleSrvRows(string myConnection, string mySelectQuery, string myTableName)  
+{  
+   OracleConnection myConn = new OracleConnection(myConnection);  
+   OracleDataAdapter myDataAdapter = new OracleDataAdapter();  
+   myDataAdapter.SelectCommand = new OracleCommand(mySelectQuery, myConn);  
+   OracleCommandBuilder cb = new OracleCommandBuilder(myDataAdapter);  
+  
+   myConn.Open();  
+   DataSet ds = new DataSet();  
+   myDataAdapter.Fill(ds, myTableName);  
+  
+   //Code to modify data in DataSet goes here...  
+  
+   //Without the OracleCommandBuilder this line would fail.  
+   myDataAdapter.Update(ds, myTableName);  
+   myConn.Close();  
+   return ds;  
+}  
+```  
+  
+ ]]></format>
+    </remarks>
+    <related type="Article" href="https://msdn.microsoft.com/library/6e3fb8b5-373b-4f9e-ab03-a22693df8e91">Автоматическое создание команд</related>
+  </Docs>
+  <Members>
+    <MemberGroup MemberName=".ctor">
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Data.OracleClient.OracleCommandBuilder" />.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public OracleCommandBuilder ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleCommandBuilder.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; OracleCommandBuilder();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Data.OracleClient.OracleCommandBuilder" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Регистрируется как прослушиватель для <xref:System.Data.OracleClient.OracleDataAdapter.RowUpdating> событий <xref:System.Data.OracleClient.OracleDataAdapter> , которые создаются указанным в этом свойстве. <xref:System.Data.OracleClient.OracleCommandBuilder>  
+  
+ При создании нового экземпляра все существующие <xref:System.Data.OracleClient.OracleCommandBuilder> <xref:System.Data.OracleClient.OracleCommandBuilder> , связанные с этим <xref:System.Data.OracleClient.OracleDataAdapter> экземпляром, освобождаются.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public OracleCommandBuilder (System.Data.OracleClient.OracleDataAdapter adapter);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.Data.OracleClient.OracleDataAdapter adapter) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleCommandBuilder.#ctor(System.Data.OracleClient.OracleDataAdapter)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (adapter As OracleDataAdapter)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; OracleCommandBuilder(System::Data::OracleClient::OracleDataAdapter ^ adapter);" />
+      <MemberSignature Language="F#" Value="new System.Data.OracleClient.OracleCommandBuilder : System.Data.OracleClient.OracleDataAdapter -&gt; System.Data.OracleClient.OracleCommandBuilder" Usage="new System.Data.OracleClient.OracleCommandBuilder adapter" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="adapter" Type="System.Data.OracleClient.OracleDataAdapter" />
+      </Parameters>
+      <Docs>
+        <param name="adapter">Объект <see cref="T:System.Data.OracleClient.OracleDataAdapter" />, который необходимо связать с объектом <see cref="T:System.Data.OracleClient.OracleCommandBuilder" />.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Data.OracleClient.OracleCommandBuilder" /> вместе со связанным объектом <see cref="T:System.Data.OracleClient.OracleDataAdapter" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Регистрируется как прослушиватель для <xref:System.Data.OracleClient.OracleDataAdapter.RowUpdating> событий <xref:System.Data.OracleClient.OracleDataAdapter> , которые создаются указанным в этом свойстве. <xref:System.Data.OracleClient.OracleCommandBuilder>  
+  
+ При создании нового экземпляра все существующие <xref:System.Data.OracleClient.OracleCommandBuilder> <xref:System.Data.OracleClient.OracleCommandBuilder> , связанные с этим <xref:System.Data.OracleClient.OracleDataAdapter> экземпляром, освобождаются.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ApplyParameterInfo">
+      <MemberSignature Language="C#" Value="protected override void ApplyParameterInfo (System.Data.Common.DbParameter parameter, System.Data.DataRow datarow, System.Data.StatementType statementType, bool whereClause);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void ApplyParameterInfo(class System.Data.Common.DbParameter parameter, class System.Data.DataRow datarow, valuetype System.Data.StatementType statementType, bool whereClause) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleCommandBuilder.ApplyParameterInfo(System.Data.Common.DbParameter,System.Data.DataRow,System.Data.StatementType,System.Boolean)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override void ApplyParameterInfo(System::Data::Common::DbParameter ^ parameter, System::Data::DataRow ^ datarow, System::Data::StatementType statementType, bool whereClause);" />
+      <MemberSignature Language="F#" Value="override this.ApplyParameterInfo : System.Data.Common.DbParameter * System.Data.DataRow * System.Data.StatementType * bool -&gt; unit" Usage="oracleCommandBuilder.ApplyParameterInfo (parameter, datarow, statementType, whereClause)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="parameter" Type="System.Data.Common.DbParameter" Index="0" FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+        <Parameter Name="datarow" Type="System.Data.DataRow" Index="1" FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+        <Parameter Name="statementType" Type="System.Data.StatementType" Index="2" FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+        <Parameter Name="whereClause" Type="System.Boolean" Index="3" FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      </Parameters>
+      <Docs>
+        <param name="parameter">To be added.</param>
+        <param name="datarow">To be added.</param>
+        <param name="statementType">To be added.</param>
+        <param name="whereClause">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CatalogLocation">
+      <MemberSignature Language="C#" Value="public override System.Data.Common.CatalogLocation CatalogLocation { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance valuetype System.Data.Common.CatalogLocation CatalogLocation" />
+      <MemberSignature Language="DocId" Value="P:System.Data.OracleClient.OracleCommandBuilder.CatalogLocation" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Property CatalogLocation As CatalogLocation" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::Data::Common::CatalogLocation CatalogLocation { System::Data::Common::CatalogLocation get(); void set(System::Data::Common::CatalogLocation value); };" />
+      <MemberSignature Language="F#" Value="member this.CatalogLocation : System.Data.Common.CatalogLocation with get, set" Usage="System.Data.OracleClient.OracleCommandBuilder.CatalogLocation" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.ComponentModel.Browsable(false)</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Data.Common.CatalogLocation</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает <see cref="T:System.Data.Common.CatalogLocation" /> для экземпляра класса <see cref="T:System.Data.Common.DbCommandBuilder" />.</summary>
+        <value>Объект <see cref="T:System.Data.Common.CatalogLocation" />.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CatalogSeparator">
+      <MemberSignature Language="C#" Value="public override string CatalogSeparator { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string CatalogSeparator" />
+      <MemberSignature Language="DocId" Value="P:System.Data.OracleClient.OracleCommandBuilder.CatalogSeparator" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Property CatalogSeparator As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::String ^ CatalogSeparator { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.CatalogSeparator : string with get, set" Usage="System.Data.OracleClient.OracleCommandBuilder.CatalogSeparator" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.ComponentModel.Browsable(false)</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает строку, которую можно использовать в качестве разделителя каталогов, для экземпляра класса <see cref="T:System.Data.Common.DbCommandBuilder" />.</summary>
+        <value>Строка, указывающая разделитель каталогов, который используется в экземпляре класса <see cref="T:System.Data.Common.DbCommandBuilder" />.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="DataAdapter">
+      <MemberSignature Language="C#" Value="public System.Data.OracleClient.OracleDataAdapter DataAdapter { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Data.OracleClient.OracleDataAdapter DataAdapter" />
+      <MemberSignature Language="DocId" Value="P:System.Data.OracleClient.OracleCommandBuilder.DataAdapter" />
+      <MemberSignature Language="VB.NET" Value="Public Property DataAdapter As OracleDataAdapter" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Data::OracleClient::OracleDataAdapter ^ DataAdapter { System::Data::OracleClient::OracleDataAdapter ^ get(); void set(System::Data::OracleClient::OracleDataAdapter ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.DataAdapter : System.Data.OracleClient.OracleDataAdapter with get, set" Usage="System.Data.OracleClient.OracleCommandBuilder.DataAdapter" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.ComponentModel.DefaultValue(null)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Data.OracleClient.OracleDataAdapter</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает объект <see cref="T:System.Data.OracleClient.OracleDataAdapter" />, для которого данный объект <see cref="T:System.Data.OracleClient.OracleCommandBuilder" /> будет генерировать операторы SQL.</summary>
+        <value>Объект <see cref="T:System.Data.OracleClient.OracleDataAdapter" />, связанный с этим объектом <see cref="T:System.Data.OracleClient.OracleCommandBuilder" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Регистрируется как прослушиватель для <xref:System.Data.OracleClient.OracleDataAdapter.RowUpdating> событий <xref:System.Data.OracleClient.OracleDataAdapter> , которые создаются указанным в этом свойстве. <xref:System.Data.OracleClient.OracleCommandBuilder>  
+  
+ При создании нового экземпляра все существующие <xref:System.Data.OracleClient.OracleCommandBuilder> <xref:System.Data.OracleClient.OracleCommandBuilder> , связанные с этим <xref:System.Data.OracleClient.OracleDataAdapter> экземпляром, освобождаются.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="DeriveParameters">
+      <MemberSignature Language="C#" Value="public static void DeriveParameters (System.Data.OracleClient.OracleCommand command);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void DeriveParameters(class System.Data.OracleClient.OracleCommand command) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleCommandBuilder.DeriveParameters(System.Data.OracleClient.OracleCommand)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Sub DeriveParameters (command As OracleCommand)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static void DeriveParameters(System::Data::OracleClient::OracleCommand ^ command);" />
+      <MemberSignature Language="F#" Value="static member DeriveParameters : System.Data.OracleClient.OracleCommand -&gt; unit" Usage="System.Data.OracleClient.OracleCommandBuilder.DeriveParameters command" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="command" Type="System.Data.OracleClient.OracleCommand" />
+      </Parameters>
+      <Docs>
+        <param name="command">Объект <see cref="T:System.Data.OracleClient.OracleCommand" /> ссылается на хранимую процедуру, из которой необходимо извлечь сведения о параметрах. Извлеченные параметры добавляются в коллекцию параметров <see cref="P:System.Data.OracleClient.OracleCommand.Parameters" /> объекта <see cref="T:System.Data.OracleClient.OracleCommand" />.</param>
+        <summary>Извлекает сведения о параметрах из хранимой процедуры, указанной в объекте <see cref="T:System.Data.OracleClient.OracleCommand" />, и включает их в коллекцию параметров <see cref="P:System.Data.OracleClient.OracleCommand.Parameters" /> указанного объекта <see cref="T:System.Data.OracleClient.OracleCommand" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Data.OracleClient.OracleCommandBuilder.DeriveParameters%2A>перезаписывает любые существующие сведения о параметрах для <xref:System.Data.OracleClient.OracleCommand>.  
+  
+ <xref:System.Data.OracleClient.OracleCommandBuilder.DeriveParameters%2A>требует дополнительного обращения к базе данных для получения информации. Если сведения о параметрах известны заранее, более эффективно заполнить коллекцию Parameters, задав сведения явным образом.  
+  
+ Можно использовать <xref:System.Data.OracleClient.OracleCommandBuilder.DeriveParameters%2A> только с хранимыми процедурами. Нельзя использовать <xref:System.Data.OracleClient.OracleCommandBuilder.DeriveParameters%2A> для заполнения <xref:System.Data.OracleClient.OracleParameterCollection> произвольными инструкциями Transact-SQL, например параметризованной инструкцией SELECT.  
+  
+ Дополнительные сведения см. в разделе [Настройка параметров и типов данных параметров](~/docs/framework/data/adonet/configuring-parameters-and-parameter-data-types.md).  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Текст команды не является допустимым именем хранимой процедуры, или указанный <see cref="T:System.Data.CommandType" /> не является хранимой процедурой <see cref="F:System.Data.CommandType.StoredProcedure" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="Dispose">
+      <MemberSignature Language="C#" Value="protected override void Dispose (bool disposing);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void Dispose(bool disposing) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleCommandBuilder.Dispose(System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Sub Dispose (disposing As Boolean)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override void Dispose(bool disposing);" />
+      <MemberSignature Language="F#" Value="override this.Dispose : bool -&gt; unit" Usage="oracleCommandBuilder.Dispose disposing" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="disposing" Type="System.Boolean" Index="0" FrameworkAlternate="netframework-1.1" />
+      </Parameters>
+      <Docs>
+        <param name="disposing">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="GetDeleteCommand">
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Получает автоматически созданный объект <see cref="T:System.Data.OracleClient.OracleCommand" />, который требуется для выполнения операций удаления в базе данных.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Data.OracleClient.OracleCommandBuilder.GetDeleteCommand%2A> Метод можно использовать для информационных целей или устранения неполадок, так как он <xref:System.Data.OracleClient.OracleCommand> возвращает объект для выполнения.  
+  
+ Также можно использовать <xref:System.Data.OracleClient.OracleCommandBuilder.GetDeleteCommand%2A> в качестве основания для измененной команды. Например, можно вызвать <xref:System.Data.OracleClient.OracleCommandBuilder.GetDeleteCommand%2A> и <xref:System.Data.OracleClient.OracleCommand.CommandText%2A> изменить значение, а затем <xref:System.Data.OracleClient.OracleDataAdapter>явно задать его в.  
+  
+ Инструкции SQL создаются впервые, когда приложение вызывает либо <xref:System.Data.Common.DbDataAdapter.Update%2A> метод, <xref:System.Data.OracleClient.OracleCommandBuilder.GetDeleteCommand%2A>либо.  
+  
+ Дополнительные сведения см. в разделе [Создание команд с помощью коммандбуилдерс](~/docs/framework/data/adonet/generating-commands-with-commandbuilders.md).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="GetDeleteCommand">
+      <MemberSignature Language="C#" Value="public System.Data.OracleClient.OracleCommand GetDeleteCommand ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.Data.OracleClient.OracleCommand GetDeleteCommand() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleCommandBuilder.GetDeleteCommand" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetDeleteCommand () As OracleCommand" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Data::OracleClient::OracleCommand ^ GetDeleteCommand();" />
+      <MemberSignature Language="F#" Value="override this.GetDeleteCommand : unit -&gt; System.Data.OracleClient.OracleCommand" Usage="oracleCommandBuilder.GetDeleteCommand " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Data.OracleClient.OracleCommand</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Получает автоматически созданный объект <see cref="T:System.Data.OracleClient.OracleCommand" />, который требуется для выполнения операций удаления в базе данных.</summary>
+        <returns>Автоматически созданный объект <see cref="T:System.Data.OracleClient.OracleCommand" />, необходимый для выполнения операций удаления.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Data.OracleClient.OracleCommandBuilder.GetDeleteCommand%2A> Метод можно использовать для информационных целей или устранения неполадок, так как он <xref:System.Data.OracleClient.OracleCommand> возвращает объект для выполнения.  
+  
+ Также можно использовать <xref:System.Data.OracleClient.OracleCommandBuilder.GetDeleteCommand%2A> в качестве основания для измененной команды. Например, можно вызвать <xref:System.Data.OracleClient.OracleCommandBuilder.GetDeleteCommand%2A> и <xref:System.Data.OracleClient.OracleCommand.CommandText%2A> изменить значение, а затем <xref:System.Data.OracleClient.OracleDataAdapter>явно задать его в.  
+  
+ Инструкции SQL создаются впервые, когда приложение вызывает либо <xref:System.Data.Common.DbDataAdapter.Update%2A> метод, <xref:System.Data.OracleClient.OracleCommandBuilder.GetDeleteCommand%2A>либо.  
+  
+ Дополнительные сведения см. в разделе [Создание команд с помощью коммандбуилдерс](~/docs/framework/data/adonet/generating-commands-with-commandbuilders.md).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetDeleteCommand">
+      <MemberSignature Language="C#" Value="public System.Data.OracleClient.OracleCommand GetDeleteCommand (bool useColumnsForParameterNames);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.Data.OracleClient.OracleCommand GetDeleteCommand(bool useColumnsForParameterNames) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleCommandBuilder.GetDeleteCommand(System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetDeleteCommand (useColumnsForParameterNames As Boolean) As OracleCommand" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Data::OracleClient::OracleCommand ^ GetDeleteCommand(bool useColumnsForParameterNames);" />
+      <MemberSignature Language="F#" Value="override this.GetDeleteCommand : bool -&gt; System.Data.OracleClient.OracleCommand" Usage="oracleCommandBuilder.GetDeleteCommand useColumnsForParameterNames" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Data.OracleClient.OracleCommand</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="useColumnsForParameterNames" Type="System.Boolean" Index="0" FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      </Parameters>
+      <Docs>
+        <param name="useColumnsForParameterNames">При значении <see langword="true" /> создаются имена параметров, совпадающие с именами столбцов, если это возможно. При значении <see langword="false" /> создаются <c>@p1</c>, <c>@p2</c> и т. д.</param>
+        <summary>Получает автоматически созданный объект <see cref="T:System.Data.OracleClient.OracleCommand" />, который требуется для выполнения операций удаления в базе данных.</summary>
+        <returns>Автоматически созданный объект <see cref="T:System.Data.OracleClient.OracleCommand" />, необходимый для выполнения операций удаления.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Data.OracleClient.OracleCommandBuilder.GetDeleteCommand%2A> Метод можно использовать для информационных целей или устранения неполадок, так как он <xref:System.Data.OracleClient.OracleCommand> возвращает объект для выполнения.  
+  
+ Также можно использовать <xref:System.Data.OracleClient.OracleCommandBuilder.GetDeleteCommand%2A> в качестве основания для измененной команды. Например, можно вызвать <xref:System.Data.OracleClient.OracleCommandBuilder.GetDeleteCommand%2A> и <xref:System.Data.OracleClient.OracleCommand.CommandText%2A> изменить значение, а затем <xref:System.Data.OracleClient.OracleDataAdapter>явно задать его в.  
+  
+ Инструкции SQL создаются впервые, когда приложение вызывает либо <xref:System.Data.Common.DbDataAdapter.Update%2A> метод, <xref:System.Data.OracleClient.OracleCommandBuilder.GetDeleteCommand%2A>либо.  
+  
+ Поведение по умолчанию при создании имен параметров заключается в использовании `@p1`, `@p2`и т. д. для различных параметров. Передача `true` для параметра <xref:System.Data.OracleClient.OracleCommandBuilder> позволяет принудительно создавать параметры на основе имен столбцов. `useColumnsForParameterNames` Это выполняется, только если выполняются следующие условия.  
+  
+-   <xref:System.Data.Common.DbMetaDataColumnNames.ParameterNameMaxLength> Был указан и его длина больше или равна имени созданного параметра.  
+  
+-   Имя созданного параметра соответствует критериям, указанным в <xref:System.Data.Common.DbMetaDataColumnNames.ParameterNamePattern> регулярном выражении.  
+  
+-   <xref:System.Data.Common.DbMetaDataColumnNames.ParameterMarkerFormat> Указан.  
+  
+ Дополнительные сведения см. в разделе [Создание команд с помощью коммандбуилдерс](~/docs/framework/data/adonet/generating-commands-with-commandbuilders.md).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="GetInsertCommand">
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Получает автоматически созданный объект <see cref="T:System.Data.OracleClient.OracleCommand" />, который требуется для выполнения операций вставки в базу данных.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Data.OracleClient.OracleCommandBuilder.GetInsertCommand%2A> Метод можно использовать для информационных целей или устранения неполадок, так как он <xref:System.Data.OracleClient.OracleCommand> возвращает объект для выполнения.  
+  
+ Также можно использовать <xref:System.Data.OracleClient.OracleCommandBuilder.GetInsertCommand%2A> в качестве основания для измененной команды. Например, можно вызвать <xref:System.Data.OracleClient.OracleCommandBuilder.GetInsertCommand%2A> и <xref:System.Data.OracleClient.OracleCommand.CommandText%2A> изменить значение, а затем <xref:System.Data.OracleClient.OracleDataAdapter>явно задать его в.  
+  
+ Инструкции SQL создаются впервые, когда приложение вызывает либо <xref:System.Data.Common.DbDataAdapter.Update%2A> метод, <xref:System.Data.OracleClient.OracleCommandBuilder.GetInsertCommand%2A>либо.  
+  
+ Дополнительные сведения см. в разделе [Создание команд с помощью коммандбуилдерс](~/docs/framework/data/adonet/generating-commands-with-commandbuilders.md).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="GetInsertCommand">
+      <MemberSignature Language="C#" Value="public System.Data.OracleClient.OracleCommand GetInsertCommand ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.Data.OracleClient.OracleCommand GetInsertCommand() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleCommandBuilder.GetInsertCommand" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetInsertCommand () As OracleCommand" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Data::OracleClient::OracleCommand ^ GetInsertCommand();" />
+      <MemberSignature Language="F#" Value="override this.GetInsertCommand : unit -&gt; System.Data.OracleClient.OracleCommand" Usage="oracleCommandBuilder.GetInsertCommand " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Data.OracleClient.OracleCommand</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Получает автоматически созданный объект <see cref="T:System.Data.OracleClient.OracleCommand" />, который требуется для выполнения операций вставки в базу данных.</summary>
+        <returns>Автоматически созданный объект <see cref="T:System.Data.OracleClient.OracleCommand" />, необходимый для выполнения операций вставки.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Data.OracleClient.OracleCommandBuilder.GetInsertCommand%2A> Метод можно использовать для информационных целей или устранения неполадок, так как он <xref:System.Data.OracleClient.OracleCommand> возвращает объект для выполнения.  
+  
+ Также можно использовать <xref:System.Data.OracleClient.OracleCommandBuilder.GetInsertCommand%2A> в качестве основания для измененной команды. Например, можно вызвать <xref:System.Data.OracleClient.OracleCommandBuilder.GetInsertCommand%2A> и <xref:System.Data.OracleClient.OracleCommand.CommandText%2A> изменить значение, а затем <xref:System.Data.OracleClient.OracleDataAdapter>явно задать его в.  
+  
+ Инструкции SQL создаются впервые, когда приложение вызывает либо <xref:System.Data.Common.DbDataAdapter.Update%2A> метод, <xref:System.Data.OracleClient.OracleCommandBuilder.GetInsertCommand%2A>либо.  
+  
+ Дополнительные сведения см. в разделе [Создание команд с помощью коммандбуилдерс](~/docs/framework/data/adonet/generating-commands-with-commandbuilders.md).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetInsertCommand">
+      <MemberSignature Language="C#" Value="public System.Data.OracleClient.OracleCommand GetInsertCommand (bool useColumnsForParameterNames);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.Data.OracleClient.OracleCommand GetInsertCommand(bool useColumnsForParameterNames) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleCommandBuilder.GetInsertCommand(System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetInsertCommand (useColumnsForParameterNames As Boolean) As OracleCommand" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Data::OracleClient::OracleCommand ^ GetInsertCommand(bool useColumnsForParameterNames);" />
+      <MemberSignature Language="F#" Value="override this.GetInsertCommand : bool -&gt; System.Data.OracleClient.OracleCommand" Usage="oracleCommandBuilder.GetInsertCommand useColumnsForParameterNames" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Data.OracleClient.OracleCommand</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="useColumnsForParameterNames" Type="System.Boolean" Index="0" FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      </Parameters>
+      <Docs>
+        <param name="useColumnsForParameterNames">При значении <see langword="true" /> создаются имена параметров, совпадающие с именами столбцов, если это возможно. При значении <see langword="false" /> создаются <c>@p1</c>, <c>@p2</c> и т. д.</param>
+        <summary>Получает автоматически созданный объект <see cref="T:System.Data.OracleClient.OracleCommand" />, который требуется для выполнения операций вставки в базу данных.</summary>
+        <returns>Автоматически созданный объект <see cref="T:System.Data.OracleClient.OracleCommand" />, необходимый для выполнения операций вставки.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Data.OracleClient.OracleCommandBuilder.GetInsertCommand%2A> Метод можно использовать для информационных целей или устранения неполадок, так как он <xref:System.Data.OracleClient.OracleCommand> возвращает объект для выполнения.  
+  
+ Также можно использовать <xref:System.Data.OracleClient.OracleCommandBuilder.GetInsertCommand%2A> в качестве основания для измененной команды. Например, можно вызвать <xref:System.Data.OracleClient.OracleCommandBuilder.GetInsertCommand%2A> и <xref:System.Data.OracleClient.OracleCommand.CommandText%2A> изменить значение, а затем <xref:System.Data.OracleClient.OracleDataAdapter>явно задать его в.  
+  
+ Инструкции SQL создаются впервые, когда приложение вызывает либо <xref:System.Data.Common.DbDataAdapter.Update%2A> метод, <xref:System.Data.OracleClient.OracleCommandBuilder.GetInsertCommand%2A>либо.  
+  
+ Поведение по умолчанию при создании имен параметров заключается в использовании `@p1`, `@p2`и т. д. для различных параметров. Передача `true` для параметра <xref:System.Data.OracleClient.OracleCommandBuilder> позволяет принудительно создавать параметры на основе имен столбцов. `useColumnsForParameterNames` Это выполняется, только если выполняются следующие условия.  
+  
+-   <xref:System.Data.Common.DbMetaDataColumnNames.ParameterNameMaxLength> Был указан и его длина больше или равна имени созданного параметра.  
+  
+-   Имя созданного параметра соответствует критериям, указанным в <xref:System.Data.Common.DbMetaDataColumnNames.ParameterNamePattern> регулярном выражении.  
+  
+-   <xref:System.Data.Common.DbMetaDataColumnNames.ParameterMarkerFormat> Указан.  
+  
+ Дополнительные сведения см. в разделе [Создание команд с помощью коммандбуилдерс](~/docs/framework/data/adonet/generating-commands-with-commandbuilders.md).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetParameterName">
+      <MemberSignature Language="C#" Value="protected override string GetParameterName (int parameterOrdinal);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance string GetParameterName(int32 parameterOrdinal) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleCommandBuilder.GetParameterName(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Function GetParameterName (parameterOrdinal As Integer) As String" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override System::String ^ GetParameterName(int parameterOrdinal);" />
+      <MemberSignature Language="F#" Value="override this.GetParameterName : int -&gt; string" Usage="oracleCommandBuilder.GetParameterName parameterOrdinal" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="parameterOrdinal" Type="System.Int32" Index="0" FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      </Parameters>
+      <Docs>
+        <param name="parameterOrdinal">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetParameterName">
+      <MemberSignature Language="C#" Value="protected override string GetParameterName (string parameterName);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance string GetParameterName(string parameterName) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleCommandBuilder.GetParameterName(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Function GetParameterName (parameterName As String) As String" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override System::String ^ GetParameterName(System::String ^ parameterName);" />
+      <MemberSignature Language="F#" Value="override this.GetParameterName : string -&gt; string" Usage="oracleCommandBuilder.GetParameterName parameterName" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="parameterName" Type="System.String" Index="0" FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      </Parameters>
+      <Docs>
+        <param name="parameterName">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetParameterPlaceholder">
+      <MemberSignature Language="C#" Value="protected override string GetParameterPlaceholder (int parameterOrdinal);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance string GetParameterPlaceholder(int32 parameterOrdinal) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleCommandBuilder.GetParameterPlaceholder(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Function GetParameterPlaceholder (parameterOrdinal As Integer) As String" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override System::String ^ GetParameterPlaceholder(int parameterOrdinal);" />
+      <MemberSignature Language="F#" Value="override this.GetParameterPlaceholder : int -&gt; string" Usage="oracleCommandBuilder.GetParameterPlaceholder parameterOrdinal" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="parameterOrdinal" Type="System.Int32" Index="0" FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      </Parameters>
+      <Docs>
+        <param name="parameterOrdinal">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="GetUpdateCommand">
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Получает автоматически созданный объект <see cref="T:System.Data.OracleClient.OracleCommand" />, который требуется для выполнения обновлений базы данных.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Data.OracleClient.OracleCommandBuilder.GetUpdateCommand%2A> Метод можно использовать для информационных целей или устранения неполадок, так как он <xref:System.Data.OracleClient.OracleCommand> возвращает объект для выполнения.  
+  
+ Также можно использовать <xref:System.Data.OracleClient.OracleCommandBuilder.GetUpdateCommand%2A> в качестве основания для измененной команды. Например, можно вызвать <xref:System.Data.OracleClient.OracleCommandBuilder.GetUpdateCommand%2A> и <xref:System.Data.OracleClient.OracleCommand.CommandText%2A> изменить значение, а затем <xref:System.Data.OracleClient.OracleDataAdapter>явно задать его в.  
+  
+ Инструкции SQL создаются впервые, когда приложение вызывает либо <xref:System.Data.Common.DbDataAdapter.Update%2A> метод, <xref:System.Data.OracleClient.OracleCommandBuilder.GetUpdateCommand%2A>либо.  
+  
+ Дополнительные сведения см. в разделе [Создание команд с помощью коммандбуилдерс](~/docs/framework/data/adonet/generating-commands-with-commandbuilders.md).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="GetUpdateCommand">
+      <MemberSignature Language="C#" Value="public System.Data.OracleClient.OracleCommand GetUpdateCommand ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.Data.OracleClient.OracleCommand GetUpdateCommand() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleCommandBuilder.GetUpdateCommand" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetUpdateCommand () As OracleCommand" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Data::OracleClient::OracleCommand ^ GetUpdateCommand();" />
+      <MemberSignature Language="F#" Value="override this.GetUpdateCommand : unit -&gt; System.Data.OracleClient.OracleCommand" Usage="oracleCommandBuilder.GetUpdateCommand " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Data.OracleClient.OracleCommand</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Получает автоматически созданный объект <see cref="T:System.Data.OracleClient.OracleCommand" />, который требуется для выполнения обновлений базы данных.</summary>
+        <returns>Автоматически созданный объект <see cref="T:System.Data.OracleClient.OracleCommand" />, необходимый для выполнения операций обновления.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Data.OracleClient.OracleCommandBuilder.GetUpdateCommand%2A> Метод можно использовать для информационных целей или устранения неполадок, так как он <xref:System.Data.OracleClient.OracleCommand> возвращает объект для выполнения.  
+  
+ Также можно использовать <xref:System.Data.OracleClient.OracleCommandBuilder.GetUpdateCommand%2A> в качестве основания для измененной команды. Например, можно вызвать <xref:System.Data.OracleClient.OracleCommandBuilder.GetUpdateCommand%2A> и <xref:System.Data.OracleClient.OracleCommand.CommandText%2A> изменить значение, а затем <xref:System.Data.OracleClient.OracleDataAdapter>явно задать его в.  
+  
+ Инструкции SQL создаются впервые, когда приложение вызывает либо <xref:System.Data.Common.DbDataAdapter.Update%2A> метод, <xref:System.Data.OracleClient.OracleCommandBuilder.GetUpdateCommand%2A>либо.  
+  
+ Дополнительные сведения см. в разделе [Создание команд с помощью коммандбуилдерс](~/docs/framework/data/adonet/generating-commands-with-commandbuilders.md).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetUpdateCommand">
+      <MemberSignature Language="C#" Value="public System.Data.OracleClient.OracleCommand GetUpdateCommand (bool useColumnsForParameterNames);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.Data.OracleClient.OracleCommand GetUpdateCommand(bool useColumnsForParameterNames) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleCommandBuilder.GetUpdateCommand(System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetUpdateCommand (useColumnsForParameterNames As Boolean) As OracleCommand" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Data::OracleClient::OracleCommand ^ GetUpdateCommand(bool useColumnsForParameterNames);" />
+      <MemberSignature Language="F#" Value="override this.GetUpdateCommand : bool -&gt; System.Data.OracleClient.OracleCommand" Usage="oracleCommandBuilder.GetUpdateCommand useColumnsForParameterNames" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Data.OracleClient.OracleCommand</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="useColumnsForParameterNames" Type="System.Boolean" Index="0" FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      </Parameters>
+      <Docs>
+        <param name="useColumnsForParameterNames">При значении <see langword="true" /> создаются имена параметров, совпадающие с именами столбцов, если это возможно. При значении <see langword="false" /> создаются <c>@p1</c>, <c>@p2</c> и т. д.</param>
+        <summary>Получает автоматически созданный объект <see cref="T:System.Data.OracleClient.OracleCommand" />, который требуется для выполнения обновлений базы данных.</summary>
+        <returns>Автоматически созданный объект <see cref="T:System.Data.OracleClient.OracleCommand" />, необходимый для выполнения операций обновления.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Data.OracleClient.OracleCommandBuilder.GetUpdateCommand%2A> Метод можно использовать для информационных целей или устранения неполадок, так как он <xref:System.Data.OracleClient.OracleCommand> возвращает объект для выполнения.  
+  
+ Также можно использовать <xref:System.Data.OracleClient.OracleCommandBuilder.GetUpdateCommand%2A> в качестве основания для измененной команды. Например, можно вызвать <xref:System.Data.OracleClient.OracleCommandBuilder.GetUpdateCommand%2A> и <xref:System.Data.OracleClient.OracleCommand.CommandText%2A> изменить значение, а затем <xref:System.Data.OracleClient.OracleDataAdapter>явно задать его в.  
+  
+ Инструкции SQL создаются впервые, когда приложение вызывает либо <xref:System.Data.Common.DbDataAdapter.Update%2A> метод, <xref:System.Data.OracleClient.OracleCommandBuilder.GetUpdateCommand%2A>либо.  
+  
+ Поведение по умолчанию при создании имен параметров заключается в использовании `@p1`, `@p2`и т. д. для различных параметров. Передача `true` для параметра <xref:System.Data.OracleClient.OracleCommandBuilder> позволяет принудительно создавать параметры на основе имен столбцов. `useColumnsForParameterNames` Это выполняется, только если выполняются следующие условия.  
+  
+-   <xref:System.Data.Common.DbMetaDataColumnNames.ParameterNameMaxLength> Был указан и его длина больше или равна имени созданного параметра.  
+  
+-   Имя созданного параметра соответствует критериям, указанным в <xref:System.Data.Common.DbMetaDataColumnNames.ParameterNamePattern> регулярном выражении.  
+  
+-   <xref:System.Data.Common.DbMetaDataColumnNames.ParameterMarkerFormat> Указан.  
+  
+ Дополнительные сведения см. в разделе [Создание команд с помощью коммандбуилдерс](~/docs/framework/data/adonet/generating-commands-with-commandbuilders.md).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="QuoteIdentifier">
+      <MemberSignature Language="C#" Value="public override string QuoteIdentifier (string unquotedIdentifier);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance string QuoteIdentifier(string unquotedIdentifier) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleCommandBuilder.QuoteIdentifier(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function QuoteIdentifier (unquotedIdentifier As String) As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::String ^ QuoteIdentifier(System::String ^ unquotedIdentifier);" />
+      <MemberSignature Language="F#" Value="override this.QuoteIdentifier : string -&gt; string" Usage="oracleCommandBuilder.QuoteIdentifier unquotedIdentifier" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="unquotedIdentifier" Type="System.String" Index="0" FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      </Parameters>
+      <Docs>
+        <param name="unquotedIdentifier">Исходный идентификатор без кавычек.</param>
+        <summary>Если у идентификатора нет кавычек, при наличии правильного каталога возвращает правильную форму этого идентификатора, взятую в кавычки, при этом корректно избегает кавычек, встроенных в идентификатор.</summary>
+        <returns>Версия идентификатора, заключенного кавычки. Кавычки, встроенные в идентификатор, корректно игнорируются.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="QuotePrefix">
+      <MemberSignature Language="C#" Value="public string QuotePrefix { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string QuotePrefix" />
+      <MemberSignature Language="DocId" Value="P:System.Data.OracleClient.OracleCommandBuilder.QuotePrefix" />
+      <MemberSignature Language="VB.NET" Value="Public Property QuotePrefix As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ QuotePrefix { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.QuotePrefix : string with get, set" Usage="System.Data.OracleClient.OracleCommandBuilder.QuotePrefix" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-1.1">
+          <AttributeName>System.ComponentModel.Browsable(false)</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-1.1">
+          <AttributeName>System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает начальный символ или символы, используемые для указания объектов базы данных (например, таблиц или столбцов), имена которых содержат такие символы, как пробелы или зарезервированные токены.</summary>
+        <value>Используемый начальный символ или символы.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="QuoteSuffix">
+      <MemberSignature Language="C#" Value="public string QuoteSuffix { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string QuoteSuffix" />
+      <MemberSignature Language="DocId" Value="P:System.Data.OracleClient.OracleCommandBuilder.QuoteSuffix" />
+      <MemberSignature Language="VB.NET" Value="Public Property QuoteSuffix As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ QuoteSuffix { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.QuoteSuffix : string with get, set" Usage="System.Data.OracleClient.OracleCommandBuilder.QuoteSuffix" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-1.1">
+          <AttributeName>System.ComponentModel.Browsable(false)</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-1.1">
+          <AttributeName>System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает конечный символ или символы, используемые для указания объектов базы данных (например, таблиц или столбцов), имена которых содержат такие символы, как пробелы или зарезервированные токены.</summary>
+        <value>Используемый конечный символ или символы.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="RefreshSchema">
+      <MemberSignature Language="C#" Value="public void RefreshSchema ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void RefreshSchema() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleCommandBuilder.RefreshSchema" />
+      <MemberSignature Language="VB.NET" Value="Public Sub RefreshSchema ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void RefreshSchema();" />
+      <MemberSignature Language="F#" Value="member this.RefreshSchema : unit -&gt; unit" Usage="oracleCommandBuilder.RefreshSchema " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>1.0.5000.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Очищает команды, связанные с этим объектом <see cref="T:System.Data.Common.DbCommandBuilder" />.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SchemaSeparator">
+      <MemberSignature Language="C#" Value="public override string SchemaSeparator { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string SchemaSeparator" />
+      <MemberSignature Language="DocId" Value="P:System.Data.OracleClient.OracleCommandBuilder.SchemaSeparator" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Property SchemaSeparator As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual property System::String ^ SchemaSeparator { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.SchemaSeparator : string with get, set" Usage="System.Data.OracleClient.OracleCommandBuilder.SchemaSeparator" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.ComponentModel.Browsable(false)</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает символ, который используется в качестве разделителя между идентификатором схемы и остальными идентификаторами.</summary>
+        <value>Символ, который необходимо использовать в схеме в качестве разделителя.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Как правило, серверы баз данных указывают схему для идентификатора, разделив имя схемы от идентификатора символом. Например, SQL Server использует двоеточие, создавая полные идентификаторы, например Person: CustomerName, где "Person" — это имя схемы, а "CustomerName" — идентификатор. Задание этого свойства позволяет разработчикам изменять это поведение.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SetRowUpdatingHandler">
+      <MemberSignature Language="C#" Value="protected override void SetRowUpdatingHandler (System.Data.Common.DbDataAdapter adapter);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void SetRowUpdatingHandler(class System.Data.Common.DbDataAdapter adapter) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleCommandBuilder.SetRowUpdatingHandler(System.Data.Common.DbDataAdapter)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Sub SetRowUpdatingHandler (adapter As DbDataAdapter)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override void SetRowUpdatingHandler(System::Data::Common::DbDataAdapter ^ adapter);" />
+      <MemberSignature Language="F#" Value="override this.SetRowUpdatingHandler : System.Data.Common.DbDataAdapter -&gt; unit" Usage="oracleCommandBuilder.SetRowUpdatingHandler adapter" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="adapter" Type="System.Data.Common.DbDataAdapter" Index="0" FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      </Parameters>
+      <Docs>
+        <param name="adapter">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="UnquoteIdentifier">
+      <MemberSignature Language="C#" Value="public override string UnquoteIdentifier (string quotedIdentifier);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance string UnquoteIdentifier(string quotedIdentifier) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Data.OracleClient.OracleCommandBuilder.UnquoteIdentifier(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Overrides Function UnquoteIdentifier (quotedIdentifier As String) As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; override System::String ^ UnquoteIdentifier(System::String ^ quotedIdentifier);" />
+      <MemberSignature Language="F#" Value="override this.UnquoteIdentifier : string -&gt; string" Usage="oracleCommandBuilder.UnquoteIdentifier quotedIdentifier" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Data.OracleClient</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="quotedIdentifier" Type="System.String" Index="0" FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      </Parameters>
+      <Docs>
+        <param name="quotedIdentifier">Идентификатор, из которого будут удалены внедренные кавычки.</param>
+        <summary>Если у идентификатора есть кавычки, возвращает форму этого идентификатора без кавычек, при этом корректно учитывая кавычки, встроенные в идентификатор.</summary>
+        <returns>Идентификатор без кавычек, в котором встроенные кавычки корректно учтены.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
