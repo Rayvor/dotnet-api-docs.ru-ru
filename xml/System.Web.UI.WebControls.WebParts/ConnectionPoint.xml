@@ -1,0 +1,387 @@
+<Type Name="ConnectionPoint" FullName="System.Web.UI.WebControls.WebParts.ConnectionPoint">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="3820b1d28d7d0da147eee2b14823ff6256fc47f1" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70690456" /></Metadata><TypeSignature Language="C#" Value="public abstract class ConnectionPoint" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract beforefieldinit ConnectionPoint extends System.Object" />
+  <TypeSignature Language="DocId" Value="T:System.Web.UI.WebControls.WebParts.ConnectionPoint" />
+  <TypeSignature Language="VB.NET" Value="Public MustInherit Class ConnectionPoint" />
+  <TypeSignature Language="C++ CLI" Value="public ref class ConnectionPoint abstract" />
+  <TypeSignature Language="F#" Value="type ConnectionPoint = class" />
+  <AssemblyInfo>
+    <AssemblyName>System.Web</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>Служит в качестве базового класса для определения объектов точек подключения, которые позволяют элементу управления получателя и элементу управления поставщика в связи веб-частей обмениваться данными.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Каждое подключение веб-части состоит из двух серверных элементов управления, совместно использующих данные: один элемент управления является потребителем, второй — поставщиком. Описание необходимых компонентов подключения веб-части и самого объекта подключения см. в <xref:System.Web.UI.WebControls.WebParts.WebPartConnection> разделе Общие сведения о классе. Для каждого подключения веб-части требуются точки подключения. У поставщика и элемента управления получателя должен быть по крайней мере один <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint> определенный объект (каждый из них может иметь несколько точек подключения), содержащий сведения о том, как элемент управления может подключаться к другому элементу управления и к типу данных, к которым он может предоставлять общий доступ. В фактическом соединении поставщик имеет собственный тип объекта точки подключения (производный от базового <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint> класса) <xref:System.Web.UI.WebControls.WebParts.ProviderConnectionPoint> , экземпляр, а потребитель имеет собственный объект — <xref:System.Web.UI.WebControls.WebParts.ConsumerConnectionPoint> экземпляр.  
+  
+ Чтобы создать точку подключения поставщика, разработчики должны добавить метод обратного вызова к поставщику, который будет возвращать экземпляр реализованного интерфейса потребителю. Они должны помечать метод обратного вызова в исходном коде `ConnectionProvider` атрибутом кода ( <xref:System.Web.UI.WebControls.WebParts.ConnectionProviderAttribute> см. класс). Аналогично, чтобы создать точку подключения потребителя, разработчики должны добавить метод к потребителю, который получает экземпляр интерфейса, и он должен помечать этот метод `ConnectionConsumer` атрибутом ( <xref:System.Web.UI.WebControls.WebParts.ConnectionConsumerAttribute> см. класс).  
+  
+ Когда разработчики создают подключения на веб-странице, их можно создавать как статические или динамические соединения. Статические соединения объявляются в разметке веб-страницы. При объявлении статического соединения разработчики могут указать, какие точки соединения используются как для потребителя, так и для поставщика, назначив значения `ProviderConnectionPointID` атрибутам и `ConsumerConnectionPointID` в `<asp:webpartconnection>` теге элемента. Этот подход особенно удобен, если в элементах управления "потребитель" и "поставщик" определено несколько точек соединения, так как он позволяет статическому соединению определять, какие точки соединения следует использовать для соединения.  
+  
+ Динамические соединения создаются программно либо с помощью кода разработчика, либо пользователями через пользовательский интерфейс, предоставляемый <xref:System.Web.UI.WebControls.WebParts.ConnectionsZone> элементом управления. Чтобы создать соединение в коде, разработчики должны получить экземпляр <xref:System.Web.UI.WebControls.WebParts.WebPartConnection> объекта, <xref:System.Web.UI.WebControls.WebParts.WebPartManager.ConnectWebParts%2A> вызвав метод для <xref:System.Web.UI.WebControls.WebParts.WebPartManager> элемента управления. Перед вызовом этого метода разработчики должны иметь ссылки на элементы управления сервера-получателя и поставщика и соответствующие объекты точек подключения. Чтобы получить ссылки на точки соединения для поставщика и элемента управления потребителя, разработчики сначала вызывают <xref:System.Web.UI.WebControls.WebParts.WebPartManager.GetProviderConnectionPoints%2A> методы и <xref:System.Web.UI.WebControls.WebParts.WebPartManager.GetConsumerConnectionPoints%2A> в <xref:System.Web.UI.WebControls.WebParts.WebPartManager> элементе управления. Эти методы возвращают соответствующие объекты точек соединения, которые, в свою очередь, могут быть переданы методу для создания соединения.  
+  
+ Если объекты точек соединения поставщика и потребителя работают с одним и тем же типом интерфейса, они являются совместимыми и могут формировать прямое соединение для совместного использования данных. Если они не работают с одним и тем же типом интерфейса, <xref:System.Web.UI.WebControls.WebParts.WebPartTransformer> необходимо использовать объект для преобразования экземпляра интерфейса из поставщика в тип, с которым может работать потребитель.  
+  
+ Абстрактный <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint> класс предоставляет базовые сведения о точках соединения, которые являются общими для элементов управления "потребитель" и "поставщик". Некоторые свойства содержат эти сведения. <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.AllowsMultipleConnections%2A> Свойство указывает, может ли точка соединения одновременно участвовать в нескольких соединениях. По умолчанию точки соединения поставщика могут участвовать в нескольких соединениях, а точки подключения потребителя — нет. <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.ControlType%2A> Свойство указывает тип серверного элемента управления, связанного с точкой соединения. Обратите внимание, <xref:System.Web.UI.WebControls.WebParts.WebPart> что не только элементы управления могут формировать соединения. любой серверный элемент управления, ASP.NET элемент управления, Пользовательский элемент управления или пользовательский элемент управления, могут быть включены для участия в подключениях, если они размещены <xref:System.Web.UI.WebControls.WebParts.WebPartZoneBase> в зоне. <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.DisplayName%2A> Свойство предоставляет понятное имя для точки подключения, которое может отображаться в пользовательском интерфейсе для помощи пользователям, создающим подключения. <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.ID%2A> Свойство служит в качестве идентификатора строки для самого объекта точки подключения. <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.InterfaceType%2A> Свойство указывает тип экземпляра интерфейса, распознаваемый точкой подключения. Будет ли данная точка соединения предоставлять или потреблять экземпляр этого интерфейса, определяется ли он <xref:System.Web.UI.WebControls.WebParts.ProviderConnectionPoint> <xref:System.Web.UI.WebControls.WebParts.ConsumerConnectionPoint> объектом или.  
+  
+ <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint> Класс имеет один метод. <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.GetEnabled%2A> Метод возвращает логическое значение, указывающее, может ли точка соединения в данный момент участвовать в соединениях.  
+  
+ Класс также имеет одно открытое поле,  <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.DefaultID> .  <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint> Это поле содержит значение, используемое для указания точки подключения по умолчанию в соединении.  
+  
+> [!NOTE]
+>  Атрибуты для указания методов точек соединения имеют только один обязательный параметр `displayName`, поэтому можно создать атрибут точки подключения по умолчанию без указания идентификатора. В таких случаях <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.DefaultID> поле предоставляет базовое значение для использования.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано создание веб-части соединения, включающего необходимые <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint> объекты. Поскольку класс является абстрактным базовым классом, экземплярами его дочерних классов<xref:System.Web.UI.WebControls.WebParts.ProviderConnectionPoint> <xref:System.Web.UI.WebControls.WebParts.ConsumerConnectionPoint>являются фактические объекты, используемые для создания соединения. <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint>  
+  
+ Пример состоит из четырех частей:  
+  
+-   Пользовательский элемент управления, позволяющий изменять режим просмотра веб-части на странице.  
+  
+-   Исходный код для интерфейса и два <xref:System.Web.UI.WebControls.WebParts.WebPart> элемента управления, выступающих в качестве поставщика и потребителя для соединения.  
+  
+-   Веб-страница для размещения всех элементов управления и выполнения примера кода.  
+  
+-   Объяснение того, как запустить пример страницы.  
+  
+ Первая часть этого примера кода — это пользовательский элемент управления, позволяющий пользователям изменять режимы экрана на веб-странице. Сохраните следующий исходный код в ASCX-файл и присвойте ему имя файла, присвоенное `Src` атрибуту `Register` директивы для этого пользовательского элемента управления, который находится ближе к верхней части страницы размещения. Дополнительные сведения о режимах вывода и описание исходного кода в этом элементе управления см. в разделе [Пошаговое руководство. изменение режимов экрана на веб-части странице](https://msdn.microsoft.com/library/24e42f74-82dc-4c13-8574-130398985fc0).  
+  
+ [!code-aspx-csharp[WebParts_ConnectionPoint_Overview#6](~/samples/snippets/csharp/VS_Snippets_WebNet/WebParts_ConnectionPoint_Overview/CS/displaymodemenucs.ascx#6)]
+ [!code-aspx-vb[WebParts_ConnectionPoint_Overview#6](~/samples/snippets/visualbasic/VS_Snippets_WebNet/WebParts_ConnectionPoint_Overview/VB/DisplayModeMenuVB.ascx#6)]  
+  
+ Вторая часть примера кода — это исходный код для интерфейса и элементов управления. Исходный файл содержит простой интерфейс с именем `IZipCode`. Также <xref:System.Web.UI.WebControls.WebParts.WebPart> существует класс с именем `ZipCodeWebPart` , который реализует интерфейс и выступает в качестве элемента управления поставщика. Его `ProvideIZipCode` метод — это метод обратного вызова, реализующий член интерфейса. Метод просто возвращает экземпляр интерфейса. Обратите внимание, что метод помечен `ConnectionProvider` атрибутом в его метаданных. Это механизм идентификации метода в качестве метода обратного вызова для точки соединения поставщика. Другой <xref:System.Web.UI.WebControls.WebParts.WebPart> класс `WeatherWebPart` называется, и он выступает в качестве потребителя для соединения. Этот класс имеет метод с именем `GetZipCode` , который получает экземпляр `IZipCode` интерфейса из элемента управления поставщика. Обратите внимание, что этот метод помечен как метод точки подключения потребителя с `ConnectionConsumer` атрибутом в его метаданных. Это механизм идентификации метода точки подключения в элементе управления потребителя.  
+  
+ Для выполнения примера кода необходимо скомпилировать этот исходный код. Его можно скомпилировать явным образом и разместить полученную сборку в папке Bin веб-сайта или в глобальном кэше сборок. Кроме того, можно разместить исходный код в папке App_Code сайта, где он будет динамически компилироваться во время выполнения. В этом примере кода используется динамическая компиляция. Пошаговое руководство, в котором показано, как выполнить компиляцию, см. в разделе [Пошаговое руководство. Разработка и использование пользовательского веб-элемента управления](https://msdn.microsoft.com/library/6d90782a-a1a4-45a6-b2d4-cf6362b83b08).  
+  
+ [!code-csharp[WebParts_ConnectionPoint_Overview#2](~/samples/snippets/csharp/VS_Snippets_WebNet/WebParts_ConnectionPoint_Overview/CS/ZipCodeComponent.cs#2)]
+ [!code-vb[WebParts_ConnectionPoint_Overview#2](~/samples/snippets/visualbasic/VS_Snippets_WebNet/WebParts_ConnectionPoint_Overview/VB/ZipCodeComponent.vb#2)]  
+  
+ Третья часть примера кода — веб-страница. В верхней части приведены `Register` директивы для регистрации пользовательских элементов управления, образующих соединение, и пользовательского элемента управления, который позволяет пользователям изменять режимы экрана на странице. Само соединение создается декларативно в `<staticconnections>` элементе на странице. Можно также создать подключение программным способом. код для выполнения этой операции содержится в `Button1_Click` методе. Независимо от того, создается ли соединение декларативно или программно, точки соединения всегда должны быть указаны как для поставщика, так и для потребителя. Метод обращается к <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint> объектам как для поставщика, так и для потребителя и записывает некоторые значения их свойств в метку на странице. `Button2_Click`  
+  
+ [!code-aspx-csharp[WebParts_ConnectionPoint_Overview#1](~/samples/snippets/csharp/VS_Snippets_WebNet/WebParts_ConnectionPoint_Overview/CS/connectionPointCS.aspx#1)]
+ [!code-aspx-vb[WebParts_ConnectionPoint_Overview#1](~/samples/snippets/visualbasic/VS_Snippets_WebNet/WebParts_ConnectionPoint_Overview/VB/connectionPointVB.aspx#1)]  
+  
+ После загрузки страницы в браузере нажмите кнопку **сведения о точке соединения** . Отобразятся сведения о точках подключения поставщика и потребителя, установленных в декларативном соединении. Затем с помощью раскрывающегося списка **режим экрана** переключите страницу в режим подключения. В меню команд одного из <xref:System.Web.UI.WebControls.WebParts.WebPart> элементов управления (представленной стрелкой вниз в заголовке окна) щелкните команду Подключить. Открывается пользовательский интерфейс подключения, который `<asp:connectionszone>` автоматически создается элементом управления, объявленным на странице. Нажмите кнопку **Disconnect (отключить** ), чтобы завершить существующее подключение. Используйте элемент управления " **режим отображения** ", чтобы вернуть страницу в режим просмотра. Затем нажмите кнопку **Динамическое соединение** , чтобы создать подключение программным способом. Снова нажмите кнопку **сведения о точке соединения** , чтобы указать сведения о двух объектах точек соединения.  
+  
+ ]]></format>
+    </remarks>
+    <altmember cref="T:System.Web.UI.WebControls.WebParts.WebPartConnection" />
+    <related type="Article" href="https://docs.microsoft.com/previous-versions/aspnet/ms178187(v=vs.100)">Общие сведения о веб-части подключениях</related>
+    <related type="Article" href="https://docs.microsoft.com/previous-versions/aspnet/e0s9t4ck(v=vs.100)">Элементы управления веб-части ASP.NET</related>
+  </Docs>
+  <Members>
+    <Member MemberName="AllowsMultipleConnections">
+      <MemberSignature Language="C#" Value="public bool AllowsMultipleConnections { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool AllowsMultipleConnections" />
+      <MemberSignature Language="DocId" Value="P:System.Web.UI.WebControls.WebParts.ConnectionPoint.AllowsMultipleConnections" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property AllowsMultipleConnections As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool AllowsMultipleConnections { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.AllowsMultipleConnections : bool" Usage="System.Web.UI.WebControls.WebParts.ConnectionPoint.AllowsMultipleConnections" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает значение, которое показывает, поддерживает ли точка подключения несколько одновременных связей.</summary>
+        <value>Значение <see langword="true" />, если точка подключения поддерживает несколько связей. В противном случае — значение <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.UI.WebControls.WebParts.ProviderConnectionPoint><xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.AllowsMultipleConnections%2A> для <xref:System.Web.UI.WebControls.WebParts.ConnectionProviderAttribute> объектов свойству задано значение (класс), поскольку набор элементов управления веб-части по умолчанию включает точки соединения поставщика для формирования соединений с несколькими потребителями. `true`  
+  
+ Напротив, <xref:System.Web.UI.WebControls.WebParts.ConsumerConnectionPoint> для <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.AllowsMultipleConnections%2A> объектов `false`  свойству <xref:System.Web.UI.WebControls.WebParts.ConnectionConsumerAttribute>  задано значение (класс), поскольку набор элементов управления веб-части по умолчанию позволяет клиентским точкам соединения устанавливать соединение только с одним поставщиком в Таймаут.  
+  
+ Поведение по умолчанию, связанное с несколькими соединениями, можно изменить, <xref:System.Web.UI.WebControls.WebParts.ConnectionProviderAttribute.AllowsMultipleConnections%2A?displayProperty=nameWithType> назначив для свойства (поставщики) различные <xref:System.Web.UI.WebControls.WebParts.ConnectionConsumerAttribute.AllowsMultipleConnections%2A?displayProperty=nameWithType> значения (для поставщиков) или свойства ( <xref:System.Attribute> для потребителей) в двух классах, используемых для атрибутов соединения. Если вы разрешите точкам соединения с потребителем одновременно подключаться к нескольким поставщикам, ваш код должен работать с любыми возникшими проблемами синхронизации.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано использование <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.AllowsMultipleConnections%2A> свойства для обоих <xref:System.Web.UI.WebControls.WebParts.ProviderConnectionPoint> объектов и <xref:System.Web.UI.WebControls.WebParts.ConsumerConnectionPoint> . В этом примере кода показана только веб-страница, содержащая код для доступа к свойству. полный код, необходимый для выполнения примера, см. в разделе "пример" <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint> раздела Обзор класса.  
+  
+ Код в `Button2_Click` методе веб-страницы обращается к <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.AllowsMultipleConnections%2A> свойству в каждом из объектов точек соединения и записывает каждое значение в метку. Выполните код, нажав кнопку **сведения о точке подключения** после загрузки страницы в браузере.  
+  
+ [!code-aspx-csharp[WebParts_ConnectionPoint_Overview#1](~/samples/snippets/csharp/VS_Snippets_WebNet/WebParts_ConnectionPoint_Overview/CS/connectionPointCS.aspx#1)]
+ [!code-aspx-vb[WebParts_ConnectionPoint_Overview#1](~/samples/snippets/visualbasic/VS_Snippets_WebNet/WebParts_ConnectionPoint_Overview/VB/connectionPointVB.aspx#1)]  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.Web.UI.WebControls.WebParts.ConnectionProviderAttribute" />
+        <altmember cref="T:System.Web.UI.WebControls.WebParts.ConnectionConsumerAttribute" />
+        <related type="Article" href="https://docs.microsoft.com/previous-versions/aspnet/e0s9t4ck(v=vs.100)">Элементы управления веб-части ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="ControlType">
+      <MemberSignature Language="C#" Value="public Type ControlType { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Type ControlType" />
+      <MemberSignature Language="DocId" Value="P:System.Web.UI.WebControls.WebParts.ConnectionPoint.ControlType" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property ControlType As Type" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property Type ^ ControlType { Type ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.ControlType : Type" Usage="System.Web.UI.WebControls.WebParts.ConnectionPoint.ControlType" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Type</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает тип <see cref="T:System.Type" /> серверного элемента управления, с которым сопоставлена точка подключения.</summary>
+        <value>Объект <see cref="T:System.Type" />, представляющий тип элемента управления.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.ControlType%2A> свойства <xref:System.Web.UI.WebControls.WebParts.WebPart>  часто является типом. Однако, поскольку любой тип пользовательского элемента управления или серверного элемента управления может участвовать в соединениях, если он правильно включен и <xref:System.Web.UI.WebControls.WebParts.WebPartZoneBase> помещен в зону <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.ControlType%2A> , это свойство может также возвращать один из этих типов серверных элементов управления.  
+  
+ Если серверные элементы управления, <xref:System.Web.UI.WebControls.WebParts.WebPart> не являющиеся элементами управления, <xref:System.Web.UI.WebControls.WebParts.WebPartZoneBase> помещаются в зону, <xref:System.Web.UI.WebControls.WebParts.GenericWebPart> они упаковываются в объект во время выполнения, чтобы они <xref:System.Web.UI.WebControls.WebParts.WebPart> могли работать как элементы управления и участвовать в соединениях. Но если такие элементы управления участвуют в соединениях <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.ControlType%2A> , значение свойства не <xref:System.Web.UI.WebControls.WebParts.GenericWebPart> Возвращает тип. оно <xref:System.Web.UI.WebControls.WebParts.GenericWebPart> Возвращает тип дочернего элемента управления объекта, который является типом сервера или пользовательского элемента управления.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано использование <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.ControlType%2A> свойства для обоих <xref:System.Web.UI.WebControls.WebParts.ProviderConnectionPoint> объектов и <xref:System.Web.UI.WebControls.WebParts.ConsumerConnectionPoint> . В этом примере кода показана только веб-страница, содержащая код для доступа к свойству. полный код, необходимый для выполнения примера, см. в разделе "пример" <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint> раздела Обзор класса.  
+  
+ Код в `Button2_Click` методе веб-страницы обращается к <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.ControlType%2A> свойству в каждом из объектов точек соединения и записывает каждое значение в метку. Выполните код, нажав кнопку **сведения о точке подключения** после загрузки страницы в браузере.  
+  
+ [!code-aspx-csharp[WebParts_ConnectionPoint_Overview#1](~/samples/snippets/csharp/VS_Snippets_WebNet/WebParts_ConnectionPoint_Overview/CS/connectionPointCS.aspx#1)]
+ [!code-aspx-vb[WebParts_ConnectionPoint_Overview#1](~/samples/snippets/visualbasic/VS_Snippets_WebNet/WebParts_ConnectionPoint_Overview/VB/connectionPointVB.aspx#1)]  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.Type" />
+        <related type="Article" href="https://docs.microsoft.com/previous-versions/aspnet/e0s9t4ck(v=vs.100)">Элементы управления веб-части ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="DefaultID">
+      <MemberSignature Language="C#" Value="public static readonly string DefaultID;" />
+      <MemberSignature Language="ILAsm" Value=".field public static initonly string DefaultID" />
+      <MemberSignature Language="DocId" Value="F:System.Web.UI.WebControls.WebParts.ConnectionPoint.DefaultID" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly DefaultID As String " />
+      <MemberSignature Language="C++ CLI" Value="public: static initonly System::String ^ DefaultID;" />
+      <MemberSignature Language="F#" Value=" staticval mutable DefaultID : string" Usage="System.Web.UI.WebControls.WebParts.ConnectionPoint.DefaultID" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Представляет строку, по которой определяется точка подключения по умолчанию в коллекции точек подключения, сопоставленных с серверным элементом управления.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ При создании точки соединения можно указать идентификатор точки соединения в исходном коде потребителя или элемента управления поставщика <xref:System.Web.UI.WebControls.WebParts.WebPart> <xref:System.Web.UI.WebControls.WebParts.ConnectionConsumerAttribute> с помощью <xref:System.Web.UI.WebControls.WebParts.ConnectionProviderAttribute> атрибута или. Однако при добавлении атрибута в точку соединения в исходном коде этот `ID` параметр является необязательным. Если идентификатор не указан в атрибуте, <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.DefaultID> поле предоставляет строку, используемую для идентификации точки подключения по умолчанию.  
+  
+ Если в элементе управления потребителя или поставщика определено несколько точек соединения, необходимо указать идентификатор для каждой точки подключения, чтобы точки соединения можно было отличать при создании подключений.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="P:System.Web.UI.WebControls.WebParts.ConnectionPoint.ID" />
+        <altmember cref="T:System.Web.UI.WebControls.WebParts.ConnectionProviderAttribute" />
+        <altmember cref="T:System.Web.UI.WebControls.WebParts.ConnectionConsumerAttribute" />
+      </Docs>
+    </Member>
+    <Member MemberName="DisplayName">
+      <MemberSignature Language="C#" Value="public string DisplayName { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string DisplayName" />
+      <MemberSignature Language="DocId" Value="P:System.Web.UI.WebControls.WebParts.ConnectionPoint.DisplayName" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property DisplayName As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ DisplayName { System::String ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.DisplayName : string" Usage="System.Web.UI.WebControls.WebParts.ConnectionPoint.DisplayName" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает строку, которая служит в качестве понятного отображаемого имени, представляющего точку подключения в пользовательском интерфейсе.</summary>
+        <value>Строка, содержащая понятное отображаемое имя для объекта <see cref="T:System.Web.UI.WebControls.WebParts.ConnectionPoint" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Чтобы создать веб-частиное соединение, элементы управления поставщика и потребителя должны указать по крайней мере одну точку подключения — метод, позволяющий им обмениваться данными и обмениваться ими. Чтобы указать эти методы точек соединения, разработчик задает атрибут для выбранных методов. В поставщике `ConnectionProvider` атрибут задается для выбранного метода обратного вызова, а в потребителе `ConnectionConsumer` атрибут задается для метода, который получает экземпляр интерфейса, который содержит данные от поставщика. Для обоих этих атрибутов необходим один параметр, который всегда требуется, независимо от того, какая перегрузка объявлена для создания атрибута, является `displayName` параметром. Разработчик должен присвоить строку, которая будет использоваться в качестве понятного отображаемого имени для точки соединения, а эта строка станет значением <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.DisplayName%2A> свойства.  
+  
+ Значение <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.DisplayName%2A> свойства отображается в пользовательском интерфейсе веб-страницы, когда пользователи создают подключения. Например, при <xref:System.Web.UI.WebControls.WebParts.ConnectionsZone> добавлении элемента управления на страницу он создает пользовательский интерфейс для создания соединений между элементами управления. После того как пользователь переключает страницу в режим отображения подключения и щелкает команду подключения в <xref:System.Web.UI.WebControls.WebParts.WebPart> элементе управления, появляется пользовательский интерфейс подключения. Каждый элемент управления, который может участвовать в соединении, отображается в пользовательском интерфейсе, а рядом с каждым элементом управления — раскрывающийся список, в котором отображаются понятные имена доступных точек соединения. Чтобы установить подключение, пользователям необходимо выбрать хотя бы одну точку подключения. Значения, отображаемые в списке точек соединения, получаются из <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.DisplayName%2A> свойства. Если разработчики создают пользовательский интерфейс для создания подключений, они могут использовать <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.DisplayName%2A> свойство аналогичным образом для предоставления понятного имени, представляющего точку подключения.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.Web.UI.WebControls.WebParts.ConnectionProviderAttribute" />
+        <altmember cref="T:System.Web.UI.WebControls.WebParts.ConnectionConsumerAttribute" />
+        <related type="Article" href="https://docs.microsoft.com/previous-versions/aspnet/e0s9t4ck(v=vs.100)">Элементы управления веб-части ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="GetEnabled">
+      <MemberSignature Language="C#" Value="public virtual bool GetEnabled (System.Web.UI.Control control);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance bool GetEnabled(class System.Web.UI.Control control) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.UI.WebControls.WebParts.ConnectionPoint.GetEnabled(System.Web.UI.Control)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual bool GetEnabled(System::Web::UI::Control ^ control);" />
+      <MemberSignature Language="F#" Value="abstract member GetEnabled : System.Web.UI.Control -&gt; bool&#xA;override this.GetEnabled : System.Web.UI.Control -&gt; bool" Usage="connectionPoint.GetEnabled control" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="control" Type="System.Web.UI.Control" />
+      </Parameters>
+      <Docs>
+        <param name="control">Элемент <see cref="T:System.Web.UI.WebControls.WebParts.WebPart" /> или другой серверный элемент управления, сопоставленный с точкой подключения.</param>
+        <summary>Возвращает значение, которое показывает, может ли точка подключения участвовать в связях.</summary>
+        <returns>Значение <see langword="true" />, если элемент управления может создать точку подключения для участия в связи. В противном случае — значение <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ `true` `true` `control` `false` Метод в базовом <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint> классе всегда возвращает, но производные классы могут переопределять метод для возврата или в разное время в зависимости от состояния. <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.GetEnabled%2A>  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано использование <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.GetEnabled%2A> метода для обоих <xref:System.Web.UI.WebControls.WebParts.ProviderConnectionPoint> объектов и <xref:System.Web.UI.WebControls.WebParts.ConsumerConnectionPoint> . В этом примере кода показана только веб-страница, содержащая код для доступа к свойству. полный код, необходимый для выполнения примера, см. в разделе "пример" <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint> раздела Обзор класса.  
+  
+ Код в `Button2_Click` методе веб-страницы обращается к <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.GetEnabled%2A> методу в каждом из объектов точек соединения и записывает каждое значение в метку. Выполните код, нажав кнопку **сведения о точке подключения** после загрузки страницы в браузере.  
+  
+ [!code-aspx-csharp[WebParts_ConnectionPoint_Overview#1](~/samples/snippets/csharp/VS_Snippets_WebNet/WebParts_ConnectionPoint_Overview/CS/connectionPointCS.aspx#1)]
+ [!code-aspx-vb[WebParts_ConnectionPoint_Overview#1](~/samples/snippets/visualbasic/VS_Snippets_WebNet/WebParts_ConnectionPoint_Overview/VB/connectionPointVB.aspx#1)]  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://docs.microsoft.com/previous-versions/aspnet/e0s9t4ck(v=vs.100)">Элементы управления веб-части ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="ID">
+      <MemberSignature Language="C#" Value="public string ID { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string ID" />
+      <MemberSignature Language="DocId" Value="P:System.Web.UI.WebControls.WebParts.ConnectionPoint.ID" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property ID As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ ID { System::String ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.ID : string" Usage="System.Web.UI.WebControls.WebParts.ConnectionPoint.ID" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает строку, содержащую идентификатор для точки подключения.</summary>
+        <value>Строка, содержащая идентификатор для точки подключения.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Когда разработчик объявляет <xref:System.Web.UI.WebControls.WebParts.ConnectionConsumerAttribute> <xref:System.Web.UI.WebControls.WebParts.ConnectionProviderAttribute> атрибут или в методе в исходном коде элемента управления, чтобы этот метод можно было использовать в качестве точки соединения, `ID` не нужно объявлять параметр для атрибута точки соединения. Единственным обязательным атрибутом является `displayName` параметр. К точке подключения назначается идентификатор по умолчанию, используя значение из <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.DefaultID> поля.  
+  
+ Если в элементе управления, используемом в качестве точки подключения, имеется только один метод, указывать идентификатор для точки соединения не требуется. Если в качестве точек соединения указано несколько методов, необходимо указать идентификатор для каждого из них. в противном случае будет создано исключение. Назначив идентификатор каждой точке подключения, вы также можете указать, какую точку соединения следует использовать при объявлении соединений на веб-страницах или создать их в коде.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано использование <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.ID%2A> свойства для обоих <xref:System.Web.UI.WebControls.WebParts.ProviderConnectionPoint> объектов и <xref:System.Web.UI.WebControls.WebParts.ConsumerConnectionPoint> . В этом примере кода показана только веб-страница, содержащая код для доступа к свойству. полный код, необходимый для выполнения примера, см. в разделе "пример" <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint> раздела Обзор класса.  
+  
+ Код в `Button2_Click` методе веб-страницы обращается к <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.ID%2A> свойству в каждом из объектов точек соединения и записывает каждое значение в метку. Выполните код, нажав кнопку **сведения о точке подключения** после загрузки страницы в браузере.  
+  
+ [!code-aspx-csharp[WebParts_ConnectionPoint_Overview#1](~/samples/snippets/csharp/VS_Snippets_WebNet/WebParts_ConnectionPoint_Overview/CS/connectionPointCS.aspx#1)]
+ [!code-aspx-vb[WebParts_ConnectionPoint_Overview#1](~/samples/snippets/visualbasic/VS_Snippets_WebNet/WebParts_ConnectionPoint_Overview/VB/connectionPointVB.aspx#1)]  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="F:System.Web.UI.WebControls.WebParts.ConnectionPoint.DefaultID" />
+        <related type="Article" href="https://docs.microsoft.com/previous-versions/aspnet/e0s9t4ck(v=vs.100)">Элементы управления веб-части ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="InterfaceType">
+      <MemberSignature Language="C#" Value="public Type InterfaceType { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Type InterfaceType" />
+      <MemberSignature Language="DocId" Value="P:System.Web.UI.WebControls.WebParts.ConnectionPoint.InterfaceType" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property InterfaceType As Type" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property Type ^ InterfaceType { Type ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.InterfaceType : Type" Usage="System.Web.UI.WebControls.WebParts.ConnectionPoint.InterfaceType" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Type</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает тип интерфейса, используемого точкой подключения.</summary>
+        <value>Объект <see cref="T:System.Type" />, соответствующий типу интерфейса, предоставляемого или получаемого элементом управления.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.InterfaceType%2A> Свойство указывает тип интерфейса, используемого точкой подключения. Это может помочь определить, совместимы ли два элемента управления с возможностью создания соединения. Если точка <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.InterfaceType%2A> подключения поставщика отличается от <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.InterfaceType%2A>точки подключения потребителя, то два элемента управления несовместимы (т. е. они не могут напрямую подключаться без <xref:System.Web.UI.WebControls.WebParts.WebPartTransformer> преобразователя), а объект должен используется для установления соединения.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано использование <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.InterfaceType%2A> свойства для обоих <xref:System.Web.UI.WebControls.WebParts.ProviderConnectionPoint> объектов и <xref:System.Web.UI.WebControls.WebParts.ConsumerConnectionPoint> . В этом примере кода показана только веб-страница, содержащая код для доступа к свойству. полный код, необходимый для выполнения примера, см. в разделе "пример" <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint> раздела Обзор класса.  
+  
+ Код в `Button2_Click` методе веб-страницы обращается к <xref:System.Web.UI.WebControls.WebParts.ConnectionPoint.InterfaceType%2A> свойству в каждом из объектов точек соединения и записывает каждое значение в метку. Выполните код, нажав кнопку **сведения о точке подключения** после загрузки страницы в браузере.  
+  
+ [!code-aspx-csharp[WebParts_ConnectionPoint_Overview#1](~/samples/snippets/csharp/VS_Snippets_WebNet/WebParts_ConnectionPoint_Overview/CS/connectionPointCS.aspx#1)]
+ [!code-aspx-vb[WebParts_ConnectionPoint_Overview#1](~/samples/snippets/visualbasic/VS_Snippets_WebNet/WebParts_ConnectionPoint_Overview/VB/connectionPointVB.aspx#1)]  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.Type" />
+        <related type="Article" href="https://docs.microsoft.com/previous-versions/aspnet/e0s9t4ck(v=vs.100)">Элементы управления веб-части ASP.NET</related>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

@@ -1,0 +1,230 @@
+<Type Name="AuthorizationContext" FullName="System.Security.Claims.AuthorizationContext">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="e000588110f6f2b10a96c2eefdb884eec22abbf9" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70714769" /></Metadata><TypeSignature Language="C#" Value="public class AuthorizationContext" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit AuthorizationContext extends System.Object" />
+  <TypeSignature Language="DocId" Value="T:System.Security.Claims.AuthorizationContext" />
+  <TypeSignature Language="VB.NET" Value="Public Class AuthorizationContext" />
+  <TypeSignature Language="C++ CLI" Value="public ref class AuthorizationContext" />
+  <TypeSignature Language="F#" Value="type AuthorizationContext = class" />
+  <AssemblyInfo>
+    <AssemblyName>System.IdentityModel</AssemblyName>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>Предоставляет сведения о контексте события авторизации. Включает субъект, представляющий вызывающий объект, запрашиваемый ресурс и выполняемое действие.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Класс представляет контекст, используемый диспетчером авторизации утверждений, реализацией <xref:System.Security.Claims.ClaimsAuthorizationManager> класса, чтобы определить, должна ли субъект (субъект) быть авторизованным для выполнения указанного действия с заданным ресурсом. <xref:System.Security.Claims.AuthorizationContext> Диспетчер авторизации утверждений оценивает контекст авторизации в <xref:System.Security.Claims.ClaimsAuthorizationManager.CheckAccess%2A> методе и либо запрещает, либо предоставляет доступ на основе утверждений, представленных участником.  
+  
+ Свойство содержит субъект, для которого запрашивается авторизация <xref:System.Security.Claims.AuthorizationContext.Resource%2A> , свойство содержит ресурс, на который авторизован участник, а <xref:System.Security.Claims.AuthorizationContext.Action%2A> свойство содержит действия, которые <xref:System.Security.Claims.AuthorizationContext.Principal%2A> участник намеревается выполнить на ресурсе. И ресурс, и действие представлены в виде коллекции утверждений. Однако в большинстве случаев каждая коллекция содержит одно утверждение.  
+  
+   
+  
+## Examples  
+ Пример кода, используемый в <xref:System.Security.Claims.AuthorizationContext> этом разделе, взят `Claims Based Authorization` из примера. В этом примере представлен настраиваемый диспетчер авторизации утверждений, который может авторизовать субъекты на основе политики, указанной в конфигурации. Этот пользовательский диспетчер состоит из трех основных компонентов: класс, производный <xref:System.Security.Claims.ClaimsAuthorizationManager> от, который реализует диспетчер `ResourceAction` , класс, который объединяет ресурс и действие, а также средство чтения политики, которое считывает и компилирует политику, указанную в файл конфигурации. Эта скомпилированная политика затем может использоваться диспетчером авторизации утверждений для проверки субъекта с целью авторизации доступа к ресурсам. Для краткости показаны не все элементы. Сведения об этом образце и других примерах, доступных для WIF, и о месте их загрузки см. в разделе [индекс примера кода WIF](~/docs/framework/security/wif-code-sample-index.md).  
+  
+ В следующем коде показан <xref:System.Security.Claims.ClaimsAuthorizationManager.CheckAccess%2A> метод для пользовательского диспетчера авторизации утверждений. Функция, которая оценивает участника на основе ресурса и действия, указанного в <xref:System.Security.Claims.AuthorizationContext> методе. Эта функция возвращает значение `true` или `false`, которое либо предоставляет, либо запрещает доступ к участнику.  
+  
+ [!code-csharp[WifClaimsBasedAuthorization#3](~/samples/snippets/csharp/VS_Snippets_Misc/wifclaimsbasedauthorization/cs/claimsauthorizationlibrary/myclaimsauthorizationmanager.cs#3)]  
+[!code-csharp[WifClaimsBasedAuthorization#5](~/samples/snippets/csharp/VS_Snippets_Misc/wifclaimsbasedauthorization/cs/claimsauthorizationlibrary/myclaimsauthorizationmanager.cs#5)]  
+  
+ В следующем коде XML показан пример политики авторизации, которая была указана в конфигурации. В первой политике участник должен обладать одним из указанных утверждений для выполнения указанного действия с указанным ресурсом. Во второй политике участник должен обладать обоими утверждениями, чтобы иметь возможность выполнить указанное действие с указанным ресурсом. Во всех остальных случаях субъекту автоматически предоставляется доступ независимо от того, какие заявки он владеет.  
+  
+```xml  
+<system.identityModel>  
+  <identityConfiguration>  
+    <claimsAuthorizationManager type="ClaimsAuthorizationLibrary.MyClaimsAuthorizationManager, ClaimsAuthorizationLibrary">  
+      <policy resource="http://localhost:28491/Developers.aspx" action="GET">  
+        <or>  
+          <claim claimType="http://schemas.microsoft.com/ws/2008/06/identity/claims/role" claimValue="developer" />  
+          <claim claimType="http://schemas.xmlsoap.org/claims/Group" claimValue="Administrator" />  
+        </or>  
+      </policy>  
+      <policy resource="http://localhost:28491/Administrators.aspx" action="GET">  
+        <and>  
+          <claim claimType="http://schemas.xmlsoap.org/claims/Group" claimValue="Administrator" />  
+          <claim claimType="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/country" claimValue="USA" />  
+        </and>  
+      </policy>  
+      <policy resource="http://localhost:28491/Default.aspx" action="GET">  
+      </policy>  
+      <policy resource="http://localhost:28491/" action="GET">  
+      </policy>  
+      <policy resource="http://localhost:28491/Claims.aspx" action="GET">  
+      </policy>  
+    </claimsAuthorizationManager>  
+  
+    ...  
+  
+  </identityConfiguration>  
+</system.identityModel>  
+```  
+  
+ ]]></format>
+    </remarks>
+  </Docs>
+  <Members>
+    <MemberGroup MemberName=".ctor">
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Security.Claims.AuthorizationContext" />.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public AuthorizationContext (System.Security.Claims.ClaimsPrincipal principal, System.Collections.ObjectModel.Collection&lt;System.Security.Claims.Claim&gt; resource, System.Collections.ObjectModel.Collection&lt;System.Security.Claims.Claim&gt; action);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.Security.Claims.ClaimsPrincipal principal, class System.Collections.ObjectModel.Collection`1&lt;class System.Security.Claims.Claim&gt; resource, class System.Collections.ObjectModel.Collection`1&lt;class System.Security.Claims.Claim&gt; action) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Security.Claims.AuthorizationContext.#ctor(System.Security.Claims.ClaimsPrincipal,System.Collections.ObjectModel.Collection{System.Security.Claims.Claim},System.Collections.ObjectModel.Collection{System.Security.Claims.Claim})" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (principal As ClaimsPrincipal, resource As Collection(Of Claim), action As Collection(Of Claim))" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; AuthorizationContext(System::Security::Claims::ClaimsPrincipal ^ principal, System::Collections::ObjectModel::Collection&lt;System::Security::Claims::Claim ^&gt; ^ resource, System::Collections::ObjectModel::Collection&lt;System::Security::Claims::Claim ^&gt; ^ action);" />
+      <MemberSignature Language="F#" Value="new System.Security.Claims.AuthorizationContext : System.Security.Claims.ClaimsPrincipal * System.Collections.ObjectModel.Collection&lt;System.Security.Claims.Claim&gt; * System.Collections.ObjectModel.Collection&lt;System.Security.Claims.Claim&gt; -&gt; System.Security.Claims.AuthorizationContext" Usage="new System.Security.Claims.AuthorizationContext (principal, resource, action)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="principal" Type="System.Security.Claims.ClaimsPrincipal" />
+        <Parameter Name="resource" Type="System.Collections.ObjectModel.Collection&lt;System.Security.Claims.Claim&gt;" />
+        <Parameter Name="action" Type="System.Collections.ObjectModel.Collection&lt;System.Security.Claims.Claim&gt;" />
+      </Parameters>
+      <Docs>
+        <param name="principal">Субъект, для которого требуется проверить авторизацию.</param>
+        <param name="resource">Коллекция требований, представляющая ресурс, для которого необходимо авторизовать субъект. Обычно коллекция содержит один элемент.</param>
+        <param name="action">Коллекция требований, представляющая действие, которое будет выполнено в ресурсе. Обычно коллекция содержит один элемент.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Security.Claims.AuthorizationContext" /> с указанным субъектом, требованием ресурса и требованием действия.</summary>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="principal" /> имеет значение <see langword="null" />.  
+  
+-или- 
+ <paramref name="resource" /> — <see langword="null" />.  
+  
+-или- 
+ Свойство <paramref name="action" /> имеет значение <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public AuthorizationContext (System.Security.Claims.ClaimsPrincipal principal, string resource, string action);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.Security.Claims.ClaimsPrincipal principal, string resource, string action) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Security.Claims.AuthorizationContext.#ctor(System.Security.Claims.ClaimsPrincipal,System.String,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (principal As ClaimsPrincipal, resource As String, action As String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; AuthorizationContext(System::Security::Claims::ClaimsPrincipal ^ principal, System::String ^ resource, System::String ^ action);" />
+      <MemberSignature Language="F#" Value="new System.Security.Claims.AuthorizationContext : System.Security.Claims.ClaimsPrincipal * string * string -&gt; System.Security.Claims.AuthorizationContext" Usage="new System.Security.Claims.AuthorizationContext (principal, resource, action)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="principal" Type="System.Security.Claims.ClaimsPrincipal" />
+        <Parameter Name="resource" Type="System.String" />
+        <Parameter Name="action" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="principal">Субъект, для которого требуется проверить авторизацию.</param>
+        <param name="resource">Ресурс, для которого должен быть авторизован субъект. Ресурс указан как значение утверждения имени.</param>
+        <param name="action">Действие для выполнения в ресурсе. Действие указано как значение утверждения имени.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Security.Claims.AuthorizationContext" /> с указанным субъектом, именем ресурса и именем действия.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойство инициализируется для включения утверждения имени (<xref:System.Security.Claims.ClaimTypes.Name?displayProperty=nameWithType>) со значением, указанным в `action` параметре. <xref:System.Security.Claims.AuthorizationContext.Action%2A> Свойство инициализируется, чтобы содержать утверждение имени со значением, указанным в `resource` параметре. <xref:System.Security.Claims.AuthorizationContext.Resource%2A>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="principal" /> — <see langword="null" />.  
+  
+- или - 
+ Свойство <paramref name="resource" /> имеет значение <see langword="null" />.  
+  
+-или- 
+ <paramref name="action" /> — <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="Action">
+      <MemberSignature Language="C#" Value="public System.Collections.ObjectModel.Collection&lt;System.Security.Claims.Claim&gt; Action { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Collections.ObjectModel.Collection`1&lt;class System.Security.Claims.Claim&gt; Action" />
+      <MemberSignature Language="DocId" Value="P:System.Security.Claims.AuthorizationContext.Action" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property Action As Collection(Of Claim)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Collections::ObjectModel::Collection&lt;System::Security::Claims::Claim ^&gt; ^ Action { System::Collections::ObjectModel::Collection&lt;System::Security::Claims::Claim ^&gt; ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Action : System.Collections.ObjectModel.Collection&lt;System.Security.Claims.Claim&gt;" Usage="System.Security.Claims.AuthorizationContext.Action" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.ObjectModel.Collection&lt;System.Security.Claims.Claim&gt;</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает действие, для которого должен быть авторизован субъект.</summary>
+        <value>Коллекция требований, представляющая действия, связанные с запросом.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Обычно коллекция содержит один элемент.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Principal">
+      <MemberSignature Language="C#" Value="public System.Security.Claims.ClaimsPrincipal Principal { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Security.Claims.ClaimsPrincipal Principal" />
+      <MemberSignature Language="DocId" Value="P:System.Security.Claims.AuthorizationContext.Principal" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property Principal As ClaimsPrincipal" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Security::Claims::ClaimsPrincipal ^ Principal { System::Security::Claims::ClaimsPrincipal ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Principal : System.Security.Claims.ClaimsPrincipal" Usage="System.Security.Claims.AuthorizationContext.Principal" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Security.Claims.ClaimsPrincipal</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает субъект, для которого запрашивается авторизация.</summary>
+        <value>Субъект, для которого запрашивается авторизация.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Resource">
+      <MemberSignature Language="C#" Value="public System.Collections.ObjectModel.Collection&lt;System.Security.Claims.Claim&gt; Resource { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Collections.ObjectModel.Collection`1&lt;class System.Security.Claims.Claim&gt; Resource" />
+      <MemberSignature Language="DocId" Value="P:System.Security.Claims.AuthorizationContext.Resource" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property Resource As Collection(Of Claim)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Collections::ObjectModel::Collection&lt;System::Security::Claims::Claim ^&gt; ^ Resource { System::Collections::ObjectModel::Collection&lt;System::Security::Claims::Claim ^&gt; ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Resource : System.Collections.ObjectModel.Collection&lt;System.Security.Claims.Claim&gt;" Usage="System.Security.Claims.AuthorizationContext.Resource" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.IdentityModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.ObjectModel.Collection&lt;System.Security.Claims.Claim&gt;</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает ресурс, на котором должен быть авторизован субъект.</summary>
+        <value>Коллекция требований, представляющих ресурс.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Обычно коллекция содержит один элемент.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
