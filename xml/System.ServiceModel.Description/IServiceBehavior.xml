@@ -1,0 +1,204 @@
+<Type Name="IServiceBehavior" FullName="System.ServiceModel.Description.IServiceBehavior">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="8f180c5c844145924ad16b66d821004bfbce2f07" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70496690" /></Metadata><TypeSignature Language="C#" Value="public interface IServiceBehavior" />
+  <TypeSignature Language="ILAsm" Value=".class public interface auto ansi abstract IServiceBehavior" />
+  <TypeSignature Language="DocId" Value="T:System.ServiceModel.Description.IServiceBehavior" />
+  <TypeSignature Language="VB.NET" Value="Public Interface IServiceBehavior" />
+  <TypeSignature Language="C++ CLI" Value="public interface class IServiceBehavior" />
+  <TypeSignature Language="F#" Value="type IServiceBehavior = interface" />
+  <AssemblyInfo>
+    <AssemblyName>System.ServiceModel</AssemblyName>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Interfaces />
+  <Docs>
+    <summary>Предоставляет механизм для изменения или вставки настраиваемых расширений в целые службы, включая <see cref="T:System.ServiceModel.ServiceHostBase" />.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализует <xref:System.ServiceModel.Description.IServiceBehavior> для изменения, проверки или расширения определенного аспекта выполнения для всей службы на уровне приложения.  
+  
+-   Можно использовать метод <xref:System.ServiceModel.Description.IServiceBehavior.ApplyDispatchBehavior%2A> для изменения значений свойства времени выполнения или для вставки объектов настраиваемых расширений, например, обработчиков ошибок, перехватчиков параметров или сообщений, а также других объектов настраиваемых расширений.  
+  
+-   <xref:System.ServiceModel.Description.IServiceBehavior.Validate%2A> Используйте метод для проверки описания, прежде чем Windows Communication Foundation (WCF) конструирует выполняющуюся службу, чтобы убедиться, что она может быть выполнена правильно.  
+  
+-   Метод <xref:System.ServiceModel.Description.IServiceBehavior.AddBindingParameters%2A> используется для передачи в элемент привязки настраиваемых сведений для службы, чтобы обеспечить ее работу.  
+  
+ Объекты <xref:System.ServiceModel.Description.IServiceBehavior> могут использовать любые из этих методов, но часто важен только один; в таких случаях неиспользуемые методы могут не возвращать никакого значения.  
+  
+> [!NOTE]
+>  Все методы <xref:System.ServiceModel.Description.IServiceBehavior> передают в качестве параметра объекты <xref:System.ServiceModel.Description.ServiceDescription?displayProperty=nameWithType> и <xref:System.ServiceModel.ServiceHostBase?displayProperty=nameWithType>. Этот параметр используется только для проверки; при изменении объекта <xref:System.ServiceModel.Description.ServiceDescription>, расширение функциональности выполнения не определено.  
+  
+ Чтобы выполнить настройку задачи, для которой предназначен этот параметр, необходимо добавить объект <xref:System.ServiceModel.Description.IServiceBehavior> в свойство <xref:System.ServiceModel.Description.ServiceDescription.Behaviors%2A> перед построением среды выполнения службы. Это можно сделать тремя способами:  
+  
+-   Программно добавить пользовательское расширение функциональности настраиваемой службы в свойство <xref:System.ServiceModel.Description.ServiceDescription.Behaviors%2A> перед тем, как метод <xref:System.ServiceModel.ICommunicationObject.Open%2A?displayProperty=nameWithType> вызывается на объекте <xref:System.ServiceModel.ServiceHost?displayProperty=nameWithType>.  
+  
+-   Создать настраиваемый атрибут, который реализует <xref:System.ServiceModel.Description.IServiceBehavior> и использует его для маркировки классов службы, которые следует изменить. При создании <xref:System.ServiceModel.ServiceHost> объекта WCF использует отражение для обнаружения атрибутов типа службы. Любые атрибуты, реализующие <xref:System.ServiceModel.Description.IServiceBehavior>, добавляются в коллекцию расширений функциональности в <xref:System.ServiceModel.Description.ServiceDescription>.  
+  
+-   Примените расширение для класса <xref:System.ServiceModel.Configuration.BehaviorExtensionElement?displayProperty=nameWithType>, чтобы включить поддержку спецификаций расширений функциональности в приложении или файле конфигурации. Дополнительные сведения см. в разделе «Пример».  
+  
+ Примерами поведения службы в WCF <xref:System.ServiceModel.ServiceBehaviorAttribute> являются атрибут <xref:System.ServiceModel.Description.ServiceThrottlingBehavior?displayProperty=nameWithType>,, <xref:System.ServiceModel.Description.ServiceDebugBehavior?displayProperty=nameWithType> и <xref:System.ServiceModel.Description.ServiceMetadataBehavior?displayProperty=nameWithType> поведение.  
+  
+   
+  
+## Examples  
+ В следующем образце кода показано использование расширений функциональности службы, заданных в файле конфигурации, для вставки настраиваемого обработчика ошибок в приложение службы. В данном примере обработчик ошибок выполняет перехват всех исключений и преобразование их в настраиваемые ошибки SOAP `GreetingFault`, которые затем возвращаются клиенту.  
+  
+ Следующая реализация <xref:System.ServiceModel.Description.IServiceBehavior> не добавляет объекты параметра привязки, но добавляет настраиваемый объект <xref:System.ServiceModel.Dispatcher.IErrorHandler?displayProperty=nameWithType> в каждое свойство <xref:System.ServiceModel.Dispatcher.ChannelDispatcher.ErrorHandlers%2A?displayProperty=nameWithType> и проверяет наличие для каждой операции службы, к которой применяются расширения функциональности службы, <xref:System.ServiceModel.FaultContractAttribute?displayProperty=nameWithType> типа `GreetingFault`.  
+  
+ [!code-csharp[IErrorHandler#7](~/samples/snippets/csharp/VS_Snippets_CFX/ierrorhandler/cs/ierrorhandler.cs#7)]
+ [!code-vb[IErrorHandler#7](~/samples/snippets/visualbasic/VS_Snippets_CFX/ierrorhandler/vb/ierrorhandler.vb#7)]  
+  
+ В данном примере класс расширений функциональности также реализует <xref:System.ServiceModel.Configuration.BehaviorExtensionElement?displayProperty=nameWithType>, который включает расширения функциональности службы для вставки путем их использования в файле конфигурации приложения, как показано в следующем примере кода.  
+  
+ [!code-xml[IErrorHandler#4](~/samples/snippets/csharp/VS_Snippets_CFX/ierrorhandler/cs/hostapplication.exe.config#4)]   
+  
+ ]]></format>
+    </remarks>
+  </Docs>
+  <Members>
+    <Member MemberName="AddBindingParameters">
+      <MemberSignature Language="C#" Value="public void AddBindingParameters (System.ServiceModel.Description.ServiceDescription serviceDescription, System.ServiceModel.ServiceHostBase serviceHostBase, System.Collections.ObjectModel.Collection&lt;System.ServiceModel.Description.ServiceEndpoint&gt; endpoints, System.ServiceModel.Channels.BindingParameterCollection bindingParameters);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void AddBindingParameters(class System.ServiceModel.Description.ServiceDescription serviceDescription, class System.ServiceModel.ServiceHostBase serviceHostBase, class System.Collections.ObjectModel.Collection`1&lt;class System.ServiceModel.Description.ServiceEndpoint&gt; endpoints, class System.ServiceModel.Channels.BindingParameterCollection bindingParameters) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceModel.Description.IServiceBehavior.AddBindingParameters(System.ServiceModel.Description.ServiceDescription,System.ServiceModel.ServiceHostBase,System.Collections.ObjectModel.Collection{System.ServiceModel.Description.ServiceEndpoint},System.ServiceModel.Channels.BindingParameterCollection)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void AddBindingParameters(System::ServiceModel::Description::ServiceDescription ^ serviceDescription, System::ServiceModel::ServiceHostBase ^ serviceHostBase, System::Collections::ObjectModel::Collection&lt;System::ServiceModel::Description::ServiceEndpoint ^&gt; ^ endpoints, System::ServiceModel::Channels::BindingParameterCollection ^ bindingParameters);" />
+      <MemberSignature Language="F#" Value="abstract member AddBindingParameters : System.ServiceModel.Description.ServiceDescription * System.ServiceModel.ServiceHostBase * System.Collections.ObjectModel.Collection&lt;System.ServiceModel.Description.ServiceEndpoint&gt; * System.ServiceModel.Channels.BindingParameterCollection -&gt; unit" Usage="iServiceBehavior.AddBindingParameters (serviceDescription, serviceHostBase, endpoints, bindingParameters)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceModel</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="serviceDescription" Type="System.ServiceModel.Description.ServiceDescription" />
+        <Parameter Name="serviceHostBase" Type="System.ServiceModel.ServiceHostBase" />
+        <Parameter Name="endpoints" Type="System.Collections.ObjectModel.Collection&lt;System.ServiceModel.Description.ServiceEndpoint&gt;" />
+        <Parameter Name="bindingParameters" Type="System.ServiceModel.Channels.BindingParameterCollection" />
+      </Parameters>
+      <Docs>
+        <param name="serviceDescription">Описание службы.</param>
+        <param name="serviceHostBase">Ведущее приложение службы.</param>
+        <param name="endpoints">Конечные точки службы.</param>
+        <param name="bindingParameters">Настраиваемые объекты, к которым имеют доступ элементы привязки.</param>
+        <summary>Предоставляет возможности передачи настраиваемых данных в элементы привязки для предоставления поддержки реализации контракта.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод <xref:System.ServiceModel.Description.IServiceBehavior.AddBindingParameters%2A> можно использовать для добавления объектов настраиваемых данных в коллекцию `parameters`, которая может использоваться элементами привязки для получения дополнительных сведений, что обеспечивает поддержку контракта в данных элементах.  
+  
+ Данный метод вызывается один раз для каждого универсального кода ресурса (URI) ожидания передачи данных. Например, если служба содержит четыре конечных точки, и две из них имеют одинаковый универсальный код ресурса (URI) ожидания передачи данных, этот метод вызывается трижды. Это обусловлено тем, что `bindingParameters` использует в качестве конечного объекта каждый стек канала, при этом для каждого универсального кода ресурса (URI) ожидания передачи данных существует один стек канала. Поскольку каждый вызов получает данные конечные точки на этом универсальном коде ресурса (URI) ожидания передачи данных, один из двух вызовов получает один <xref:System.ServiceModel.Description.ServiceEndpoint?displayProperty=nameWithType>, а второй вызов получает коллекцию из двух объектов <xref:System.ServiceModel.Description.ServiceEndpoint?displayProperty=nameWithType>.  
+  
+> [!NOTE]
+>  Все методы <xref:System.ServiceModel.Description.IServiceBehavior> передают в качестве параметра объекты <xref:System.ServiceModel.Description.ServiceDescription?displayProperty=nameWithType> и <xref:System.ServiceModel.ServiceHostBase?displayProperty=nameWithType>. Этот параметр используется только для проверки и вставки настроек; при изменении объекта <xref:System.ServiceModel.Description.ServiceDescription>, расширение функциональности выполнения не определено.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ApplyDispatchBehavior">
+      <MemberSignature Language="C#" Value="public void ApplyDispatchBehavior (System.ServiceModel.Description.ServiceDescription serviceDescription, System.ServiceModel.ServiceHostBase serviceHostBase);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void ApplyDispatchBehavior(class System.ServiceModel.Description.ServiceDescription serviceDescription, class System.ServiceModel.ServiceHostBase serviceHostBase) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceModel.Description.IServiceBehavior.ApplyDispatchBehavior(System.ServiceModel.Description.ServiceDescription,System.ServiceModel.ServiceHostBase)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void ApplyDispatchBehavior(System::ServiceModel::Description::ServiceDescription ^ serviceDescription, System::ServiceModel::ServiceHostBase ^ serviceHostBase);" />
+      <MemberSignature Language="F#" Value="abstract member ApplyDispatchBehavior : System.ServiceModel.Description.ServiceDescription * System.ServiceModel.ServiceHostBase -&gt; unit" Usage="iServiceBehavior.ApplyDispatchBehavior (serviceDescription, serviceHostBase)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceModel</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="serviceDescription" Type="System.ServiceModel.Description.ServiceDescription" />
+        <Parameter Name="serviceHostBase" Type="System.ServiceModel.ServiceHostBase" />
+      </Parameters>
+      <Docs>
+        <param name="serviceDescription">Описание службы.</param>
+        <param name="serviceHostBase">Ведущее приложение, построение которого выполняется в настоящее время.</param>
+        <summary>Предоставляет возможности для изменения значений свойства времени выполнения или для вставки объектов настраиваемых расширений, например, обработчиков ошибок, перехватчиков параметров или сообщений, а также других объектов настраиваемых расширений.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализует метод <xref:System.ServiceModel.Description.IServiceBehavior.ApplyDispatchBehavior%2A> для проверки или изменения объекта <xref:System.ServiceModel.ServiceHostBase>, который создается для обеспечения поддержки определенных настраиваемых сценариев выполнения.  
+  
+> [!NOTE]
+>  Все методы <xref:System.ServiceModel.Description.IServiceBehavior> передают в качестве параметра объекты <xref:System.ServiceModel.Description.ServiceDescription?displayProperty=nameWithType> и <xref:System.ServiceModel.ServiceHostBase?displayProperty=nameWithType>. Этот параметр используется только для проверки и вставки настроек; при изменении объекта <xref:System.ServiceModel.Description.ServiceDescription>, расширение функциональности выполнения не определено.  
+  
+   
+  
+## Examples  
+ В следующем образце кода показано использование расширений функциональности службы, заданных в файле конфигурации, для вставки настраиваемого обработчика ошибок в приложение службы. В данном примере обработчик ошибок выполняет перехват всех исключений и преобразование их в настраиваемые ошибки SOAP `GreetingFault`, которые затем возвращаются клиенту.  
+  
+ Следующая реализация <xref:System.ServiceModel.Description.IServiceBehavior> не добавляет объекты параметра привязки, но добавляет настраиваемый объект <xref:System.ServiceModel.Dispatcher.IErrorHandler?displayProperty=nameWithType> в каждое свойство <xref:System.ServiceModel.Dispatcher.ChannelDispatcher.ErrorHandlers%2A?displayProperty=nameWithType> и проверяет наличие для каждой операции службы, к которой применяются расширения функциональности службы, <xref:System.ServiceModel.FaultContractAttribute?displayProperty=nameWithType> типа `GreetingFault`.  
+  
+ [!code-csharp[IErrorHandler#7](~/samples/snippets/csharp/VS_Snippets_CFX/ierrorhandler/cs/ierrorhandler.cs#7)]
+ [!code-vb[IErrorHandler#7](~/samples/snippets/visualbasic/VS_Snippets_CFX/ierrorhandler/vb/ierrorhandler.vb#7)]  
+  
+ В данном примере класс расширений функциональности также реализует <xref:System.ServiceModel.Configuration.BehaviorExtensionElement?displayProperty=nameWithType>, который включает расширения функциональности службы для вставки путем их использования в файле конфигурации приложения, как показано в следующем примере кода.  
+  
+ [!code-xml[IErrorHandler#4](~/samples/snippets/csharp/VS_Snippets_CFX/ierrorhandler/cs/hostapplication.exe.config#4)]   
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Validate">
+      <MemberSignature Language="C#" Value="public void Validate (System.ServiceModel.Description.ServiceDescription serviceDescription, System.ServiceModel.ServiceHostBase serviceHostBase);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void Validate(class System.ServiceModel.Description.ServiceDescription serviceDescription, class System.ServiceModel.ServiceHostBase serviceHostBase) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceModel.Description.IServiceBehavior.Validate(System.ServiceModel.Description.ServiceDescription,System.ServiceModel.ServiceHostBase)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Validate(System::ServiceModel::Description::ServiceDescription ^ serviceDescription, System::ServiceModel::ServiceHostBase ^ serviceHostBase);" />
+      <MemberSignature Language="F#" Value="abstract member Validate : System.ServiceModel.Description.ServiceDescription * System.ServiceModel.ServiceHostBase -&gt; unit" Usage="iServiceBehavior.Validate (serviceDescription, serviceHostBase)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceModel</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="serviceDescription" Type="System.ServiceModel.Description.ServiceDescription" />
+        <Parameter Name="serviceHostBase" Type="System.ServiceModel.ServiceHostBase" />
+      </Parameters>
+      <Docs>
+        <param name="serviceDescription">Описание службы.</param>
+        <param name="serviceHostBase">Ведущее приложение службы, которое создается в настоящий момент.</param>
+        <summary>Предоставляет возможности проверки ведущего приложения и описания службы, чтобы подтвердить готовность службы.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Можно использовать метод <xref:System.ServiceModel.Description.IServiceBehavior.Validate%2A> для подтверждения готовности текущей службы к выполнению в соответствии с заданным сценарием.  
+  
+> [!NOTE]
+>  Все методы <xref:System.ServiceModel.Description.IServiceBehavior> передают в качестве параметра объекты <xref:System.ServiceModel.Description.ServiceDescription?displayProperty=nameWithType> и <xref:System.ServiceModel.ServiceHostBase?displayProperty=nameWithType>. Этот параметр используется только для проверки и вставки настроек; при изменении объекта <xref:System.ServiceModel.Description.ServiceDescription>, расширение функциональности выполнения не определено.  
+  
+   
+  
+## Examples  
+ В следующем образце кода показано использование расширений функциональности службы, заданных в файле конфигурации, для вставки настраиваемого обработчика ошибок в приложение службы. В данном примере обработчик ошибок выполняет перехват всех исключений и преобразование их в настраиваемые ошибки SOAP `GreetingFault`, которые затем возвращаются клиенту.  
+  
+ Следующая реализация <xref:System.ServiceModel.Description.IServiceBehavior> не добавляет объекты параметра привязки, но добавляет настраиваемый объект <xref:System.ServiceModel.Dispatcher.IErrorHandler?displayProperty=nameWithType> в каждое свойство <xref:System.ServiceModel.Dispatcher.ChannelDispatcher.ErrorHandlers%2A?displayProperty=nameWithType> и проверяет наличие для каждой операции службы, к которой применяются расширения функциональности службы, <xref:System.ServiceModel.FaultContractAttribute?displayProperty=nameWithType> типа `GreetingFault`.  
+  
+ [!code-csharp[IErrorHandler#7](~/samples/snippets/csharp/VS_Snippets_CFX/ierrorhandler/cs/ierrorhandler.cs#7)]
+ [!code-vb[IErrorHandler#7](~/samples/snippets/visualbasic/VS_Snippets_CFX/ierrorhandler/vb/ierrorhandler.vb#7)]  
+  
+ В данном примере класс расширений функциональности также реализует <xref:System.ServiceModel.Configuration.BehaviorExtensionElement?displayProperty=nameWithType>, который включает расширения функциональности службы для вставки путем их использования в файле конфигурации приложения, как показано в следующем примере кода.  
+  
+ [!code-xml[IErrorHandler#4](~/samples/snippets/csharp/VS_Snippets_CFX/ierrorhandler/cs/hostapplication.exe.config#4)]   
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
