@@ -1,0 +1,437 @@
+<Type Name="ChangeMonitor" FullName="System.Runtime.Caching.ChangeMonitor">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="ed10988d07dceeceb8c3790eaec2ec2b9b04d9fa" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70577745" /></Metadata><TypeSignature Language="C#" Value="public abstract class ChangeMonitor : IDisposable" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract beforefieldinit ChangeMonitor extends System.Object implements class System.IDisposable" />
+  <TypeSignature Language="DocId" Value="T:System.Runtime.Caching.ChangeMonitor" />
+  <TypeSignature Language="VB.NET" Value="Public MustInherit Class ChangeMonitor&#xA;Implements IDisposable" />
+  <TypeSignature Language="C++ CLI" Value="public ref class ChangeMonitor abstract : IDisposable" />
+  <TypeSignature Language="F#" Value="type ChangeMonitor = class&#xA;    interface IDisposable" />
+  <AssemblyInfo>
+    <AssemblyName>System.Runtime.Caching</AssemblyName>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces>
+    <Interface>
+      <InterfaceName>System.IDisposable</InterfaceName>
+    </Interface>
+  </Interfaces>
+  <Docs>
+    <summary>Предоставляет базовый класс производного пользовательского типа, отслеживающего изменения в состоянии данных, от которых зависит элемент кэша.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Runtime.Caching.ChangeMonitor> Класс используется в качестве базового класса для производных классов мониторинга, которые являются специализированными для конкретных реализаций кэша. <xref:System.Runtime.Caching.ChangeMonitor> Экземпляр отслеживает изменения в состоянии данных, от которых зависит элемент кэша. Например, элемент может быть файлом или сущностью данных, содержимое которой кэшируется. Если файл или сущность данных обновлен, связанная запись кэша также должна быть изменена. К общим элементам, которые можно отслеживать, относятся сущности данных (поля базы данных, значения, строки или таблицы), другая запись кэша, а также файлы и атрибуты файлов.  
+  
+ Изменение зависимости — это изменение в состоянии зависимости. В типичной реализации кэша после того, <xref:System.Runtime.Caching.ChangeMonitor> как экземпляр уведомляет кэш о том, что зависимость изменилась, кэш выполняет необходимое действие, например недействительность вставленной записи кэша.  
+  
+ Производные <xref:System.Runtime.Caching.ChangeMonitor> классы могут быть настроены для отслеживания изменений зависимостей для конкретных различных хранилищ данных. Например, существуют реализации кэша для файловой системы, физической памяти или базы данных. <xref:System.Runtime.Caching.ChangeMonitor> Класс проверяет изменения, происходящие за пределами кэша, а затем оповещает кэш о произошедших изменениях.  
+  
+ Включает в себя следующие классы, производные от <xref:System.Runtime.Caching.ChangeMonitor> класса: [!INCLUDE[dnprdnshort](~/includes/dnprdnshort-md.md)]  
+  
+-   <xref:System.Runtime.Caching.CacheEntryChangeMonitor>  
+  
+-   <xref:System.Runtime.Caching.FileChangeMonitor>  
+  
+-   <xref:System.Runtime.Caching.HostFileChangeMonitor>  
+  
+-   <xref:System.Runtime.Caching.SqlChangeMonitor>  
+  
+ Каждый из этих классов работает с различными типами зависимостей. Например, производный <xref:System.Runtime.Caching.FileChangeMonitor> класс отслеживает изменения в кэше для данных файловой системы (файлов и папок), от которых зависит элемент кэша.  
+  
+ ]]></format>
+    </remarks>
+    <threadsafe>Данный тип потокобезопасен.</threadsafe>
+    <block subset="none" type="overrides"><para>При создании пользовательской реализации кэша или производного монитора изменений необходимо соблюдать определенные рекомендации. В следующем списке приводятся эти рекомендации. Дополнительные сведения см. в документации по отдельным методам или свойствам.  
+  
+— Конструктор производного класса должен задать <see cref="P:System.Runtime.Caching.ChangeMonitor.UniqueId" /> свойство, начать мониторинг и вызвать <see cref="M:System.Runtime.Caching.ChangeMonitor.InitializationComplete" /> метод перед возвратом метода. Если конструктор встречает ошибку во время конструкций и должен удалить ресурсы, <see cref="Overload:System.Runtime.Caching.ChangeMonitor.Dispose" /> конструктор может вызвать перегрузку только <see cref="M:System.Runtime.Caching.ChangeMonitor.InitializationComplete" /> после вызова <see cref="Overload:System.Runtime.Caching.ChangeMonitor.Dispose" /> метода, так как перегрузка вызовет исключение <see cref="T:System.InvalidOperationException" /> исключение, если инициализация не завершена.  
+  
+— Если изменения вносятся в данные, которые отслеживаются до завершения инициализации, конструктор должен вызвать <see cref="M:System.Runtime.Caching.ChangeMonitor.OnChanged(System.Object)" /> метод перед <see cref="M:System.Runtime.Caching.ChangeMonitor.InitializationComplete" /> вызовом метода.  
+  
+— После создания экземпляра <see cref="T:System.Runtime.Caching.ChangeMonitor" /> производного типа необходимо вставить этот монитор в пользовательскую <see cref="T:System.Runtime.Caching.ObjectCache" /> реализацию. Если вы завершили работу с монитором изменений, вызовите <see cref="Overload:System.Runtime.Caching.ChangeMonitor.Dispose" /> метод.  
+  
+— После <see cref="T:System.Runtime.Caching.ChangeMonitor" /> вставки экземпляра <see cref="T:System.Runtime.Caching.ObjectCache" /> в реализацию для <see cref="T:System.Runtime.Caching.ObjectCache" /> экземпляра требуется, чтобы монитор изменений был удален. Даже если вставка является недопустимой и вызывает исключение, <see cref="T:System.Runtime.Caching.ObjectCache" /> реализация должна <see cref="Overload:System.Runtime.Caching.ChangeMonitor.Dispose" /> вызывать перегрузку.  
+  
+— После вставки производного монитора изменений в кэш <see cref="T:System.Runtime.Caching.ObjectCache" /> реализация должна вызвать метод <see cref="M:System.Runtime.Caching.ChangeMonitor.NotifyOnChanged(System.Runtime.Caching.OnChangedCallback)" />, передав <see cref="T:System.Runtime.Caching.OnChangedCallback" /> объект. <see cref="M:System.Runtime.Caching.ChangeMonitor.NotifyOnChanged(System.Runtime.Caching.OnChangedCallback)" /> Метод можно вызывать только один раз. Если изменение зависимости уже произошло, <see cref="T:System.Runtime.Caching.OnChangedCallback" /> экземпляр будет вызываться немедленно при <see cref="M:System.Runtime.Caching.ChangeMonitor.NotifyOnChanged(System.Runtime.Caching.OnChangedCallback)" /> вызове метода. В противном случае экземпляр будет вызываться только один раз. <see cref="T:System.Runtime.Caching.OnChangedCallback" /> Этот <see cref="M:System.Runtime.Caching.ChangeMonitor.OnChanged(System.Object)" /> вызов происходит либо при вызове метода, <see cref="T:System.Runtime.Caching.ChangeMonitor" /> поскольку экземпляр обнаружил <see cref="M:System.Runtime.Caching.ChangeMonitor.Dispose" /> изменение, либо когда метод вызывается <see cref="T:System.Runtime.Caching.ChangeMonitor" />в, в зависимости от того, что происходит первым.  
+  
+— Экземпляр, предоставляемый <see cref="T:System.Runtime.Caching.ObjectCache" /> реализацией, должен удалить связанную запись кэша и указать причину с помощью <see cref="F:System.Web.Caching.CacheItemRemovedReason.DependencyChanged" /> перечисления. <see cref="T:System.Runtime.Caching.OnChangedCallback" />  
+  
+— Экземпляр может <see cref="M:System.Runtime.Caching.ChangeMonitor.OnChanged(System.Object)" /> вызывать метод либо перед тем, как реализация кэша вызывала <see cref="M:System.Runtime.Caching.ChangeMonitor.NotifyOnChanged(System.Runtime.Caching.OnChangedCallback)" /> метод или после. <see cref="T:System.Runtime.Caching.ChangeMonitor" /> <see cref="T:System.Runtime.Caching.ChangeMonitor" /> <see cref="M:System.Runtime.Caching.ChangeMonitor.NotifyOnChanged(System.Runtime.Caching.OnChangedCallback)" /> <see cref="M:System.Runtime.Caching.ChangeMonitor.NotifyOnChanged(System.Runtime.Caching.OnChangedCallback)" /> Если метод вызывается до <see cref="M:System.Runtime.Caching.ChangeMonitor.NotifyOnChanged(System.Runtime.Caching.OnChangedCallback)" /> вызова метода, базовая реализация будет уведомлять кэш о том, что это произошло, и будет активировать обратный вызов, который будет передан немедленно при вызове. <see cref="M:System.Runtime.Caching.ChangeMonitor.OnChanged(System.Object)" /> Все данные о состоянии, передаваемые в <see cref="M:System.Runtime.Caching.ChangeMonitor.OnChanged(System.Object)" /> метод, сохраняются монитором изменений, а затем передаются <see cref="M:System.Runtime.Caching.ChangeMonitor.NotifyOnChanged(System.Runtime.Caching.OnChangedCallback)" /> в метод при <see cref="M:System.Runtime.Caching.ChangeMonitor.NotifyOnChanged(System.Runtime.Caching.OnChangedCallback)" /> вызове метода.  
+  
+— Монитор изменений должен реализовывать <see cref="M:System.Runtime.Caching.ChangeMonitor.Dispose(System.Boolean)" /> метод. Дополнительные сведения см. в документации метода <see cref="M:System.Runtime.Caching.ChangeMonitor.Dispose(System.Boolean)" />.  
+  
+— Необходимо вызвать перегрузку <see cref="T:System.Runtime.Caching.ChangeMonitor" /> метода для удаления экземпляра. <see cref="M:System.Runtime.Caching.ChangeMonitor.Dispose" /> Ниже приведены правила для вызова Dispose. 
+— Перед вставкой элемента в кэш ответственность за удаление <see cref="T:System.Runtime.Caching.ChangeMonitor" /> экземпляра осуществляется вызывающей стороной.  
+  
+-После того как элемент кэша <see cref="T:System.Runtime.Caching.ChangeMonitor" /> и связанные с ним экземпляры передаются в кэш, разработчику кэша необходимо убедиться <see cref="Overload:System.Runtime.Caching.ChangeMonitor.Dispose" /> , что метод вызывается, даже если вставка завершается ошибкой.  
+  
+— После передачи элемента и связанных <see cref="T:System.Runtime.Caching.ChangeMonitor" /> с ним экземпляров в кэш вызывающий объект не должен удалять зависимость, поскольку <see cref="Overload:System.Runtime.Caching.ChangeMonitor.Dispose" /> при вызове метода вызов обрабатывается так, как если бы зависимость изменилась. В результате <see cref="M:System.Runtime.Caching.ChangeMonitor.OnChanged(System.Object)" /> метод вызывается автоматически.  
+  
+— Принимая эти правила, <see cref="Overload:System.Runtime.Caching.ChangeMonitor.Dispose" /> метод должен вызываться одним из следующих способов: 
+— Пользователи должны вызывать перегрузку метода, <see cref="M:System.Runtime.Caching.ChangeMonitor.Dispose" /> если они решили не вставлять производный экземпляр монитора изменений в кэш.  
+  
+— Если реализация пытается вставить экземпляр монитора изменений в кэш объектов, но вставка завершается неудачей, реализация кэша отвечает за вызов <see cref="M:System.Runtime.Caching.ChangeMonitor.Dispose" /> перегрузки. Когда в результате попытки вставки вызывается исключение, реализация кэша должна удалить все связанные зависимости.  
+  
+— Если запись кэша удалена, реализация кэша должна также удалить зависимость.  
+  
+— Внутренняя реализация <see cref="M:System.Runtime.Caching.ChangeMonitor.OnChanged(System.Object)" /> метода автоматически <see cref="Overload:System.Runtime.Caching.ChangeMonitor.Dispose" /> вызывает метод после вызова метода обратного вызова, зарегистрированного с помощью <see cref="M:System.Runtime.Caching.ChangeMonitor.NotifyOnChanged(System.Runtime.Caching.OnChangedCallback)" />.  
+  
+ <block subset="none" type="note"><para>  
+ Этот автоматический вызов метода Dispose во время срабатывания события происходит только в том случае, если инициализация <see cref="T:System.Runtime.Caching.ChangeMonitor" /> экземпляра была выполнена ранее.  
+  
+</para></block>  
+  
+ Когда конструктор производного монитора изменений вызывает <see cref="M:System.Runtime.Caching.ChangeMonitor.InitializationComplete" /> метод, если состояние монитора изменений уже изменилось (то есть состояние, которое отслеживается ранее, когда конструктор еще был активен) <see cref="M:System.Runtime.Caching.ChangeMonitor.InitializationComplete" /> , метод будет Автоматическое удаление монитора изменений.  
+  
+<see langword="true" /> <see cref="M:System.Runtime.Caching.ChangeMonitor.OnChanged(System.Object)" /> <see cref="T:System.Runtime.Caching.OnChangedCallback" /> — Свойство устанавливается в значение после того, как метод вызывается производным экземпляром монитора изменений, независимо от того, был ли объект задан вызовом <see cref="M:System.Runtime.Caching.ChangeMonitor.NotifyOnChanged(System.Runtime.Caching.OnChangedCallback)" /> метода. <see cref="P:System.Runtime.Caching.ChangeMonitor.HasChanged" /></para></block>
+    <altmember cref="N:System.Web.Caching" />
+    <altmember cref="T:System.Runtime.Caching.ObjectCache" />
+    <related type="Article" href="https://msdn.microsoft.com/library/ac11c8ea-df5d-4de8-b315-9ccf1048b0ce">Кэширование ASP.NET</related>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="protected ChangeMonitor ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Caching.ChangeMonitor.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Protected Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; ChangeMonitor();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Caching</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Runtime.Caching.ChangeMonitor" />. Этот конструктор вызывается конструкторами в производных классах для инициализации базового класса.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Runtime.Caching.ChangeMonitor> Класс содержит конструктор без параметров. Однако классы, наследующие от базового <xref:System.Runtime.Caching.ChangeMonitor> класса и определяющие пользовательское поведение мониторинга изменений, должны выполнять инициализацию в конструкторе. Дополнительные сведения см. в разделе Примечания для наследников.  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>Конструктор производного класса должен задать <see cref="P:System.Runtime.Caching.ChangeMonitor.UniqueId" /> свойство, начать мониторинг и <see cref="M:System.Runtime.Caching.ChangeMonitor.InitializationComplete" /> вызвать класс перед возвратом. Если зависимость изменяется до завершения инициализации (например, если зависимый ключ кэша не найден в кэше), конструктор должен вызвать <see cref="M:System.Runtime.Caching.ChangeMonitor.OnChanged(System.Object)" /> метод перед <see cref="M:System.Runtime.Caching.ChangeMonitor.InitializationComplete" /> вызовом метода. В этом случае конструктор может вызвать <see cref="M:System.Runtime.Caching.ChangeMonitor.Dispose" /> метод только <see cref="M:System.Runtime.Caching.ChangeMonitor.InitializationComplete" /> после вызова метода, так как <see cref="M:System.Runtime.Caching.ChangeMonitor.Dispose" /> метод создает исключение, если инициализация не завершена.</para></block>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="Dispose">
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Caching</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Освобождает все ресурсы, используемые текущим экземпляром класса <see cref="T:System.Runtime.Caching.ChangeMonitor" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод используется для <xref:System.Runtime.Caching.ChangeMonitor> освобождения экземпляра и связанных ресурсов. <xref:System.Runtime.Caching.ChangeMonitor.Dispose%2A> Открытый <xref:System.Runtime.Caching.ChangeMonitor.Dispose%2A> метод вызывается для координации процесса реализации с событиями жизненного цикла ключа производных классов отслеживания изменений (например, инициализации), а также для <xref:System.Runtime.Caching.ChangeMonitor> освобождения экземпляра, чтобы экземпляр мог быть собран сборщиком мусора. <xref:System.Runtime.Caching.ChangeMonitor.Dispose%2A> Метод реализуется производными классами отслеживания изменений для удаления управляемых и неуправляемых ресурсов.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="Dispose">
+      <MemberSignature Language="C#" Value="public void Dispose ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void Dispose() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Caching.ChangeMonitor.Dispose" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Dispose ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual void Dispose();" />
+      <MemberSignature Language="F#" Value="abstract member Dispose : unit -&gt; unit&#xA;override this.Dispose : unit -&gt; unit" Usage="changeMonitor.Dispose " />
+      <MemberType>Method</MemberType>
+      <Implements>
+        <InterfaceMember>M:System.IDisposable.Dispose</InterfaceMember>
+      </Implements>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Caching</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Освобождает все ресурсы, используемые текущим экземпляром класса <see cref="T:System.Runtime.Caching.ChangeMonitor" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Runtime.Caching.ChangeMonitor.Dispose%2A> Метод вызывает <xref:System.Runtime.Caching.ChangeMonitor.Dispose%2A>  метод производных классов только один раз, при первом вызове метода. Последующие вызовы <xref:System.Runtime.Caching.ChangeMonitor.Dispose%2A> метода не действуют. После вызова <xref:System.Runtime.Caching.ChangeMonitor.IsDisposed%2A> метода свойству присваивается `true`значение.  
+  
+ Чтобы удалить <xref:System.Runtime.Caching.ChangeMonitor>  экземпляр, необходимо вызвать перегрузку. <xref:System.Runtime.Caching.ChangeMonitor.Dispose%2A> Ниже приведены правила для вызова метода Dispose:  
+  
+-   Перед вставкой элемента в кэш вызывающий объект обязан ликвидировать <xref:System.Runtime.Caching.ChangeMonitor> экземпляр.  
+  
+-   После того как элемент кэша <xref:System.Runtime.Caching.ChangeMonitor> и связанные с ним экземпляры передаются в кэш, метод реализации кэша должен <xref:System.Runtime.Caching.ChangeMonitor.Dispose%2A> обеспечивать вызов, даже если вставка завершается ошибкой.  
+  
+-   После того как элемент и его <xref:System.Runtime.Caching.ChangeMonitor> связанные экземпляры передаются в кэш, вызывающий объект не должен удалять зависимость, поскольку <xref:System.Runtime.Caching.ChangeMonitor.Dispose%2A> при вызове метода вызов обрабатывается так, как если бы зависимость изменилась. В результате <xref:System.Runtime.Caching.ChangeMonitor.OnChanged%2A> метод вызывается автоматически.  
+  
+-   Принимая эти правила, <xref:System.Runtime.Caching.ChangeMonitor.Dispose%2A> метод должен вызываться одним из следующих способов:  
+  
+    -   Пользователи должны вызывать перегрузку метода, <xref:System.Runtime.Caching.ChangeMonitor.Dispose%2A> если они решили не вставлять производный экземпляр монитора изменений в кэш.  
+  
+    -   Реализация кэша отвечает за вызов <xref:System.Runtime.Caching.ChangeMonitor.Dispose%2A> перегрузки, если реализация пытается вставить экземпляр монитора изменений в кэш объектов, но вставка завершается ошибкой. Когда в результате попытки вставки вызывается исключение, реализация кэша должна удалить все связанные зависимости.  
+  
+    -   Если запись кэша удалена, реализация кэша должна также ликвидировать зависимость.  
+  
+ Внутренняя реализация <xref:System.Runtime.Caching.ChangeMonitor.OnChanged%2A> метода автоматически <xref:System.Runtime.Caching.ChangeMonitor.Dispose%2A> вызывает метод после вызова метода обратного вызова <xref:System.Runtime.Caching.ChangeMonitor.NotifyOnChanged%2A> , зарегистрированного с помощью метода.  
+  
+> [!NOTE]
+>  Автоматическое удаление во время срабатывания события происходит только в том случае, если инициализация <xref:System.Runtime.Caching.ChangeMonitor> экземпляра завершилась ранее.  
+  
+ Когда конструктор производного монитора изменений вызывает <xref:System.Runtime.Caching.ChangeMonitor.InitializationComplete%2A> метод, если состояние монитора изменений уже изменилось (то есть состояние, которое отслеживается, уже изменилось, когда конструктор еще активен <xref:System.Runtime.Caching.ChangeMonitor.InitializationComplete%2A> ), метод будет Автоматическое удаление монитора изменений.  
+  
+> [!NOTE]
+>  Пользователи не должны вызывать <xref:System.Runtime.Caching.ChangeMonitor.Dispose%2A> метод. Однако нельзя запретить пользователям вызывать метод. Таким образом, если это так, <xref:System.Runtime.Caching.ChangeMonitor.OnChanged%2A> вызывается метод. В этом случае запись кэша будет уведомлена так, как если бы зависимость была изменена.  
+  
+ Чтобы исключить производные классы от переопределяющего <xref:System.Runtime.Caching.ChangeMonitor.Dispose%2A> метода, метод не является явной реализацией интерфейса.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Инициализация не завершена в производном классе монитора изменений, который вызвал базовый метод <see cref="M:System.Runtime.Caching.ChangeMonitor.Dispose" />.</exception>
+        <altmember cref="M:System.Runtime.Caching.ChangeMonitor.OnChanged(System.Object)" />
+      </Docs>
+    </Member>
+    <Member MemberName="Dispose">
+      <MemberSignature Language="C#" Value="protected abstract void Dispose (bool disposing);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void Dispose(bool disposing) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Caching.ChangeMonitor.Dispose(System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Protected MustOverride Sub Dispose (disposing As Boolean)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; abstract void Dispose(bool disposing);" />
+      <MemberSignature Language="F#" Value="abstract member Dispose : bool -&gt; unit" Usage="changeMonitor.Dispose disposing" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Caching</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="disposing" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="disposing">Значение <see langword="true" />, чтобы освободить управляемые и неуправляемые ресурсы и любые ссылки на экземпляр <see cref="T:System.Runtime.Caching.ChangeMonitor" />; значение <see langword="false" />, чтобы освободить только неуправляемые ресурсы. Если передается значение <see langword="false" />, метод <see cref="M:System.Runtime.Caching.ChangeMonitor.Dispose(System.Boolean)" /> вызывается потоком <see langword="finalizer" />, а любые внешние управляемые ссылки в большинстве случаев становятся недействительными, так как они уже были очищены сборщиком мусора.</param>
+        <summary>Освобождает все управляемые и неуправляемые ресурсы и все ссылки на экземпляр <see cref="T:System.Runtime.Caching.ChangeMonitor" />. Эту перегрузку необходимо реализовывать в производных классах, контролирующих изменения.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если значение `disposing` равно `true`, все управляемые и неуправляемые ресурсы удаляются и все ссылки на этот объект освобождаются, чтобы производный экземпляр монитора изменений мог быть собран сборщиком мусора. Гарантируется, что базовый <xref:System.Runtime.Caching.ChangeMonitor.Dispose%2A> метод вызовет реализованный <xref:System.Runtime.Caching.ChangeMonitor.Dispose%2A> метод только один раз.  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>Монитор изменений должен реализовать <see cref="M:System.Runtime.Caching.ChangeMonitor.Dispose(System.Boolean)" /> перегрузку, чтобы освободить все управляемые и неуправляемые ресурсы, если <paramref name="disposing" /> значение равно <see langword="true" />. Перегрузка метода, <paramref name="disposing" /> имеющая значение <see langword="true" /> , вызывается только один раз, а именно, когда экземпляр удаляется в первый раз. <see cref="M:System.Runtime.Caching.ChangeMonitor.Dispose(System.Boolean)" /> Монитор изменений не должен вызывать <see cref="M:System.Runtime.Caching.ChangeMonitor.Dispose(System.Boolean)" /> перегрузку напрямую. Производный монитор изменений может вызвать открытый <see cref="M:System.Runtime.Caching.ChangeMonitor.Dispose" /> метод без параметров для базового <see cref="T:System.Runtime.Caching.ChangeMonitor" /> класса.  
+  
+Кроме того, монитор изменений может реализовать метод метода завершения. В этом случае финализатор может вызвать <see cref="M:System.Runtime.Caching.ChangeMonitor.Dispose(System.Boolean)" /> метод и передать <paramref name="disposing" /> ему значение <see langword="false" />. Однако обычно это не требуется. Мониторинг изменений зависимостей обычно выполняется службой, которая поддерживает ссылку на экземпляр монитора изменений. Ссылка не позволяет экземпляру быть собрана сборщиком мусора и, следовательно, приводит к необходимости в методе завершения. Чтобы избежать утечек памяти, при изменении <see cref="M:System.Runtime.Caching.ChangeMonitor.OnChanged(System.Object)" /> зависимости метод удаляет экземпляр монитора изменений (если инициализация не завершена).</para></block>
+      </Docs>
+    </Member>
+    <Member MemberName="HasChanged">
+      <MemberSignature Language="C#" Value="public bool HasChanged { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool HasChanged" />
+      <MemberSignature Language="DocId" Value="P:System.Runtime.Caching.ChangeMonitor.HasChanged" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property HasChanged As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool HasChanged { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.HasChanged : bool" Usage="System.Runtime.Caching.ChangeMonitor.HasChanged" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Caching</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает значение, указывающее, что состояние, отслеживаемое классом <see cref="T:System.Runtime.Caching.ChangeMonitor" />, изменилось.</summary>
+        <value>Значение <see langword="true" />, если состояние отслеживаемое экземпляром <see cref="T:System.Runtime.Caching.ChangeMonitor" />, изменилось; в противном случае — значение <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Чтобы узнать, изменилась ли зависимость, можно проверить значение <xref:System.Runtime.Caching.ChangeMonitor> этого свойства в производном классе.  
+  
+ Значение устанавливается в, `true` когда происходит изменение зависимости (то есть <xref:System.Runtime.Caching.ChangeMonitor.OnChanged%2A> при вызове метода). <xref:System.Runtime.Caching.ChangeMonitor.NotifyOnChanged%2A> <xref:System.Runtime.Caching.OnChangedCallback> `true` <xref:System.Runtime.Caching.ChangeMonitor.HasChanged%2A> После вызова метода производным классом значение свойства будет, независимо от того, был ли экземпляр уведомлен с помощью вызова метода. <xref:System.Runtime.Caching.ChangeMonitor.OnChanged%2A>  
+  
+> [!NOTE]
+>  Вызывающие объекты могут проверить <xref:System.Runtime.Caching.ChangeMonitor.HasChanged%2A> свойство, чтобы узнать, изменилась ли зависимость. Однако в многопоточной среде проще и более сопровождаемый подход заключается в вставке данных в реализацию кэша без проверки <xref:System.Runtime.Caching.ChangeMonitor.HasChanged%2A> свойства. Реализации кэша должны проверять <xref:System.Runtime.Caching.ChangeMonitor.HasChanged%2A> свойство и не должны выполнять операцию INSERT или Set, если одна или несколько связанных зависимостей уже были изменены.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.Runtime.Caching.ChangeMonitor.NotifyOnChanged(System.Runtime.Caching.OnChangedCallback)" />
+        <altmember cref="M:System.Runtime.Caching.ChangeMonitor.OnChanged(System.Object)" />
+      </Docs>
+    </Member>
+    <Member MemberName="InitializationComplete">
+      <MemberSignature Language="C#" Value="protected void InitializationComplete ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig instance void InitializationComplete() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Caching.ChangeMonitor.InitializationComplete" />
+      <MemberSignature Language="VB.NET" Value="Protected Sub InitializationComplete ()" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; void InitializationComplete();" />
+      <MemberSignature Language="F#" Value="member this.InitializationComplete : unit -&gt; unit" Usage="changeMonitor.InitializationComplete " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Caching</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Вызывается из конструктора производных классов и указывает на завершение инициализации.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если зависимость изменяется до завершения инициализации в производном классе, конструктор производного класса должен вызвать <xref:System.Runtime.Caching.ChangeMonitor.OnChanged%2A> метод.  
+  
+ При вызове <xref:System.Runtime.Caching.ChangeMonitor.HasChanged%2A> метода свойство автоматически устанавливается на `true` монитор изменений. <xref:System.Runtime.Caching.ChangeMonitor.OnChanged%2A> В результате, когда конструктор изменений монитора вызывает <xref:System.Runtime.Caching.ChangeMonitor.InitializationComplete%2A> метод, базовый класс будет автоматически <xref:System.Runtime.Caching.ChangeMonitor.Dispose%2A> вызывать метод. Если инициализация завершена, <xref:System.Runtime.Caching.ChangeMonitor.OnChanged%2A> метод автоматически удаляет производный экземпляр монитора изменений.  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>Конструктор производного класса должен вызвать базовый <see cref="M:System.Runtime.Caching.ChangeMonitor.InitializationComplete" /> метод перед возвратом из конструктора. Конструктор производного класса может вызывать <see cref="M:System.Runtime.Caching.ChangeMonitor.Dispose" /> метод только после <see cref="M:System.Runtime.Caching.ChangeMonitor.InitializationComplete" /> вызова метода, поскольку <see cref="M:System.Runtime.Caching.ChangeMonitor.Dispose" /> метод создает исключение, если инициализация не завершена.</para></block>
+      </Docs>
+    </Member>
+    <Member MemberName="IsDisposed">
+      <MemberSignature Language="C#" Value="public bool IsDisposed { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool IsDisposed" />
+      <MemberSignature Language="DocId" Value="P:System.Runtime.Caching.ChangeMonitor.IsDisposed" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property IsDisposed As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property bool IsDisposed { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.IsDisposed : bool" Usage="System.Runtime.Caching.ChangeMonitor.IsDisposed" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Caching</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает значение, указывающее, что производный экземпляр класса <see cref="T:System.Runtime.Caching.ChangeMonitor" /> удален.</summary>
+        <value>Значение <see langword="true" />, если экземпляр удален; в противном случае — значение <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойство устанавливается в `true` значение после того, как <xref:System.Runtime.Caching.ChangeMonitor.Dispose%2A> базовый метод вызывает <xref:System.Runtime.Caching.ChangeMonitor.Dispose%2A> метод в производном классе для удаления экземпляра.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="NotifyOnChanged">
+      <MemberSignature Language="C#" Value="public void NotifyOnChanged (System.Runtime.Caching.OnChangedCallback onChangedCallback);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void NotifyOnChanged(class System.Runtime.Caching.OnChangedCallback onChangedCallback) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Caching.ChangeMonitor.NotifyOnChanged(System.Runtime.Caching.OnChangedCallback)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void NotifyOnChanged(System::Runtime::Caching::OnChangedCallback ^ onChangedCallback);" />
+      <MemberSignature Language="F#" Value="member this.NotifyOnChanged : System.Runtime.Caching.OnChangedCallback -&gt; unit" Usage="changeMonitor.NotifyOnChanged onChangedCallback" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Caching</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="onChangedCallback" Type="System.Runtime.Caching.OnChangedCallback" />
+      </Parameters>
+      <Docs>
+        <param name="onChangedCallback">Ссылка на метод, вызываемый при изменении зависимости.</param>
+        <summary>Вызывается средствами реализации кэша для регистрации обратного вызова и уведомления экземпляра <see cref="T:System.Runtime.Caching.ObjectCache" /> об изменении зависимости с использованием делегата <see cref="T:System.Runtime.Caching.OnChangedCallback" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Методы реализации кэша используют этот метод для самостоятельной связи с монитором изменений. При связывании одного или нескольких мониторов изменений с элементом кэша передается <xref:System.Runtime.Caching.CacheItemPolicy> экземпляр с заполненным свойством Monitoring Monitors в элемент кэша. Средство реализации кэша, поддерживающее мониторы изменений, отвечает за перебор <xref:System.Runtime.Caching.CacheItemPolicy.ChangeMonitors%2A> свойства и <xref:System.Runtime.Caching.OnChangedCallback> регистрирует делегаты с каждым найденным монитором изменений.  
+  
+ <xref:System.Runtime.Caching.OnChangedCallback> Поскольку делегат включает необязательный параметр состояния, реализация конкретного монитора изменений может передавать дополнительные сведения о состоянии. Метод реализации кэша определяет, может ли быть выполнена явная зависимость от типа состояния, переданного пользовательским монитором изменений в качестве части обратного вызова.  
+  
+> [!NOTE]
+>  API расширяемости базового кэша не требует явной зависимости от типа состояния.  
+  
+ Реализация <xref:System.Runtime.Caching.ChangeMonitor.NotifyOnChanged%2A> метода автоматически определяет, было ли состояние монитора уже изменено при вызове метода времени <xref:System.Runtime.Caching.ChangeMonitor.NotifyOnChanged%2A> . Если свойство имеет `true`значение, метод автоматически вызывает <xref:System.Runtime.Caching.OnChangedCallback> <xref:System.Runtime.Caching.ChangeMonitor.OnChanged%2A> обработчик событий, который был зарегистрирован с помощью метода. <xref:System.Runtime.Caching.ChangeMonitor.HasChanged%2A> Это происходит потому, что из-за того, что в реализации кэша создается монитор изменений, до того момента, как реализация кэша получает монитор и сами подключаются к нему, состояние базового наблюдаемого состояния изменилось. Если состояние уже изменено, то объект, переданный в <xref:System.Runtime.Caching.ChangeMonitor.OnChanged%2A> метод, имеет значение. `null`  
+  
+ <xref:System.Runtime.Caching.ChangeMonitor.NotifyOnChanged%2A> Метод может быть вызван только один раз и будет вызывать исключение при последующих вызовах.  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException">Метод обратного вызова уже вызван.</exception>
+        <exception cref="T:System.ArgumentNullException"><paramref name="onChangedCallback" /> — <see langword="null" />.</exception>
+        <block subset="none" type="overrides"><para>1. необходимо вызвать <see cref="M:System.Runtime.Caching.ChangeMonitor.NotifyOnChanged(System.Runtime.Caching.OnChangedCallback)" /> метод, чтобы получать уведомления об изменениях зависимостей. Если изменение зависимости уже произошло, <see cref="T:System.Runtime.Caching.OnChangedCallback" /> экземпляр будет вызываться при <see cref="M:System.Runtime.Caching.ChangeMonitor.NotifyOnChanged(System.Runtime.Caching.OnChangedCallback)" /> вызове метода. В противном <see cref="T:System.Runtime.Caching.OnChangedCallback" /> случае экземпляр будет вызываться один раз, как <see cref="M:System.Runtime.Caching.ChangeMonitor.OnChanged(System.Object)" /> при вызове метода, так и <see cref="M:System.Runtime.Caching.ChangeMonitor.Dispose" /> при вызове метода, в зависимости от того, что происходит первым. <see cref="T:System.Runtime.Caching.OnChangedCallback" /> Экземпляр, предоставляемый реализацией кэша, должен удалить запись кэша и, если она запрошена вызывающим кэшем, вызвать необходимое изменение или обновить событие обратно в исходный вызывающий объект кэша.  
+  
+2.  Реализация кэша объектов должна удалить запись кэша, связанную с изменением зависимости.</para></block>
+        <altmember cref="M:System.Runtime.Caching.ChangeMonitor.OnChanged(System.Object)" />
+      </Docs>
+    </Member>
+    <Member MemberName="OnChanged">
+      <MemberSignature Language="C#" Value="protected void OnChanged (object state);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig instance void OnChanged(object state) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Caching.ChangeMonitor.OnChanged(System.Object)" />
+      <MemberSignature Language="VB.NET" Value="Protected Sub OnChanged (state As Object)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; void OnChanged(System::Object ^ state);" />
+      <MemberSignature Language="F#" Value="member this.OnChanged : obj -&gt; unit" Usage="changeMonitor.OnChanged state" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Caching</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="state" Type="System.Object" />
+      </Parameters>
+      <Docs>
+        <param name="state">Данные для события изменения. Это значение может быть равно <see langword="null" />.</param>
+        <summary>Вызывается производными классами для создания события при изменении зависимости.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Как правило, <xref:System.Runtime.Caching.ChangeMonitor.OnChanged%2A> метод вызывается, когда происходят изменения зависимостей. <xref:System.Runtime.Caching.ChangeMonitor.OnChanged%2A> Метод также вызывается при удалении экземпляра монитора изменений, но реализация происходит только в том случае, если обратный вызов еще не был вызван.  
+  
+ Если метод вызывается <xref:System.Runtime.Caching.ChangeMonitor.NotifyOnChanged%2A> до вызова метода, данные о состоянии <xref:System.Runtime.Caching.ChangeMonitor.OnChanged%2A> из вызова метода сохраняются реализацией кэша. <xref:System.Runtime.Caching.ChangeMonitor.OnChanged%2A> Кроме того, обратный вызов <xref:System.Runtime.Caching.OnChangedCallback> метода вызывается немедленно <xref:System.Runtime.Caching.ChangeMonitor.NotifyOnChanged%2A> при вызове метода.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="Overload:System.Runtime.Caching.ChangeMonitor.Dispose" />
+        <altmember cref="M:System.Runtime.Caching.ChangeMonitor.NotifyOnChanged(System.Runtime.Caching.OnChangedCallback)" />
+        <altmember cref="P:System.Runtime.Caching.ChangeMonitor.HasChanged" />
+      </Docs>
+    </Member>
+    <Member MemberName="UniqueId">
+      <MemberSignature Language="C#" Value="public abstract string UniqueId { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string UniqueId" />
+      <MemberSignature Language="DocId" Value="P:System.Runtime.Caching.ChangeMonitor.UniqueId" />
+      <MemberSignature Language="VB.NET" Value="Public MustOverride ReadOnly Property UniqueId As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; abstract property System::String ^ UniqueId { System::String ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.UniqueId : string" Usage="System.Runtime.Caching.ChangeMonitor.UniqueId" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Caching</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает значение, представляющее экземпляр класса <see cref="T:System.Runtime.Caching.ChangeMonitor" />.</summary>
+        <value>Идентификатор экземпляра монитора изменений.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение свойства обычно состоит из Объединенных строковых данных, которые однозначно идентифицируют данные, отслеживаемые <xref:System.Runtime.Caching.ChangeMonitor> экземпляром. <xref:System.Runtime.Caching.ChangeMonitor.UniqueId%2A> Значением <xref:System.Runtime.Caching.ChangeMonitor.UniqueId%2A> свойства является строка. Значение строки используется для присвоения уникального идентификатора <xref:System.Runtime.Caching.ChangeMonitor> экземпляра.  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>Переопределяя свойство, можно определить пользовательскую реализацию для строкового значения свойства, чтобы назначить ей уникальный идентификатор.</para></block>
+        <block subset="none" type="overrides"><para>В производных классах необходимо задать значение свойства в конструкторе.</para></block>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

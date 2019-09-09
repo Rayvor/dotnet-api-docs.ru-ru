@@ -1,0 +1,394 @@
+<Type Name="SpeakProgressEventArgs" FullName="System.Speech.Synthesis.SpeakProgressEventArgs">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="14a63a784adf4b871867f9253662cb34de5e6479" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70628576" /></Metadata><TypeSignature Language="C#" Value="public class SpeakProgressEventArgs : System.Speech.Synthesis.PromptEventArgs" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit SpeakProgressEventArgs extends System.Speech.Synthesis.PromptEventArgs" />
+  <TypeSignature Language="DocId" Value="T:System.Speech.Synthesis.SpeakProgressEventArgs" />
+  <TypeSignature Language="VB.NET" Value="Public Class SpeakProgressEventArgs&#xA;Inherits PromptEventArgs" />
+  <TypeSignature Language="C++ CLI" Value="public ref class SpeakProgressEventArgs : System::Speech::Synthesis::PromptEventArgs" />
+  <TypeSignature Language="F#" Value="type SpeakProgressEventArgs = class&#xA;    inherit PromptEventArgs" />
+  <AssemblyInfo>
+    <AssemblyName>System.Speech</AssemblyName>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Speech.Synthesis.PromptEventArgs</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>Возвращает данные из события <see cref="E:System.Speech.Synthesis.SpeechSynthesizer.SpeakProgress" />.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Экземпляр <xref:System.Speech.Synthesis.SpeakProgressEventArgs> создается, <xref:System.Speech.Synthesis.SpeechSynthesizer> когда объект вызывает <xref:System.Speech.Synthesis.SpeechSynthesizer.SpeakProgress> событие. <xref:System.Speech.Synthesis.SpeechSynthesizer.SpeakAsync%2A> <xref:System.Speech.Synthesis.SpeechSynthesizer.Speak%2A> <xref:System.Speech.Synthesis.SpeechSynthesizer.SpeakSsmlAsync%2A> <xref:System.Speech.Synthesis.SpeechSynthesizer.SpeakSsml%2A>Вызывает это событие для каждого нового слова, которое оно говорит в запросе, используя любой из методов,, или. <xref:System.Speech.Synthesis.SpeechSynthesizer>  
+  
+ Возвращаемые данные основаны на языке разметки распознавания речи (SSML), создаваемом кодом. Значения, возвращаемые <xref:System.Speech.Synthesis.SpeakProgressEventArgs.CharacterCount%2A> для включения пробелов и символов и содержимого тегов SSML, созданных кодом.  
+  
+   
+  
+## Examples  
+ В следующем примере показаны сведения, доступные в <xref:System.Speech.Synthesis.SpeakProgressEventArgs>. Обратите внимание <xref:System.Speech.Synthesis.PromptBuilder.StartParagraph%2A>на <xref:System.Speech.Synthesis.PromptBuilder.EndParagraph%2A>то <xref:System.Speech.Synthesis.PromptBuilder.StartSentence%2A> <xref:System.Speech.Synthesis.PromptBuilder.EndSentence%2A>  **\<**  **\<, как**методы, **, \<** и влияют на, добавив p >,/p >, s > и <xref:System.Speech.Synthesis.SpeakProgressEventArgs.CharacterCount%2A> /s > тегами для созданного SSML.  **\<** Кроме того, в выходных данных для «30%» есть две записи, по одной для каждого слова, чтобы обговаривать эту строку (тридцать процентов). <xref:System.Speech.Synthesis.SpeakProgressEventArgs.CharacterCount%2A> И <xref:System.Speech.Synthesis.SpeakProgressEventArgs.CharacterPosition%2A>  одинаковы для каждой записи и представляют символы «30%. Однако изменения отражать слова «тридцать» и «PERCENT»  <xref:System.Speech.Synthesis.SpeechSynthesizer> .  <xref:System.Speech.Synthesis.SpeakProgressEventArgs.AudioPosition%2A>  
+  
+```csharp  
+using System;  
+using System.Speech.Synthesis;  
+  
+namespace SampleSynthesis  
+{  
+  class Program  
+  {  
+    static void Main(string[] args)  
+    {  
+  
+      // Initialize a new instance of the SpeechSynthesizer.  
+      using (SpeechSynthesizer synth = new SpeechSynthesizer())  
+      {  
+  
+        // Configure the audio output.   
+        synth.SetOutputToWaveFile(@"C:\test\weather.wav");  
+  
+        // Create a SoundPlayer instance to play the output audio file.  
+        System.Media.SoundPlayer m_SoundPlayer =  
+          new System.Media.SoundPlayer(@"C:\test\weather.wav");  
+  
+        // Build a prompt containing a paragraph and two sentences.  
+        PromptBuilder builder = new PromptBuilder(  
+          new System.Globalization.CultureInfo("en-US"));  
+        builder.StartParagraph();  
+        builder.StartSentence();  
+        builder.AppendText(  
+          "The weather forecast for today is partly cloudy with some sun breaks.");  
+        builder.EndSentence();  
+        builder.StartSentence();  
+        builder.AppendText(  
+          "Tonight's weather will be cloudy with a 30% chance of showers.");  
+        builder.EndSentence();  
+        builder.EndParagraph();  
+  
+        // Add a handler for the SpeakProgress event.  
+        synth.SpeakProgress +=  
+          new EventHandler<SpeakProgressEventArgs>(synth_SpeakProgress);  
+  
+        // Speak the prompt and play back the output file.  
+        synth.Speak(builder);  
+        m_SoundPlayer.Play();  
+      }  
+  
+      Console.WriteLine();  
+      Console.WriteLine("Press any key to exit...");  
+      Console.ReadKey();  
+    }  
+  
+    // Write each word and its character position to the console.  
+    static void synth_SpeakProgress(object sender, SpeakProgressEventArgs e)  
+    {  
+      Console.WriteLine("CharPos: {0}   CharCount: {1}   AudioPos: {2}    \"{3}\"",  
+        e.CharacterPosition, e.CharacterCount, e.AudioPosition, e.Text);  
+    }  
+  }  
+}  
+  
+```  
+  
+ ]]></format>
+    </remarks>
+  </Docs>
+  <Members>
+    <Member MemberName="AudioPosition">
+      <MemberSignature Language="C#" Value="public TimeSpan AudioPosition { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance valuetype System.TimeSpan AudioPosition" />
+      <MemberSignature Language="DocId" Value="P:System.Speech.Synthesis.SpeakProgressEventArgs.AudioPosition" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property AudioPosition As TimeSpan" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property TimeSpan AudioPosition { TimeSpan get(); };" />
+      <MemberSignature Language="F#" Value="member this.AudioPosition : TimeSpan" Usage="System.Speech.Synthesis.SpeakProgressEventArgs.AudioPosition" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.TimeSpan</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает положение события в аудио.</summary>
+        <value>Возвращает позицию события в звуковом выводном потоке.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Параметр <xref:System.Speech.Synthesis.SpeechSynthesizer> нормализует числа в слова, соответствующие тому, как будет проголосовать число. Например, синтезатор говорит о числе "4003" как "4003". Он создает <xref:System.Speech.Synthesis.SpeechSynthesizer.SpeakProgress> событие для каждого произнесенного слова и <xref:System.Speech.Synthesis.SpeakProgressEventArgs.AudioPosition%2A> возвращает для каждого слова.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CharacterCount">
+      <MemberSignature Language="C#" Value="public int CharacterCount { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 CharacterCount" />
+      <MemberSignature Language="DocId" Value="P:System.Speech.Synthesis.SpeakProgressEventArgs.CharacterCount" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property CharacterCount As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int CharacterCount { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.CharacterCount : int" Usage="System.Speech.Synthesis.SpeakProgressEventArgs.CharacterCount" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает количество символов в слове, которое было произнесено непосредственно перед возникновением события.</summary>
+        <value>Возвращает количество символов в слове, которое было произнесено непосредственно перед возникновением события.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Параметр <xref:System.Speech.Synthesis.SpeechSynthesizer> нормализует числа в слова, соответствующие тому, как будет проголосовать число. Например, синтезатор говорит о числе "4003" как "4003". Он создает <xref:System.Speech.Synthesis.SpeechSynthesizer.SpeakProgress> событие для каждого произнесенного слова. <xref:System.Speech.Synthesis.SpeakProgressEventArgs.CharacterCount%2A> Однако свойство для каждого из этих трех слов одинаково. Это число символов в номере "4003" в тексте запроса, в данном случае четыре.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CharacterPosition">
+      <MemberSignature Language="C#" Value="public int CharacterPosition { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 CharacterPosition" />
+      <MemberSignature Language="DocId" Value="P:System.Speech.Synthesis.SpeakProgressEventArgs.CharacterPosition" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property CharacterPosition As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int CharacterPosition { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.CharacterPosition : int" Usage="System.Speech.Synthesis.SpeakProgressEventArgs.CharacterPosition" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает число символов и и пробелов с начала запроса до позиции перед первой буквой только что произнесенного слова.</summary>
+        <value>Возвращает число символов и и пробелов с начала запроса до позиции перед первой буквой только что произнесенного слова.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Speech.Synthesis.SpeakProgressEventArgs.CharacterPosition%2A> Включает в себя количество символов в XML-тегах, включая заключенные в них квадратные скобки. <xref:System.Speech.Synthesis.PromptBuilder.AppendText%2A>При использовании любого из методов <xref:System.Speech.Synthesis.PromptBuilder.AppendTextWithHint%2A>, <xref:System.Speech.Synthesis.PromptBuilder.AppendTextWithAlias%2A> <xref:System.Speech.Synthesis.PromptBuilder.AppendSsmlMarkup%2A>,, или <xref:System.Speech.Synthesis.PromptBuilder.AppendTextWithPronunciation%2A> , содержимое добавляется в запрос SSML, содержащий открывающие и закрывающие `speak` элементы. Открывающий `speak` элемент добавляет смещение 82 символов и пробелов <xref:System.Speech.Synthesis.SpeakProgressEventArgs.CharacterPosition%2A> ко всем словам и буквам в приглашении. Например, в следующем фрагменте кода <xref:System.Speech.Synthesis.SpeakProgressEventArgs.CharacterPosition%2A> первое слово, "this", равно 82.  
+  
+```csharp  
+builder.AppendText("This is a test");  
+Synthesizer.Speak(builder);  
+```  
+  
+ В приведенном выше примере <xref:System.Speech.Synthesis.SpeakProgressEventArgs.CharacterPosition%2A> слово «Test» имеет значение 92. В следующем фрагменте кода <xref:System.Speech.Synthesis.SpeakProgressEventArgs.CharacterPosition%2A> слово "Test" содержит 23 символа выше (115), поскольку открывающий  **\<Prosody шаг = "High" >ный** тег содержит 23 символа и пробелы (два escape-символа "\\ "не учитываются).  
+  
+```csharp  
+builder.AppendSsmlMarkup("This is a <prosody pitch=\"high\"> test </prosody>.");   
+Synthesizer.Speak(builder);  
+```  
+  
+ Если вы используете <xref:System.Speech.Synthesis.PromptBuilder.AppendSsml%2A> методы для добавления содержимого в приглашение путем указания файла, то открывающее `xml` объявление и `speak` элементы в файле не используются и не учитываются. Первый символ в файле после открывающего `speak` тега будет находиться в позиции 82, если это первое содержимое запроса.  
+  
+ В отличие от этого, строковый параметр <xref:System.Speech.Synthesis.SpeechSynthesizer.Speak%2A> метода не добавляется в запрос SSML перед обречием. Таким образом, <xref:System.Speech.Synthesis.SpeakProgressEventArgs.CharacterPosition%2A> первое слово «this» в следующем фрагменте кода равно нулю.  
+  
+```csharp  
+Synthesizer.Speak("This is a test.");  
+```  
+  
+ Параметр <xref:System.Speech.Synthesis.SpeechSynthesizer> нормализует числа в слова, соответствующие тому, как будет проголосовать число. Например, синтезатор говорит о числе "4003" как "4003". Он создает <xref:System.Speech.Synthesis.SpeechSynthesizer.SpeakProgress> событие для каждого из трех слов. <xref:System.Speech.Synthesis.SpeakProgressEventArgs.CharacterPosition%2A> Однако свойство для каждого из этих трех слов одинаково. Это расположение перед первым символом числа "4003" в тексте запроса.  
+  
+   
+  
+## Examples  
+ В следующем примере создается <xref:System.Speech.Synthesis.PromptBuilder> и добавляется содержимое SSML XML-файла с помощью. <xref:System.Xml.XmlReader> В примере речь записывается в WAV-файл для воспроизведения. Содержимое XML-файла, содержащего SSML, отображается под примером кода.  
+  
+```csharp  
+using System;  
+using System.Xml;  
+using System.IO;  
+using System.Speech.Synthesis;  
+  
+namespace SampleSynthesis  
+{  
+  class Program  
+  {  
+    static void Main(string[] args)  
+    {  
+  
+      // Initialize a new instance of the SpeechSynthesizer.  
+      using (SpeechSynthesizer synth = new SpeechSynthesizer())  
+      {  
+  
+        // Configure the audio output.   
+        synth.SetOutputToDefaultAudioDevice();  
+  
+        // Create a path to the file that contains SSML.  
+        string weatherFile = Path.GetFullPath("c:\\test\\Weather.ssml");  
+  
+        // Create an XML Reader from the file, create a PromptBuilder and   
+        // append the XmlReader.  
+        PromptBuilder builder = new PromptBuilder();  
+  
+        if (File.Exists(weatherFile))  
+        {  
+          XmlReader reader = XmlReader.Create(weatherFile);  
+          builder.AppendSsml(reader);  
+          reader.Close();  
+        }  
+  
+        // Add a handler for the SpeakProgress event.  
+        synth.SpeakProgress +=  
+          new EventHandler<SpeakProgressEventArgs>(synth_SpeakProgress);  
+  
+        // Speak the prompt and play back the output file.  
+        synth.Speak(builder);  
+      }  
+  
+      Console.WriteLine();  
+      Console.WriteLine("Press any key to exit...");  
+      Console.ReadKey();  
+    }  
+  
+    // Write each word and its character position to the console.  
+    static void synth_SpeakProgress(object sender, SpeakProgressEventArgs e)  
+    {  
+      Console.WriteLine("Speak progress: {0} {1}",  
+        e.CharacterPosition, e.Text);  
+    }  
+  }  
+}  
+  
+```  
+  
+```xml  
+<!-- The following are the contents of the file Weather.ssml.   
+Note that because of the <p> tag and the space that follows it,   
+that the character position of the first word "The" will be 86. -->  
+  
+<?xml version="1.0" encoding="ISO-8859-1"?>  
+<speak version="1.0"  
+ xmlns="http://www.w3.org/2001/10/synthesis"  
+ xml:lang="en-US">  
+  
+  <p> The weather forecast for today is partly cloudy with   
+some sun breaks. </p>  
+  
+  <break strength="medium" />  
+  
+  <p> Tonight's weather will be cloudy with a 30% chance of   
+showers. </p>  
+  
+</speak>  
+  
+```  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Text">
+      <MemberSignature Language="C#" Value="public string Text { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string Text" />
+      <MemberSignature Language="DocId" Value="P:System.Speech.Synthesis.SpeakProgressEventArgs.Text" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property Text As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::String ^ Text { System::String ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Text : string" Usage="System.Speech.Synthesis.SpeakProgressEventArgs.Text" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>текст, который был только что произнесен, когда было создано событие.</summary>
+        <value>Возвращает текст, который был только что произнесен, когда было создано событие.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Параметр <xref:System.Speech.Synthesis.SpeechSynthesizer> нормализует числа в слова, соответствующие тому, как будет проголосовать число. Например, синтезатор говорит о числе "4003" как "4003". Он создает <xref:System.Speech.Synthesis.SpeechSynthesizer.SpeakProgress> событие для каждого произнесенного слова. <xref:System.Speech.Synthesis.SpeakProgressEventArgs.Text%2A> Однако свойство для каждого из этих трех слов одинаково. Это текст "4003" из командной строки.  
+  
+   
+  
+## Examples  
+ В следующем примере показано, как <xref:System.Speech.Synthesis.SpeechSynthesizer.SpeakProgress> событие <xref:System.Speech.Synthesis.SpeakProgressEventArgs.CharacterPosition%2A> сообщает о свойствах <xref:System.Speech.Synthesis.SpeakProgressEventArgs.Text%2A> и для строк, содержащих числа.  
+  
+```csharp  
+using System;  
+using System.Xml;  
+using System.IO;  
+using System.Speech.Synthesis;  
+  
+namespace SampleSynthesis  
+{  
+  class Program  
+  {  
+    static void Main(string[] args)  
+    {  
+  
+      // Initialize a new instance of the SpeechSynthesizer.  
+      using (SpeechSynthesizer synth = new SpeechSynthesizer())  
+      {  
+  
+        // Configure the audio output.   
+        synth.SetOutputToDefaultAudioDevice();  
+  
+        // Create an XML Reader from the file, create a PromptBuilder and   
+        // append the XmlReader.  
+        PromptBuilder builder = new PromptBuilder();  
+        builder.AppendText("4003");  
+  
+        // Add a handler for the SpeakProgress event.  
+        synth.SpeakProgress +=  
+          new EventHandler<SpeakProgressEventArgs>(synth_SpeakProgress);  
+  
+        // Speak the prompt and play back the output file.  
+        synth.Speak(builder);  
+      }  
+  
+      Console.WriteLine();  
+      Console.WriteLine("Press any key to exit...");  
+      Console.ReadKey();  
+    }  
+  
+    // Write each word and its character position to the console.  
+    static void synth_SpeakProgress(object sender, SpeakProgressEventArgs e)  
+    {  
+      Console.WriteLine("Speak progress -    Character position:  {0}    Text:  {1}",  
+        e.CharacterPosition, e.Text);  
+    }  
+  }  
+}  
+```  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

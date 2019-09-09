@@ -1,0 +1,331 @@
+<Type Name="PageStatePersister" FullName="System.Web.UI.PageStatePersister">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="f49b7ecb1ed06ac52d52e6f52f00af58a0317546" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70668506" /></Metadata><TypeSignature Language="C#" Value="public abstract class PageStatePersister" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract beforefieldinit PageStatePersister extends System.Object" />
+  <TypeSignature Language="DocId" Value="T:System.Web.UI.PageStatePersister" />
+  <TypeSignature Language="VB.NET" Value="Public MustInherit Class PageStatePersister" />
+  <TypeSignature Language="C++ CLI" Value="public ref class PageStatePersister abstract" />
+  <TypeSignature Language="F#" Value="type PageStatePersister = class" />
+  <AssemblyInfo>
+    <AssemblyName>System.Web</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>Предоставляет базовую функциональность для механизмов сохранения состояния представления ASP.NET.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ HTTP-запросы и ответы по своей природе не имеют состояния. Чтобы сохранить сведения о состоянии между HTTP-запросами, страницы сервера ASP.NET <xref:System.Web.UI.Page> могут хранить состояние. Это состояние, называемое состоянием представления, состоит из параметров страницы и элементов управления и данных, которые делают страницу и элементы управления такими же, как если бы пользователь видел и взаимодействовал с последним циклическим обменом с сервером. Существует несколько механизмов хранения состояния представления между последовательными запросами к одной и той же странице. Абстрактный <xref:System.Web.UI.PageStatePersister> класс представляет базовый класс для этих механизмов хранения сведений о состоянии.  
+  
+ Механизм сохраняемости состояния представления по умолчанию в ASP.NET заключается в поддержке сведений о состоянии в виде строки в кодировке Base64 в скрытом HTML-элементе (элемент с `type` атрибутом, `"hidden"`установленным в) на странице. Страница ASP.NET использует <xref:System.Web.UI.HiddenFieldPageStatePersister> объект для выполнения этой работы, <xref:System.Web.UI.IStateFormatter> используя экземпляр для сериализации и десериализации сведений о состоянии объекта. Кроме того, состояние представления для страниц можно сохранить в <xref:System.Web.HttpContext.Session%2A> объекте на сервере <xref:System.Web.UI.SessionPageStatePersister> с помощью класса для мобильных клиентов с ограниченной пропускной способностью и ресурсами. В некоторых случаях сохранение состояния просмотра можно отключить совсем. В результате это приведет к тому, что иногда страницы и элементы управления, зависящие от сохраняемости состояния, работают неправильно. Дополнительные сведения об управлении состоянием страницы и состоянии представления см. в разделе [ASP.NET State Management Overview](https://msdn.microsoft.com/library/0218d965-5d30-445b-b6a6-8870e70e63ce(v=vs.100)).  
+  
+ При написании элементов управления можно хранить сведения о состоянии для элементов управления в <xref:System.Web.UI.Control.ViewState%2A> словаре, который <xref:System.Web.UI.StateBag> является объектом. Разработчик может извлечь состояние элемента управления с помощью <xref:System.Web.UI.PageStatePersister.ControlState%2A> свойства. Вы назначаете <xref:System.Web.UI.Control.ViewState%2A> свойству ключи и значения, <xref:System.Web.UI.Page> и объект сериализует сведения о состоянии между запросами. Для выполнения пользовательской обработки состояния в элементе управления Переопределите <xref:System.Web.UI.Control.LoadViewState%2A> методы и. <xref:System.Web.UI.Control.SaveViewState%2A> Сведения о состоянии, хранящиеся в этом словаре, теряются, если состояние представления отключено разработчиком страницы. Чтобы устранить эту проблемы, в ASP.NET версии 2,0 можно хранить критически важные сведения о состоянии в отдельном объекте, который называется состоянием элемента управления. На объект состояния элемента управления не влияет состояние представления, отключенное разработчиком страницы. Для хранения сведений о состоянии в объекте состояния элемента управления требуется, чтобы элемент <xref:System.Web.UI.Control.LoadControlState%2A> управления <xref:System.Web.UI.Control.SaveControlState%2A> переопределял методы и, а также что элемент управления должен быть зарегистрирован для хранения сведений о состоянии в состоянии элемента управления каждый раз при инициализации элемента управления. Можно зарегистрировать элемент управления для использования состояния элемента управления, переопределив <xref:System.Web.UI.Control.OnInit%2A> метод и <xref:System.Web.UI.Page.RegisterRequiresControlState%2A> вызвав метод. Дополнительные сведения об использовании <xref:System.Web.UI.Control.ViewState%2A> свойства и состояния элемента управления при разработке элементов управления см. в разделе [Разработка пользовательских серверных элементов управления ASP.NET](https://msdn.microsoft.com/library/fbe26c16-cff4-4089-b3dd-877411f0c0ef).  
+  
+ Чтобы поддерживать состояние представления на клиентах, которые не поддерживают существующие механизмы сохранения состояния представления, можно расширить <xref:System.Web.UI.PageStatePersister> класс, чтобы ввести собственные методы сохранения состояния представления, а также использовать адаптеры страниц для настройки приложения ASP.NET. использование различных механизмов сохранения состояния представления в зависимости от типа клиента, на котором обслуживается страница. Классы, производные от <xref:System.Web.UI.PageStatePersister> класса, должны переопределять абстрактный <xref:System.Web.UI.PageStatePersister.Save%2A> метод для хранения состояния представления и состояния элемента управления в среднем хранилище, а также <xref:System.Web.UI.PageStatePersister.Load%2A> переопределять метод, чтобы извлекать его. Если необходимо сериализовать состояние представления и состояние элемента управления в строку, можно использовать <xref:System.Web.UI.IStateFormatter> объект, доступ к которому осуществляется <xref:System.Web.UI.PageStatePersister.StateFormatter%2A> с помощью свойства. Она эффективно сериализует и десериализует сведения о состоянии объекта в строку в кодировке Base64. Можно также переопределить <xref:System.Web.UI.PageStatePersister.StateFormatter%2A> свойство, чтобы предоставить собственный механизм сериализации состояния объекта.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как создать <xref:System.Web.UI.PageStatePersister> объект, который сохраняет представление и состояние элемента управления на веб-сервере. В `StreamPageStatePersister` этом примере показано, как <xref:System.Web.UI.PageStatePersister.Load%2A> переопределить <xref:System.Web.UI.PageStatePersister.Save%2A> методы и для извлечения и сохранения сведений о состоянии представления. Поскольку механизмы сохранения состояния связаны с адаптивной визуализацией и возможностями клиента, `MyPageAdapter` класс предоставляется для `StreamPageStatePersister` активации приложения ASP.NET. Наконец, предоставляется файл возможностей браузера (Browser) для включения `MyPageAdapter` адаптера для определенного класса клиентов (в данном случае это веб-браузер по умолчанию).  
+  
+ [!code-csharp[Samples.AspNet.Alexkr.TextFilePageStatePersister_1#1](~/samples/snippets/csharp/VS_Snippets_WebNet/Samples.AspNet.Alexkr.TextFilePageStatePersister_1/CS/textfilepagestatepersister.cs#1)]
+ [!code-vb[Samples.AspNet.Alexkr.TextFilePageStatePersister_1#1](~/samples/snippets/visualbasic/VS_Snippets_WebNet/Samples.AspNet.Alexkr.TextFilePageStatePersister_1/VB/textfilepagestatepersister.vb#1)]  
+  
+ В следующем примере кода показано, как создать <xref:System.Web.UI.Adapters.PageAdapter> класс, возвращающий `StreamPageStatePersister`экземпляр, который используется для сохранения представления и состояния элемента управления для веб-страницы ASP.NET.  
+  
+ [!code-csharp[Samples.AspNet.Alexkr.TextFilePageStatePersister_1#5](~/samples/snippets/csharp/VS_Snippets_WebNet/Samples.AspNet.Alexkr.TextFilePageStatePersister_1/CS/mypageadapter.cs#5)]
+ [!code-vb[Samples.AspNet.Alexkr.TextFilePageStatePersister_1#5](~/samples/snippets/visualbasic/VS_Snippets_WebNet/Samples.AspNet.Alexkr.TextFilePageStatePersister_1/VB/mypageadapter.vb#5)]  
+  
+ Скомпилируйте эти два класса в сборку, которую можно использовать для запуска примера, используя следующую командную строку компилятора. Убедитесь, что скомпилированная сборка находится в каталоге \bin под корнем приложения ASP.NET.  
+  
+ [!code-csharp[Samples.AspNet.Alexkr.TextFilePageStatePersister_1#6](~/samples/snippets/csharp/VS_Snippets_WebNet/Samples.AspNet.Alexkr.TextFilePageStatePersister_1/CS/mypageadapter.cs#6)]
+ [!code-vb[Samples.AspNet.Alexkr.TextFilePageStatePersister_1#6](~/samples/snippets/visualbasic/VS_Snippets_WebNet/Samples.AspNet.Alexkr.TextFilePageStatePersister_1/VB/mypageadapter.vb#6)]  
+  
+ Наконец, чтобы включить `MyPageAdapter` адаптер, необходимо создать каталог с именем Browsers под корнем приложения ASP.NET и включить файл. browser с информацией о конфигурации. `<refid>` Элемент в файле конфигурации указывает, что конфигурация переопределяет значения, указанные для браузера по умолчанию в файле конфигурации по умолчанию. browser. В этом примере `MyPageAdapter` используется для веб-страниц ASP.NET (где обычно не используется адаптер).  
+  
+```  
+<browsers>  
+    <browser refid="Default" >  
+        <controlAdapters>  
+            <adapter   
+                controlType="System.Web.UI.Page"                              
+                adapterType="Samples.AspNet.CS.MyPageAdapter" />  
+        </controlAdapters>  
+    </browser>  
+</browsers>  
+```  
+  
+ ]]></format>
+    </remarks>
+    <altmember cref="T:System.Web.UI.ObjectStateFormatter" />
+    <altmember cref="T:System.Web.UI.LosFormatter" />
+    <altmember cref="T:System.Web.UI.Pair" />
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="protected PageStatePersister (System.Web.UI.Page page);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig specialname rtspecialname instance void .ctor(class System.Web.UI.Page page) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.UI.PageStatePersister.#ctor(System.Web.UI.Page)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; PageStatePersister(System::Web::UI::Page ^ page);" />
+      <MemberSignature Language="F#" Value="new System.Web.UI.PageStatePersister : System.Web.UI.Page -&gt; System.Web.UI.PageStatePersister" Usage="new System.Web.UI.PageStatePersister page" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="page" Type="System.Web.UI.Page" />
+      </Parameters>
+      <Docs>
+        <param name="page">Объект <see cref="T:System.Web.UI.Page" />, для которого создается механизм сохранения состояния просмотра.</param>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Web.UI.PageStatePersister" />.</summary>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentNullException">Параметр <paramref name="page" /> имеет значение <see langword="null" />.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="ControlState">
+      <MemberSignature Language="C#" Value="public object ControlState { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance object ControlState" />
+      <MemberSignature Language="DocId" Value="P:System.Web.UI.PageStatePersister.ControlState" />
+      <MemberSignature Language="VB.NET" Value="Public Property ControlState As Object" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Object ^ ControlState { System::Object ^ get(); void set(System::Object ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.ControlState : obj with get, set" Usage="System.Web.UI.PageStatePersister.ControlState" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>set: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Object</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает объект, представляющий данные, которые элементы управления, содержащиеся в текущем объекте <see cref="T:System.Web.UI.Page" />, используют для сохранения в HTTP-запросах к веб-серверу.</summary>
+        <value>Объект, содержащий данные состояния представления.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Состояние элемента управления — это объект, состоящий из данных состояния критического представления, которые должны функционировать элементами управления веб-сервера и который содержится в отдельном объекте из сведений о состоянии обычного представления. Данные о состоянии элемента управления не затрагиваются, когда состояние представления отключено на <xref:System.Web.UI.Page> уровне, но требует дополнительных шагов реализации. Дополнительные сведения об использовании <xref:System.Web.UI.Control.ViewState%2A> свойства и состояния элемента управления при разработке элементов управления см. в разделе [Разработка пользовательских серверных элементов управления ASP.NET](https://msdn.microsoft.com/library/fbe26c16-cff4-4089-b3dd-877411f0c0ef).  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как класс, производный от <xref:System.Web.UI.PageStatePersister> класса, инициализирует <xref:System.Web.UI.PageStatePersister.ControlState%2A> свойство. В этом примере <xref:System.Web.UI.PageStatePersister.ControlState%2A> свойство было назначено <xref:System.Web.UI.Pair.Second> полю <xref:System.Web.UI.Pair> объекта и сериализовано с помощью <xref:System.Web.UI.ObjectStateFormatter> класса. <xref:System.Web.UI.PageStatePersister.ControlState%2A> <xref:System.Web.UI.Pair.Second> <xref:System.Web.UI.Pair> При вызове <xref:System.Web.UI.ObjectStateFormatter> <xref:System.Web.UI.PageStatePersister.Load%2A> метода класс используется для десериализации сведений о состоянии представления и состояния элемента управления, а свойство инициализируется из поля результирующего объекта. Этот пример кода является частью большого примера, <xref:System.Web.UI.PageStatePersister> приведенного для класса.  
+  
+ [!code-csharp[Samples.AspNet.Alexkr.TextFilePageStatePersister_1#2](~/samples/snippets/csharp/VS_Snippets_WebNet/Samples.AspNet.Alexkr.TextFilePageStatePersister_1/CS/textfilepagestatepersister.cs#2)]
+ [!code-vb[Samples.AspNet.Alexkr.TextFilePageStatePersister_1#2](~/samples/snippets/visualbasic/VS_Snippets_WebNet/Samples.AspNet.Alexkr.TextFilePageStatePersister_1/VB/textfilepagestatepersister.vb#2)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Load">
+      <MemberSignature Language="C#" Value="public abstract void Load ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void Load() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.UI.PageStatePersister.Load" />
+      <MemberSignature Language="VB.NET" Value="Public MustOverride Sub Load ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; abstract void Load();" />
+      <MemberSignature Language="F#" Value="abstract member Load : unit -&gt; unit" Usage="pageStatePersister.Load " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Переопределение производными классами для десериализации и загрузки сохраненной информации о состоянии при инициализации объектом <see cref="T:System.Web.UI.Page" /> собственной иерархии элементов управления.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Классы <xref:System.Web.UI.PageStatePersister> , производные от класса, <xref:System.Web.UI.PageStatePersister.Load%2A> реализуют метод для инициализации <xref:System.Web.UI.PageStatePersister.ViewState%2A> свойств и <xref:System.Web.UI.PageStatePersister.ControlState%2A> из некоторого сохраненного формата.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как класс, производный от <xref:System.Web.UI.PageStatePersister> класса, <xref:System.Web.UI.PageStatePersister.Load%2A> реализует метод для загрузки состояния представления из среднего уровня сохраняемости. `StreamPageStatePersister` Пытается прочитать данные из потока. Он использует <xref:System.Web.UI.IStateFormatter> объект для десериализации данных состояния представления и <xref:System.Web.UI.PageStatePersister.ViewState%2A> инициализации свойства и <xref:System.Web.UI.PageStatePersister.ControlState%2A> свойства, которые страница использует для инициализации элементов управления. Этот пример кода является частью большого примера, <xref:System.Web.UI.PageStatePersister> приведенного для класса.  
+  
+ [!code-csharp[Samples.AspNet.Alexkr.TextFilePageStatePersister_1#2](~/samples/snippets/csharp/VS_Snippets_WebNet/Samples.AspNet.Alexkr.TextFilePageStatePersister_1/CS/textfilepagestatepersister.cs#2)]
+ [!code-vb[Samples.AspNet.Alexkr.TextFilePageStatePersister_1#2](~/samples/snippets/visualbasic/VS_Snippets_WebNet/Samples.AspNet.Alexkr.TextFilePageStatePersister_1/VB/textfilepagestatepersister.vb#2)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Page">
+      <MemberSignature Language="C#" Value="protected System.Web.UI.Page Page { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Web.UI.Page Page" />
+      <MemberSignature Language="DocId" Value="P:System.Web.UI.PageStatePersister.Page" />
+      <MemberSignature Language="VB.NET" Value="Protected Property Page As Page" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; property System::Web::UI::Page ^ Page { System::Web::UI::Page ^ get(); void set(System::Web::UI::Page ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.Page : System.Web.UI.Page with get, set" Usage="System.Web.UI.PageStatePersister.Page" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>set: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Web.UI.Page</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает объект <see cref="T:System.Web.UI.Page" />, для которого создается механизм сохранения состояния представления.</summary>
+        <value>Класс T:System.Workflow.ComponentModel.Design.WorkflowTheme	<see cref="T:System.Web.UI.Page" />, связанный с классом <see cref="T:System.Web.UI.PageStatePersister" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Для доступа к текущему <xref:System.Web.UI.PageStatePersister.Page%2A> <xref:System.Web.HttpContext> объекту можно использовать свойство.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Save">
+      <MemberSignature Language="C#" Value="public abstract void Save ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void Save() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.UI.PageStatePersister.Save" />
+      <MemberSignature Language="VB.NET" Value="Public MustOverride Sub Save ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; abstract void Save();" />
+      <MemberSignature Language="F#" Value="abstract member Save : unit -&gt; unit" Usage="pageStatePersister.Save " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Переопределение производными классами для сериализации сохраненных данных о состоянии при выгрузке из памяти объекта <see cref="T:System.Web.UI.Page" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Классы <xref:System.Web.UI.PageStatePersister> , производные от класса, <xref:System.Web.UI.PageStatePersister.Save%2A> реализуют метод для <xref:System.Web.UI.PageStatePersister.ViewState%2A> сохранения содержимого свойств и <xref:System.Web.UI.PageStatePersister.ControlState%2A> в среднем уровне сохраняемости.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как класс, производный от <xref:System.Web.UI.PageStatePersister> класса, <xref:System.Web.UI.PageStatePersister.Save%2A> реализует метод для сохранения состояния представления в среднем хранении. Компонент использует объект для <xref:System.Web.UI.PageStatePersister.ViewState%2A>  сериализации содержимого свойства и <xref:System.Web.UI.PageStatePersister.ControlState%2A> свойства. <xref:System.Web.UI.IStateFormatter> `StreamPageStatePersister` Этот пример кода является частью большого примера, <xref:System.Web.UI.PageStatePersister> приведенного для класса.  
+  
+ [!code-csharp[Samples.AspNet.Alexkr.TextFilePageStatePersister_1#3](~/samples/snippets/csharp/VS_Snippets_WebNet/Samples.AspNet.Alexkr.TextFilePageStatePersister_1/CS/textfilepagestatepersister.cs#3)]
+ [!code-vb[Samples.AspNet.Alexkr.TextFilePageStatePersister_1#3](~/samples/snippets/visualbasic/VS_Snippets_WebNet/Samples.AspNet.Alexkr.TextFilePageStatePersister_1/VB/textfilepagestatepersister.vb#3)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="StateFormatter">
+      <MemberSignature Language="C#" Value="protected System.Web.UI.IStateFormatter StateFormatter { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Web.UI.IStateFormatter StateFormatter" />
+      <MemberSignature Language="DocId" Value="P:System.Web.UI.PageStatePersister.StateFormatter" />
+      <MemberSignature Language="VB.NET" Value="Protected ReadOnly Property StateFormatter As IStateFormatter" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; property System::Web::UI::IStateFormatter ^ StateFormatter { System::Web::UI::IStateFormatter ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.StateFormatter : System.Web.UI.IStateFormatter" Usage="System.Web.UI.PageStatePersister.StateFormatter" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.UI.IStateFormatter</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает объект <see cref="T:System.Web.UI.IStateFormatter" />, используемый для сериализации и десериализации данных о состоянии, содержащихся в свойствах <see cref="P:System.Web.UI.PageStatePersister.ViewState" /> и <see cref="P:System.Web.UI.PageStatePersister.ControlState" /> во время вызова методов <see cref="M:System.Web.UI.PageStatePersister.Save" /> и <see cref="M:System.Web.UI.PageStatePersister.Load" />.</summary>
+        <value>Экземпляр <see cref="T:System.Web.UI.IStateFormatter" />, используемый для сериализации и десериализации состояния объекта.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Можно переопределить <xref:System.Web.UI.PageStatePersister.StateFormatter%2A> свойство, чтобы предоставить собственный модуль форматирования состояния представления.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как класс <xref:System.Web.UI.PageStatePersister> , производный от класса, получает доступ <xref:System.Web.UI.PageStatePersister.StateFormatter%2A> к свойству для получения <xref:System.Web.UI.ObjectStateFormatter> объекта <xref:System.Web.UI.IStateFormatter> , который является реализацией интерфейса по умолчанию для сериализации представления. состояние и состояние элемента управления в потоке. Этот пример кода является частью большого примера, <xref:System.Web.UI.PageStatePersister> приведенного для класса.  
+  
+ [!code-csharp[Samples.AspNet.Alexkr.TextFilePageStatePersister_1#3](~/samples/snippets/csharp/VS_Snippets_WebNet/Samples.AspNet.Alexkr.TextFilePageStatePersister_1/CS/textfilepagestatepersister.cs#3)]
+ [!code-vb[Samples.AspNet.Alexkr.TextFilePageStatePersister_1#3](~/samples/snippets/visualbasic/VS_Snippets_WebNet/Samples.AspNet.Alexkr.TextFilePageStatePersister_1/VB/textfilepagestatepersister.vb#3)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ViewState">
+      <MemberSignature Language="C#" Value="public object ViewState { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance object ViewState" />
+      <MemberSignature Language="DocId" Value="P:System.Web.UI.PageStatePersister.ViewState" />
+      <MemberSignature Language="VB.NET" Value="Public Property ViewState As Object" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Object ^ ViewState { System::Object ^ get(); void set(System::Object ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.ViewState : obj with get, set" Usage="System.Web.UI.PageStatePersister.ViewState" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>set: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Object</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает объект, представляющий данные, которые элементы управления, содержащиеся в текущем объекте <see cref="T:System.Web.UI.Page" />, используют для сохранения в HTTP-запросах к веб-серверу.</summary>
+        <value>Объект, содержащий данные состояния представления.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Состояние представления — это словарь данных о состоянии, которые должны функционировать и подготавливать элементы управления веб-сервера. Разработчики элементов управления обычно обращаются к объекту состояния представления <xref:System.Web.UI.Control.ViewState%2A> с помощью свойства. Состояние представления изменяется, если состояние представления отключено на <xref:System.Web.UI.Page> уровне, и в результате в этих сценариях элементы управления могут работать неправильно. Дополнительные сведения об использовании <xref:System.Web.UI.Control.ViewState%2A> и состоянии элемента управления при разработке элементов управления см. в разделе [Разработка пользовательских серверных элементов управления ASP.NET](https://msdn.microsoft.com/library/fbe26c16-cff4-4089-b3dd-877411f0c0ef).  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как класс, производный от <xref:System.Web.UI.PageStatePersister> класса, инициализирует <xref:System.Web.UI.PageStatePersister.ViewState%2A> свойство. <xref:System.Web.UI.PageStatePersister.ViewState%2A> В этом примере свойство было назначено <xref:System.Web.UI.Pair> <xref:System.Web.UI.Pair.First> полю объекта и сериализовано с помощью <xref:System.Web.UI.ObjectStateFormatter> объекта, который является экземпляром <xref:System.Web.UI.IStateFormatter> интерфейса. <xref:System.Web.UI.PageStatePersister.ViewState%2A> <xref:System.Web.UI.Pair.First> <xref:System.Web.UI.Pair> При вызове <xref:System.Web.UI.ObjectStateFormatter> <xref:System.Web.UI.PageStatePersister.Load%2A> метода интерфейс используется для десериализации сведений о состоянии представления, а свойство инициализируется из поля результирующего объекта. Этот пример кода является частью большого примера, <xref:System.Web.UI.PageStatePersister> приведенного для класса.  
+  
+ [!code-csharp[Samples.AspNet.Alexkr.TextFilePageStatePersister_1#2](~/samples/snippets/csharp/VS_Snippets_WebNet/Samples.AspNet.Alexkr.TextFilePageStatePersister_1/CS/textfilepagestatepersister.cs#2)]
+ [!code-vb[Samples.AspNet.Alexkr.TextFilePageStatePersister_1#2](~/samples/snippets/visualbasic/VS_Snippets_WebNet/Samples.AspNet.Alexkr.TextFilePageStatePersister_1/VB/textfilepagestatepersister.vb#2)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
