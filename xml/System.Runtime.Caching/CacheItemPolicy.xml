@@ -1,0 +1,299 @@
+<Type Name="CacheItemPolicy" FullName="System.Runtime.Caching.CacheItemPolicy">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="8d3a41fca12cf1ba037bf849858f6cf63bc9fd37" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70436680" /></Metadata><TypeSignature Language="C#" Value="public class CacheItemPolicy" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit CacheItemPolicy extends System.Object" />
+  <TypeSignature Language="DocId" Value="T:System.Runtime.Caching.CacheItemPolicy" />
+  <TypeSignature Language="VB.NET" Value="Public Class CacheItemPolicy" />
+  <TypeSignature Language="C++ CLI" Value="public ref class CacheItemPolicy" />
+  <TypeSignature Language="F#" Value="type CacheItemPolicy = class" />
+  <AssemblyInfo>
+    <AssemblyName>System.Runtime.Caching</AssemblyName>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary><span data-ttu-id="84dc9-101">Представляет набор подробностей об удалении и сроке действия конкретной записи кэша.</span><span class="sxs-lookup"><span data-stu-id="84dc9-101">Represents a set of eviction and expiration details for a specific cache entry.</span></span></summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <span data-ttu-id="84dc9-102"><xref:System.Runtime.Caching.CacheItemPolicy> Экземпляр содержит сведения, которые могут быть связаны с записью кэша.</span><span class="sxs-lookup"><span data-stu-id="84dc9-102">A <xref:System.Runtime.Caching.CacheItemPolicy> instance contains information that can be associated with a cache entry.</span></span> <span data-ttu-id="84dc9-103">Например, если запись кэша собирается удалить из кэша, <xref:System.Runtime.Caching.CacheEntryUpdateArguments> объект передается в метод обратного вызова.</span><span class="sxs-lookup"><span data-stu-id="84dc9-103">For example, when a cache entry is about to be removed from the cache, a <xref:System.Runtime.Caching.CacheEntryUpdateArguments> object is passed to a callback method.</span></span> <span data-ttu-id="84dc9-104">Свойство объекта может передавать ссылку на экземпляр, который может включать сведения о вытеснении и истечении срока действия записи кэша. <xref:System.Runtime.Caching.CacheItemPolicy> <xref:System.Runtime.Caching.CacheEntryUpdateArguments.UpdatedCacheItemPolicy%2A> <xref:System.Runtime.Caching.CacheEntryUpdateArguments></span><span class="sxs-lookup"><span data-stu-id="84dc9-104">The <xref:System.Runtime.Caching.CacheEntryUpdateArguments.UpdatedCacheItemPolicy%2A> property of the <xref:System.Runtime.Caching.CacheEntryUpdateArguments> object can pass a reference to a <xref:System.Runtime.Caching.CacheItemPolicy> instance that can include eviction and expiration details about the cache entry.</span></span>  
+  
+ <span data-ttu-id="84dc9-105">Некоторые методы в <xref:System.Runtime.Caching.MemoryCache> классах <xref:System.Runtime.Caching.ObjectCache> и принимают <xref:System.Runtime.Caching.CacheItemPolicy> экземпляр для описания политики вытеснения или истечения срока действия.</span><span class="sxs-lookup"><span data-stu-id="84dc9-105">Some methods in the <xref:System.Runtime.Caching.MemoryCache> and <xref:System.Runtime.Caching.ObjectCache> classes accept a <xref:System.Runtime.Caching.CacheItemPolicy> instance to describe eviction or expiration policy.</span></span>  
+  
+   
+  
+## Examples  
+ <span data-ttu-id="84dc9-106">В следующем примере показано, как создать элемент кэша в памяти, который отслеживает путь к текстовому файлу.</span><span class="sxs-lookup"><span data-stu-id="84dc9-106">The following example shows how to create an in-memory cache item that monitors the path for a text file.</span></span> <span data-ttu-id="84dc9-107">Кэш создает <xref:System.Runtime.Caching.CacheItemPolicy> объект и <xref:System.Runtime.Caching.CacheItemPolicy.AbsoluteExpiration%2A> задает свойство для исключения кэша через 60 секунд.</span><span class="sxs-lookup"><span data-stu-id="84dc9-107">The cache creates a <xref:System.Runtime.Caching.CacheItemPolicy> object and sets the <xref:System.Runtime.Caching.CacheItemPolicy.AbsoluteExpiration%2A> property to evict the cache after 60 seconds.</span></span>  
+  
+```vb  
+Protected Sub Button1_Click(ByVal sender As Object, _  
+            ByVal e As System.EventArgs) Handles Button1.Click  
+    Dim cache As ObjectCache = MemoryCache.Default  
+    Dim fileContents As String = TryCast(cache("filecontents"), _  
+            String)  
+    If fileContents Is Nothing Then  
+        Dim policy As New CacheItemPolicy()  
+        policy.AbsoluteExpiration = _  
+            DateTimeOffset.Now.AddSeconds(60.0)  
+        Dim filePaths As New List(Of String)()  
+     Dim cachedFilePath As String = Server.MapPath("~") & _  
+         "\cacheText.txt"  
+        filePaths.Add(cachedFilePath)  
+        policy.ChangeMonitors.Add(New _  
+            HostFileChangeMonitor(filePaths))  
+  
+        ' Fetch the file contents.  
+        fileContents = File.ReadAllText(cachedFilePath)  
+        cache.Set("filecontents", fileContents, policy)  
+    End If  
+    Label1.Text = fileContents  
+End Sub  
+```  
+  
+```csharp  
+protected void Button1_Click(object sender, EventArgs e)  
+    {  
+        ObjectCache cache = MemoryCache.Default;  
+            string fileContents = cache["filecontents"] as string;  
+            if (fileContents == null)  
+            {  
+                CacheItemPolicy policy = new CacheItemPolicy();  
+                policy.AbsoluteExpiration =   
+                    DateTimeOffset.Now.AddSeconds(60.0);  
+  
+                List<string> filePaths = new List<string>();  
+             string cachedFilePath = Server.MapPath("~") +   
+                 "\\cacheText.txt";  
+             filePaths.Add(cachedFilePath);  
+  
+                policy.ChangeMonitors.Add(new   
+                    HostFileChangeMonitor(filePaths));  
+  
+                // Fetch the file contents.  
+                fileContents = File.ReadAllText(cachedFilePath);  
+  
+                cache.Set("filecontents", fileContents, policy);  
+  
+            }  
+  
+            Label1.Text = fileContents;  
+        }  
+```  
+  
+ ]]></format>
+    </remarks>
+    <block subset="none" type="overrides"><para><span data-ttu-id="84dc9-108"><see cref="T:System.Runtime.Caching.CacheItemPolicy" /> Тип не запечатан, поэтому разработчики пользовательского кэша могут расширить его.</span><span class="sxs-lookup"><span data-stu-id="84dc9-108">The <see cref="T:System.Runtime.Caching.CacheItemPolicy" /> type is unsealed so that custom cache developers can extend it.</span></span></para></block>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public CacheItemPolicy ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Runtime.Caching.CacheItemPolicy.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; CacheItemPolicy();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Caching</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters />
+      <Docs>
+        <summary><span data-ttu-id="84dc9-109">Инициализирует новый экземпляр класса <see cref="T:System.Runtime.Caching.CacheItemPolicy" />.</span><span class="sxs-lookup"><span data-stu-id="84dc9-109">Initializes a new instance of the <see cref="T:System.Runtime.Caching.CacheItemPolicy" /> class.</span></span></summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="AbsoluteExpiration">
+      <MemberSignature Language="C#" Value="public DateTimeOffset AbsoluteExpiration { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance valuetype System.DateTimeOffset AbsoluteExpiration" />
+      <MemberSignature Language="DocId" Value="P:System.Runtime.Caching.CacheItemPolicy.AbsoluteExpiration" />
+      <MemberSignature Language="VB.NET" Value="Public Property AbsoluteExpiration As DateTimeOffset" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property DateTimeOffset AbsoluteExpiration { DateTimeOffset get(); void set(DateTimeOffset value); };" />
+      <MemberSignature Language="F#" Value="member this.AbsoluteExpiration : DateTimeOffset with get, set" Usage="System.Runtime.Caching.CacheItemPolicy.AbsoluteExpiration" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Caching</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>set: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.DateTimeOffset</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary><span data-ttu-id="84dc9-110">Получает или задает значение, указывающее, следует ли вытеснить запись кэша в указанный момент.</span><span class="sxs-lookup"><span data-stu-id="84dc9-110">Gets or sets a value that indicates whether a cache entry should be evicted at a specified point in time.</span></span></summary>
+        <value><span data-ttu-id="84dc9-111">Момент времени, когда запись кэша удаляется.</span><span class="sxs-lookup"><span data-stu-id="84dc9-111">The point in time at which a cache entry is evicted.</span></span> <span data-ttu-id="84dc9-112">Значение по умолчанию — <see cref="F:System.Runtime.Caching.ObjectCache.InfiniteAbsoluteExpiration" />, означающее, что срок действия записи не истекает.</span><span class="sxs-lookup"><span data-stu-id="84dc9-112">The default value is <see cref="F:System.Runtime.Caching.ObjectCache.InfiniteAbsoluteExpiration" />, meaning that the entry does not expire.</span></span></value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ChangeMonitors">
+      <MemberSignature Language="C#" Value="public System.Collections.ObjectModel.Collection&lt;System.Runtime.Caching.ChangeMonitor&gt; ChangeMonitors { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Collections.ObjectModel.Collection`1&lt;class System.Runtime.Caching.ChangeMonitor&gt; ChangeMonitors" />
+      <MemberSignature Language="DocId" Value="P:System.Runtime.Caching.CacheItemPolicy.ChangeMonitors" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property ChangeMonitors As Collection(Of ChangeMonitor)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Collections::ObjectModel::Collection&lt;System::Runtime::Caching::ChangeMonitor ^&gt; ^ ChangeMonitors { System::Collections::ObjectModel::Collection&lt;System::Runtime::Caching::ChangeMonitor ^&gt; ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.ChangeMonitors : System.Collections.ObjectModel.Collection&lt;System.Runtime.Caching.ChangeMonitor&gt;" Usage="System.Runtime.Caching.CacheItemPolicy.ChangeMonitors" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Caching</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.ObjectModel.Collection&lt;System.Runtime.Caching.ChangeMonitor&gt;</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary><span data-ttu-id="84dc9-113">Получает коллекцию объектов <see cref="T:System.Runtime.Caching.ChangeMonitor" />, связанных с записью кэша.</span><span class="sxs-lookup"><span data-stu-id="84dc9-113">Gets a collection of <see cref="T:System.Runtime.Caching.ChangeMonitor" /> objects that are associated with a cache entry.</span></span></summary>
+        <value><span data-ttu-id="84dc9-114">Коллекция мониторов изменений.</span><span class="sxs-lookup"><span data-stu-id="84dc9-114">A collection of change monitors.</span></span> <span data-ttu-id="84dc9-115">По умолчанию является пустой коллекцией.</span><span class="sxs-lookup"><span data-stu-id="84dc9-115">The default is an empty collection.</span></span></value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <span data-ttu-id="84dc9-116">Можно добавлять или удалять мониторы изменений, связанные с записью кэша.</span><span class="sxs-lookup"><span data-stu-id="84dc9-116">You can add to or remove change monitors that are associated with a cache entry.</span></span> <span data-ttu-id="84dc9-117">Однако набор мониторов изменений должен быть завершен до передачи <xref:System.Runtime.Caching.CacheItemPolicy> экземпляра <xref:System.Runtime.Caching.ObjectCache> в реализацию.</span><span class="sxs-lookup"><span data-stu-id="84dc9-117">However, the set of change monitors must be complete before you pass a <xref:System.Runtime.Caching.CacheItemPolicy> instance to an <xref:System.Runtime.Caching.ObjectCache> implementation.</span></span> <span data-ttu-id="84dc9-118">Если изменить набор мониторов <xref:System.Runtime.Caching.CacheItemPolicy> изменений объекта <xref:System.Runtime.Caching.CacheItemPolicy> после того, как объект был передан в <xref:System.Runtime.Caching.ObjectCache> реализацию, изменения не вступят в действие.</span><span class="sxs-lookup"><span data-stu-id="84dc9-118">If you change the set of change monitors on a <xref:System.Runtime.Caching.CacheItemPolicy> object after the <xref:System.Runtime.Caching.CacheItemPolicy> object has been passed to an <xref:System.Runtime.Caching.ObjectCache> implementation, the changes have no effect.</span></span>  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Priority">
+      <MemberSignature Language="C#" Value="public System.Runtime.Caching.CacheItemPriority Priority { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance valuetype System.Runtime.Caching.CacheItemPriority Priority" />
+      <MemberSignature Language="DocId" Value="P:System.Runtime.Caching.CacheItemPolicy.Priority" />
+      <MemberSignature Language="VB.NET" Value="Public Property Priority As CacheItemPriority" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Runtime::Caching::CacheItemPriority Priority { System::Runtime::Caching::CacheItemPriority get(); void set(System::Runtime::Caching::CacheItemPriority value); };" />
+      <MemberSignature Language="F#" Value="member this.Priority : System.Runtime.Caching.CacheItemPriority with get, set" Usage="System.Runtime.Caching.CacheItemPolicy.Priority" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Caching</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>set: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Runtime.Caching.CacheItemPriority</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary><span data-ttu-id="84dc9-119">Получает или задает параметр приоритета, на основании которого принимается решение об удалении записи кэша.</span><span class="sxs-lookup"><span data-stu-id="84dc9-119">Gets or sets a priority setting that is used to determine whether to evict a cache entry.</span></span></summary>
+        <value><span data-ttu-id="84dc9-120">Одно из значений перечисления, определяющее приоритет удаления.</span><span class="sxs-lookup"><span data-stu-id="84dc9-120">One of the enumeration values that indicates the priority for eviction.</span></span> <span data-ttu-id="84dc9-121">Значение приоритета по умолчанию — <see cref="F:System.Runtime.Caching.CacheItemPriority.Default" />, что означает отсутствие приоритета.</span><span class="sxs-lookup"><span data-stu-id="84dc9-121">The default priority value is <see cref="F:System.Runtime.Caching.CacheItemPriority.Default" />, which means no priority.</span></span></value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <span data-ttu-id="84dc9-122">В ASP.NET перечисление приоритетов имеет только два возможных приоритета: <xref:System.Runtime.Caching.CacheItemPriority.Default> (это означает отсутствие приоритета) и <xref:System.Runtime.Caching.CacheItemPriority.NotRemovable> (это означает, что запись не может быть удалена).</span><span class="sxs-lookup"><span data-stu-id="84dc9-122">In ASP.NET, the priority enumeration only has two possible priorities: <xref:System.Runtime.Caching.CacheItemPriority.Default> (which means no priority), and <xref:System.Runtime.Caching.CacheItemPriority.NotRemovable> (which means the entry cannot be removed).</span></span> <span data-ttu-id="84dc9-123">Таким образом, единственным приоритетом, который можно задать, является возможность бесконечного сохранения записи в кэше.</span><span class="sxs-lookup"><span data-stu-id="84dc9-123">Therefore, the only priority that can be set is whether a cache entry should remain in the cache forever.</span></span>  
+  
+> [!IMPORTANT]
+>  <span data-ttu-id="84dc9-124">Добавление записи в кэш с уровнем <xref:System.Runtime.Caching.CacheItemPriority.NotRemovable> приоритета может привести к переполнению кэша записями, которые никогда не могут быть удалены.</span><span class="sxs-lookup"><span data-stu-id="84dc9-124">Adding an entry to the cache with a priority level of <xref:System.Runtime.Caching.CacheItemPriority.NotRemovable> can cause the cache to overflow with entries that can never be removed.</span></span> <span data-ttu-id="84dc9-125">Реализации кэша должны устанавливать <xref:System.Runtime.Caching.CacheItemPriority.NotRemovable> приоритет для записи кэша только в том случае, если реализация кэша предоставляет способы исключения записей из кэша и управления количеством записей кэша.</span><span class="sxs-lookup"><span data-stu-id="84dc9-125">Cache implementations should set the <xref:System.Runtime.Caching.CacheItemPriority.NotRemovable> priority for a cache entry only if the cache implementation provides ways to evict entries from the cache and to manage the number of cache entries.</span></span>  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="RemovedCallback">
+      <MemberSignature Language="C#" Value="public System.Runtime.Caching.CacheEntryRemovedCallback RemovedCallback { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Runtime.Caching.CacheEntryRemovedCallback RemovedCallback" />
+      <MemberSignature Language="DocId" Value="P:System.Runtime.Caching.CacheItemPolicy.RemovedCallback" />
+      <MemberSignature Language="VB.NET" Value="Public Property RemovedCallback As CacheEntryRemovedCallback" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Runtime::Caching::CacheEntryRemovedCallback ^ RemovedCallback { System::Runtime::Caching::CacheEntryRemovedCallback ^ get(); void set(System::Runtime::Caching::CacheEntryRemovedCallback ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.RemovedCallback : System.Runtime.Caching.CacheEntryRemovedCallback with get, set" Usage="System.Runtime.Caching.CacheItemPolicy.RemovedCallback" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Caching</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>set: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Runtime.Caching.CacheEntryRemovedCallback</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary><span data-ttu-id="84dc9-126">Получает или задает ссылку на делегат <see cref="T:System.Runtime.Caching.CacheEntryRemovedCallback" />, вызываемый после удаления записи из кэша.</span><span class="sxs-lookup"><span data-stu-id="84dc9-126">Gets or sets a reference to a <see cref="T:System.Runtime.Caching.CacheEntryRemovedCallback" /> delegate that is called after an entry is removed from the cache.</span></span></summary>
+        <value><span data-ttu-id="84dc9-127">Ссылка на делегат, вызываемый реализацией кэша.</span><span class="sxs-lookup"><span data-stu-id="84dc9-127">A reference to a delegate that is called by a cache implementation.</span></span></value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <span data-ttu-id="84dc9-128">После удаления записи кэша из кэша кэш вызывает объект обратного вызова, на который ссылается <xref:System.Runtime.Caching.CacheItemPolicy.RemovedCallback%2A> свойство.</span><span class="sxs-lookup"><span data-stu-id="84dc9-128">After a cache entry has been removed from the cache, the cache invokes the callback object that is referenced by the <xref:System.Runtime.Caching.CacheItemPolicy.RemovedCallback%2A> property.</span></span> <span data-ttu-id="84dc9-129">Реализация кэша может использовать этот обратный вызов для уведомления вызывающего метода о том, что запись кэша была удалена.</span><span class="sxs-lookup"><span data-stu-id="84dc9-129">A cache implementation can use this callback to notify the calling method that a cache entry has been removed.</span></span>  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SlidingExpiration">
+      <MemberSignature Language="C#" Value="public TimeSpan SlidingExpiration { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance valuetype System.TimeSpan SlidingExpiration" />
+      <MemberSignature Language="DocId" Value="P:System.Runtime.Caching.CacheItemPolicy.SlidingExpiration" />
+      <MemberSignature Language="VB.NET" Value="Public Property SlidingExpiration As TimeSpan" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property TimeSpan SlidingExpiration { TimeSpan get(); void set(TimeSpan value); };" />
+      <MemberSignature Language="F#" Value="member this.SlidingExpiration : TimeSpan with get, set" Usage="System.Runtime.Caching.CacheItemPolicy.SlidingExpiration" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Caching</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>set: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.TimeSpan</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary><span data-ttu-id="84dc9-130">Получает или задает значение, указывающее, следует ли удалить запись кэша, если к ней в течение определенного времени не осуществлялся доступ.</span><span class="sxs-lookup"><span data-stu-id="84dc9-130">Gets or sets a value that indicates whether a cache entry should be evicted if it has not been accessed in a given span of time.</span></span></summary>
+        <value><span data-ttu-id="84dc9-131">Промежуток времени, в течение которого должен быть осуществлен доступ к записи кэша, прежде чем она будет удалена из кэша.</span><span class="sxs-lookup"><span data-stu-id="84dc9-131">A span of time within which a cache entry must be accessed before the cache entry is evicted from the cache.</span></span> <span data-ttu-id="84dc9-132">Значение по умолчанию — <see cref="F:System.Runtime.Caching.ObjectCache.NoSlidingExpiration" />, что означает независимость истечения срока действия элемента от временного диапазона.</span><span class="sxs-lookup"><span data-stu-id="84dc9-132">The default is <see cref="F:System.Runtime.Caching.ObjectCache.NoSlidingExpiration" />, meaning that the item should not be expired based on a time span.</span></span></value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="UpdateCallback">
+      <MemberSignature Language="C#" Value="public System.Runtime.Caching.CacheEntryUpdateCallback UpdateCallback { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Runtime.Caching.CacheEntryUpdateCallback UpdateCallback" />
+      <MemberSignature Language="DocId" Value="P:System.Runtime.Caching.CacheItemPolicy.UpdateCallback" />
+      <MemberSignature Language="VB.NET" Value="Public Property UpdateCallback As CacheEntryUpdateCallback" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property System::Runtime::Caching::CacheEntryUpdateCallback ^ UpdateCallback { System::Runtime::Caching::CacheEntryUpdateCallback ^ get(); void set(System::Runtime::Caching::CacheEntryUpdateCallback ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.UpdateCallback : System.Runtime.Caching.CacheEntryUpdateCallback with get, set" Usage="System.Runtime.Caching.CacheItemPolicy.UpdateCallback" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Runtime.Caching</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>set: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Runtime.Caching.CacheEntryUpdateCallback</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary><span data-ttu-id="84dc9-133">Получает или задает ссылку на делегат <see cref="T:System.Runtime.Caching.CacheEntryUpdateCallback" />, вызываемый перед удалением записи из кэша.</span><span class="sxs-lookup"><span data-stu-id="84dc9-133">Gets or sets a reference to a <see cref="T:System.Runtime.Caching.CacheEntryUpdateCallback" /> delegate that is called before a cache entry is removed from the cache.</span></span></summary>
+        <value><span data-ttu-id="84dc9-134">Ссылка на делегат, вызываемый реализацией кэша.</span><span class="sxs-lookup"><span data-stu-id="84dc9-134">A reference to a delegate that is called by a cache implementation.</span></span></value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
