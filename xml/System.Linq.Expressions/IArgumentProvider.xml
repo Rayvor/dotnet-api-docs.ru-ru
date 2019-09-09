@@ -1,0 +1,124 @@
+<Type Name="IArgumentProvider" FullName="System.Linq.Expressions.IArgumentProvider">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="4abd0b0508fdc62e37d2117e5823a54dfc7dfdce" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70580565" /></Metadata><TypeSignature Language="C#" Value="public interface IArgumentProvider" />
+  <TypeSignature Language="ILAsm" Value=".class public interface auto ansi abstract IArgumentProvider" />
+  <TypeSignature Language="DocId" Value="T:System.Linq.Expressions.IArgumentProvider" />
+  <TypeSignature Language="VB.NET" Value="Public Interface IArgumentProvider" />
+  <TypeSignature Language="C++ CLI" Value="public interface class IArgumentProvider" />
+  <TypeSignature Language="F#" Value="type IArgumentProvider = interface" />
+  <AssemblyInfo>
+    <AssemblyName>System.Linq.Expressions</AssemblyName>
+    <AssemblyVersion>4.0.10.0</AssemblyVersion>
+    <AssemblyVersion>4.1.0.0</AssemblyVersion>
+    <AssemblyVersion>4.2.0.0</AssemblyVersion>
+    <AssemblyVersion>4.2.1.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>System.Core</AssemblyName>
+    <AssemblyVersion>2.0.5.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyName>netstandard</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Interfaces />
+  <Docs>
+    <summary>Предоставляет внутренний интерфейс для доступа к аргументам нескольких узлов дерева (DynamicExpression, ElementInit, MethodCallExpression, InvocationExpression, NewExpression и IndexExpression).  Этот интерфейс API предназначен только для внутреннего использования.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[
+      
+## Remarks
+
+Не следует использовать этот API.  Он открыт только в результате рефакторинга сборок и существует только для внутренней оптимизации производительности. Он включает две оптимизации, уменьшающие размер деревьев:
+  
+1. Он позволяет узлам удерживаться <xref:System.Collections.Generic.IList%601> вместо. <xref:System.Collections.ObjectModel.ReadOnlyCollection%601>  Это экономит затраты на выделение коллекции только для чтения для каждого узла.
+  
+2. Он позволяет создавать специализированные подклассы, которые содержат определенное количество аргументов (например `Block2` `Block2`,,, `Block4`).  Таким образом, эти узлы не <xref:System.Collections.ObjectModel.ReadOnlyCollection%601> выделяют и массив для хранения своих элементов, тем самым сохраняя 32 байт на узел.  Этот метод используется различными узлами, включая <xref:System.Linq.Expressions.BlockExpression>, <xref:System.Linq.Expressions.InvocationExpression>и <xref:System.Linq.Expressions.MethodCallExpression>.
+            
+Узлы дерева выражения продолжают предоставлять исходные свойства <xref:System.Collections.ObjectModel.ReadOnlyCollection%601> LINQ объектов. Это делается путем повторного использования поля для хранения как массива, так и элемента, который обычно хранится в массиве.
+            
+Для массива Case коллекция вводится в <xref:System.Collections.Generic.IList%601> <xref:System.Collections.ObjectModel.ReadOnlyCollection%601>вместо. При первоначальном создании узла он является массивом.  Компилятор или служебные программы в этой библиотеке обращаются к элементам через этот интерфейс. Доступ к элементам массива повышает массив до <xref:System.Collections.ObjectModel.ReadOnlyCollection%601>.
+            
+Для объекта Case первый аргумент хранится в поле, введенном в <xref:System.Object>. При первоначальном создании узла это поле содержит <xref:System.Linq.Expressions.Expression> первый аргумент.  Когда компилятор и служебные программы в этой библиотеке обращаются к аргументам, они снова используют этот интерфейс, а метод доступа для первого аргумента `Expression.ReturnObject<T>(System.Object)` использует внутренний вспомогательный метод для возврата объекта, <xref:System.Linq.Expressions.Expression> обрабатывающего регистр или <xref:System.Collections.ObjectModel.ReadOnlyCollection%601> . Когда пользователь обращается к <xref:System.Collections.ObjectModel.ReadOnlyCollection%601>, поле объекта обновляется для сохранения непосредственно в. <xref:System.Collections.ObjectModel.ReadOnlyCollection%601>
+            
+Важно, чтобы <xref:System.Linq.Expressions.Expression> свойства возвращались одинаково <xref:System.Collections.ObjectModel.ReadOnlyCollection%601>. В противном случае обходное дерево перезаписи, используемое посетителями выражения, будет нарушено. Это критическое изменение из LINQ v1, возвращающее <xref:System.Collections.ObjectModel.ReadOnlyCollection%601> отличия от <xref:System.Linq.Expressions.Expression> того же узла. В настоящее время пользователи могут использовать удостоверение объекта, чтобы определить, изменился ли узел.  <xref:System.Collections.ObjectModel.ReadOnlyCollection%601> Хранение в перегруженном поле позволяет уменьшить использование памяти и обеспечивает совместимость с общедоступным API.
+
+      ]]></format>
+    </remarks>
+  </Docs>
+  <Members>
+    <Member MemberName="ArgumentCount">
+      <MemberSignature Language="C#" Value="public int ArgumentCount { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 ArgumentCount" />
+      <MemberSignature Language="DocId" Value="P:System.Linq.Expressions.IArgumentProvider.ArgumentCount" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property ArgumentCount As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int ArgumentCount { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.ArgumentCount : int" Usage="System.Linq.Expressions.IArgumentProvider.ArgumentCount" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Linq.Expressions</AssemblyName>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает число аргументов для узла дерева выражения. Этот интерфейс API предназначен только для внутреннего использования.</summary>
+        <value>Число аргументов для узла дерева выражения в виде <see cref="T:System.Int32" />.</value>
+        <remarks>Не следует использовать этот API. Она является общедоступной только из-за рефакторинга сборок и используется внутренне для оптимизации производительности.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetArgument">
+      <MemberSignature Language="C#" Value="public System.Linq.Expressions.Expression GetArgument (int index);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance class System.Linq.Expressions.Expression GetArgument(int32 index) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Linq.Expressions.IArgumentProvider.GetArgument(System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Function GetArgument (index As Integer) As Expression" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Linq::Expressions::Expression ^ GetArgument(int index);" />
+      <MemberSignature Language="F#" Value="abstract member GetArgument : int -&gt; System.Linq.Expressions.Expression" Usage="iArgumentProvider.GetArgument index" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Linq.Expressions</AssemblyName>
+        <AssemblyVersion>4.0.10.0</AssemblyVersion>
+        <AssemblyVersion>4.1.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.0.0</AssemblyVersion>
+        <AssemblyVersion>4.2.1.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>System.Core</AssemblyName>
+        <AssemblyVersion>2.0.5.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <AssemblyInfo>
+        <AssemblyName>netstandard</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Linq.Expressions.Expression</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="index" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="index">Индекс аргумента.</param>
+        <summary>Возвращает аргумент по индексу <paramref name="index" />, создавая исключение, если индекс <paramref name="index" /> находится вне допустимых границ. Этот интерфейс API предназначен только для внутреннего использования.</summary>
+        <returns>Аргумент по индексу.</returns>
+        <remarks>Не следует использовать этот API.  Он является открытым только из-за рефакторинга сборки и используется внутренне для оптимизации производительности.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

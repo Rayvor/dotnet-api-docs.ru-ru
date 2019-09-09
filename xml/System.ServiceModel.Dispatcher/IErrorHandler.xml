@@ -1,0 +1,198 @@
+<Type Name="IErrorHandler" FullName="System.ServiceModel.Dispatcher.IErrorHandler">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="a2285d06910f16471e7937c8b9a352ed5e89fdf3" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70600305" /></Metadata><TypeSignature Language="C#" Value="public interface IErrorHandler" />
+  <TypeSignature Language="ILAsm" Value=".class public interface auto ansi abstract IErrorHandler" />
+  <TypeSignature Language="DocId" Value="T:System.ServiceModel.Dispatcher.IErrorHandler" />
+  <TypeSignature Language="VB.NET" Value="Public Interface IErrorHandler" />
+  <TypeSignature Language="C++ CLI" Value="public interface class IErrorHandler" />
+  <TypeSignature Language="F#" Value="type IErrorHandler = interface" />
+  <AssemblyInfo>
+    <AssemblyName>System.ServiceModel</AssemblyName>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Interfaces />
+  <Docs>
+    <summary>Позволяет разработчику управлять сообщениями об ошибках, возвращаемыми вызывающему объекту, и дополнительно выполнять пользовательскую обработку ошибок, например ведение журнала.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Чтобы явно управлять поведением приложения при возникновении исключения, реализуйте <xref:System.ServiceModel.Dispatcher.IErrorHandler> интерфейс и добавьте его <xref:System.ServiceModel.Dispatcher.ChannelDispatcher>в <xref:System.ServiceModel.Dispatcher.ChannelDispatcher.ErrorHandlers%2A> свойство. <xref:System.ServiceModel.Dispatcher.IErrorHandler> позволяет пользователю явно управлять сообщением SOAP об ошибке, принимать решение о том, отправлять ли сообщение назад клиенту, и выполнять соответствующие задачи, например по ведению журнала. Обработчики ошибок вызываются в том порядке, в котором они добавлены к свойству <xref:System.ServiceModel.Dispatcher.ChannelDispatcher.ErrorHandlers%2A>.  
+  
+ Реализуйте метод <xref:System.ServiceModel.Dispatcher.IErrorHandler.ProvideFault%2A> для управления сообщением об ошибке, которое возвращается клиенту.  
+  
+ Реализуйте метод <xref:System.ServiceModel.Dispatcher.IErrorHandler.HandleError%2A>, чтобы обеспечить поведения, связанные с ошибками, например, ведение журнала ошибок, быстрое прекращение работы, завершение приложения, и т. п.  
+  
+> [!NOTE]
+>  Поскольку метод<xref:System.ServiceModel.Dispatcher.IErrorHandler.HandleError%2A> можно вызвать из множества разных мест, гарантии относительно того, что метод будет вызван на каком-то конкретном потоке, отсутствуют. Не полагайтесь на метод <xref:System.ServiceModel.Dispatcher.IErrorHandler.HandleError%2A>, вызываемый на потоке операции.  
+  
+ Все реализации <xref:System.ServiceModel.Dispatcher.IErrorHandler.ProvideFault%2A> вызываются первыми, перед отправлением ответного сообщения. Если все реализации <xref:System.ServiceModel.Dispatcher.IErrorHandler.ProvideFault%2A> уже были вызваны и возвращены, и если параметр `fault` имеет значение, отличное от `null`, он отправляется обратно клиенту согласно контракту операции. Если параметр `fault` имеет значение `null` после всех вызванных реализаций, ответное сообщение управляется значением свойства <xref:System.ServiceModel.ServiceBehaviorAttribute.IncludeExceptionDetailInFaults%2A?displayProperty=nameWithType>.  
+  
+> [!NOTE]
+>  Исключения могут возникать после вызова всех реализаций <xref:System.ServiceModel.Dispatcher.IErrorHandler.ProvideFault%2A> и передачи ответного сообщения каналу. Если возникает исключение канала (например, сложность сериализации сообщения) <xref:System.ServiceModel.Dispatcher.IErrorHandler> , уведомляются объекты. В этом случае необходимо убедиться, что среда разработки перехватывает и отображает такие исключения, или использует трассировку для обнаружения проблемы. Дополнительные сведения о трассировке см. [в разделе Использование трассировки для устранения неполадок в приложении](~/docs/framework/wcf/diagnostics/tracing/using-tracing-to-troubleshoot-your-application.md).  
+  
+ После отправки ответного сообщения все реализации <xref:System.ServiceModel.Dispatcher.IErrorHandler.HandleError%2A> вызываются в том же порядке.  
+  
+ Обычно реализация <xref:System.ServiceModel.Dispatcher.IErrorHandler> добавляется к свойству<xref:System.ServiceModel.Dispatcher.ChannelDispatcher.ErrorHandlers%2A> в службе (и к клиенту в случае дуплексного обмена данными).  
+  
+ Можно добавить интерфейс <xref:System.ServiceModel.Dispatcher.IErrorHandler> к среде выполнения, реализовав поведение (<xref:System.ServiceModel.Description.IServiceBehavior?displayProperty=nameWithType>, <xref:System.ServiceModel.Description.IEndpointBehavior?displayProperty=nameWithType>, <xref:System.ServiceModel.Description.IContractBehavior?displayProperty=nameWithType> или <xref:System.ServiceModel.Description.IOperationBehavior?displayProperty=nameWithType> объекта), и использовать поведение программным способом, из файла конфигурации или с пользовательским атрибутом для присоединения интерфейса <xref:System.ServiceModel.Dispatcher.IErrorHandler>.  
+  
+ Дополнительные сведения об использовании поведений для изменения среды выполнения см. в разделе [Настройка и расширение среды выполнения с помощью поведений](~/docs/framework/wcf/extending/configuring-and-extending-the-runtime-with-behaviors.md).  
+  
+   
+  
+## Examples  
+ В следующем примере кода демонстрируется служба, которая реализует интерфейс <xref:System.ServiceModel.Dispatcher.IErrorHandler>, возвращающий только исключение <xref:System.ServiceModel.FaultException%601> типа `GreetingFault`, когда метод службы создает управляемое исключение.  
+  
+ [!code-csharp[IErrorHandler#6](~/samples/snippets/csharp/VS_Snippets_CFX/ierrorhandler/cs/ierrorhandler.cs#6)]
+ [!code-vb[IErrorHandler#6](~/samples/snippets/visualbasic/VS_Snippets_CFX/ierrorhandler/vb/ierrorhandler.vb#6)]  
+  
+ В следующем примере кода показано использование поведения службы для добавления реализации <xref:System.ServiceModel.Dispatcher.IErrorHandler> к свойству<xref:System.ServiceModel.Dispatcher.ChannelDispatcher.ErrorHandlers%2A>.  
+  
+ [!code-csharp[IErrorHandler#7](~/samples/snippets/csharp/VS_Snippets_CFX/ierrorhandler/cs/ierrorhandler.cs#7)]
+ [!code-vb[IErrorHandler#7](~/samples/snippets/visualbasic/VS_Snippets_CFX/ierrorhandler/vb/ierrorhandler.vb#7)]  
+  
+ В следующем примере кода показано, как настроить службу для загрузки поведения службы с помощью файла конфигурации приложения. Дополнительные сведения о том, как предоставить поведение службы в файле конфигурации, см. в разделе <xref:System.ServiceModel.Description.IServiceBehavior>.  
+
+ [!code-xml[IErrorHandler#4](~/samples/snippets/csharp/VS_Snippets_CFX/ierrorhandler/cs/hostapplication.exe.config#4)]   
+  
+ ]]></format>
+    </remarks>
+  </Docs>
+  <Members>
+    <Member MemberName="HandleError">
+      <MemberSignature Language="C#" Value="public bool HandleError (Exception error);" FrameworkAlternate="netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.8" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance bool HandleError(class System.Exception error) cil managed" FrameworkAlternate="netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.8" />
+      <MemberSignature Language="VB.NET" Value="Public Function HandleError (error As Exception) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; bool HandleError(Exception ^ error);" FrameworkAlternate="netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.8" />
+      <MemberSignature Language="C#" Value="public bool HandleError (Exception exception);" FrameworkAlternate="xamarinmac-3.0" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance bool HandleError(class System.Exception exception) cil managed" FrameworkAlternate="xamarinmac-3.0" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; bool HandleError(Exception ^ exception);" FrameworkAlternate="xamarinmac-3.0" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceModel.Dispatcher.IErrorHandler.HandleError(System.Exception)" FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      <MemberSignature Language="F#" Value="abstract member HandleError : Exception -&gt; bool" Usage="iErrorHandler.HandleError exception" FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceModel.Dispatcher.IErrorHandler.HandleError(System.Exception)" FrameworkAlternate="xamarinmac-3.0" />
+      <MemberSignature Language="F#" Value="abstract member HandleError : Exception -&gt; bool" Usage="iErrorHandler.HandleError exception" FrameworkAlternate="xamarinmac-3.0" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceModel</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="error" Type="System.Exception" Index="0" FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+        <Parameter Name="exception" Type="System.Exception" Index="0" FrameworkAlternate="xamarinmac-3.0" />
+      </Parameters>
+      <Docs>
+        <param name="error">Исключение, созданное при обработке.</param>
+        <param name="exception">Исключение, созданное при обработке.</param>
+        <summary>Включает обработку, связанную с ошибками, и возвращает значение, которое показывает, прерывает ли диспетчер в определенных случаях сеанс и контекст экземпляра.</summary>
+        <returns>Значение <see langword="true" />, если служба Windows Communication Foundation (WCF) не должна прерывать сеанс (если он имеется) и контекст экземпляра, если только этим контекстом не является <see cref="F:System.ServiceModel.InstanceContextMode.Single" />; в противном случае — значение <see langword="false" />. Значение по умолчанию — <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Используйте метод <xref:System.ServiceModel.Dispatcher.IErrorHandler.HandleError%2A> для реализации поведений, связанных с ошибками, например, ведения журнала ошибок, системных уведомлений, завершения приложения и т. п., а также для возвращения значения, которое указывает, было ли исключение обработано правильно.  
+  
+> [!NOTE]
+>  Поскольку метод<xref:System.ServiceModel.Dispatcher.IErrorHandler.HandleError%2A> можно вызвать из множества разных мест, гарантии относительно того, что метод будет вызван на каком-то конкретном потоке, отсутствуют. Не полагайтесь на метод <xref:System.ServiceModel.Dispatcher.IErrorHandler.HandleError%2A>, вызываемый на потоке операции.  
+  
+ Вызываются все реализации <xref:System.ServiceModel.Dispatcher.IErrorHandler>. По умолчанию (если возвращаемое значение `false`равно), если возникает исключение, диспетчер прерывает любой сеанс и прерывает, <xref:System.ServiceModel.InstanceContext> если является любым, <xref:System.ServiceModel.InstanceContextMode> отличным от <xref:System.ServiceModel.InstanceContextMode.Single>.  Затем исключение считается необработанным, и любое состояние считается поврежденным.  
+  
+ Передайте значение `true` из метода <xref:System.ServiceModel.Dispatcher.IErrorHandler.HandleError%2A>, чтобы заблокировать это поведение по умолчанию. Если какой-либо обработчик `true` ошибок возвращает, WCF может продолжать использовать состояние, связанное с неудачным запросом.  
+  
+ Если ни один обработчик ошибок не возвращает значение `true` из метода <xref:System.ServiceModel.Dispatcher.IErrorHandler.HandleError%2A>, исключение считается необработанным и используется ответное сообщение по умолчанию, что может привести к прекращению работы <xref:System.ServiceModel.InstanceContext?displayProperty=nameWithType> и канала, если используется взаимодействие через канал сеанса или если свойство <xref:System.ServiceModel.ServiceBehaviorAttribute.InstanceContextMode%2A?displayProperty=nameWithType> имеет значение, отличное от <xref:System.ServiceModel.InstanceContextMode.Single?displayProperty=nameWithType>.  
+  
+ Параметр `error` никогда не имеет значения `null` и содержит объект исключения, которое было создано.  
+  
+   
+  
+## Examples  
+ В следующем примере кода демонстрируется служба, которая реализует интерфейс <xref:System.ServiceModel.Dispatcher.IErrorHandler>, возвращающий только исключение <xref:System.ServiceModel.FaultException%601> типа `GreetingFault`, когда метод службы создает управляемое исключение.  
+  
+ [!code-csharp[IErrorHandler#6](~/samples/snippets/csharp/VS_Snippets_CFX/ierrorhandler/cs/ierrorhandler.cs#6)]
+ [!code-vb[IErrorHandler#6](~/samples/snippets/visualbasic/VS_Snippets_CFX/ierrorhandler/vb/ierrorhandler.vb#6)]  
+  
+ В следующем примере кода показано использование поведения службы для добавления реализации <xref:System.ServiceModel.Dispatcher.IErrorHandler> к свойству<xref:System.ServiceModel.Dispatcher.ChannelDispatcher.ErrorHandlers%2A>.  
+  
+ [!code-csharp[IErrorHandler#7](~/samples/snippets/csharp/VS_Snippets_CFX/ierrorhandler/cs/ierrorhandler.cs#7)]
+ [!code-vb[IErrorHandler#7](~/samples/snippets/visualbasic/VS_Snippets_CFX/ierrorhandler/vb/ierrorhandler.vb#7)]  
+  
+ В следующем примере кода показано, как настроить службу для загрузки поведения службы с помощью файла конфигурации приложения. Дополнительные сведения о том, как предоставить поведение службы в файле конфигурации, см. в разделе <xref:System.ServiceModel.Description.IServiceBehavior>.  
+  
+ [!code-xml[IErrorHandler#4](~/samples/snippets/csharp/VS_Snippets_CFX/ierrorhandler/cs/hostapplication.exe.config#4)]   
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ProvideFault">
+      <MemberSignature Language="C#" Value="public void ProvideFault (Exception error, System.ServiceModel.Channels.MessageVersion version, ref System.ServiceModel.Channels.Message fault);" FrameworkAlternate="netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.8" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void ProvideFault(class System.Exception error, class System.ServiceModel.Channels.MessageVersion version, class System.ServiceModel.Channels.Message&amp; fault) cil managed" FrameworkAlternate="netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.8" />
+      <MemberSignature Language="VB.NET" Value="Public Sub ProvideFault (error As Exception, version As MessageVersion, ByRef fault As Message)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void ProvideFault(Exception ^ error, System::ServiceModel::Channels::MessageVersion ^ version, System::ServiceModel::Channels::Message ^ % fault);" FrameworkAlternate="netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.8" />
+      <MemberSignature Language="C#" Value="public void ProvideFault (Exception exception, System.ServiceModel.Channels.MessageVersion version, ref System.ServiceModel.Channels.Message fault);" FrameworkAlternate="xamarinmac-3.0" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void ProvideFault(class System.Exception exception, class System.ServiceModel.Channels.MessageVersion version, class System.ServiceModel.Channels.Message&amp; fault) cil managed" FrameworkAlternate="xamarinmac-3.0" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void ProvideFault(Exception ^ exception, System::ServiceModel::Channels::MessageVersion ^ version, System::ServiceModel::Channels::Message ^ % fault);" FrameworkAlternate="xamarinmac-3.0" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceModel.Dispatcher.IErrorHandler.ProvideFault(System.Exception,System.ServiceModel.Channels.MessageVersion,System.ServiceModel.Channels.Message@)" FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      <MemberSignature Language="F#" Value="abstract member ProvideFault : Exception * System.ServiceModel.Channels.MessageVersion *  -&gt; unit" Usage="iErrorHandler.ProvideFault (exception, version, fault)" FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceModel.Dispatcher.IErrorHandler.ProvideFault(System.Exception,System.ServiceModel.Channels.MessageVersion,System.ServiceModel.Channels.Message@)" FrameworkAlternate="xamarinmac-3.0" />
+      <MemberSignature Language="F#" Value="abstract member ProvideFault : Exception * System.ServiceModel.Channels.MessageVersion *  -&gt; unit" Usage="iErrorHandler.ProvideFault (exception, version, fault)" FrameworkAlternate="xamarinmac-3.0" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceModel</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="error" Type="System.Exception" Index="0" FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8" />
+        <Parameter Name="exception" Type="System.Exception" Index="0" FrameworkAlternate="xamarinmac-3.0" />
+        <Parameter Name="version" Type="System.ServiceModel.Channels.MessageVersion" Index="1" />
+        <Parameter Name="fault" Type="System.ServiceModel.Channels.Message" RefType="ref" Index="2" />
+      </Parameters>
+      <Docs>
+        <param name="error">Исключение <see cref="T:System.Exception" /> вызывается во время работы службы.</param>
+        <param name="exception">Исключение <see cref="T:System.Exception" /> вызывается во время работы службы.</param>
+        <param name="version">SOAP-версия сообщения.</param>
+        <param name="fault">Объект <see cref="T:System.ServiceModel.Channels.Message" />, который возвращается клиенту или службе (при наличии дуплексного взаимодействия).</param>
+        <summary>Позволяет создать пользовательское исключение <see cref="T:System.ServiceModel.FaultException`1" />, которое возвращается из исключения в ходе работы метода службы.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализуйте метод <xref:System.ServiceModel.Dispatcher.IErrorHandler.ProvideFault%2A> для создания пользовательского сообщения об ошибке, которое возвращается клиенту.  <xref:System.ServiceModel.Dispatcher.IErrorHandler.ProvideFault%2A> Метод всегда будет вызываться для исключений, которые оставляют операции, за исключением случаев, когда среда выполнения WCF распознает исключение как особенно неустранимое и выбрасывает само исключение. Если все реализации <xref:System.ServiceModel.Dispatcher.IErrorHandler.ProvideFault%2A> уже были вызваны, сообщение об ошибке отправляется клиенту обратно (если параметр `fault` имеет значение, отличное от `null`). Если параметр является `null` ошибкой по умолчанию, клиент отправляется клиенту. `fault`  
+  
+> [!NOTE]
+>  Входящее сообщение, инициировавшее ошибку обработки, доступно в данном методе из свойства <xref:System.ServiceModel.OperationContext.RequestContext%2A?displayProperty=nameWithType>.  
+  
+> [!NOTE]
+>  Поскольку метод<xref:System.ServiceModel.Dispatcher.IErrorHandler.ProvideFault%2A> можно вызвать из множества разных мест, гарантии относительно того, что метод будет вызван на каком-то конкретном потоке, отсутствуют. Не полагайтесь на метод <xref:System.ServiceModel.Dispatcher.IErrorHandler.ProvideFault%2A>, вызываемый на потоке операции.  
+  
+   
+  
+## Examples  
+ В следующем примере кода демонстрируется служба, которая реализует интерфейс <xref:System.ServiceModel.Dispatcher.IErrorHandler>, возвращающий только исключение <xref:System.ServiceModel.FaultException%601> типа `GreetingFault`, когда метод службы создает управляемое исключение.  
+  
+ [!code-csharp[IErrorHandler#6](~/samples/snippets/csharp/VS_Snippets_CFX/ierrorhandler/cs/ierrorhandler.cs#6)]
+ [!code-vb[IErrorHandler#6](~/samples/snippets/visualbasic/VS_Snippets_CFX/ierrorhandler/vb/ierrorhandler.vb#6)]  
+  
+ В следующем примере кода показано использование поведения службы для добавления реализации <xref:System.ServiceModel.Dispatcher.IErrorHandler> к свойству<xref:System.ServiceModel.Dispatcher.ChannelDispatcher.ErrorHandlers%2A>.  
+  
+ [!code-csharp[IErrorHandler#7](~/samples/snippets/csharp/VS_Snippets_CFX/ierrorhandler/cs/ierrorhandler.cs#7)]
+ [!code-vb[IErrorHandler#7](~/samples/snippets/visualbasic/VS_Snippets_CFX/ierrorhandler/vb/ierrorhandler.vb#7)]  
+  
+ В следующем примере кода показано, как настроить службу для загрузки поведения службы с помощью файла конфигурации приложения. Дополнительные сведения о том, как предоставить поведение службы в файле конфигурации, см. в разделе <xref:System.ServiceModel.Description.IServiceBehavior>.  
+  
+ [!code-xml[IErrorHandler#4](~/samples/snippets/csharp/VS_Snippets_CFX/ierrorhandler/cs/hostapplication.exe.config#4)]   
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

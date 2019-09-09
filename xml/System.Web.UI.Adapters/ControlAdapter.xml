@@ -1,0 +1,783 @@
+<Type Name="ControlAdapter" FullName="System.Web.UI.Adapters.ControlAdapter">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="32931f959545fbccc955d499802e8801510a11d2" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70702019" /></Metadata><TypeSignature Language="C#" Value="public abstract class ControlAdapter" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract beforefieldinit ControlAdapter extends System.Object" />
+  <TypeSignature Language="DocId" Value="T:System.Web.UI.Adapters.ControlAdapter" />
+  <TypeSignature Language="VB.NET" Value="Public MustInherit Class ControlAdapter" />
+  <TypeSignature Language="C++ CLI" Value="public ref class ControlAdapter abstract" />
+  <TypeSignature Language="F#" Value="type ControlAdapter = class" />
+  <AssemblyInfo>
+    <AssemblyName>System.Web</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>Настраивает отрисовку производного элемента управления, к которому присоединен адаптер, предназначенного для изменения стандартной разметки или поведения определенных браузеров, и является базовым классом, из которого наследуются все адаптеры элементов управления.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Адаптеры элементов управления — это компоненты, <xref:System.Web.UI.Control> переопределяющие определенные методы и события классов в жизненном цикле выполнения, чтобы разрешить обработку в браузере или разметку. .NET Framework сопоставляет один производный адаптер <xref:System.Web.UI.Control> элемента управления с объектом для каждого клиентского запроса.  
+  
+ Адаптер изменяет элемент управления для конкретного браузера или класса браузеров или выступает в качестве произвольного фильтра для некоторых возможностей. Обычно адаптер определяется языком разметки, используемым браузером (например, XHTML или HTML 3,2). Большая часть адаптируемости в процессе отрисовки может быть инкапсулирована в специализированные классы, производные от <xref:System.Web.UI.HtmlTextWriter> класса. Таким образом, вполне вероятно, что один адаптер может использоваться для нескольких вариантов поведения класса браузера или что включение адаптируемости в <xref:System.Web.UI.HtmlTextWriter> классы может сделать использование адаптера элемента управления ненужным.  
+  
+ Адаптер для класса элемента управления применяется ко всем элементам управления, которые наследуются от этого класса, если отсутствуют более специализированные адаптеры. Например, адаптер для <xref:System.Web.UI.WebControls.BaseValidator> класса можно использовать для всех `Validator` объектов.  
+  
+ Адаптеры обычно не наследуют непосредственно от <xref:System.Web.UI.Adapters.ControlAdapter> класса, но из одного из базовых классов адаптера, предназначенных для конкретных целевых устройств, которые предоставляют дополнительные функциональные возможности, относящиеся к типу элемента управления и целевому браузеру, или к конкретной отрисовке.  
+  
+ Самим элементам управления не требуется адаптер. Если элементы управления расширяются с помощью композиции, обычно достаточно дочерних адаптеров элементов управления.  
+  
+ Каждый элемент управления имеет явные сопоставления с адаптерами через файлы определения браузера. Таким же, любой доступ к <xref:System.Web.UI.Control.Adapter%2A?displayProperty=nameWithType> свойству использует <xref:System.Web.HttpBrowserCapabilities> объект, извлеченный из файлов определения браузера, для выполнения поиска сопоставления адаптера для управления.  
+  
+ Во время обработки .NET Framework перехватывает вызовы переопределяемых методов элемента управления, которые могут быть зависят от целевого объекта. Если адаптер элемента управления присоединен, .NET Framework вызывает связанные методы адаптера.  
+  
+ Адаптер выполняет отрисовку для элемента управления с помощью <xref:System.Web.UI.Adapters.ControlAdapter.Render%2A> метода. Если переопределено <xref:System.Web.UI.Adapters.ControlAdapter.Render%2A> , потенциально не должен вызывать реализацию базового класса, так как <xref:System.Web.UI.Control.Render%2A?displayProperty=nameWithType> он выполняет обратный вызов метода. Это может привести к тому, что отрисовка будет происходить дважды, один раз адаптером и один раз в элементе управления.  
+  
+ Базовый метод выполняет обратный <xref:System.Web.UI.Control.Render%2A?displayProperty=nameWithType> вызов метода элемента управления. <xref:System.Web.UI.Adapters.ControlAdapter.Render%2A> Таким же, при переопределении <xref:System.Web.UI.Adapters.ControlAdapter.Render%2A>не следует вызывать реализацию базового класса, если реализация отрисовки не реализована в дополнение к, <xref:System.Web.UI.Control.Render%2A?displayProperty=nameWithType> предоставленному элементом управления.  
+  
+ Необходимо убедиться, что .NET Framework выполняет перехват для адаптеров дочерних элементов управления. Это можно сделать, вызвав <xref:System.Web.UI.Adapters.ControlAdapter.RenderChildren%2A> базовый метод, который <xref:System.Web.UI.Control.RenderChildren%2A?displayProperty=nameWithType> вызывает метод элемента управления из <xref:System.Web.UI.Adapters.ControlAdapter.Render%2A> перекрытия.  
+  
+ Методы <xref:System.Web.UI.Adapters.ControlAdapter.BeginRender%2A> <xref:System.Web.UI.Adapters.ControlAdapter.Render%2A> и <xref:System.Web.UI.Adapters.ControlAdapter.EndRender%2A> вызываются элементом управления непосредственно до и после (соответственно) элемента управления, который вызывает метод. Если предварительная и пост-отрисовка являются единственными необходимыми задачами обработки для конкретного браузера <xref:System.Web.UI.Adapters.ControlAdapter.BeginRender%2A> , <xref:System.Web.UI.Adapters.ControlAdapter.EndRender%2A> использование и может сделать ненужным переопределение <xref:System.Web.UI.Adapters.ControlAdapter.Render%2A>. Поведение <xref:System.Web.UI.Adapters.ControlAdapter.BeginRender%2A> по умолчанию для методов <xref:System.Web.UI.Adapters.ControlAdapter.EndRender%2A> и заключается в вызове соответствующих методов класса. <xref:System.Web.UI.HtmlTextWriter>  
+  
+ Чтобы сохранить сведения о состоянии, адаптер элемента <xref:System.Web.UI.Adapters.ControlAdapter.SaveAdapterControlState%2A>управления может переопределить методы, <xref:System.Web.UI.Adapters.ControlAdapter.LoadAdapterControlState%2A>, <xref:System.Web.UI.Adapters.ControlAdapter.SaveAdapterViewState%2A>и <xref:System.Web.UI.Adapters.ControlAdapter.LoadAdapterViewState%2A> . <xref:System.Web.UI.Adapters.ControlAdapter.SaveAdapterControlState%2A>, <xref:System.Web.UI.Adapters.ControlAdapter.SaveAdapterViewState%2A>, <xref:System.Web.UI.Adapters.ControlAdapter.LoadAdapterControlState%2A> и <xref:System.Web.UI.Adapters.ControlAdapter.LoadAdapterViewState%2A>  вызываются, когда закрытые элементы управления и состояния просмотра сохраняются и загружаются соответственно.  
+  
+ <xref:System.Web.UI.Adapters.ControlAdapter.OnLoad%2A>Базовые методы <xref:System.Web.UI.Control> , , <xref:System.Web.UI.Adapters.ControlAdapter.OnPreRender%2A>  и <xref:System.Web.UI.Adapters.ControlAdapter.OnUnload%2A>  вызывают обратные вызовы к соответствующим методам класса. <xref:System.Web.UI.Adapters.ControlAdapter.OnInit%2A> Таким образом, любой из <xref:System.Web.UI.Adapters.ControlAdapter> этих методов, которые переопределяются, должен вызывать свои базовые методы; в противном случае <xref:System.Web.UI.Control> событие, связанное с методом класса, не будет вызвано.  
+  
+ Элементы управления и адаптеры дополнительно реализуют <xref:System.Web.UI.IPostBackDataHandler> интерфейсы <xref:System.Web.UI.IPostBackEventHandler> и. .NET Framework определяет, существует ли адаптер и реализует ли адаптер эти интерфейсы. Если это так, адаптер должен переопределять <xref:System.Web.UI.IPostBackDataHandler.LoadPostData%2A>методы, <xref:System.Web.UI.IPostBackDataHandler.RaisePostDataChangedEvent%2A>и <xref:System.Web.UI.IPostBackEventHandler.RaisePostBackEvent%2A> при необходимости. Если данные обратной передачи не распознаются в адаптере, они должны выполнить обратный вызов элемента управления для их обработки. Последующие обработчики событий также должны обращаться к элементу управления.  
+  
+ ]]></format>
+    </remarks>
+    <block subset="none" type="overrides"><para>При наследовании от <see cref="T:System.Web.UI.Adapters.ControlAdapter" /> класса элемент управления, которому требуются общие функции адаптера, должен иметь соответствующий базовый класс адаптера с именем в <see langword="Adapter" /> шаблоне <paramref name="ControlType" /> (например, <see langword="TextBoxAdapter" />). Адаптер должен быть как минимум возвращать строго типизированный экземпляр элемента управления через его <see cref="P:System.Web.UI.Adapters.ControlAdapter.Control" /> свойство.  
+  
+1.  Адаптеры элементов управления для определенного типа элемента управления и языка разметки должны называться в <paramref name="MarkupControlType" /> шаблоне <see langword="Adapter" /> (например <see langword="XhtmlTextBoxAdapter" />,). Адаптеры для элемента управления должны быть реализованы во <see langword="Adapters" /> подпространстве имен.  
+  
+Адаптеры элементов управления должны наследоваться от соответствующего базового класса и следовать той же модели наследования, что и элемент управления. Например, адаптер для <see cref="T:System.Web.UI.Control" /> элемента управления, наследуемого от базового класса, должен наследовать <see cref="T:System.Web.UI.Adapters.ControlAdapter" /> либо от класса, либо от <paramref name="ControlType" /> соответствующего <see langword="Adapter" /> класса.  
+  
+Все специализированные адаптеры должны быть определены для специализированного элемента управления во всех узлах устройств в файлах конфигурации. browser.  
+  
+Правильно реализованный элемент управления не должен считать, что адаптер подключен или подключенный адаптер реализует конкретный интерфейс. Вместо этого он должен проверять наличие этих данных перед вызовом метода.  
+  
+Можно имитировать переопределение защищенных методов событий в элементе управления, например <see cref="M:System.Web.UI.WebControls.LinkButton.OnClick(System.EventArgs)" /> метод. <see cref="T:System.Web.UI.WebControls.LinkButton" /> Сначала создайте класс адаптера с помощью метода <c>OnClick</c> . Затем создайте новый элемент управления, производный от <see cref="T:System.Web.UI.WebControls.LinkButton" /> , и <see cref="M:System.Web.UI.WebControls.LinkButton.OnClick(System.EventArgs)" /> Переопределите метод. Переопределенный <see cref="M:System.Web.UI.WebControls.LinkButton.OnClick(System.EventArgs)" /> метод вызывает метод <c>OnClick</c> адаптера. Объект адаптера доступен через свойство <see cref="P:System.Web.UI.Control.Adapter" /> <see cref="T:System.Web.UI.Control" /> protected класса. Свойство элемента управления имеет <see langword="null" /> значение, когда отсутствует связанный адаптер, поэтому любой код должен проверить это условие перед вызовом методов адаптера. <see cref="P:System.Web.UI.Control.Adapter" /></para></block>
+    <altmember cref="T:System.Web.UI.Control" />
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="protected ControlAdapter ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.UI.Adapters.ControlAdapter.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Protected Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; ControlAdapter();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Web.UI.Adapters.ControlAdapter" />.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ .NET Framework внутренне создает этот адаптер при создании соответствующего <xref:System.Web.UI.Control> объекта.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.Web.UI.Control" />
+      </Docs>
+    </Member>
+    <Member MemberName="BeginRender">
+      <MemberSignature Language="C#" Value="protected internal virtual void BeginRender (System.Web.UI.HtmlTextWriter writer);" />
+      <MemberSignature Language="ILAsm" Value=".method familyorassemblyhidebysig newslot virtual instance void BeginRender(class System.Web.UI.HtmlTextWriter writer) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.UI.Adapters.ControlAdapter.BeginRender(System.Web.UI.HtmlTextWriter)" />
+      <MemberSignature Language="VB.NET" Value="Protected Friend Overridable Sub BeginRender (writer As HtmlTextWriter)" />
+      <MemberSignature Language="C++ CLI" Value="protected public:&#xA; virtual void BeginRender(System::Web::UI::HtmlTextWriter ^ writer);" />
+      <MemberSignature Language="F#" Value="abstract member BeginRender : System.Web.UI.HtmlTextWriter -&gt; unit&#xA;override this.BeginRender : System.Web.UI.HtmlTextWriter -&gt; unit" Usage="controlAdapter.BeginRender writer" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="writer" Type="System.Web.UI.HtmlTextWriter" />
+      </Parameters>
+      <Docs>
+        <param name="writer">Объект <see cref="T:System.Web.UI.HtmlTextWriter" />, содержащий методы отрисовки целевого вывода.</param>
+        <summary>Вызывается до отрисовки элемента управления. В производном классе адаптеров генерируются открывающие теги, которые необходимы для определенной цели, но не требуются для HTML-браузеров.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод вызывается непосредственно перед методом и используется для выполнения предварительной обработки, зависящей от целевого объекта, до отрисовки элемента управления. <xref:System.Web.UI.Adapters.ControlAdapter.Render%2A> <xref:System.Web.UI.Adapters.ControlAdapter.BeginRender%2A>  
+  
+ Используйте метод в сочетании с методом, чтобы обеспечить согласованность открывающего и закрывающего тега. <xref:System.Web.UI.Adapters.ControlAdapter.EndRender%2A> <xref:System.Web.UI.Adapters.ControlAdapter.BeginRender%2A>  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>При наследовании от <see cref="T:System.Web.UI.Adapters.ControlAdapter" /> класса <see cref="M:System.Web.UI.Adapters.ControlAdapter.BeginRender(System.Web.UI.HtmlTextWriter)" /> базовый метод вызывает <see cref="M:System.Web.UI.HtmlTextWriter.BeginRender" /> метод. Таким способом, переопределения <see cref="M:System.Web.UI.Adapters.ControlAdapter.BeginRender(System.Web.UI.HtmlTextWriter)" /> метода должны <see cref="M:System.Web.UI.Adapters.ControlAdapter.BeginRender(System.Web.UI.HtmlTextWriter)" /> вызывать базовый метод только в том случае, если его обработка выполняется в дополнение к <see cref="M:System.Web.UI.HtmlTextWriter.BeginRender" /> методу, а не к.</para></block>
+        <altmember cref="M:System.Web.UI.HtmlTextWriter.BeginRender" />
+        <altmember cref="M:System.Web.UI.Adapters.ControlAdapter.Render(System.Web.UI.HtmlTextWriter)" />
+        <altmember cref="M:System.Web.UI.Adapters.ControlAdapter.EndRender(System.Web.UI.HtmlTextWriter)" />
+        <altmember cref="T:System.Web.UI.HtmlTextWriter" />
+        <altmember cref="T:System.Web.UI.Control" />
+      </Docs>
+    </Member>
+    <Member MemberName="Browser">
+      <MemberSignature Language="C#" Value="protected System.Web.HttpBrowserCapabilities Browser { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Web.HttpBrowserCapabilities Browser" />
+      <MemberSignature Language="DocId" Value="P:System.Web.UI.Adapters.ControlAdapter.Browser" />
+      <MemberSignature Language="VB.NET" Value="Protected ReadOnly Property Browser As HttpBrowserCapabilities" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; property System::Web::HttpBrowserCapabilities ^ Browser { System::Web::HttpBrowserCapabilities ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Browser : System.Web.HttpBrowserCapabilities" Usage="System.Web.UI.Adapters.ControlAdapter.Browser" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.HttpBrowserCapabilities</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает ссылку на возможности клиентского браузера, создающего текущий HTTP-запрос.</summary>
+        <value>Объект <see cref="T:System.Web.HttpBrowserCapabilities" /> определяет возможности клиентского браузера и разметки.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Объект определяет возможности клиентского браузера <xref:System.Web.HttpBrowserCapabilities> из объекта <xref:System.Web.UI.Adapters.ControlAdapter.Browser%2A> , возвращаемого свойством. <xref:System.Web.UI.Adapters.ControlAdapter> Это позволяет <xref:System.Web.UI.Adapters.ControlAdapter> объекту визуализировать разметку, относящуюся к браузеру, или иным образом изменять поведение <xref:System.Web.UI.Control>.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как использовать <xref:System.Web.UI.Adapters.ControlAdapter.Browser%2A> свойство для получения сведений о запрашивающем браузере. В этом примере код проверяет, совместим ли браузер с JavaScript, а затем позволяет разработчику визуализировать настроенные выходные данные в этом случае.  
+  
+ [!code-cpp[ControlAdapter_Browser#1](~/samples/snippets/cpp/VS_Snippets_WebNet/ControlAdapter_Browser/CPP/controladapter_browser.cpp#1)]
+ [!code-csharp[ControlAdapter_Browser#1](~/samples/snippets/csharp/VS_Snippets_WebNet/ControlAdapter_Browser/CS/controladapter_browser.cs#1)]
+ [!code-vb[ControlAdapter_Browser#1](~/samples/snippets/visualbasic/VS_Snippets_WebNet/ControlAdapter_Browser/VB/controladapter_browser.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.Web.UI.Control" />
+        <altmember cref="T:System.Web.HttpBrowserCapabilities" />
+        <altmember cref="T:System.Web.Configuration.HttpCapabilitiesBase" />
+      </Docs>
+    </Member>
+    <Member MemberName="Control">
+      <MemberSignature Language="C#" Value="protected System.Web.UI.Control Control { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Web.UI.Control Control" />
+      <MemberSignature Language="DocId" Value="P:System.Web.UI.Adapters.ControlAdapter.Control" />
+      <MemberSignature Language="VB.NET" Value="Protected ReadOnly Property Control As Control" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; property System::Web::UI::Control ^ Control { System::Web::UI::Control ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Control : System.Web.UI.Control" Usage="System.Web.UI.Adapters.ControlAdapter.Control" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.ComponentModel.Browsable(false)</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>get: System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Web.UI.Control</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает ссылку на элемент управления, к которому присоединен адаптер элемента управления.</summary>
+        <value>Объект <see cref="T:System.Web.UI.Control" />, к которому присоединен этот элемент <see cref="T:System.Web.UI.Adapters.ControlAdapter" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ При присоединении к элементу управления производного адаптера элемента управления .NET Framework вызывает определенные члены адаптера вместо элементов управления.  
+  
+   
+  
+## Examples  
+ В следующем примере кода показано, как получить пользовательский элемент управления из <xref:System.Web.UI.Control> класса, а затем создать соответствующий адаптер, наследующий <xref:System.Web.UI.Adapters.ControlAdapter> от класса. Адаптер переопределяет <xref:System.Web.UI.Adapters.ControlAdapter.Control%2A> свойство и возвращает строго типизированную ссылку на элемент управления.  
+  
+ [!code-cpp[ControlAdapter.Control#1](~/samples/snippets/cpp/VS_Snippets_WebNet/ControlAdapter.Control/CPP/controladapter.control.cpp#1)]
+ [!code-csharp[ControlAdapter.Control#1](~/samples/snippets/csharp/VS_Snippets_WebNet/ControlAdapter.Control/CS/controladapter.control.cs#1)]
+ [!code-vb[ControlAdapter.Control#1](~/samples/snippets/visualbasic/VS_Snippets_WebNet/ControlAdapter.Control/VB/controladapter.control.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>При наследовании от <see cref="T:System.Web.UI.Adapters.ControlAdapter" /> класса как минимум следует <see langword="Control" /> реализовать свойство, возвращающее строго типизированный экземпляр элемента управления, как показано в разделе "пример".</para></block>
+        <altmember cref="T:System.Web.UI.Control" />
+      </Docs>
+    </Member>
+    <Member MemberName="CreateChildControls">
+      <MemberSignature Language="C#" Value="protected internal virtual void CreateChildControls ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyorassemblyhidebysig newslot virtual instance void CreateChildControls() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.UI.Adapters.ControlAdapter.CreateChildControls" />
+      <MemberSignature Language="VB.NET" Value="Protected Friend Overridable Sub CreateChildControls ()" />
+      <MemberSignature Language="C++ CLI" Value="protected public:&#xA; virtual void CreateChildControls();" />
+      <MemberSignature Language="F#" Value="abstract member CreateChildControls : unit -&gt; unit&#xA;override this.CreateChildControls : unit -&gt; unit" Usage="controlAdapter.CreateChildControls " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Создает целевые дочерние элементы управления для составного элемента управления.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если к <xref:System.Web.UI.Control> объекту присоединен адаптер производного элемента управления <xref:System.Web.UI.Adapters.ControlAdapter.CreateChildControls%2A> и метод переопределен, вместо <xref:System.Web.UI.Control.CreateChildControls%2A?displayProperty=nameWithType> метода вызывается переопределение. Таким же <xref:System.Web.UI.Adapters.ControlAdapter.CreateChildControls%2A> можно использовать для создания набора дочерних элементов управления, предназначенного для целевого объекта.  
+  
+ Дополнительные сведения о сочетании элементов управления для создания нового элемента управления см. в разделе [составные элементы управления](https://msdn.microsoft.com/library/fb174677-d845-467c-8bf3-cc096b2490b0).  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>Если вы создаете производный класс и переопределяете <see cref="M:System.Web.UI.Adapters.ControlAdapter.CreateChildControls" /> метод, не вызывайте базовый метод, если не хотите добавлять элементы управления, созданные базовым методом. В противном случае можно было бы создать два набора дочерних элементов управления.</para></block>
+        <altmember cref="M:System.Web.UI.Control.CreateChildControls" />
+        <altmember cref="T:System.Web.UI.Control" />
+      </Docs>
+    </Member>
+    <Member MemberName="EndRender">
+      <MemberSignature Language="C#" Value="protected internal virtual void EndRender (System.Web.UI.HtmlTextWriter writer);" />
+      <MemberSignature Language="ILAsm" Value=".method familyorassemblyhidebysig newslot virtual instance void EndRender(class System.Web.UI.HtmlTextWriter writer) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.UI.Adapters.ControlAdapter.EndRender(System.Web.UI.HtmlTextWriter)" />
+      <MemberSignature Language="VB.NET" Value="Protected Friend Overridable Sub EndRender (writer As HtmlTextWriter)" />
+      <MemberSignature Language="C++ CLI" Value="protected public:&#xA; virtual void EndRender(System::Web::UI::HtmlTextWriter ^ writer);" />
+      <MemberSignature Language="F#" Value="abstract member EndRender : System.Web.UI.HtmlTextWriter -&gt; unit&#xA;override this.EndRender : System.Web.UI.HtmlTextWriter -&gt; unit" Usage="controlAdapter.EndRender writer" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="writer" Type="System.Web.UI.HtmlTextWriter" />
+      </Parameters>
+      <Docs>
+        <param name="writer">Объект <see cref="T:System.Web.UI.HtmlTextWriter" />, содержащий методы отрисовки целевого вывода.</param>
+        <summary>Вызывается после отрисовки элемента управления. В производном классе адаптеров генерируются закрывающие теги, которые необходимы для определенной цели, но не требуются для HTML-браузеров.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод вызывается сразу после метода и используется для выполнения обработки, зависящей от целевого объекта, после отрисовки элемента управления. <xref:System.Web.UI.Adapters.ControlAdapter.Render%2A> <xref:System.Web.UI.Adapters.ControlAdapter.EndRender%2A>  
+  
+ Используйте метод в сочетании с методом, чтобы обеспечить согласованность открывающего и закрывающего тега. <xref:System.Web.UI.Adapters.ControlAdapter.BeginRender%2A> <xref:System.Web.UI.Adapters.ControlAdapter.EndRender%2A>  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>При наследовании от <see cref="T:System.Web.UI.Adapters.ControlAdapter" /> класса <see cref="M:System.Web.UI.Adapters.ControlAdapter.EndRender(System.Web.UI.HtmlTextWriter)" /> базовый метод вызывает <see cref="M:System.Web.UI.HtmlTextWriter.EndRender" /> метод. Таким способом, переопределения <see cref="M:System.Web.UI.Adapters.ControlAdapter.EndRender(System.Web.UI.HtmlTextWriter)" /> метода должны <see cref="M:System.Web.UI.Adapters.ControlAdapter.EndRender(System.Web.UI.HtmlTextWriter)" /> вызывать базовый метод только в том случае, если его обработка выполняется в дополнение к <see cref="M:System.Web.UI.HtmlTextWriter.EndRender" /> методу, а не к.</para></block>
+        <altmember cref="M:System.Web.UI.HtmlTextWriter.EndRender" />
+        <altmember cref="M:System.Web.UI.Adapters.ControlAdapter.Render(System.Web.UI.HtmlTextWriter)" />
+        <altmember cref="M:System.Web.UI.Adapters.ControlAdapter.BeginRender(System.Web.UI.HtmlTextWriter)" />
+        <altmember cref="T:System.Web.UI.HtmlTextWriter" />
+        <altmember cref="T:System.Web.UI.Control" />
+      </Docs>
+    </Member>
+    <Member MemberName="LoadAdapterControlState">
+      <MemberSignature Language="C#" Value="protected internal virtual void LoadAdapterControlState (object state);" />
+      <MemberSignature Language="ILAsm" Value=".method familyorassemblyhidebysig newslot virtual instance void LoadAdapterControlState(object state) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.UI.Adapters.ControlAdapter.LoadAdapterControlState(System.Object)" />
+      <MemberSignature Language="VB.NET" Value="Protected Friend Overridable Sub LoadAdapterControlState (state As Object)" />
+      <MemberSignature Language="C++ CLI" Value="protected public:&#xA; virtual void LoadAdapterControlState(System::Object ^ state);" />
+      <MemberSignature Language="F#" Value="abstract member LoadAdapterControlState : obj -&gt; unit&#xA;override this.LoadAdapterControlState : obj -&gt; unit" Usage="controlAdapter.LoadAdapterControlState state" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="state" Type="System.Object" />
+      </Parameters>
+      <Docs>
+        <param name="state">Объект <see cref="T:System.Object" />содержащий сведения о состоянии адаптера элемента управления, такие. как <see cref="T:System.Web.UI.StateBag" />.</param>
+        <summary>Загружает сведения о состоянии адаптера элемента управления, которые были сохранены <see cref="M:System.Web.UI.Adapters.ControlAdapter.SaveAdapterControlState" /> во время предыдущего запроса страницы, на которой размещен элемент управления, связанный с адаптером элемента управления.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Состояние элемента управления — это необходимая информация о состоянии, даже если состояние представления отключено. Если адаптеру необходимо поддерживать собственные сведения о состоянии элемента управления, он может переопределить <xref:System.Web.UI.Adapters.ControlAdapter.LoadAdapterControlState%2A> методы и. <xref:System.Web.UI.Adapters.ControlAdapter.SaveAdapterControlState%2A>  
+  
+ Адаптеру может потребоваться поддерживать сведения о состоянии управления, если есть функции, которые должны поддерживать состояние в запросах независимо от состояния связанного элемента управления. Например, составной элемент управления, состоящий из большого текстового отображения, и группа <xref:System.Web.UI.WebControls.RadioButton> элементов управления может отображаться как одно представление в браузерах настольных компьютеров. В других браузерах он может разделить отрисовку — одно представление для текстового отображения, а другое — для группы переключателей. Адаптеру потребуется поддерживать собственные целевые сведения о текущем активном представлении.  
+  
+ Метод вызывается сразу <xref:System.Web.UI.Control.LoadControlState%2A?displayProperty=nameWithType> после метода на `LoadState` стадии жизненного цикла. <xref:System.Web.UI.Adapters.ControlAdapter.LoadAdapterControlState%2A> Состояние элемента управления адаптера является отдельным и в дополнение к состоянию элемента управления.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.Web.UI.Control.LoadControlState(System.Object)" />
+        <altmember cref="T:System.Web.UI.Control" />
+        <altmember cref="M:System.Web.UI.Adapters.ControlAdapter.SaveAdapterControlState" />
+        <altmember cref="M:System.Web.UI.Adapters.ControlAdapter.LoadAdapterViewState(System.Object)" />
+      </Docs>
+    </Member>
+    <Member MemberName="LoadAdapterViewState">
+      <MemberSignature Language="C#" Value="protected internal virtual void LoadAdapterViewState (object state);" />
+      <MemberSignature Language="ILAsm" Value=".method familyorassemblyhidebysig newslot virtual instance void LoadAdapterViewState(object state) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.UI.Adapters.ControlAdapter.LoadAdapterViewState(System.Object)" />
+      <MemberSignature Language="VB.NET" Value="Protected Friend Overridable Sub LoadAdapterViewState (state As Object)" />
+      <MemberSignature Language="C++ CLI" Value="protected public:&#xA; virtual void LoadAdapterViewState(System::Object ^ state);" />
+      <MemberSignature Language="F#" Value="abstract member LoadAdapterViewState : obj -&gt; unit&#xA;override this.LoadAdapterViewState : obj -&gt; unit" Usage="controlAdapter.LoadAdapterViewState state" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="state" Type="System.Object" />
+      </Parameters>
+      <Docs>
+        <param name="state">Объект <see cref="T:System.Object" />, содержащий сведения о состоянии просмотра адаптера, такие как <see cref="T:System.Web.UI.StateBag" />.</param>
+        <summary>Загружает сведения о состоянии просмотра адаптера, сохраненные объектом <see cref="M:System.Web.UI.Adapters.ControlAdapter.SaveAdapterViewState" /> во время предыдущего запроса страницы, на которой размещен элемент управления, связанный с адаптером элемента управления.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если адаптеру необходимо сохранить свои сведения о состоянии представления, он может переопределить <xref:System.Web.UI.Adapters.ControlAdapter.LoadAdapterViewState%2A> методы и. <xref:System.Web.UI.Adapters.ControlAdapter.SaveAdapterViewState%2A>  
+  
+ Адаптер должен поддерживать сведения о состоянии представления, если имеются данные, которые должны поддерживаться в запросах, независимо от состояния представления связанного элемента управления. Например, элемент управления "Сетка" в браузерах настольных компьютеров может отображаться как одно представление строк и столбцов значений. В других браузерах он может разделить отрисовку на несколько отдельных представлений, таких как список строк и сведения о одной строке. Адаптеру потребуется поддерживать данные для представлений, которые в настоящее время не активны в состоянии представления.  
+  
+ Метод вызывается непосредственно <xref:System.Web.UI.Control.LoadViewState%2A?displayProperty=nameWithType> перед методом на `LoadState` этапе жизненного цикла. <xref:System.Web.UI.Adapters.ControlAdapter.LoadAdapterViewState%2A> Состояние представления адаптера является отдельным и в дополнение к состоянию представления элемента управления.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.Web.UI.Control.LoadViewState(System.Object)" />
+        <altmember cref="T:System.Web.UI.Control" />
+        <altmember cref="M:System.Web.UI.Adapters.ControlAdapter.SaveAdapterViewState" />
+        <altmember cref="M:System.Web.UI.Adapters.ControlAdapter.LoadAdapterControlState(System.Object)" />
+        <altmember cref="P:System.Web.UI.Control.ViewState" />
+      </Docs>
+    </Member>
+    <Member MemberName="OnInit">
+      <MemberSignature Language="C#" Value="protected internal virtual void OnInit (EventArgs e);" />
+      <MemberSignature Language="ILAsm" Value=".method familyorassemblyhidebysig newslot virtual instance void OnInit(class System.EventArgs e) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.UI.Adapters.ControlAdapter.OnInit(System.EventArgs)" />
+      <MemberSignature Language="VB.NET" Value="Protected Friend Overridable Sub OnInit (e As EventArgs)" />
+      <MemberSignature Language="C++ CLI" Value="protected public:&#xA; virtual void OnInit(EventArgs ^ e);" />
+      <MemberSignature Language="F#" Value="abstract member OnInit : EventArgs -&gt; unit&#xA;override this.OnInit : EventArgs -&gt; unit" Usage="controlAdapter.OnInit e" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="e" Type="System.EventArgs" />
+      </Parameters>
+      <Docs>
+        <param name="e">Объект класса <see cref="T:System.EventArgs" />, содержащий данные события.</param>
+        <summary>Переопределяет метод <see cref="M:System.Web.UI.Control.OnInit(System.EventArgs)" /> для связанного элемента управления.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ При наличии адаптера, присоединенного к <xref:System.Web.UI.Control> объекту, <xref:System.Web.UI.Adapters.ControlAdapter.OnInit%2A> и переопределении метода, вместо <xref:System.Web.UI.Control.OnInit%2A?displayProperty=nameWithType> метода вызывается метод override.  
+  
+ Переопределение <xref:System.Web.UI.Adapters.ControlAdapter.OnInit%2A> для выполнения обработки, зависящей от `Initialize` целевого, на этапе жизненного цикла элемента управления. Как правило, это функции, выполняемые при создании элемента управления.  
+  
+   
+  
+## Examples  
+ Следующий пример кода извлекает пользовательский адаптер элемента управления из <xref:System.Web.UI.Adapters.ControlAdapter> класса. Затем он переопределяет <xref:System.Web.UI.Adapters.ControlAdapter.OnInit%2A> метод, чтобы задать свойство для связанного элемента управления и вызвать базовый метод для завершения инициализации элемента управления.  
+  
+ [!code-cpp[ControlAdapter_OnInit#1](~/samples/snippets/cpp/VS_Snippets_WebNet/ControlAdapter_OnInit/CPP/controladapter_oninit.cpp#1)]
+ [!code-csharp[ControlAdapter_OnInit#1](~/samples/snippets/csharp/VS_Snippets_WebNet/ControlAdapter_OnInit/CS/controladapter_oninit.cs#1)]
+ [!code-vb[ControlAdapter_OnInit#1](~/samples/snippets/visualbasic/VS_Snippets_WebNet/ControlAdapter_OnInit/VB/controladapter_oninit.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>При наследовании от <see cref="T:System.Web.UI.Adapters.ControlAdapter" /> класса и адаптере <see cref="M:System.Web.UI.Adapters.ControlAdapter.OnInit(System.EventArgs)" /> переопределяет метод, адаптер должен вызвать соответствующий метод базового класса, <see cref="M:System.Web.UI.Control.OnInit(System.EventArgs)" /> который, в свою очередь, вызывает метод. Если метод не вызывается <see cref="E:System.Web.UI.Control.Init" /> , событие не будет вызвано. <see cref="M:System.Web.UI.Control.OnInit(System.EventArgs)" /></para></block>
+        <altmember cref="E:System.Web.UI.Control.Init" />
+        <altmember cref="M:System.Web.UI.Control.OnInit(System.EventArgs)" />
+        <altmember cref="T:System.Web.UI.Control" />
+      </Docs>
+    </Member>
+    <Member MemberName="OnLoad">
+      <MemberSignature Language="C#" Value="protected internal virtual void OnLoad (EventArgs e);" />
+      <MemberSignature Language="ILAsm" Value=".method familyorassemblyhidebysig newslot virtual instance void OnLoad(class System.EventArgs e) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.UI.Adapters.ControlAdapter.OnLoad(System.EventArgs)" />
+      <MemberSignature Language="VB.NET" Value="Protected Friend Overridable Sub OnLoad (e As EventArgs)" />
+      <MemberSignature Language="C++ CLI" Value="protected public:&#xA; virtual void OnLoad(EventArgs ^ e);" />
+      <MemberSignature Language="F#" Value="abstract member OnLoad : EventArgs -&gt; unit&#xA;override this.OnLoad : EventArgs -&gt; unit" Usage="controlAdapter.OnLoad e" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="e" Type="System.EventArgs" />
+      </Parameters>
+      <Docs>
+        <param name="e">Объект класса <see cref="T:System.EventArgs" />, содержащий данные события.</param>
+        <summary>Переопределяет метод <see cref="M:System.Web.UI.Control.OnLoad(System.EventArgs)" /> для связанного элемента управления.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ При наличии адаптера, присоединенного к <xref:System.Web.UI.Control> объекту, <xref:System.Web.UI.Adapters.ControlAdapter.OnLoad%2A> и переопределении метода, вместо <xref:System.Web.UI.Control.OnLoad%2A?displayProperty=nameWithType> метода вызывается метод override.  
+  
+ Переопределите `Load` метод для выполнения обработки, зависящей от целевого, на этапе жизненного цикла элемента управления. <xref:System.Web.UI.Adapters.ControlAdapter.OnLoad%2A> Как правило, это функции, которые должны выполняться для каждого запроса клиента.  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>При наследовании от <see cref="T:System.Web.UI.Adapters.ControlAdapter" /> класса и адаптере <see cref="M:System.Web.UI.Adapters.ControlAdapter.OnLoad(System.EventArgs)" /> переопределяет метод, адаптер должен вызвать соответствующий метод базового класса, <see cref="M:System.Web.UI.Control.OnLoad(System.EventArgs)" /> который, в свою очередь, вызывает метод. Если <see cref="M:System.Web.UI.Control.OnLoad(System.EventArgs)" /> не вызывается <see cref="E:System.Web.UI.Control.Load" /> , событие не будет вызвано.</para></block>
+        <altmember cref="E:System.Web.UI.Control.Load" />
+        <altmember cref="M:System.Web.UI.Control.OnLoad(System.EventArgs)" />
+        <altmember cref="T:System.Web.UI.Control" />
+      </Docs>
+    </Member>
+    <Member MemberName="OnPreRender">
+      <MemberSignature Language="C#" Value="protected internal virtual void OnPreRender (EventArgs e);" />
+      <MemberSignature Language="ILAsm" Value=".method familyorassemblyhidebysig newslot virtual instance void OnPreRender(class System.EventArgs e) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.UI.Adapters.ControlAdapter.OnPreRender(System.EventArgs)" />
+      <MemberSignature Language="VB.NET" Value="Protected Friend Overridable Sub OnPreRender (e As EventArgs)" />
+      <MemberSignature Language="C++ CLI" Value="protected public:&#xA; virtual void OnPreRender(EventArgs ^ e);" />
+      <MemberSignature Language="F#" Value="abstract member OnPreRender : EventArgs -&gt; unit&#xA;override this.OnPreRender : EventArgs -&gt; unit" Usage="controlAdapter.OnPreRender e" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="e" Type="System.EventArgs" />
+      </Parameters>
+      <Docs>
+        <param name="e">Объект класса <see cref="T:System.EventArgs" />, содержащий данные события.</param>
+        <summary>Переопределяет метод <see cref="M:System.Web.UI.Control.OnPreRender(System.EventArgs)" /> для связанного элемента управления.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ При наличии адаптера, присоединенного к <xref:System.Web.UI.Control> объекту, <xref:System.Web.UI.Adapters.ControlAdapter.OnPreRender%2A> и переопределении метода, вместо <xref:System.Web.UI.Control.OnPreRender%2A?displayProperty=nameWithType> метода вызывается метод override.  
+  
+ Переопределите `PreRender` метод для выполнения обработки, зависящей от целевого, на этапе жизненного цикла элемента управления. <xref:System.Web.UI.Adapters.ControlAdapter.OnPreRender%2A> Как правило, это функции, непосредственно предшествующие отрисовке выходных данных элемента управления.  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>При наследовании от <see cref="T:System.Web.UI.Adapters.ControlAdapter" /> класса и адаптере <see cref="M:System.Web.UI.Adapters.ControlAdapter.OnPreRender(System.EventArgs)" /> переопределяет метод, адаптер должен вызвать соответствующий метод базового класса, <see cref="M:System.Web.UI.Control.OnPreRender(System.EventArgs)" /> который, в свою очередь, вызывает метод. Если метод не вызывается <see cref="E:System.Web.UI.Control.PreRender" /> , событие не будет вызвано. <see cref="M:System.Web.UI.Control.OnPreRender(System.EventArgs)" /></para></block>
+        <altmember cref="E:System.Web.UI.Control.PreRender" />
+        <altmember cref="M:System.Web.UI.Control.OnPreRender(System.EventArgs)" />
+        <altmember cref="T:System.Web.UI.Control" />
+      </Docs>
+    </Member>
+    <Member MemberName="OnUnload">
+      <MemberSignature Language="C#" Value="protected internal virtual void OnUnload (EventArgs e);" />
+      <MemberSignature Language="ILAsm" Value=".method familyorassemblyhidebysig newslot virtual instance void OnUnload(class System.EventArgs e) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.UI.Adapters.ControlAdapter.OnUnload(System.EventArgs)" />
+      <MemberSignature Language="VB.NET" Value="Protected Friend Overridable Sub OnUnload (e As EventArgs)" />
+      <MemberSignature Language="C++ CLI" Value="protected public:&#xA; virtual void OnUnload(EventArgs ^ e);" />
+      <MemberSignature Language="F#" Value="abstract member OnUnload : EventArgs -&gt; unit&#xA;override this.OnUnload : EventArgs -&gt; unit" Usage="controlAdapter.OnUnload e" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="e" Type="System.EventArgs" />
+      </Parameters>
+      <Docs>
+        <param name="e">Объект класса <see cref="T:System.EventArgs" />, содержащий данные события.</param>
+        <summary>Переопределяет метод <see cref="M:System.Web.UI.Control.OnUnload(System.EventArgs)" /> для связанного элемента управления.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ При наличии адаптера, присоединенного к <xref:System.Web.UI.Control> объекту, <xref:System.Web.UI.Adapters.ControlAdapter.OnUnload%2A> и переопределении метода, вместо <xref:System.Web.UI.Control.OnUnload%2A?displayProperty=nameWithType> метода вызывается метод override.  
+  
+ Переопределите `Unload` метод для выполнения обработки, зависящей от целевого, на этапе жизненного цикла элемента управления. <xref:System.Web.UI.Adapters.ControlAdapter.OnUnload%2A> Как правило, это функции очистки, предшествующие расстановке элемента управления.  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>При наследовании от <see cref="T:System.Web.UI.Adapters.ControlAdapter" /> класса и адаптере <see cref="M:System.Web.UI.Adapters.ControlAdapter.OnUnload(System.EventArgs)" /> переопределяет метод, адаптер должен вызвать соответствующий метод базового класса, <see cref="M:System.Web.UI.Control.OnUnload(System.EventArgs)" /> который, в свою очередь, вызывает метод. Если <see cref="M:System.Web.UI.Control.OnUnload(System.EventArgs)" /> не вызывается <see cref="E:System.Web.UI.Control.Unload" /> , событие не будет вызвано.</para></block>
+        <altmember cref="E:System.Web.UI.Control.Unload" />
+        <altmember cref="M:System.Web.UI.Control.OnUnload(System.EventArgs)" />
+        <altmember cref="T:System.Web.UI.Control" />
+      </Docs>
+    </Member>
+    <Member MemberName="Page">
+      <MemberSignature Language="C#" Value="protected System.Web.UI.Page Page { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Web.UI.Page Page" />
+      <MemberSignature Language="DocId" Value="P:System.Web.UI.Adapters.ControlAdapter.Page" />
+      <MemberSignature Language="VB.NET" Value="Protected ReadOnly Property Page As Page" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; property System::Web::UI::Page ^ Page { System::Web::UI::Page ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Page : System.Web.UI.Page" Usage="System.Web.UI.Adapters.ControlAdapter.Page" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.ComponentModel.Browsable(false)</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Web.UI.Page</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает ссылку на страницу, на которой располагается элемент управления, связанный с данным адаптером.</summary>
+        <value>Объект <see cref="T:System.Web.UI.Page" />, обеспечивающий доступ к экземпляру страницы, на которой располагается связанный элемент управления.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойство предоставляет доступ <xref:System.Web.UI.Page?displayProperty=nameWithType> к объекту, где располагается элемент управления. <xref:System.Web.UI.Adapters.ControlAdapter.Page%2A>  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.Web.UI.Page" />
+        <altmember cref="T:System.Web.UI.Control" />
+      </Docs>
+    </Member>
+    <Member MemberName="PageAdapter">
+      <MemberSignature Language="C#" Value="protected System.Web.UI.Adapters.PageAdapter PageAdapter { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Web.UI.Adapters.PageAdapter PageAdapter" />
+      <MemberSignature Language="DocId" Value="P:System.Web.UI.Adapters.ControlAdapter.PageAdapter" />
+      <MemberSignature Language="VB.NET" Value="Protected ReadOnly Property PageAdapter As PageAdapter" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; property System::Web::UI::Adapters::PageAdapter ^ PageAdapter { System::Web::UI::Adapters::PageAdapter ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.PageAdapter : System.Web.UI.Adapters.PageAdapter" Usage="System.Web.UI.Adapters.ControlAdapter.PageAdapter" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.ComponentModel.Browsable(false)</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Web.UI.Adapters.PageAdapter</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает ссылку на адаптер страницы для страницы, на которой располагается связанный элемент управления.</summary>
+        <value>Объект <see cref="T:System.Web.UI.Adapters.PageAdapter" /> для страницы, на которой располагается элемент управления, связанный с текущим адаптером <see cref="T:System.Web.UI.Adapters.ControlAdapter" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.UI.Adapters.PageAdapter?displayProperty=nameWithType> <xref:System.Web.UI.Page> Свойство предоставляет доступ к объекту <xref:System.Web.UI.Adapters.ControlAdapter> для объекта, где находится объект, связанный с текущим объектом. <xref:System.Web.UI.Control>  <xref:System.Web.UI.Adapters.ControlAdapter.PageAdapter%2A>  
+  
+ <xref:System.Web.UI.Adapters.ControlAdapter.PageAdapter%2A> Свойство можно использовать для доступа к другим элементам на уровне адаптера страницы, например к общим функциям, предназначенным для определенных целей, которые могут применяться к нескольким типам элементов управления на странице.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="T:System.Web.UI.Adapters.PageAdapter" />
+        <altmember cref="T:System.Web.UI.Control" />
+      </Docs>
+    </Member>
+    <Member MemberName="Render">
+      <MemberSignature Language="C#" Value="protected internal virtual void Render (System.Web.UI.HtmlTextWriter writer);" />
+      <MemberSignature Language="ILAsm" Value=".method familyorassemblyhidebysig newslot virtual instance void Render(class System.Web.UI.HtmlTextWriter writer) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.UI.Adapters.ControlAdapter.Render(System.Web.UI.HtmlTextWriter)" />
+      <MemberSignature Language="VB.NET" Value="Protected Friend Overridable Sub Render (writer As HtmlTextWriter)" />
+      <MemberSignature Language="C++ CLI" Value="protected public:&#xA; virtual void Render(System::Web::UI::HtmlTextWriter ^ writer);" />
+      <MemberSignature Language="F#" Value="abstract member Render : System.Web.UI.HtmlTextWriter -&gt; unit&#xA;override this.Render : System.Web.UI.HtmlTextWriter -&gt; unit" Usage="controlAdapter.Render writer" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="writer" Type="System.Web.UI.HtmlTextWriter" />
+      </Parameters>
+      <Docs>
+        <param name="writer">Объект <see cref="T:System.Web.UI.HtmlTextWriter" />, применяющийся для отображения целевого вывода.</param>
+        <summary>Создает целевую разметку для элемента управления, к которому присоединяется адаптер управления.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Переопределите <xref:System.Web.UI.Adapters.ControlAdapter.Render%2A> метод, чтобы создать разметку, относящуюся к целевому объекту, для отправки в браузер клиента. Метод вызывается вместо <xref:System.Web.UI.Control.Render%2A?displayProperty=nameWithType> метода, если <xref:System.Web.UI.Adapters.ControlAdapter> объект присоединен к <xref:System.Web.UI.Control> объекту. <xref:System.Web.UI.Adapters.ControlAdapter.Render%2A>  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>При наследовании от <see cref="T:System.Web.UI.Adapters.ControlAdapter" /> класса <see cref="M:System.Web.UI.Adapters.ControlAdapter.Render(System.Web.UI.HtmlTextWriter)" /> базовый метод вызывает <see cref="M:System.Web.UI.Control.Render(System.Web.UI.HtmlTextWriter)" /> метод. Таким способом, переопределения <see cref="M:System.Web.UI.Adapters.ControlAdapter.Render(System.Web.UI.HtmlTextWriter)" /> метода должны <see cref="M:System.Web.UI.Adapters.ControlAdapter.Render(System.Web.UI.HtmlTextWriter)" /> вызывать базовый метод только в том случае, если его обработка выполняется в дополнение к <see cref="M:System.Web.UI.Control.Render(System.Web.UI.HtmlTextWriter)" /> методу, а не к.  
+  
+Для составного элемента управления разработчик адаптера должен убедиться, что дочерние элементы управления подготавливаются к просмотру. Если метод вызывает визуализацию дочерних элементов управления, но не создает разметку, может быть целесообразно <see cref="M:System.Web.UI.Adapters.ControlAdapter.Render(System.Web.UI.HtmlTextWriter)" /> , чтобы метод вызывал свой базовый метод. <see cref="M:System.Web.UI.Control.Render(System.Web.UI.HtmlTextWriter)" /> Если требуется отрисовка дочерних элементов управления для конкретных целей, адаптер должен реализовать <see cref="M:System.Web.UI.Adapters.ControlAdapter.RenderChildren(System.Web.UI.HtmlTextWriter)" /> метод и <see cref="M:System.Web.UI.Adapters.ControlAdapter.RenderChildren(System.Web.UI.HtmlTextWriter)" /> вызвать метод из <see cref="M:System.Web.UI.Adapters.ControlAdapter.Render(System.Web.UI.HtmlTextWriter)" /> метода.</para></block>
+        <altmember cref="M:System.Web.UI.Control.Render(System.Web.UI.HtmlTextWriter)" />
+        <altmember cref="T:System.Web.UI.Control" />
+        <altmember cref="M:System.Web.UI.Adapters.ControlAdapter.RenderChildren(System.Web.UI.HtmlTextWriter)" />
+        <altmember cref="M:System.Web.UI.Control.RenderChildren(System.Web.UI.HtmlTextWriter)" />
+        <altmember cref="M:System.Web.UI.Control.RenderControl(System.Web.UI.HtmlTextWriter,System.Web.UI.Adapters.ControlAdapter)" />
+      </Docs>
+    </Member>
+    <Member MemberName="RenderChildren">
+      <MemberSignature Language="C#" Value="protected virtual void RenderChildren (System.Web.UI.HtmlTextWriter writer);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void RenderChildren(class System.Web.UI.HtmlTextWriter writer) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.UI.Adapters.ControlAdapter.RenderChildren(System.Web.UI.HtmlTextWriter)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overridable Sub RenderChildren (writer As HtmlTextWriter)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual void RenderChildren(System::Web::UI::HtmlTextWriter ^ writer);" />
+      <MemberSignature Language="F#" Value="abstract member RenderChildren : System.Web.UI.HtmlTextWriter -&gt; unit&#xA;override this.RenderChildren : System.Web.UI.HtmlTextWriter -&gt; unit" Usage="controlAdapter.RenderChildren writer" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="writer" Type="System.Web.UI.HtmlTextWriter" />
+      </Parameters>
+      <Docs>
+        <param name="writer">Объект <see cref="T:System.Web.UI.HtmlTextWriter" />, применяющийся для отображения целевого вывода.</param>
+        <summary>Создает целевую разметку для дочерних элементов управления в составном элементе управления, к которому присоединяется адаптер элемента управления.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Переопределите <xref:System.Web.UI.Adapters.ControlAdapter.RenderChildren%2A> метод, когда необходимо создать разметку для дочернего элемента управления в составном элементе управления, а также разметку для отдельных дочерних элементов управления.  
+  
+ ]]></format>
+        </remarks>
+        <block subset="none" type="overrides"><para>При наследовании от <see cref="T:System.Web.UI.Adapters.ControlAdapter" /> класса для составного элемента управления разработчик адаптера должен убедиться, что дочерние элементы управления подготавливаются к просмотру. Если адаптер переопределяет <see cref="M:System.Web.UI.Adapters.ControlAdapter.RenderChildren(System.Web.UI.HtmlTextWriter)" /> метод, он должен <see cref="M:System.Web.UI.Adapters.ControlAdapter.RenderChildren(System.Web.UI.HtmlTextWriter)" /> вызвать метод <see cref="M:System.Web.UI.Adapters.ControlAdapter.Render(System.Web.UI.HtmlTextWriter)" /> из переопределения метода.  
+  
+Если метод вызывает визуализацию дочерних элементов управления, но сам по себе не создает разметку, <see cref="M:System.Web.UI.Adapters.ControlAdapter.Render(System.Web.UI.HtmlTextWriter)" /> метод может вызвать его базовый <see cref="M:System.Web.UI.Control.Render(System.Web.UI.HtmlTextWriter)" /> метод, который вызывает метод, вместо реализации переопределения для <see cref="M:System.Web.UI.Control.Render(System.Web.UI.HtmlTextWriter)" /> <see cref="M:System.Web.UI.Adapters.ControlAdapter.RenderChildren(System.Web.UI.HtmlTextWriter)" /> метод.</para></block>
+        <altmember cref="M:System.Web.UI.Control.RenderChildren(System.Web.UI.HtmlTextWriter)" />
+        <altmember cref="T:System.Web.UI.Control" />
+        <altmember cref="M:System.Web.UI.Adapters.ControlAdapter.Render(System.Web.UI.HtmlTextWriter)" />
+        <altmember cref="M:System.Web.UI.Control.Render(System.Web.UI.HtmlTextWriter)" />
+      </Docs>
+    </Member>
+    <Member MemberName="SaveAdapterControlState">
+      <MemberSignature Language="C#" Value="protected internal virtual object SaveAdapterControlState ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyorassemblyhidebysig newslot virtual instance object SaveAdapterControlState() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.UI.Adapters.ControlAdapter.SaveAdapterControlState" />
+      <MemberSignature Language="VB.NET" Value="Protected Friend Overridable Function SaveAdapterControlState () As Object" />
+      <MemberSignature Language="C++ CLI" Value="protected public:&#xA; virtual System::Object ^ SaveAdapterControlState();" />
+      <MemberSignature Language="F#" Value="abstract member SaveAdapterControlState : unit -&gt; obj&#xA;override this.SaveAdapterControlState : unit -&gt; obj" Usage="controlAdapter.SaveAdapterControlState " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Object</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Сохраняет сведения о состоянии элемента управления для адаптера элемента управления.</summary>
+        <returns>Объект <see cref="T:System.Object" />содержащий сведения о состоянии адаптера элемента управления, такие. как <see cref="T:System.Web.UI.StateBag" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Состояние элемента управления — это необходимая информация о состоянии, даже если состояние представления отключено. Если адаптеру необходимо поддерживать собственные сведения о состоянии элемента управления, он может переопределить <xref:System.Web.UI.Adapters.ControlAdapter.SaveAdapterControlState%2A> методы и. <xref:System.Web.UI.Adapters.ControlAdapter.LoadAdapterControlState%2A>  
+  
+ Адаптеру может потребоваться поддерживать сведения о состоянии управления, если есть функции, которые должны поддерживать состояние в запросах независимо от состояния связанного элемента управления. Например, составной элемент управления, состоящий из большого текстового отображения, и группа <xref:System.Web.UI.WebControls.RadioButton> элементов управления может отображаться как одно представление в браузерах настольных компьютеров. В других браузерах он может разделить отрисовку — одно представление для текстового отображения, а другое — для группы переключателей. Адаптеру потребуется поддерживать собственные целевые сведения о текущем активном представлении.  
+  
+ Метод вызывается сразу <xref:System.Web.UI.Control.SaveControlState%2A?displayProperty=nameWithType> после метода на `SaveState` этапе жизненного цикла. <xref:System.Web.UI.Adapters.ControlAdapter.SaveAdapterControlState%2A> Состояние элемента управления адаптера является отдельным и в дополнение к состоянию элемента управления.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.Web.UI.Control.SaveControlState" />
+        <altmember cref="T:System.Web.UI.Control" />
+        <altmember cref="M:System.Web.UI.Adapters.ControlAdapter.LoadAdapterControlState(System.Object)" />
+        <altmember cref="M:System.Web.UI.Adapters.ControlAdapter.SaveAdapterViewState" />
+      </Docs>
+    </Member>
+    <Member MemberName="SaveAdapterViewState">
+      <MemberSignature Language="C#" Value="protected internal virtual object SaveAdapterViewState ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyorassemblyhidebysig newslot virtual instance object SaveAdapterViewState() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.UI.Adapters.ControlAdapter.SaveAdapterViewState" />
+      <MemberSignature Language="VB.NET" Value="Protected Friend Overridable Function SaveAdapterViewState () As Object" />
+      <MemberSignature Language="C++ CLI" Value="protected public:&#xA; virtual System::Object ^ SaveAdapterViewState();" />
+      <MemberSignature Language="F#" Value="abstract member SaveAdapterViewState : unit -&gt; obj&#xA;override this.SaveAdapterViewState : unit -&gt; obj" Usage="controlAdapter.SaveAdapterViewState " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Object</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Сохраняет сведения о состоянии просмотра для адаптера элемента управления.</summary>
+        <returns>Объект <see cref="T:System.Object" />, содержащий сведения о состоянии просмотра адаптера, такие как <see cref="T:System.Web.UI.StateBag" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если адаптеру необходимо сохранить свои сведения о состоянии представления, он может переопределить <xref:System.Web.UI.Adapters.ControlAdapter.SaveAdapterViewState%2A> методы и. <xref:System.Web.UI.Adapters.ControlAdapter.LoadAdapterViewState%2A>  
+  
+ Адаптер должен поддерживать сведения о состоянии представления, если есть данные, которые должны поддерживаться в запросах, независимо от связанного состояния представления элемента управления. Например, элемент управления "Сетка" в браузерах настольных компьютеров может отображаться как одно представление строк и столбцов значений. В других браузерах он может разделить отрисовку на несколько отдельных представлений, таких как список строк и сведения о одной строке. Адаптеру потребуется поддерживать данные для представлений, которые в настоящее время не активны в состоянии представления.  
+  
+ Метод вызывается непосредственно <xref:System.Web.UI.Control.SaveViewState%2A?displayProperty=nameWithType> перед методом на `SaveState` этапе жизненного цикла. <xref:System.Web.UI.Adapters.ControlAdapter.SaveAdapterViewState%2A> Состояние представления адаптера является отдельным и в дополнение к состоянию представления элемента управления.  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.Web.UI.Control.SaveViewState" />
+        <altmember cref="T:System.Web.UI.Control" />
+        <altmember cref="M:System.Web.UI.Adapters.ControlAdapter.SaveAdapterControlState" />
+        <altmember cref="M:System.Web.UI.Adapters.ControlAdapter.LoadAdapterViewState(System.Object)" />
+        <altmember cref="P:System.Web.UI.Control.ViewState" />
+      </Docs>
+    </Member>
+  </Members>
+</Type>

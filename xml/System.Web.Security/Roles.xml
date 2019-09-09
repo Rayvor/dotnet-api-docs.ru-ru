@@ -1,0 +1,1972 @@
+<Type Name="Roles" FullName="System.Web.Security.Roles">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="171691fbff13d58edd51e317d08305505e6b2292" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70690626" /></Metadata><TypeSignature Language="C#" Value="public static class Roles" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract sealed beforefieldinit Roles extends System.Object" />
+  <TypeSignature Language="DocId" Value="T:System.Web.Security.Roles" />
+  <TypeSignature Language="VB.NET" Value="Public Class Roles" />
+  <TypeSignature Language="C++ CLI" Value="public ref class Roles abstract sealed" />
+  <TypeSignature Language="F#" Value="type Roles = class" />
+  <AssemblyInfo>
+    <AssemblyName>System.Web</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>Управляет членством пользователя в ролях для проверки авторизации в приложении ASP.NET. Этот класс не наследуется.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Управление ролями ASP.NET позволяет управлять авторизацией для приложения на основе групп пользователей, которые называются ролями. Назначив пользователям роли, можно управлять доступом к различным частям или функциям веб-приложения на основе роли, а не или в дополнение к указанию авторизации на основе имени пользователя. Например, приложение-сотрудник может иметь такие роли, как менеджеры, сотрудники, директора и т. д., где для каждой роли указаны разные привилегии.  
+  
+ Пользователи могут принадлежать к более чем одной роли. Например, если ваш сайт является форумом обсуждений, некоторые пользователи могут быть в роли участников и модераторов. Вы можете определить для каждой роли разные привилегии на сайте, и пользователь, который находится в обеих ролях, будет иметь оба набора привилегий.  
+  
+ Чтобы включить управление ролями для приложения ASP.NET, используйте элемент `system.web` [roleManager](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/ms164660(v%3dvs.100)) раздела в файле Web. config для приложения, как показано в следующем примере.  
+  
+```  
+<configuration>  
+  <connectionStrings>  
+    <add name="SqlServices" connectionString="Data Source=localhost;Initial Catalog=aspnetdb;Integrated Security=SSPI;" />  
+  </connectionStrings>  
+  
+  <system.web>  
+    <authentication mode="Forms" >  
+      <forms loginUrl="login.aspx"  
+      name=".ASPXFORMSAUTH" />  
+    </authentication>  
+  
+  <roleManager defaultProvider="SqlProvider"   
+    enabled="true"  
+    cacheRolesInCookie="true"  
+    cookieName=".ASPROLES"  
+    cookieTimeout="30"  
+    cookiePath="/"  
+    cookieRequireSSL="false"  
+    cookieSlidingExpiration="true"  
+    cookieProtection="All" >  
+    <providers>  
+      <add  
+        name="SqlProvider"  
+        type="System.Web.Security.SqlRoleProvider"  
+        connectionStringName="SqlServices"  
+        applicationName="SampleApplication" />  
+      </providers>  
+    </roleManager>  
+  </system.web>  
+</configuration>  
+```  
+  
+ Правила авторизации можно указать в файле конфигурации для веб-приложения или программно в коде. Например, для следующего раздела [авторизации](https://msdn.microsoft.com/library/2d3d9bf6-f914-4c30-ad03-32eea98fa612) из файла Web. config необходимо, чтобы пользователи выполнили вход (запретив анонимных пользователей), а затем разрешить доступ только пользователям с ролью «Администраторы».  
+  
+```  
+<authorization>  
+  <deny users="?" />  
+  <allow roles="Administrators" />  
+  <deny users="*" />  
+</authorization>  
+```  
+  
+ Если вы используете `authorization` раздел в файле Web. config приложения для указания авторизации на основе ролей, пользователи приложения должны предоставить удостоверение пользователя, прошедшего проверку подлинности. Проверить подлинность пользователей можно с помощью Windows или форм. Анонимные пользователи не могут быть назначены роли. Роли можно использовать независимо друг от друга и в сочетании с классами ASP.NET <xref:System.Web.Security.Membership> .  
+  
+ Чтобы проверить членство в ролях программными средствами, можно <xref:System.Web.Security.Roles> использовать класс <xref:System.Web.UI.Page.User%2A?displayProperty=nameWithType> или свойство с <xref:System.Web.Security.Roles.IsUserInRole%2A> методом, <xref:System.Security.Principal.IPrincipal.IsInRole%2A?displayProperty=nameWithType> либо можно использовать <xref:System.Web.UI.Page.User%2A?displayProperty=nameWithType> свойство с методом. Пример кода, который программно проверяет членство в ролях, см. в подразделе "пример" этой статьи.  
+  
+ Кроме <xref:System.Web.Security.Roles> того, класс позволяет создавать и удалять роли, а также добавлять и удалять пользователей из ролей.  
+  
+> [!NOTE]
+>  Если приложение настроено для использования класса, изменить <xref:System.Web.Security.WindowsTokenRoleProvider> роли или членство в роли нельзя. <xref:System.Web.Security.WindowsTokenRoleProvider> Класс проверяет членство только в группах безопасности Windows. В этом случае для создания и удаления групп и управления членством в группах необходимо использовать управление учетными записями пользователей Windows, а не ASP.NET роли.  
+  
+ Сведения о ролях можно хранить в нескольких источниках данных.  
+  
+-   <xref:System.Web.Security.WindowsTokenRoleProvider> Класс можно использовать для получения сведений о ролях на основе членства в группах Windows.  
+  
+-   Сведения о ролях можно хранить в базе данных SQL Server с помощью <xref:System.Web.Security.SqlRoleProvider> класса.  
+  
+-   Если у вас есть сведения о ролях или вы хотите хранить сведения о ролях в источнике данных, отличном от Windows, хранилище данных авторизации или SQL Server, можно реализовать пользовательский поставщик роли, создав класс, который наследует  <xref:System.Web.Security.RoleProvider> абстрактный класс. Дополнительные сведения см. [в разделе Реализация поставщика ролей](https://msdn.microsoft.com/library/851671ce-bf9b-43f2-aba4-bc9d28b11c7d).  
+  
+ Если браузер пользователя принимает файлы cookie, можно сохранить сведения о ролях для этого пользователя в файле cookie на компьютере пользователя. При каждом запросе страницы ASP.NET считывает сведения о ролях для этого пользователя из файла cookie. Это может повысить производительность приложения, уменьшая объем обмена данными, необходимый источнику данных для получения сведений о ролях. Если сведения о ролях для пользователя слишком длинные для хранения в файле cookie, ASP.NET сохраняет только недавно использованные сведения о ролях в файле cookie, а затем при необходимости ищет дополнительные сведения о ролях в источнике данных. Если браузер пользователя не поддерживает файлы cookie, а файлы cookie отключены, сведения о ролях не кэшируются в файле cookie.  
+  
+ Можно повысить надежность имен ролей, кэшированных в файле cookie, указав <xref:System.Web.Security.Roles.CookieProtectionValue%2A> свойство при настройке ролей ASP.NET. Значение по <xref:System.Web.Security.Roles.CookieProtectionValue%2A> умолчанию — `All`, которое шифрует имена ролей в файле cookie и проверяет, что содержимое файла cookie не было изменено.  
+  
+   
+  
+## Examples  
+ В следующем примере показан файл Web. config для приложения, настроенного для использования ASP.NET членства и ролей ASP.NET, и для использования <xref:System.Web.Security.SqlRoleProvider> для хранения сведений о членстве и ролях в SQL Server базе данных. Пользователи проходят проверку подлинности с помощью форм, и доступ к приложению разрешен только пользователям из роли "Администраторы".  
+  
+```  
+<configuration>  
+  <connectionStrings>  
+    <add name="SqlServices" connectionString="Data Source=localhost;Initial Catalog=aspnetdb;Integrated Security=SSPI;" />  
+  </connectionStrings>  
+  
+  <system.web>  
+    <authentication mode="Forms" >  
+      <forms loginUrl="login.aspx"  
+      name=".ASPXFORMSAUTH" />  
+    </authentication>  
+  
+    <authorization>  
+      <deny users="?" />  
+      <allow roles="Administrators" />  
+      <deny users="*" />  
+    </authorization>  
+  
+    <membership defaultProvider="AspNetSqlProvider" userIsOnlineTimeWindow="15">  
+    </membership>  
+  
+    <roleManager defaultProvider="SqlProvider"   
+      enabled="true"  
+      cacheRolesInCookie="true"  
+      cookieName=".ASPROLES"  
+      cookieTimeout="30"  
+      cookiePath="/"  
+      cookieRequireSSL="true"  
+      cookieSlidingExpiration="true"  
+      cookieProtection="All" >  
+  
+      <providers>  
+        <clear />  
+        <add  
+          name="SqlProvider"  
+          type="System.Web.Security.SqlRoleProvider"  
+          connectionStringName="SqlServices"  
+          applicationName="SampleApplication" />  
+        </providers>  
+  
+    </roleManager>  
+  </system.web>  
+</configuration>  
+```  
+  
+ В следующем примере кода программным способом проверяется, входит ли вошедший в систему пользователь в роль "Администраторы", прежде чем разрешить пользователю просматривать роли других пользователей.  
+  
+  
+  
+ ]]></format>
+    </remarks>
+    <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+  </Docs>
+  <Members>
+    <Member MemberName="AddUsersToRole">
+      <MemberSignature Language="C#" Value="public static void AddUsersToRole (string[] usernames, string roleName);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void AddUsersToRole(string[] usernames, string roleName) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.Roles.AddUsersToRole(System.String[],System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Sub AddUsersToRole (usernames As String(), roleName As String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static void AddUsersToRole(cli::array &lt;System::String ^&gt; ^ usernames, System::String ^ roleName);" />
+      <MemberSignature Language="F#" Value="static member AddUsersToRole : string[] * string -&gt; unit" Usage="System.Web.Security.Roles.AddUsersToRole (usernames, roleName)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="usernames" Type="System.String[]" />
+        <Parameter Name="roleName" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="usernames">Массив строк имен пользователей для добавления в указанную роль.</param>
+        <param name="roleName">Роль, в которую добавляются указанные имена пользователей.</param>
+        <summary>Добавляет указанных пользователей в указанную роль.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.Roles.AddUsersToRole%2A> Метод вызывает поставщик ролей по умолчанию, чтобы связать указанных пользователей с указанной ролью в источнике данных.  
+  
+ Если приложение использует <xref:System.Web.Security.SqlRoleProvider> класс, то обновления базы данных, выполняемые во время вызова <xref:System.Web.Security.SqlRoleProvider.AddUsersToRoles%2A> метода, выполняются внутри транзакции. Если возникает ошибка, например имя пользователя, которое уже находится в указанной роли, выполняется откат транзакции и обновления не выполняются.  
+  
+> [!NOTE]
+>  Имена пользователей и ролей не могут содержать запятые.  
+  
+   
+  
+## Examples  
+ Следующий пример кода добавляет одного или нескольких пользователей к роли или удаляет пользователя из роли на основе введенных пользователем данных. Пример файла Web. config, который включает управление ролями, см. в разделе <xref:System.Web.Security.Roles>.  
+  
+ [!code-aspx-csharp[System.Web.Security.SqlRoleProvider#3](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.SqlRoleProvider/CS/adduserstorolecs.aspx#3)]
+ [!code-aspx-vb[System.Web.Security.SqlRoleProvider#3](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.SqlRoleProvider/VB/adduserstorolevb.aspx#3)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="roleName" /> имеет значение <see langword="null" />.  
+  
+- или - 
+Один из элементов в <paramref name="usernames" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="roleName" /> равен пустой строке или содержит запятую (,).  
+  
+- или - 
+Один из элементов массива <paramref name="usernames" /> — пустая строка или содержит запятую (,).  
+  
+- или - 
+ Параметр <paramref name="usernames" /> содержит повторяющийся элемент.</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Управление ролями не включено.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="AddUsersToRoles">
+      <MemberSignature Language="C#" Value="public static void AddUsersToRoles (string[] usernames, string[] roleNames);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void AddUsersToRoles(string[] usernames, string[] roleNames) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.Roles.AddUsersToRoles(System.String[],System.String[])" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Sub AddUsersToRoles (usernames As String(), roleNames As String())" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static void AddUsersToRoles(cli::array &lt;System::String ^&gt; ^ usernames, cli::array &lt;System::String ^&gt; ^ roleNames);" />
+      <MemberSignature Language="F#" Value="static member AddUsersToRoles : string[] * string[] -&gt; unit" Usage="System.Web.Security.Roles.AddUsersToRoles (usernames, roleNames)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="usernames" Type="System.String[]" />
+        <Parameter Name="roleNames" Type="System.String[]" />
+      </Parameters>
+      <Docs>
+        <param name="usernames">Массив строк имен пользователей для добавления в указанные роли.</param>
+        <param name="roleNames">Массив строк имен ролей, в который добавляются указанные имена пользователей.</param>
+        <summary>Добавляет указанных пользователей в указанные роли.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.Roles.AddUsersToRoles%2A> Метод вызывает поставщик ролей по умолчанию, чтобы связать указанных пользователей с указанными ролями в источнике данных.  
+  
+ Если приложение использует <xref:System.Web.Security.SqlRoleProvider> класс, то обновления базы данных, выполняемые во время вызова <xref:System.Web.Security.SqlRoleProvider.AddUsersToRoles%2A> метода, выполняются внутри транзакции. Если возникает ошибка, например имя пользователя, которое уже находится в указанной роли, выполняется откат транзакции и обновления не выполняются.  
+  
+> [!NOTE]
+>  Имена пользователей и ролей не могут содержать запятые.  
+  
+   
+  
+## Examples  
+ В следующем примере кода один или несколько пользователей добавляются в одну или несколько ролей. Пример файла Web. config, который включает управление ролями, см. в разделе <xref:System.Web.Security.Roles>.  
+  
+ [!code-aspx-csharp[System.Web.Security.Roles#1](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.Roles/CS/adduserstorolescs.aspx#1)]
+ [!code-aspx-vb[System.Web.Security.Roles#1](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.Roles/VB/adduserstorolesvb.aspx#1)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Одна из ролей в массиве <paramref name="roleNames" /> имеет значение <see langword="null" />.  
+  
+-или- 
+Один из пользователей в массиве <paramref name="usernames" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException">Одна из ролей в массиве <paramref name="roleNames" /> — пустая строка или содержит запятую (,).  
+  
+- или - 
+Один из пользователей в массиве <paramref name="usernames" /> — пустая строка или содержит запятую (,).  
+  
+- или - 
+ Параметр <paramref name="roleNames" /> содержит повторяющийся элемент.  
+  
+- или - 
+ Параметр <paramref name="usernames" /> содержит повторяющийся элемент.</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Управление ролями не включено.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="AddUserToRole">
+      <MemberSignature Language="C#" Value="public static void AddUserToRole (string username, string roleName);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void AddUserToRole(string username, string roleName) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.Roles.AddUserToRole(System.String,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Sub AddUserToRole (username As String, roleName As String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static void AddUserToRole(System::String ^ username, System::String ^ roleName);" />
+      <MemberSignature Language="F#" Value="static member AddUserToRole : string * string -&gt; unit" Usage="System.Web.Security.Roles.AddUserToRole (username, roleName)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="username" Type="System.String" />
+        <Parameter Name="roleName" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="username">Имя пользователя для добавления в указанную роль.</param>
+        <param name="roleName">Роль, в которую добавляется указанное имя пользователя.</param>
+        <summary>Добавляет указанного пользователя в указанную роль.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.Roles.AddUserToRole%2A> Метод вызывает поставщик ролей по умолчанию, чтобы связать указанного пользователя с указанной ролью в источнике данных.  
+  
+> [!NOTE]
+>  Имена пользователей и ролей не могут содержать запятые.  
+  
+   
+  
+## Examples  
+ В следующем примере кода пользователь добавляется в роль. Пример файла Web. config, который включает управление ролями, см. в разделе <xref:System.Web.Security.Roles>.  
+  
+ [!code-aspx-csharp[System.Web.Security.Roles#2](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.Roles/CS/addusertorolecs.aspx#2)]
+ [!code-aspx-vb[System.Web.Security.Roles#2](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.Roles/VB/addusertorolevb.aspx#2)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="roleName" /> — <see langword="null" />.  
+  
+- или - 
+ Свойство <paramref name="username" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="roleName" /> равен пустой строке или содержит запятую (,).  
+  
+- или - 
+ Параметр <paramref name="username" /> равен пустой строке или содержит запятую (,).</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Управление ролями не включено.  
+  
+ - или -  
+  
+ Пользователь уже присвоен указанной роли.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="AddUserToRoles">
+      <MemberSignature Language="C#" Value="public static void AddUserToRoles (string username, string[] roleNames);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void AddUserToRoles(string username, string[] roleNames) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.Roles.AddUserToRoles(System.String,System.String[])" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Sub AddUserToRoles (username As String, roleNames As String())" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static void AddUserToRoles(System::String ^ username, cli::array &lt;System::String ^&gt; ^ roleNames);" />
+      <MemberSignature Language="F#" Value="static member AddUserToRoles : string * string[] -&gt; unit" Usage="System.Web.Security.Roles.AddUserToRoles (username, roleNames)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="username" Type="System.String" />
+        <Parameter Name="roleNames" Type="System.String[]" />
+      </Parameters>
+      <Docs>
+        <param name="username">Имя пользователя для добавления в указанные роли.</param>
+        <param name="roleNames">Массив строк ролей для добавления в них указанных имен пользователей.</param>
+        <summary>Добавляет указанного пользователя в указанные роли.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.Roles.AddUserToRoles%2A> Метод вызывает поставщик ролей по умолчанию, чтобы связать указанного пользователя с указанными ролями в источнике данных.  
+  
+ Если приложение использует <xref:System.Web.Security.SqlRoleProvider> класс, то обновления базы данных, выполняемые во время вызова <xref:System.Web.Security.Roles.AddUserToRoles%2A> метода, выполняются внутри транзакции. Если возникает ошибка, например имя пользователя, которое уже находится в указанной роли, выполняется откат транзакции и обновления не выполняются.  
+  
+> [!NOTE]
+>  Имена пользователей и ролей не могут содержать запятые.  
+  
+   
+  
+## Examples  
+ В следующем примере кода пользователь добавляется в одну или несколько ролей. Пример файла Web. config, который включает управление ролями, см. в разделе <xref:System.Web.Security.Roles>.  
+  
+ [!code-aspx-csharp[System.Web.Security.Roles#3](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.Roles/CS/addusertorolescs.aspx#3)]
+ [!code-aspx-vb[System.Web.Security.Roles#3](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.Roles/VB/addusertorolesvb.aspx#3)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Одна из ролей в массиве <paramref name="roleNames" /> имеет значение <see langword="null" />.  
+  
+-или- 
+ Свойство <paramref name="username" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException">Одна из ролей в массиве <paramref name="roleNames" /> — пустая строка или содержит запятую (,).  
+  
+- или - 
+ Параметр <paramref name="username" /> равен пустой строке или содержит запятую (,).  
+  
+- или - 
+ Параметр <paramref name="roleNames" /> содержит повторяющийся элемент.</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Управление ролями не включено.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="ApplicationName">
+      <MemberSignature Language="C#" Value="public static string ApplicationName { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property string ApplicationName" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.Roles.ApplicationName" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Property ApplicationName As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property System::String ^ ApplicationName { System::String ^ get(); void set(System::String ^ value); };" />
+      <MemberSignature Language="F#" Value="member this.ApplicationName : string with get, set" Usage="System.Web.Security.Roles.ApplicationName" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает или задает имя приложения, для которого будут сохраняться и извлекаться сведения о роли.</summary>
+        <value>Имя приложения, для которого будут сохраняться и извлекаться сведения о роли.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.Roles.ApplicationName%2A> Свойство используется <xref:System.Web.Security.Roles>  классом для связывания пользователей и ролей с различными приложениями. Это позволяет нескольким приложениям использовать один источник данных для хранения сведений о пользователях и ролях без конфликтов между повторяющимися именами пользователей или повторяющимися именами ролей. Несколько ASP.NET приложений могут использовать один и тот же источник данных, указав одно и то <xref:System.Web.Security.Roles.ApplicationName%2A> же значение в свойстве. <xref:System.Web.Security.Roles.ApplicationName%2A> Свойство можно задать программно или декларативно в файле конфигурации для веб-приложения с `applicationName` помощью атрибута.  
+  
+ Если <xref:System.Web.Security.SqlRoleProvider> веб-приложение использует класс, а значение не указано `applicationName` для атрибута в файле конфигурации, <xref:System.Web.HttpRequest.ApplicationPath%2A?displayProperty=nameWithType> используется значение свойства для текущего <xref:System.Web.HttpContext.Request%2A?displayProperty=nameWithType> свойства.  
+  
+> [!CAUTION]
+>  Поскольку один экземпляр поставщика ролей по умолчанию используется для всех запросов, обслуживаемых <xref:System.Web.HttpApplication> объектом, можно одновременно выполнять несколько запросов и пытаться <xref:System.Web.Security.Roles.ApplicationName%2A> задать значение свойства. Свойство не является потокобезопасным для нескольких операций записи, и <xref:System.Web.Security.Roles.ApplicationName%2A> изменение значения свойства может привести к непредвиденному поведению для нескольких пользователей приложения. <xref:System.Web.Security.Roles.ApplicationName%2A> Следует избегать написания кода, чтобы пользователи могли задавать свойство, <xref:System.Web.Security.Roles.ApplicationName%2A> если это не требуется. Примером приложения, в <xref:System.Web.Security.Roles.ApplicationName%2A> котором может потребоваться задать свойство, является административное приложение, которое управляет данными ролей для нескольких приложений. Такое приложение должно быть приложением с одним пользователем, а не веб-приложением.  
+  
+   
+  
+## Examples  
+ В следующем примере показан элемент [roleManager](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/ms164660(v%3dvs.100)) в `system.web` разделе файла Web. config для приложения ASP.NET. Он указывает, что приложение использует <xref:System.Web.Security.SqlRoleProvider> экземпляр и `applicationName` присваивает атрибуту `MyApplication`значение.  
+  
+```  
+<roleManager defaultProvider="SqlProvider"   
+  enabled="true"  
+  cacheRolesInCookie="true"  
+  cookieName=".ASPROLES"  
+  cookieTimeout="30"  
+  cookiePath="/"  
+  cookieRequireSSL="false"  
+  cookieSlidingExpiration="true"  
+  cookieProtection="All" >  
+  <providers>  
+    <add  
+      name="SqlProvider"  
+      type="System.Web.Security.SqlRoleProvider"  
+      connectionStringName="SqlServices"  
+      applicationName="MyApplication" />  
+  </providers>  
+</roleManager>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="CacheRolesInCookie">
+      <MemberSignature Language="C#" Value="public static bool CacheRolesInCookie { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property bool CacheRolesInCookie" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.Roles.CacheRolesInCookie" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property CacheRolesInCookie As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property bool CacheRolesInCookie { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.CacheRolesInCookie : bool" Usage="System.Web.Security.Roles.CacheRolesInCookie" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, указывающее кэшированы ли текущие роли пользователей в файл Cookie.</summary>
+        <value><see langword="true" />, если роли текущего пользователя кэшируются с использованием файла cookie, иначе <see langword="false" />. Значение по умолчанию — <see langword="true" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Если свойство имеет `true` значение в файле Web. config, сведения о ролях для каждого пользователя хранятся в файле cookie. <xref:System.Web.Security.Roles.CacheRolesInCookie%2A> Когда служба управления ролями проверяет, входит ли пользователь в конкретную роль, перед вызовом поставщика роли проверяется состояние файла Cookie ролей, чтобы проверить список ролей в источнике данных. Файл cookie динамически обновляется для кэширования последних проверенных имен ролей.  
+  
+ Можно повысить надежность имен ролей, кэшированных в файле cookie, указав <xref:System.Web.Security.Roles.CookieProtectionValue%2A> свойство при настройке ролей ASP.NET. Значение по <xref:System.Web.Security.Roles.CookieProtectionValue%2A> умолчанию — `All`, которое шифрует имена ролей в файле cookie и проверяет, что содержимое файла cookie не было изменено.  
+  
+> [!NOTE]
+>  Поскольку имена ролей могут кэшироваться отдельно от источника данных, изменения в управлении ролями в источнике данных не будут отражены в кэшированных значениях. В этом случае пользователь должен закрыть и снова открыть браузер, чтобы очистить кэшированное значение файла cookie.  
+  
+   
+  
+## Examples  
+ В следующем примере показан элемент [roleManager](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/ms164660(v%3dvs.100)) в `system.web` разделе файла Web. config для приложения ASP.NET. Он указывает, что приложение использует <xref:System.Web.Security.SqlRoleProvider> экземпляр и `cacheRolesInCookie` присваивает атрибуту `true`значение.  
+  
+```  
+<roleManager defaultProvider="SqlProvider"   
+  enabled="true"  
+  cacheRolesInCookie="true"  
+  cookieName=".ASPROLES"  
+  cookieTimeout="30"  
+  cookiePath="/"  
+  cookieRequireSSL="false"  
+  cookieSlidingExpiration="true"  
+  cookieProtection="All" >  
+  <providers>  
+    <add  
+      name="SqlProvider"  
+      type="System.Web.Security.SqlRoleProvider"  
+      connectionStringName="SqlServices"  
+      applicationName="MyApplication" />  
+   </providers>  
+</roleManager>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="CookieName">
+      <MemberSignature Language="C#" Value="public static string CookieName { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property string CookieName" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.Roles.CookieName" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property CookieName As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property System::String ^ CookieName { System::String ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.CookieName : string" Usage="System.Web.Security.Roles.CookieName" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает имя файла cookie, в котором кэшированы имена ролей.</summary>
+        <value>Имя файла cookie, в котором кэшированы имена ролей. По умолчанию — .ASPXROLES.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Можно указать имя файла cookie, в котором будут кэшироваться роли для приложения, задав `cookieName` атрибут в файле Web. config для приложения ASP.NET. Это полезно, если требуется уникально идентифицировать файл cookie для приложения или когда файл cookie используется несколькими приложениями, например с файлом cookie домена.  
+  
+   
+  
+## Examples  
+ В следующем примере показан элемент [roleManager](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/ms164660(v%3dvs.100)) в `system.web` разделе файла Web. config для приложения ASP.NET. Он указывает, что приложение использует <xref:System.Web.Security.SqlRoleProvider> экземпляр и `cookieName` присваивает атрибуту значение. АСПРОЛЕС.  
+  
+```  
+<roleManager defaultProvider="SqlProvider"   
+  enabled="true"  
+  cacheRolesInCookie="true"  
+  cookieName=".ASPROLES"  
+  cookieTimeout="30"  
+  cookiePath="/"  
+  cookieRequireSSL="false"  
+  cookieSlidingExpiration="true"  
+  cookieProtection="All" >  
+  <providers>  
+    <add  
+      name="SqlProvider"  
+      type="System.Web.Security.SqlRoleProvider"  
+      connectionStringName="SqlServices"  
+      applicationName="MyApplication" />  
+  </providers>  
+</roleManager>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="CookiePath">
+      <MemberSignature Language="C#" Value="public static string CookiePath { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property string CookiePath" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.Roles.CookiePath" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property CookiePath As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property System::String ^ CookiePath { System::String ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.CookiePath : string" Usage="System.Web.Security.Roles.CookiePath" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает путь к файлу cookie с именами ролей.</summary>
+        <value>Путь к файлу cookie, в котором кэшированы имена ролей. По умолчанию используется /.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Можно указать путь к файлу cookie, в котором будут кэшироваться роли для приложения, задав `cookiePath` атрибут в файле Web. config для приложения ASP.NET. Дополнительные сведения о путях файлов cookie см. <xref:System.Web.HttpCookie.Path%2A>в разделе.  
+  
+   
+  
+## Examples  
+ В следующем примере показан элемент [roleManager](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/ms164660(v%3dvs.100)) в `system.web` разделе файла Web. config для приложения ASP.NET. Он указывает, что приложение использует <xref:System.Web.Security.SqlRoleProvider> экземпляр и `cookiePath` присваивает атрибуту значение/мяппликатион..  
+  
+```  
+<roleManager defaultProvider="SqlProvider"   
+  enabled="true"  
+  cacheRolesInCookie="true"  
+  cookieName=".ASPROLES"  
+  cookieTimeout="30"  
+  cookiePath="/MyApplication"  
+  cookieRequireSSL="false"  
+  cookieSlidingExpiration="true"  
+  cookieProtection="All" >  
+  <providers>  
+    <add  
+      name="SqlProvider"  
+      type="System.Web.Security.SqlRoleProvider"  
+      connectionStringName="SqlServices"  
+      applicationName="MyApplication" />  
+  </providers>  
+</roleManager>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="CookieProtectionValue">
+      <MemberSignature Language="C#" Value="public static System.Web.Security.CookieProtection CookieProtectionValue { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property valuetype System.Web.Security.CookieProtection CookieProtectionValue" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.Roles.CookieProtectionValue" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property CookieProtectionValue As CookieProtection" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property System::Web::Security::CookieProtection CookieProtectionValue { System::Web::Security::CookieProtection get(); };" />
+      <MemberSignature Language="F#" Value="member this.CookieProtectionValue : System.Web.Security.CookieProtection" Usage="System.Web.Security.Roles.CookieProtectionValue" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Security.CookieProtection</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, указывающее, каким образом защищены имена ролей, кэшированные в файле Cookie.</summary>
+        <value>Одно из значений перечисления <see cref="T:System.Web.Security.CookieProtection" /> указывает, каким образом защищены имена ролей, кэшированные в файле Cookie. Значение по умолчанию — <see langword="All" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Можно указать защиту файла cookie, в котором кэшируются роли для приложения, задав `cookieProtection` атрибут в файле Web. config для приложения ASP.NET. `cookieProtection` Атрибут принимает значение перечисления, которое указывает, являются ли имена ролей зашифрованными, проверенными, как, так <xref:System.Web.Security.CookieProtection>  и без них.  
+  
+   
+  
+## Examples  
+ В следующем примере показан элемент [roleManager](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/ms164660(v%3dvs.100)) в `system.web` разделе файла Web. config для приложения ASP.NET. Он указывает, что приложение использует <xref:System.Web.Security.SqlRoleProvider> экземпляр и задает `cookieProtection` для атрибута значение `Encrypted`.  
+  
+```  
+<roleManager defaultProvider="SqlProvider"   
+  enabled="true"  
+  cacheRolesInCookie="true"  
+  cookieName=".ASPROLES"  
+  cookieTimeout="30"  
+  cookiePath="/MyApplication"  
+  cookieRequireSSL="false"  
+  cookieSlidingExpiration="true"  
+  cookieProtection="Encrypted" >  
+  <providers>  
+    <add  
+      name="SqlProvider"  
+      type="System.Web.Security.SqlRoleProvider"  
+      connectionStringName="SqlServices"  
+      applicationName="MyApplication" />  
+  </providers>  
+</roleManager>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="CookieRequireSSL">
+      <MemberSignature Language="C#" Value="public static bool CookieRequireSSL { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property bool CookieRequireSSL" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.Roles.CookieRequireSSL" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property CookieRequireSSL As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property bool CookieRequireSSL { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.CookieRequireSSL : bool" Usage="System.Web.Security.Roles.CookieRequireSSL" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, показывающее требуется ли файлам Cookie с именами ролей протокол SSL для возвращения на сервер.</summary>
+        <value><see langword="true" />, если протокол SSL необходим для возвращения на сервер файлов Cookie с именами ролей; в противном случае — <see langword="false" />. Значение по умолчанию — <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Можно указать, требуется ли SSL (SSL) для возврата файлов cookie с именами ролей на сервер в приложении, задав `cookieRequireSSL` атрибут в файле Web. config для приложения ASP.NET. Для получения дополнительной информации см. <xref:System.Web.HttpCookie.Secure%2A>.  
+  
+   
+  
+## Examples  
+ В следующем примере показан элемент [roleManager](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/ms164660(v%3dvs.100)) в `system.web` разделе файла Web. config для приложения ASP.NET. Он указывает, что приложение использует <xref:System.Web.Security.SqlRoleProvider> экземпляр и задает `cookieRequireSSL` для значение `true`.  
+  
+```  
+<roleManager defaultProvider="SqlProvider"   
+  enabled="true"  
+  cacheRolesInCookie="true"  
+  cookieName=".ASPROLES"  
+  cookieTimeout="30"  
+  cookiePath="/MyApplication"  
+  cookieRequireSSL="true"  
+  cookieSlidingExpiration="true"  
+  cookieProtection="Encrypted" >  
+  <providers>  
+    <add  
+      name="SqlProvider"  
+      type="System.Web.Security.SqlRoleProvider"  
+      connectionStringName="SqlServices"  
+      applicationName="MyApplication" />  
+  </providers>  
+</roleManager>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="CookieSlidingExpiration">
+      <MemberSignature Language="C#" Value="public static bool CookieSlidingExpiration { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property bool CookieSlidingExpiration" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.Roles.CookieSlidingExpiration" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property CookieSlidingExpiration As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property bool CookieSlidingExpiration { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.CookieSlidingExpiration : bool" Usage="System.Web.Security.Roles.CookieSlidingExpiration" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Указывает, будет ли выполняться периодический сброс даты и времени истечения срока действия файла cookie c именами ролей.</summary>
+        <value><see langword="true" />, если выполняется периодический сброс срока действия такого файла cookie, иначе <see langword="false" />. Значение по умолчанию — <see langword="true" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Вы можете указать, следует ли сбрасывать имена ролей и время истечения срока действия файлов cookie с каждым ответом, используя `cookieSlidingExpiration` атрибут в файле Web. config для приложения ASP.NET. Если `true`значение равно, то срок действия файла cookie будет изначально установлен на текущую дату и время <xref:System.Web.Security.Roles.CookieTimeout%2A> плюс в минутах. Хотя пользователь по-своему активно использует приложение ASP.NET, Дата и время окончания срока действия файла cookie автоматически обновляются, если меньше половины <xref:System.Web.Security.Roles.CookieTimeout%2A> оставшегося. Дополнительные сведения см. в описании свойства <xref:System.Web.HttpCookie.Expires%2A>.  
+  
+   
+  
+## Examples  
+ В следующем примере показан элемент [roleManager](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/ms164660(v%3dvs.100)) в `system.web` разделе файла Web. config для приложения ASP.NET. Он указывает, что приложение использует <xref:System.Web.Security.SqlRoleProvider> экземпляр и <xref:System.Web.Security.Roles.CookieSlidingExpiration%2A> присваивает свойству `false`значение.  
+  
+```  
+<roleManager defaultProvider="SqlProvider"   
+  enabled="true"  
+  cacheRolesInCookie="true"  
+  cookieName=".ASPROLES"  
+  cookieTimeout="30"  
+  cookiePath="/MyApplication"  
+  cookieRequireSSL="true"  
+  cookieSlidingExpiration="false"  
+  cookieProtection="Encrypted" >  
+  <providers>  
+    <add  
+      name="SqlProvider"  
+      type="System.Web.Security.SqlRoleProvider"  
+      connectionStringName="SqlServices"  
+      applicationName="MyApplication" />  
+  </providers>  
+</roleManager>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="CookieTimeout">
+      <MemberSignature Language="C#" Value="public static int CookieTimeout { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property int32 CookieTimeout" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.Roles.CookieTimeout" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property CookieTimeout As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property int CookieTimeout { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.CookieTimeout : int" Usage="System.Web.Security.Roles.CookieTimeout" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает количество минут до истечения срока действия файла cookie с именами ролей.</summary>
+        <value>Целое число, указывающее количество минут до истечения срока действия файла сookie с именами ролей. Значение по умолчанию - 30 минут.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойство используется, <xref:System.Web.Security.Roles.CookieSlidingExpiration%2A> если свойство имеет `true` значение, и указывает срок жизни в минутах для файла Cookie ролей. <xref:System.Web.Security.Roles.CookieTimeout%2A> Чтобы задать <xref:System.Web.Security.Roles.CookieTimeout%2A> значение, `cookieTimeout` добавьте атрибут в элемент [roleManager](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/ms164660(v%3dvs.100)) в файле Web. config для приложения ASP.NET и укажите целочисленное значение.  
+  
+ Если <xref:System.Web.Security.Roles.CookieSlidingExpiration%2A> имеет `false`значение, это свойство игнорируется.  
+  
+   
+  
+## Examples  
+ В следующем примере показан элемент [roleManager](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/ms164660(v%3dvs.100)) в `system.web` разделе файла Web. config для приложения ASP.NET. Он указывает, что приложение использует <xref:System.Web.Security.SqlRoleProvider> экземпляр и <xref:System.Web.Security.Roles.CookieTimeout%2A> задает для свойства значение 30 минут.  
+  
+```  
+<roleManager defaultProvider="SqlProvider"   
+  enabled="true"  
+  cacheRolesInCookie="true"  
+  cookieName=".ASPROLES"  
+  cookieTimeout="30"  
+  cookiePath="/MyApplication"  
+  cookieRequireSSL="true"  
+  cookieSlidingExpiration="true"  
+  cookieProtection="Encrypted" >  
+  <providers>  
+  <add  
+    name="SqlProvider"  
+    type="System.Web.Security.SqlRoleProvider"  
+    connectionStringName="SqlServices"  
+    applicationName="MyApplication" />  
+  </providers>  
+</roleManager>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="CreatePersistentCookie">
+      <MemberSignature Language="C#" Value="public static bool CreatePersistentCookie { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property bool CreatePersistentCookie" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.Roles.CreatePersistentCookie" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property CreatePersistentCookie As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property bool CreatePersistentCookie { bool get(); };" />
+      <MemberSignature Language="F#" Value="member this.CreatePersistentCookie : bool" Usage="System.Web.Security.Roles.CreatePersistentCookie" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение, указывающее, создаются ли файлы Cookie с именами ролей для определенного сеанса или являются постоянными.</summary>
+        <value><see langword="true" />, если файлы Cookie с именами ролей являются постоянными; в противном случае — <see langword="false" />. Значение по умолчанию — <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение свойства задается в конфигурации для приложения ASP.NET `createPersistentCookie` с помощью атрибута элемента конфигурации [roleManager](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/ms164660(v%3dvs.100)) . <xref:System.Web.Security.Roles.CreatePersistentCookie%2A>  
+  
+ Если `false`задано значение, то файл cookie с именами ролей — это файл cookie сеанса, то есть файл cookie будет потерян при закрытии браузера. Если `true`задано значение, то файл cookie с именами ролей является постоянным файлом cookie, доступным в нескольких сеансах браузера. Дата и время истечения срока действия файла cookie устанавливаются на текущую дату и время плюс <xref:System.Web.Security.Roles.CookieTimeout%2A> значение в минутах.  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="CreateRole">
+      <MemberSignature Language="C#" Value="public static void CreateRole (string roleName);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void CreateRole(string roleName) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.Roles.CreateRole(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Sub CreateRole (roleName As String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static void CreateRole(System::String ^ roleName);" />
+      <MemberSignature Language="F#" Value="static member CreateRole : string -&gt; unit" Usage="System.Web.Security.Roles.CreateRole roleName" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="roleName" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="roleName">Имя создаваемой роли.</param>
+        <summary>Добавляет новую роль в источник данных.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.Roles.CreateRole%2A> Метод добавляет имя роли в источник данных. <xref:System.Web.Security.Roles.CreateRole%2A><xref:System.Web.Security.RoleProvider.CreateRole%2A> вызывает метод поставщика ролей по умолчанию, чтобы добавить указанную роль в источник данных.  
+  
+> [!NOTE]
+>  Имена ролей не могут содержать запятые.  
+  
+   
+  
+## Examples  
+ В следующем примере кода создается новая роль в источнике данных. Пример файла Web. config, который включает управление ролями, см. в разделе <xref:System.Web.Security.Roles>.  
+  
+> [!IMPORTANT]
+>  Этот пример содержит текстовое поле, которое принимает вводимые пользователем данные, что является потенциальной угрозой безопасности. По умолчанию данные, вводимые пользователем на веб-страницах ASP.NET, проверяются на наличие скриптов и HTML-элементов. Дополнительные сведения см. в разделе [Общие сведения об использовании сценариев](https://msdn.microsoft.com/library/772c7312-211a-4eb3-8d6e-eec0aa1dcc07).  
+  
+ [!code-aspx-csharp[System.Web.Security.SqlRoleProvider#1](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.SqlRoleProvider/CS/createrolecs.aspx#1)]
+ [!code-aspx-vb[System.Web.Security.SqlRoleProvider#1](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.SqlRoleProvider/VB/createrolevb.aspx#1)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="roleName" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="roleName" /> равен пустой строке.  
+  
+- или - 
+ Параметр <paramref name="roleName" /> содержит запятую.</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Управление ролями не включено.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="DeleteCookie">
+      <MemberSignature Language="C#" Value="public static void DeleteCookie ();" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void DeleteCookie() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.Roles.DeleteCookie" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Sub DeleteCookie ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static void DeleteCookie();" />
+      <MemberSignature Language="F#" Value="static member DeleteCookie : unit -&gt; unit" Usage="System.Web.Security.Roles.DeleteCookie " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Удаляет файл Cookie, в котором кэшированы имена ролей.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.Roles.DeleteCookie%2A> Метод очищает содержимое файла cookie, используемого для кэширования имен ролей. Дополнительные сведения о кэшировании имен ролей см. <xref:System.Web.Security.Roles.CacheRolesInCookie%2A>в разделе.  
+  
+   
+  
+## Examples  
+ В следующем примере кода <xref:System.Web.Security.Roles.DeleteCookie%2A> метод вызывается для очистки любых кэшированных имен ролей при входе пользователя в систему. Пример файла Web. config, который включает управление ролями, см. в разделе <xref:System.Web.Security.Roles>.  
+  
+> [!IMPORTANT]
+>  Этот пример содержит текстовое поле, которое принимает вводимые пользователем данные, что является потенциальной угрозой безопасности. По умолчанию данные, вводимые пользователем на веб-страницах ASP.NET, проверяются на наличие скриптов и HTML-элементов. Дополнительные сведения см. в разделе [Общие сведения об использовании сценариев](https://msdn.microsoft.com/library/772c7312-211a-4eb3-8d6e-eec0aa1dcc07).  
+  
+ [!code-aspx-csharp[System.Web.Security.Roles#5](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.Roles/CS/logincs.aspx#5)]
+ [!code-aspx-vb[System.Web.Security.Roles#5](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.Roles/VB/loginvb.aspx#5)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Управление ролями не включено.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="DeleteRole">
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Удаляет роль из источника данных.</summary>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="DeleteRole">
+      <MemberSignature Language="C#" Value="public static bool DeleteRole (string roleName);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool DeleteRole(string roleName) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.Roles.DeleteRole(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function DeleteRole (roleName As String) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static bool DeleteRole(System::String ^ roleName);" />
+      <MemberSignature Language="F#" Value="static member DeleteRole : string -&gt; bool" Usage="System.Web.Security.Roles.DeleteRole roleName" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="roleName" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="roleName">Имя удаляемой роли.</param>
+        <summary>Удаляет роль из источника данных.</summary>
+        <returns><see langword="true" />, если параметр <paramref name="roleName" /> был удален из источника данных; в противном случае — <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.Roles.DeleteRole%2A> Метод удаляет имя роли из источника данных. <xref:System.Web.Security.Roles.DeleteRole%2A><xref:System.Web.Security.RoleProvider.DeleteRole%2A> вызывает метод поставщика ролей по умолчанию для удаления указанной роли из источника данных.  
+  
+ Если роль, определяемая `roleName` параметром, имеет один или несколько членов, будет создано исключение и роль не будет удалена.  
+  
+   
+  
+## Examples  
+ В следующем примере кода удаляется роль из источника данных. Пример файла Web. config, который включает управление ролями, см. в разделе <xref:System.Web.Security.Roles>.  
+  
+ [!code-aspx-csharp[System.Web.Security.SqlRoleProvider#2](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.SqlRoleProvider/CS/deleterolecs.aspx#2)]
+ [!code-aspx-vb[System.Web.Security.SqlRoleProvider#2](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.SqlRoleProvider/VB/deleterolevb.aspx#2)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="roleName" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="roleName" /> равен пустой строке или содержит запятую (,).</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Параметр <paramref name="roleName" /> имеет один или несколько элементов.  
+  
+- или - 
+Управление ролями не включено.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="DeleteRole">
+      <MemberSignature Language="C#" Value="public static bool DeleteRole (string roleName, bool throwOnPopulatedRole);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool DeleteRole(string roleName, bool throwOnPopulatedRole) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.Roles.DeleteRole(System.String,System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function DeleteRole (roleName As String, throwOnPopulatedRole As Boolean) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static bool DeleteRole(System::String ^ roleName, bool throwOnPopulatedRole);" />
+      <MemberSignature Language="F#" Value="static member DeleteRole : string * bool -&gt; bool" Usage="System.Web.Security.Roles.DeleteRole (roleName, throwOnPopulatedRole)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="roleName" Type="System.String" />
+        <Parameter Name="throwOnPopulatedRole" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="roleName">Имя удаляемой роли.</param>
+        <param name="throwOnPopulatedRole">Если <see langword="true" />, вызывается исключение, если <paramref name="roleName" /> имеет один или несколько членов.</param>
+        <summary>Удаляет роль из источника данных.</summary>
+        <returns><see langword="true" />, если параметр <paramref name="roleName" /> был удален из источника данных; в противном случае — <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.Roles.DeleteRole%2A> Метод удаляет имя роли из источника данных. <xref:System.Web.Security.Roles.DeleteRole%2A><xref:System.Web.Security.RoleProvider.DeleteRole%2A> вызывает метод поставщика ролей по умолчанию для удаления указанной роли из источника данных.  
+  
+ Если `throwOnPopulatedRole` имеет `true`значение, то создается исключение и роль не удаляется, если роль, определяемая `roleName` параметром, имеет один или несколько членов. Если `throwOnPopulatedRole` имеет `false`значение, то роль будет удалена независимо от того, пуста ли она.  
+  
+   
+  
+## Examples  
+ В следующем примере кода удаляется роль из источника данных. Пример файла Web. config, который включает управление ролями, см. в разделе <xref:System.Web.Security.Roles>.  
+  
+ [!code-aspx-csharp[System.Web.Security.SqlRoleProvider#2](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.SqlRoleProvider/CS/deleterolecs.aspx#2)]
+ [!code-aspx-vb[System.Web.Security.SqlRoleProvider#2](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.SqlRoleProvider/VB/deleterolevb.aspx#2)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="roleName" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="roleName" /> равен пустой строке.</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Параметр <paramref name="roleName" /> имеет один или несколько членов, и параметр <paramref name="throwOnPopulatedRole" /> имеет значение <see langword="true" />.  
+  
+- или - 
+Управление ролями не включено.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Domain">
+      <MemberSignature Language="C#" Value="public static string Domain { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property string Domain" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.Roles.Domain" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property Domain As String" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property System::String ^ Domain { System::String ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Domain : string" Usage="System.Web.Security.Roles.Domain" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает значение домена файла Cookie с именами ролей.</summary>
+        <value>Свойство <see cref="P:System.Web.HttpCookie.Domain" /> файла Cookie с именами ролей.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Значение свойства задается в конфигурации для приложения ASP.NET `domain` с помощью атрибута элемента конфигурации [roleManager](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/ms164660(v%3dvs.100)) . <xref:System.Web.Security.Roles.Domain%2A>  
+  
+ Если в конфигурации для атрибута домена не <xref:System.Web.Security.Roles.Domain%2A> указано значение, свойство возвращает `null` , а домен cookie с именами ролей по умолчанию имеет поведение <xref:System.Web.HttpCookie> <xref:System.Web.HttpCookie.Domain%2A> свойства.  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Enabled">
+      <MemberSignature Language="C#" Value="public static bool Enabled { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property bool Enabled" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.Roles.Enabled" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Property Enabled As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property bool Enabled { bool get(); void set(bool value); };" />
+      <MemberSignature Language="F#" Value="member this.Enabled : bool with get, set" Usage="System.Web.Security.Roles.Enabled" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Получает или задает значение, показывающее включено ли управление ролями для текущего веб-приложения.</summary>
+        <value><see langword="true" />, если управление ролями включено; в противном случае — <see langword="false" />. Значение по умолчанию — <see langword="false" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Examples  
+ В следующем примере показан элемент [roleManager](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/ms164660(v%3dvs.100)) в `system.web` разделе файла Web. config для приложения ASP.NET. Он указывает, что приложение использует <xref:System.Web.Security.SqlRoleProvider> экземпляр и `enabled` присваивает атрибуту `true`значение.  
+  
+```  
+<roleManager defaultProvider="SqlProvider"   
+  enabled="true"  
+  cacheRolesInCookie="true"  
+  cookieName=".ASPROLES"  
+  cookieTimeout="30"  
+  cookiePath="/"  
+  cookieRequireSSL="false"  
+  cookieSlidingExpiration="true"  
+  cookieProtection="All" >  
+  <providers>  
+    <add  
+      name="SqlProvider"  
+      type="System.Web.Security.SqlRoleProvider"  
+      connectionStringName="SqlServices"  
+      applicationName="MyApplication" />  
+  </providers>  
+</roleManager>  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="FindUsersInRole">
+      <MemberSignature Language="C#" Value="public static string[] FindUsersInRole (string roleName, string usernameToMatch);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig string[] FindUsersInRole(string roleName, string usernameToMatch) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.Roles.FindUsersInRole(System.String,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function FindUsersInRole (roleName As String, usernameToMatch As String) As String()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static cli::array &lt;System::String ^&gt; ^ FindUsersInRole(System::String ^ roleName, System::String ^ usernameToMatch);" />
+      <MemberSignature Language="F#" Value="static member FindUsersInRole : string * string -&gt; string[]" Usage="System.Web.Security.Roles.FindUsersInRole (roleName, usernameToMatch)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String[]</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="roleName" Type="System.String" />
+        <Parameter Name="usernameToMatch" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="roleName">Роль, в которой следует выполнить поиск.</param>
+        <param name="usernameToMatch">Имя пользователя для поиска.</param>
+        <summary>Возвращает список пользователей в указанной роли, у которых имена совпадают с указанными именами пользователей.</summary>
+        <returns>Массив строк, содержащий имена всех пользователей, имена которых совпадают с <paramref name="usernameToMatch" />, и которые являются членами указанной роли.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.Roles.FindUsersInRole%2A>Возвращает список пользователей в роли, где имя пользователя содержит совпадение с указанным `usernameToMatch` для настроенного. `applicationName` Например, если `usernameToMatch` для параметра задано значение «User», то возвращаются пользователи «User1», «Пользователь2», «user3» и т. д. Пользователи возвращаются в алфавитном порядке по имени пользователя.  
+  
+ Выполняет поиск с помощью предложения LIKE в `usernameToMatch` отношении параметра. <xref:System.Web.Security.SqlRoleProvider> Все подстановочные знаки, поддерживаемые SQL Server в предложениях Like, можно использовать в `usernameToMatch` значении параметра.  
+  
+   
+  
+## Examples  
+ В следующем примере кода <xref:System.Web.Security.Roles.FindUsersInRole%2A> метод используется для вывода членства в роли на основе вводимых пользователем данных. Пример файла Web. config, который включает управление ролями, см. в разделе <xref:System.Web.Security.Roles>.  
+  
+> [!IMPORTANT]
+>  Этот пример содержит текстовое поле, которое принимает вводимые пользователем данные, что является потенциальной угрозой безопасности. По умолчанию данные, вводимые пользователем на веб-страницах ASP.NET, проверяются на наличие скриптов и HTML-элементов. Дополнительные сведения см. в разделе [Общие сведения об использовании сценариев](https://msdn.microsoft.com/library/772c7312-211a-4eb3-8d6e-eec0aa1dcc07).  
+  
+ [!code-aspx-csharp[System.Web.Security.Roles#11](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.Roles/CS/FindUsersInRolecs.aspx#11)]
+ [!code-aspx-vb[System.Web.Security.Roles#11](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.Roles/VB/FindUsersInRolevb.aspx#11)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Значение параметра <paramref name="roleName" /> — <see langword="null" /> (<see langword="Nothing" /> в Visual Basic).  
+  
+-или- 
+ <paramref name="usernameToMatch" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="roleName" /> равен пустой строке или содержит запятую (,).  
+  
+- или - 
+ Параметр <paramref name="usernameToMatch" /> равен пустой строке.</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Управление ролями не включено.</exception>
+      </Docs>
+    </Member>
+    <Member MemberName="GetAllRoles">
+      <MemberSignature Language="C#" Value="public static string[] GetAllRoles ();" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig string[] GetAllRoles() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.Roles.GetAllRoles" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function GetAllRoles () As String()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static cli::array &lt;System::String ^&gt; ^ GetAllRoles();" />
+      <MemberSignature Language="F#" Value="static member GetAllRoles : unit -&gt; string[]" Usage="System.Web.Security.Roles.GetAllRoles " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String[]</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Возвращает список всех ролей для приложения.</summary>
+        <returns>Массив строк, содержащий имена всех ролей, сохраненных в источнике данных для приложения.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.Roles.GetAllRoles%2A> Метод <xref:System.Web.Security.RoleProvider.GetAllRoles%2A?displayProperty=nameWithType>  вызывает метод поставщика роли по умолчанию, чтобы получить список всех ролей из источника данных для приложения. Извлекаются только роли для приложения, указанного в <xref:System.Web.Security.Roles.ApplicationName%2A> свойстве.  
+  
+   
+  
+## Examples  
+ В следующем примере кода <xref:System.Web.Security.Roles.GetAllRoles%2A> метод используется для получения списка ролей для приложения и привязки результатов <xref:System.Web.UI.WebControls.GridView?displayProperty=nameWithType> к элементу управления. Пример файла Web. config, который включает управление ролями, см. в разделе <xref:System.Web.Security.Roles>.  
+  
+> [!IMPORTANT]
+>  Этот пример содержит текстовое поле, которое принимает вводимые пользователем данные, что является потенциальной угрозой безопасности. По умолчанию данные, вводимые пользователем на веб-страницах ASP.NET, проверяются на наличие скриптов и HTML-элементов. Дополнительные сведения см. в разделе [Общие сведения об использовании сценариев](https://msdn.microsoft.com/library/772c7312-211a-4eb3-8d6e-eec0aa1dcc07).  
+  
+ [!code-aspx-csharp[System.Web.Security.SqlRoleProvider#1](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.SqlRoleProvider/CS/createrolecs.aspx#1)]
+ [!code-aspx-vb[System.Web.Security.SqlRoleProvider#1](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.SqlRoleProvider/VB/createrolevb.aspx#1)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Управление ролями не включено.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="GetRolesForUser">
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Возвращает список ролей, в которых состоит пользователь.</summary>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="GetRolesForUser">
+      <MemberSignature Language="C#" Value="public static string[] GetRolesForUser ();" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig string[] GetRolesForUser() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.Roles.GetRolesForUser" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function GetRolesForUser () As String()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static cli::array &lt;System::String ^&gt; ^ GetRolesForUser();" />
+      <MemberSignature Language="F#" Value="static member GetRolesForUser : unit -&gt; string[]" Usage="System.Web.Security.Roles.GetRolesForUser " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String[]</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Возвращает список ролей, с которыми вошел в систему текущий пользователь.</summary>
+        <returns>Массив строк, содержащий имена всех ролей, с которыми вошел в систему текущий пользователь.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.Roles.GetRolesForUser%2A> Метод <xref:System.Web.Security.RoleProvider.GetRolesForUser%2A?displayProperty=nameWithType>  вызывает метод поставщика роли по умолчанию для получения из источника данных ролей, в которых находится пользователь, вошедший в систему. Вошедший в систему пользователь определяется <xref:System.Web.HttpContext.User%2A?displayProperty=nameWithType> свойством текущего <xref:System.Web.HttpContext?displayProperty=nameWithType>объекта или <xref:System.Threading.Thread.CurrentPrincipal%2A?displayProperty=nameWithType> для сред размещения, отличных от HTTP. Если ни один пользователь не вошел в систему, будет создано исключение. Извлекаются только роли для приложения, указанного в <xref:System.Web.Security.Roles.ApplicationName%2A> свойстве.  
+  
+ Если <xref:System.Web.Security.Roles.CacheRolesInCookie%2A> параметр `true`имеет значение, результаты <xref:System.Web.Security.Roles.GetRolesForUser%2A> метода могут возвращаться из кэша роли, а не от указанного поставщика ролей.  
+  
+   
+  
+## Examples  
+ В следующем примере кода <xref:System.Web.Security.Roles.GetRolesForUser%2A> метод используется для получения списка ролей для указанного пользователя и привязки возвращенных ролей <xref:System.Web.UI.WebControls.GridView?displayProperty=nameWithType> к элементу управления. Пример файла Web. config, который включает управление ролями, см. в разделе <xref:System.Web.Security.Roles>.  
+  
+ [!code-aspx-csharp[System.Web.Security.Roles#4](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.Roles/CS/ViewRolescs.aspx#4)]
+ [!code-aspx-vb[System.Web.Security.Roles#4](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.Roles/VB/ViewRolesvb.aspx#4)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">В данный момент нет вошедших в систему пользователей.</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Управление ролями не включено.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="GetRolesForUser">
+      <MemberSignature Language="C#" Value="public static string[] GetRolesForUser (string username);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig string[] GetRolesForUser(string username) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.Roles.GetRolesForUser(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function GetRolesForUser (username As String) As String()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static cli::array &lt;System::String ^&gt; ^ GetRolesForUser(System::String ^ username);" />
+      <MemberSignature Language="F#" Value="static member GetRolesForUser : string -&gt; string[]" Usage="System.Web.Security.Roles.GetRolesForUser username" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String[]</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="username" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="username">Имя пользователя, для которого нужно возвратить список ролей.</param>
+        <summary>Возвращает список ролей, в которых состоит пользователь.</summary>
+        <returns>Массив строк, содержащий имена всех ролей, с которыми входит указанный пользователь.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.Roles.GetRolesForUser%2A> Метод <xref:System.Web.Security.RoleProvider.GetRolesForUser%2A?displayProperty=nameWithType>  вызывает метод поставщика роли по умолчанию для получения из источника данных ролей, в которых находится пользователь. Извлекаются только роли для приложения, указанного в <xref:System.Web.Security.Roles.ApplicationName%2A> свойстве.  
+  
+ Если `username` параметр равен текущему пользователю, вошедшему в <xref:System.Web.Security.Roles.CacheRolesInCookie%2A> систему `true`, и имеет значение, <xref:System.Web.Security.Roles.GetRolesForUser%2A> результаты метода могут возвращаться из кэша роли, а не из указанного <xref:System.Web.Security.Roles.Provider%2A>.  
+  
+   
+  
+## Examples  
+ В следующем примере кода <xref:System.Web.Security.Roles.GetRolesForUser%2A> метод используется для получения списка ролей для указанного пользователя и привязки возвращенных ролей <xref:System.Web.UI.WebControls.GridView?displayProperty=nameWithType> к элементу управления. Пример файла Web. config, который включает управление ролями, см. в разделе <xref:System.Web.Security.Roles>.  
+  
+ [!code-aspx-csharp[System.Web.Security.Roles#4](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.Roles/CS/ViewRolescs.aspx#4)]
+ [!code-aspx-vb[System.Web.Security.Roles#4](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.Roles/VB/ViewRolesvb.aspx#4)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="username" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException"><paramref name="username" /> содержит запятую (,).</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Управление ролями не включено.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="GetUsersInRole">
+      <MemberSignature Language="C#" Value="public static string[] GetUsersInRole (string roleName);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig string[] GetUsersInRole(string roleName) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.Roles.GetUsersInRole(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function GetUsersInRole (roleName As String) As String()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static cli::array &lt;System::String ^&gt; ^ GetUsersInRole(System::String ^ roleName);" />
+      <MemberSignature Language="F#" Value="static member GetUsersInRole : string -&gt; string[]" Usage="System.Web.Security.Roles.GetUsersInRole roleName" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String[]</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="roleName" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="roleName">Роль, для которой возвращается список пользователей.</param>
+        <summary>Возвращает список пользователей в указанной роли.</summary>
+        <returns>Массив строк, содержащий имена всех пользователей, которые являются членами указанной роли.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.Roles.GetUsersInRole%2A> Метод <xref:System.Web.Security.RoleProvider.GetUsersInRole%2A>  вызывает метод поставщика роли по умолчанию для получения имен пользователей, связанных с ролью, из источника данных. Извлекаются только роли для приложения, указанного в <xref:System.Web.Security.Roles.ApplicationName%2A> свойстве.  
+  
+   
+  
+## Examples  
+ В следующем примере кода <xref:System.Web.Security.Roles.GetUsersInRole%2A> метод используется для получения списка пользователей в определенной роли и привязки результатов <xref:System.Web.UI.WebControls.GridView> к элементу управления. Пример файла Web. config, который включает управление ролями, см. в разделе <xref:System.Web.Security.Roles>.  
+  
+ [!code-aspx-csharp[System.Web.Security.SqlRoleProvider#3](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.SqlRoleProvider/CS/adduserstorolecs.aspx#3)]
+ [!code-aspx-vb[System.Web.Security.SqlRoleProvider#3](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.SqlRoleProvider/VB/adduserstorolevb.aspx#3)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="roleName" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="roleName" /> равен пустой строке или содержит запятую (,).</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Управление ролями не включено.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="IsUserInRole">
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Возвращает значение, позволяющее определить, находится ли пользователь в указанной роли.</summary>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="IsUserInRole">
+      <MemberSignature Language="C#" Value="public static bool IsUserInRole (string roleName);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool IsUserInRole(string roleName) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.Roles.IsUserInRole(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function IsUserInRole (roleName As String) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static bool IsUserInRole(System::String ^ roleName);" />
+      <MemberSignature Language="F#" Value="static member IsUserInRole : string -&gt; bool" Usage="System.Web.Security.Roles.IsUserInRole roleName" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="roleName" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="roleName">Имя роли, в которой следует выполнить поиск.</param>
+        <summary>Возвращает значение, позволяющее определить, находится ли текущий пользователь, вошедший в систему, в указанной роли. Интерфейс API предназначен для вызова только в контексте потока запросов ASP.NET. При таком санкционированном использовании он является потокобезопасным.</summary>
+        <returns><see langword="true" />, если текущему пользователю, вошедшему в систему, присвоена указанная роль, в противном случае — значение <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод вызывает метод поставщика роли по умолчанию, чтобы определить, связан ли пользователь, выполнивший вход в систему, с ролью из источника данных для приложения <xref:System.Web.Security.Roles.ApplicationName%2A> , указанного в свойстве. <xref:System.Web.Security.RoleProvider.IsUserInRole%2A?displayProperty=nameWithType> <xref:System.Web.Security.Roles.IsUserInRole%2A> Вошедший в систему пользователь определяется <xref:System.Web.HttpContext.User%2A?displayProperty=nameWithType> свойством текущего <xref:System.Web.HttpContext?displayProperty=nameWithType>объекта или <xref:System.Threading.Thread.CurrentPrincipal%2A?displayProperty=nameWithType> для сред размещения, отличных от HTTP. Если ни один пользователь не вошел в систему, будет создано исключение. Извлекаются только роли для приложения, указанного в <xref:System.Web.Security.Roles.ApplicationName%2A> свойстве.  
+  
+ Если <xref:System.Web.Security.Roles.CacheRolesInCookie%2A> имеет `true`значение, `roleName` то можно проверить кэш ролей, а не указанного поставщика ролей.  
+  
+   
+  
+## Examples  
+ В следующем примере кода программным способом проверяется, входит ли пользователь, вошедший в систему, в роль "Администраторы", прежде чем разрешить пользователю просматривать параметры ролей для приложения. Пример файла Web. config, который включает управление ролями, см. в разделе <xref:System.Web.Security.Roles>.  
+  
+ [!code-aspx-csharp[System.Web.Security.SqlRoleProvider#4](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.SqlRoleProvider/CS/ViewRolescs.aspx#4)]
+ [!code-aspx-vb[System.Web.Security.SqlRoleProvider#4](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.SqlRoleProvider/VB/ViewRolesvb.aspx#4)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="roleName" /> имеет значение <see langword="null" />.  
+  
+-или- 
+В данный момент нет вошедших в систему пользователей.</exception>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="roleName" /> равен пустой строке или содержит запятую (,).</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Управление ролями не включено.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="IsUserInRole">
+      <MemberSignature Language="C#" Value="public static bool IsUserInRole (string username, string roleName);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool IsUserInRole(string username, string roleName) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.Roles.IsUserInRole(System.String,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function IsUserInRole (username As String, roleName As String) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static bool IsUserInRole(System::String ^ username, System::String ^ roleName);" />
+      <MemberSignature Language="F#" Value="static member IsUserInRole : string * string -&gt; bool" Usage="System.Web.Security.Roles.IsUserInRole (username, roleName)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="username" Type="System.String" />
+        <Parameter Name="roleName" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="username">Имя пользователя для поиска.</param>
+        <param name="roleName">Имя роли, в которой следует выполнить поиск.</param>
+        <summary>Получает значение, позволяющее определить, может ли заданный пользователь выполнять указанную роль. Интерфейс API предназначен для вызова только в контексте потока запросов ASP.NET. При таком санкционированном использовании он является потокобезопасным.</summary>
+        <returns><see langword="true" />, если указанный пользователь находится в указанной роли, в противном случае — <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод вызывает метод поставщика роли по умолчанию, чтобы определить, связано ли имя пользователя с ролью из источника данных для приложения <xref:System.Web.Security.Roles.ApplicationName%2A> , указанного в свойстве. <xref:System.Web.Security.RoleProvider.IsUserInRole%2A> <xref:System.Web.Security.Roles.IsUserInRole%2A>  
+  
+ Если `username` параметр равен текущему пользователю, вошедшему в систему <xref:System.Web.Security.Roles.CacheRolesInCookie%2A> , а значение `true`свойства `roleName` равно, то можно проверить кэш роли, а не указанный <xref:System.Web.Security.Roles.Provider%2A>.  
+  
+   
+  
+## Examples  
+ В следующем примере кода программным способом проверяется, входит ли пользователь в роль администраторов, прежде чем разрешить пользователю просматривать параметры ролей для приложения. Пример файла Web. config, который включает управление ролями, см. в разделе <xref:System.Web.Security.Roles>.  
+  
+ [!code-aspx-csharp[System.Web.Security.SqlRoleProvider#4](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.SqlRoleProvider/CS/ViewRolescs.aspx#4)]
+ [!code-aspx-vb[System.Web.Security.SqlRoleProvider#4](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.SqlRoleProvider/VB/ViewRolesvb.aspx#4)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="roleName" /> имеет значение <see langword="null" />.  
+  
+- или - 
+ <paramref name="username" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="roleName" /> равен пустой строке или содержит запятую (,).  
+  
+- или - 
+ <paramref name="username" /> содержит запятую (,).</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Управление ролями не включено.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="MaxCachedResults">
+      <MemberSignature Language="C#" Value="public static int MaxCachedResults { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property int32 MaxCachedResults" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.Roles.MaxCachedResults" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property MaxCachedResults As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property int MaxCachedResults { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.MaxCachedResults : int" Usage="System.Web.Security.Roles.MaxCachedResults" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает максимальное число имен ролей для пользователя, которые необходимо кэшировать.</summary>
+        <value>Максимальное число имен ролей для пользователя, которые необходимо кэшировать. Значение по умолчанию — 25.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Свойство задается с помощью `maxCachedResults` атрибута конфигурации. <xref:System.Web.Security.Roles.MaxCachedResults%2A> Значение `maxCachedResults` атрибута конфигурации должно быть целым числом больше нуля.  
+  
+   
+  
+## Examples  
+ В следующем примере показан элемент [roleManager](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/ms164660(v%3dvs.100)) в `system.web` разделе файла Web. config для приложения ASP.NET. Он указывает, что приложение использует <xref:System.Web.Security.SqlRoleProvider> экземпляр и `maxCachedResults` присваивает атрибуту значение 10.  
+  
+```  
+<roleManager  
+  enabled="true"  
+  cacheRolesInCookie="true"  
+  cookieName=".ASPROLES"  
+  cookieTimeout="30"  
+  cookiePath="/"  
+  cookieRequireSSL="false"  
+  cookieSlidingExpiration="true"  
+  cookieProtection="All"   
+  maxCachedResults="10" />  
+```  
+  
+ ]]></format>
+        </remarks>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Provider">
+      <MemberSignature Language="C#" Value="public static System.Web.Security.RoleProvider Provider { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property class System.Web.Security.RoleProvider Provider" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.Roles.Provider" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property Provider As RoleProvider" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property System::Web::Security::RoleProvider ^ Provider { System::Web::Security::RoleProvider ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Provider : System.Web.Security.RoleProvider" Usage="System.Web.Security.Roles.Provider" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Security.RoleProvider</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает поставщика роли по умолчанию для приложения.</summary>
+        <value>Поставщик роли по умолчанию для приложения, который предоставляется в качестве класса, который наследует абстрактный класс <see cref="T:System.Web.Security.RoleProvider" />.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.Roles.Provider%2A> Свойство позволяет напрямую ссылаться на поставщика ролей по умолчанию для приложения. Обычно это используется для доступа к пользовательским элементам поставщика роли, которые не являются частью <xref:System.Web.Security.RoleProvider> абстрактного класса.  
+  
+ Например, <xref:System.Web.Security.WindowsTokenRoleProvider> класс включает перегрузку <xref:System.Web.Security.WindowsTokenRoleProvider.IsUserInRole%2A> метода, позволяющую определить, является ли пользователь общей ролью <xref:System.Security.Principal.WindowsBuiltInRole> Windows с помощью значения перечисления. Ссылка на <xref:System.Web.Security.WindowsTokenRoleProvider> класс для приложения может быть получена <xref:System.Web.Security.Roles.Provider%2A> с помощью свойства и может быть приведена в качестве, <xref:System.Web.Security.WindowsTokenRoleProvider> чтобы ссылаться <xref:System.Web.Security.WindowsTokenRoleProvider.IsUserInRole%2A> на перегрузку.  
+  
+ Если для приложения настроено несколько поставщиков ролей, доступ к различным поставщикам ролей можно получить с <xref:System.Web.Security.Roles.Providers%2A> помощью коллекции.  
+  
+   
+  
+## Examples  
+ В следующем примере кода поставщик роли по умолчанию приводится к <xref:System.Web.Security.WindowsTokenRoleProvider> типу и проверяет, находится ли пользователь, вошедший в систему, к роли администраторов, прежде чем разрешить пользователю просматривать параметры ролей для приложения. Пример файла Web. config, который включает управление ролями, см. в разделе <xref:System.Web.Security.WindowsTokenRoleProvider>.  
+  
+ [!code-aspx-csharp[System.Web.Security.WindowsTokenRoleProvider#2](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.WindowsTokenRoleProvider/CS/ViewRoles2cs.aspx#2)]
+ [!code-aspx-vb[System.Web.Security.WindowsTokenRoleProvider#2](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.WindowsTokenRoleProvider/VB/ViewRoles2vb.aspx#2)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Управление ролями не включено.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="Providers">
+      <MemberSignature Language="C#" Value="public static System.Web.Security.RoleProviderCollection Providers { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property class System.Web.Security.RoleProviderCollection Providers" />
+      <MemberSignature Language="DocId" Value="P:System.Web.Security.Roles.Providers" />
+      <MemberSignature Language="VB.NET" Value="Public Shared ReadOnly Property Providers As RoleProviderCollection" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static property System::Web::Security::RoleProviderCollection ^ Providers { System::Web::Security::RoleProviderCollection ^ get(); };" />
+      <MemberSignature Language="F#" Value="member this.Providers : System.Web.Security.RoleProviderCollection" Usage="System.Web.Security.Roles.Providers" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Web.Security.RoleProviderCollection</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Возвращает коллекцию поставщиков ролей для приложения ASP.NET.</summary>
+        <value>Коллекция <see cref="T:System.Web.Security.RoleProviderCollection" />, которая содержит поставщиков ролей, настроенных для приложений ASP.NET.</value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.Roles.Providers%2A> Свойство ссылается на все поставщики ролей, включенные для приложения, включая поставщиков, добавленных в файл Web. config. Вы можете контролировать, какие поставщики ролей доступны для приложения, используя `providers` элемент в разделе [roleManager](https://docs.microsoft.com/previous-versions/dotnet/netframework-4.0/ms164660(v%3dvs.100)) файла Web. config для вашего приложения.  
+  
+ В следующем примере показан раздел [roleManager](https://msdn.microsoft.com/library/4b0f6078-4824-4fc8-a5ee-4ae00ee3ceec) , в котором удаляются все существующие поставщики (например, указанные в файле Machine. config) и добавляется <xref:System.Web.Security.SqlRoleProvider> экземпляр в качестве поставщика роли для приложения.  
+  
+```  
+<configuration>  
+  <connectionStrings>  
+    <add name="SqlServices" connectionString="Data Source=MySqlServer;Integrated Security=SSPI;Initial Catalog=aspnetdb;" />  
+  </connectionStrings>  
+  
+  <system.web>  
+    <roleManager defaultProvider="SqlProvider"   
+      enabled="true"  
+      cacheRolesInCookie="true"  
+      cookieName=".ASPROLES"  
+      cookieTimeout="30"  
+      cookiePath="/"  
+      cookieRequireSSL="false"  
+      cookieSlidingExpiration="true"  
+      cookieProtection="Encrypted">  
+  
+      <providers>  
+        <clear/>  
+        <add  
+          name="SqlProvider"  
+          type="System.Web.Security.SqlRoleProvider"  
+          connectionStringName="SqlServices"  
+          applicationName="MyApplication" />  
+         </providers>  
+  
+    </roleManager>  
+  </system.web>  
+</configuration>  
+```  
+  
+ Чтобы получить строго типизированную ссылку на поставщик из <xref:System.Web.Security.Roles.Providers%2A> коллекции, можно индексировать поставщик ролей по имени и присвоить его как нужный тип.  
+  
+ Получить ссылку на поставщик по умолчанию для приложения можно с помощью <xref:System.Web.Security.Roles.Provider%2A> свойства.  
+  
+   
+  
+## Examples  
+ В следующем примере кода перечисляются поставщики, включенные для приложения, и соответствующие им типы.  
+  
+ [!code-aspx-csharp[System.Web.Security.Roles#7](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.Roles/CS/Providerscs.aspx#7)]
+ [!code-aspx-vb[System.Web.Security.Roles#7](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.Roles/VB/Providersvb.aspx#7)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Управление ролями не включено.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="RemoveUserFromRole">
+      <MemberSignature Language="C#" Value="public static void RemoveUserFromRole (string username, string roleName);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void RemoveUserFromRole(string username, string roleName) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.Roles.RemoveUserFromRole(System.String,System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Sub RemoveUserFromRole (username As String, roleName As String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static void RemoveUserFromRole(System::String ^ username, System::String ^ roleName);" />
+      <MemberSignature Language="F#" Value="static member RemoveUserFromRole : string * string -&gt; unit" Usage="System.Web.Security.Roles.RemoveUserFromRole (username, roleName)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="username" Type="System.String" />
+        <Parameter Name="roleName" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="username">Пользователь, которого необходимо удалить из указанной роли.</param>
+        <param name="roleName">Роль, из которой необходимо удалить указанного пользователя.</param>
+        <summary>Удаляет указанного пользователя из указанной роли.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.Roles.RemoveUserFromRole%2A> Метод вызывает поставщик ролей по умолчанию для удаления указанного пользователя из указанной роли в источнике данных.  
+  
+   
+  
+## Examples  
+ В следующем примере кода пользователь удаляется из роли. Пример файла Web. config, который включает управление ролями, см. в разделе <xref:System.Web.Security.Roles>.  
+  
+ [!code-aspx-csharp[System.Web.Security.SqlRoleProvider#3](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.SqlRoleProvider/CS/adduserstorolecs.aspx#3)]
+ [!code-aspx-vb[System.Web.Security.SqlRoleProvider#3](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.SqlRoleProvider/VB/adduserstorolevb.aspx#3)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="roleName" /> — <see langword="null" />.  
+  
+- или - 
+ <paramref name="username" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="roleName" /> равен пустой строке или содержит запятую (,). 
+ Параметр <paramref name="username" /> равен пустой строке или содержит запятую (,).</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Управление ролями не включено.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="RemoveUserFromRoles">
+      <MemberSignature Language="C#" Value="public static void RemoveUserFromRoles (string username, string[] roleNames);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void RemoveUserFromRoles(string username, string[] roleNames) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.Roles.RemoveUserFromRoles(System.String,System.String[])" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Sub RemoveUserFromRoles (username As String, roleNames As String())" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static void RemoveUserFromRoles(System::String ^ username, cli::array &lt;System::String ^&gt; ^ roleNames);" />
+      <MemberSignature Language="F#" Value="static member RemoveUserFromRoles : string * string[] -&gt; unit" Usage="System.Web.Security.Roles.RemoveUserFromRoles (username, roleNames)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="username" Type="System.String" />
+        <Parameter Name="roleNames" Type="System.String[]" />
+      </Parameters>
+      <Docs>
+        <param name="username">Пользователь, которого необходимо удалить из указанных ролей.</param>
+        <param name="roleNames">Массив строк имен ролей, из которых необходимо удалить указанного пользователя.</param>
+        <summary>Удаляет указанного пользователя из указанных ролей.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.Roles.RemoveUserFromRoles%2A> Метод вызывает поставщик ролей по умолчанию для удаления указанного пользователя из указанных ролей в источнике данных.  
+  
+ Если приложение настроено для использования <xref:System.Web.Security.SqlRoleProvider> класса, то обновления базы данных, выполняемые во время вызова <xref:System.Web.Security.Roles.RemoveUserFromRoles%2A> метода, выполняются внутри транзакции. Если возникает ошибка, например имя пользователя, которого нет в указанной роли, выполняется откат транзакции и никакие обновления не выполняются.  
+  
+   
+  
+## Examples  
+ В следующем примере кода <xref:System.Web.Security.Roles.RemoveUserFromRoles%2A> метод используется для удаления пользователя из одной или нескольких ролей. Пример файла Web. config, который включает управление ролями, см. в разделе <xref:System.Web.Security.Roles>.  
+  
+ [!code-aspx-csharp[System.Web.Security.Roles#10](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.Roles/CS/RemoveUserFromRolescs.aspx#10)]
+ [!code-aspx-vb[System.Web.Security.Roles#10](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.Roles/VB/RemoveUserFromRolesvb.aspx#10)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Одна из ролей в массиве <paramref name="roleNames" /> имеет значение <see langword="null" />.  
+  
+- или - 
+ <paramref name="username" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException">Одна из ролей в массиве <paramref name="roleNames" /> — пустая строка или содержит запятую (,).  
+  
+- или - 
+ Параметр <paramref name="username" /> равен пустой строке или содержит запятую (,).  
+  
+-или- 
+ Параметр <paramref name="roleNames" /> содержит повторяющийся элемент.</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Управление ролями не включено.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="RemoveUsersFromRole">
+      <MemberSignature Language="C#" Value="public static void RemoveUsersFromRole (string[] usernames, string roleName);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void RemoveUsersFromRole(string[] usernames, string roleName) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.Roles.RemoveUsersFromRole(System.String[],System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Sub RemoveUsersFromRole (usernames As String(), roleName As String)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static void RemoveUsersFromRole(cli::array &lt;System::String ^&gt; ^ usernames, System::String ^ roleName);" />
+      <MemberSignature Language="F#" Value="static member RemoveUsersFromRole : string[] * string -&gt; unit" Usage="System.Web.Security.Roles.RemoveUsersFromRole (usernames, roleName)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="usernames" Type="System.String[]" />
+        <Parameter Name="roleName" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="usernames">Массив строк имен пользователей, которых необходимо удалить из указанных пользователей.</param>
+        <param name="roleName">Имя роли, из которой необходимо удалить указанных пользователей.</param>
+        <summary>Удаляет указанных пользователей из указанной роли.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.Roles.RemoveUsersFromRole%2A> Метод вызывает поставщик ролей по умолчанию для удаления указанных пользователей из указанной роли в источнике данных.  
+  
+ Если приложение использует <xref:System.Web.Security.SqlRoleProvider> класс, то обновления базы данных, выполняемые во время вызова <xref:System.Web.Security.SqlRoleProvider.RemoveUsersFromRoles%2A> метода, выполняются внутри транзакции. Если возникает ошибка, например имя пользователя, которого нет в указанной роли, выполняется откат транзакции и никакие обновления не выполняются.  
+  
+   
+  
+## Examples  
+ В следующем примере кода <xref:System.Web.Security.Roles.RemoveUsersFromRole%2A> метод используется для удаления одного или нескольких пользователей из роли. Пример файла Web. config, который включает управление ролями, см. в разделе <xref:System.Web.Security.Roles>.  
+  
+ [!code-aspx-csharp[System.Web.Security.Roles#9](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.Roles/CS/RemoveUsersFromRolecs.aspx#9)]
+ [!code-aspx-vb[System.Web.Security.Roles#9](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.Roles/VB/RemoveUsersFromRolevb.aspx#9)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException"><paramref name="roleName" /> — <see langword="null" />.  
+  
+- или - 
+Одно из имен пользователей в массиве <paramref name="usernames" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="roleName" /> равен пустой строке или содержит запятую (,).  
+  
+-или- 
+Одно из имен пользователей в массиве <paramref name="usernames" /> равно пустой строке или содержит запятую (,).  
+  
+- или - 
+ Параметр <paramref name="usernames" /> содержит повторяющийся элемент.</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Управление ролями не включено.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="RemoveUsersFromRoles">
+      <MemberSignature Language="C#" Value="public static void RemoveUsersFromRoles (string[] usernames, string[] roleNames);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void RemoveUsersFromRoles(string[] usernames, string[] roleNames) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.Roles.RemoveUsersFromRoles(System.String[],System.String[])" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Sub RemoveUsersFromRoles (usernames As String(), roleNames As String())" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static void RemoveUsersFromRoles(cli::array &lt;System::String ^&gt; ^ usernames, cli::array &lt;System::String ^&gt; ^ roleNames);" />
+      <MemberSignature Language="F#" Value="static member RemoveUsersFromRoles : string[] * string[] -&gt; unit" Usage="System.Web.Security.Roles.RemoveUsersFromRoles (usernames, roleNames)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="usernames" Type="System.String[]" />
+        <Parameter Name="roleNames" Type="System.String[]" />
+      </Parameters>
+      <Docs>
+        <param name="usernames">Массив строк имен пользователей, которых необходимо удалить из указанных пользователей.</param>
+        <param name="roleNames">Массив строк имен ролей, из которых необходимо удалить указанных пользователей.</param>
+        <summary>Удаляет указанные имена пользователей из указанных ролей.</summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <xref:System.Web.Security.Roles.RemoveUsersFromRoles%2A> Метод вызывает поставщик ролей по умолчанию для удаления указанных пользователей из указанных ролей в источнике данных.  
+  
+ Если приложение использует <xref:System.Web.Security.SqlRoleProvider> класс, то обновления базы данных, выполняемые во время вызова <xref:System.Web.Security.SqlRoleProvider.RemoveUsersFromRoles%2A> метода, выполняются внутри транзакции. Если возникает ошибка, например имя пользователя, которого нет в указанной роли, выполняется откат транзакции и никакие обновления не выполняются.  
+  
+   
+  
+## Examples  
+ В следующем примере кода <xref:System.Web.Security.Roles.RemoveUsersFromRoles%2A> метод используется для удаления одного или нескольких пользователей из одной или нескольких ролей на основе вводимых пользователем данных. Пример файла Web. config, который включает управление ролями, см. в разделе <xref:System.Web.Security.Roles>.  
+  
+ [!code-aspx-csharp[System.Web.Security.Roles#8](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.Roles/CS/RemoveUsersFromRolescs.aspx#8)]
+ [!code-aspx-vb[System.Web.Security.Roles#8](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.Roles/VB/RemoveUsersFromRolesvb.aspx#8)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Одна из ролей, указанных в массиве <paramref name="roleNames" />, имеет значение <see langword="null" />.  
+  
+- или - 
+Один из пользователей, указанных в массиве <paramref name="usernames" />, имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentException">Одна из ролей, указанных в массиве <paramref name="roleNames" />, равна пустой строке или содержит запятую (,).  
+  
+- или - 
+Один из пользователей, указанных в массиве <paramref name="usernames" />, равен пустой строке или содержит запятую (,).  
+  
+- или - 
+ Параметр <paramref name="roleNames" /> содержит повторяющийся элемент.  
+  
+-или- 
+ Параметр <paramref name="usernames" /> содержит повторяющийся элемент.</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Управление ролями не включено.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+    <Member MemberName="RoleExists">
+      <MemberSignature Language="C#" Value="public static bool RoleExists (string roleName);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool RoleExists(string roleName) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Web.Security.Roles.RoleExists(System.String)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function RoleExists (roleName As String) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static bool RoleExists(System::String ^ roleName);" />
+      <MemberSignature Language="F#" Value="static member RoleExists : string -&gt; bool" Usage="System.Web.Security.Roles.RoleExists roleName" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Web</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="roleName" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="roleName">Имя роли, которую необходимо найти в источнике данных.</param>
+        <summary>Получает значение, позволяющее определить, существует ли указанная роль в источнике данных роли.</summary>
+        <returns><see langword="true" />, если имя роли уже существует в источнике данных; в противном случае — <see langword="false" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Метод вызывает метод поставщика роли по умолчанию, чтобы определить <xref:System.Web.Security.Roles.ApplicationName%2A> , существует ли имя роли в источнике данных для приложения, указанного в свойстве. `RoleExists` <xref:System.Web.Security.Roles.RoleExists%2A>  
+  
+   
+  
+## Examples  
+ В следующем примере кода <xref:System.Web.Security.Roles.RoleExists%2A> метод используется для определения того, существует ли уже имя роли перед созданием роли. Пример файла Web. config, который включает управление ролями, см. в разделе <xref:System.Web.Security.Roles>.  
+  
+> [!IMPORTANT]
+>  Этот пример содержит текстовое поле, которое принимает вводимые пользователем данные, что является потенциальной угрозой безопасности. По умолчанию данные, вводимые пользователем на веб-страницах ASP.NET, проверяются на наличие скриптов и HTML-элементов. Дополнительные сведения см. в разделе [Общие сведения об использовании сценариев](https://msdn.microsoft.com/library/772c7312-211a-4eb3-8d6e-eec0aa1dcc07).  
+  
+ [!code-aspx-csharp[System.Web.Security.SqlRoleProvider#1](~/samples/snippets/csharp/VS_Snippets_WebNet/System.Web.Security.SqlRoleProvider/CS/createrolecs.aspx#1)]
+ [!code-aspx-vb[System.Web.Security.SqlRoleProvider#1](~/samples/snippets/visualbasic/VS_Snippets_WebNet/System.Web.Security.SqlRoleProvider/VB/createrolevb.aspx#1)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentNullException">Значение параметра <paramref name="roleName" /> — <see langword="null" /> (<see langword="Nothing" /> в Visual Basic).</exception>
+        <exception cref="T:System.ArgumentException">Параметр <paramref name="roleName" /> равен пустой строке или содержит запятую (,).</exception>
+        <exception cref="T:System.Configuration.Provider.ProviderException">Управление ролями не включено.</exception>
+        <related type="Article" href="https://msdn.microsoft.com/library/a0d2f19d-a2a7-496d-88b6-30133f8ea3d6">Основные сведения об управлении ролями ASP.NET</related>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
