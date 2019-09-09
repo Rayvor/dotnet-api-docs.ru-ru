@@ -1,0 +1,894 @@
+<Type Name="WriteableBitmap" FullName="System.Windows.Media.Imaging.WriteableBitmap">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="5999a98bb529cee5374999d18ea413f94c9feeda" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70630106" /></Metadata><TypeSignature Language="C#" Value="public sealed class WriteableBitmap : System.Windows.Media.Imaging.BitmapSource" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi sealed beforefieldinit WriteableBitmap extends System.Windows.Media.Imaging.BitmapSource" />
+  <TypeSignature Language="DocId" Value="T:System.Windows.Media.Imaging.WriteableBitmap" />
+  <TypeSignature Language="VB.NET" Value="Public NotInheritable Class WriteableBitmap&#xA;Inherits BitmapSource" />
+  <TypeSignature Language="C++ CLI" Value="public ref class WriteableBitmap sealed : System::Windows::Media::Imaging::BitmapSource" />
+  <TypeSignature Language="F#" Value="type WriteableBitmap = class&#xA;    inherit BitmapSource" />
+  <AssemblyInfo>
+    <AssemblyName>PresentationCore</AssemblyName>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Windows.Media.Imaging.BitmapSource</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary><span data-ttu-id="23b30-101">Предоставляет объект <see cref="T:System.Windows.Media.Imaging.BitmapSource" />, в который можно осуществить запись и обновить.</span><span class="sxs-lookup"><span data-stu-id="23b30-101">Provides a <see cref="T:System.Windows.Media.Imaging.BitmapSource" /> that can be written to and updated.</span></span></summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <span data-ttu-id="23b30-102"><xref:System.Windows.Media.Imaging.WriteableBitmap> Используйте класс для обновления и отрисовки растрового изображения на основе каждого фрейма.</span><span class="sxs-lookup"><span data-stu-id="23b30-102">Use the <xref:System.Windows.Media.Imaging.WriteableBitmap> class to update and render a bitmap on a per-frame basis.</span></span> <span data-ttu-id="23b30-103">Это полезно для создания алгоритмного содержимого, такого как изображение фрактала, и для визуализации данных, например, визуализатора музыки.</span><span class="sxs-lookup"><span data-stu-id="23b30-103">This is useful for generating algorithmic content, such as a fractal image, and for data visualization, such as a music visualizer.</span></span>  
+  
+ <span data-ttu-id="23b30-104"><xref:System.Windows.Media.Imaging.WriteableBitmap> Класс использует два буфера.</span><span class="sxs-lookup"><span data-stu-id="23b30-104">The <xref:System.Windows.Media.Imaging.WriteableBitmap> class uses two buffers.</span></span> <span data-ttu-id="23b30-105">*Задний буфер* выделяется в системной памяти и накапливает содержимое, которое в настоящее время не отображается.</span><span class="sxs-lookup"><span data-stu-id="23b30-105">The *back buffer* is allocated in system memory and accumulates content that is not currently displayed.</span></span> <span data-ttu-id="23b30-106">*Передний буфер* выделяется в системной памяти и содержит текущее отображаемое содержимое.</span><span class="sxs-lookup"><span data-stu-id="23b30-106">The *front buffer* is allocated in system memory and contains the content that is currently displayed.</span></span> <span data-ttu-id="23b30-107">Система отрисовки копирует передний буфер в видеопамять для отображения.</span><span class="sxs-lookup"><span data-stu-id="23b30-107">The rendering system copies the front buffer to video memory for display.</span></span>  
+  
+ <span data-ttu-id="23b30-108">Эти буферы используются двумя потоками.</span><span class="sxs-lookup"><span data-stu-id="23b30-108">Two threads use these buffers.</span></span> <span data-ttu-id="23b30-109">*Поток пользовательского интерфейса* создает пользовательский интерфейс, но не представляет его на экране.</span><span class="sxs-lookup"><span data-stu-id="23b30-109">The *user interface (UI) thread* generates the UI but does not present it to the screen.</span></span> <span data-ttu-id="23b30-110">Поток пользовательского интерфейса реагирует на пользовательский ввод, таймеры и другие события.</span><span class="sxs-lookup"><span data-stu-id="23b30-110">The UI thread responds to user input, timers, and other events.</span></span> <span data-ttu-id="23b30-111">Приложение может иметь несколько потоков пользовательского интерфейса.</span><span class="sxs-lookup"><span data-stu-id="23b30-111">An application can have multiple UI threads.</span></span> <span data-ttu-id="23b30-112">*Поток отрисовки* формирует и визуализирует изменения из потока пользовательского интерфейса.</span><span class="sxs-lookup"><span data-stu-id="23b30-112">The *render thread* composes and renders changes from the UI thread.</span></span> <span data-ttu-id="23b30-113">Существует только один поток отрисовки для каждого приложения.</span><span class="sxs-lookup"><span data-stu-id="23b30-113">There is only one render thread per application.</span></span>  
+  
+ <span data-ttu-id="23b30-114">Поток пользовательского интерфейса записывает содержимое в задний буфер.</span><span class="sxs-lookup"><span data-stu-id="23b30-114">The UI thread writes content to the back buffer.</span></span> <span data-ttu-id="23b30-115">Поток отрисовки считывает содержимое из переднего буфера и копирует его в видеопамять.</span><span class="sxs-lookup"><span data-stu-id="23b30-115">The render thread reads content from the front buffer and copies it to video memory.</span></span> <span data-ttu-id="23b30-116">Изменения в обратном буфере отправляются с измененными прямоугольными областями.</span><span class="sxs-lookup"><span data-stu-id="23b30-116">Changes to the back buffer are tracked with changed rectangular regions.</span></span>  
+  
+ <span data-ttu-id="23b30-117">Вызовите одну из <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%2A> перегрузок, чтобы автоматически обновлять и отображать содержимое в обратном буфере.</span><span class="sxs-lookup"><span data-stu-id="23b30-117">Call one of the <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%2A> overloads to update and display content in the back buffer automatically.</span></span>  
+  
+ <span data-ttu-id="23b30-118">Для более высокого контроля над обновлениями и многопоточного доступа к буферу заднего буфера используйте следующий рабочий процесс.</span><span class="sxs-lookup"><span data-stu-id="23b30-118">For greater control over updates, and for multi-threaded access to the back buffer, use the following workflow.</span></span>  
+  
+1.  <span data-ttu-id="23b30-119">Вызовите <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> метод, чтобы зарезервировать задний буфер для обновлений.</span><span class="sxs-lookup"><span data-stu-id="23b30-119">Call the <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> method to reserve the back buffer for updates.</span></span>  
+  
+2.  <span data-ttu-id="23b30-120">Получите указатель на задний буфер, обратившись <xref:System.Windows.Media.Imaging.WriteableBitmap.BackBuffer%2A> к свойству.</span><span class="sxs-lookup"><span data-stu-id="23b30-120">Obtain a pointer to the back buffer by accessing the <xref:System.Windows.Media.Imaging.WriteableBitmap.BackBuffer%2A> property.</span></span>  
+  
+3.  <span data-ttu-id="23b30-121">Запись изменений в задний буфер.</span><span class="sxs-lookup"><span data-stu-id="23b30-121">Write changes to the back buffer.</span></span> <span data-ttu-id="23b30-122">Другие потоки могут записывать изменения в задний буфер при <xref:System.Windows.Media.Imaging.WriteableBitmap> блокировке.</span><span class="sxs-lookup"><span data-stu-id="23b30-122">Other threads may write changes to the back buffer when the <xref:System.Windows.Media.Imaging.WriteableBitmap> is locked.</span></span>  
+  
+4.  <span data-ttu-id="23b30-123">Вызовите <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A> метод, чтобы указать изменившиеся области.</span><span class="sxs-lookup"><span data-stu-id="23b30-123">Call the <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A> method to indicate areas that have changed.</span></span>  
+  
+5.  <span data-ttu-id="23b30-124">Вызовите <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> метод, чтобы освободить задний буфер и разрешить показ презентации на экране.</span><span class="sxs-lookup"><span data-stu-id="23b30-124">Call the <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> method to release the back buffer and allow presentation to the screen.</span></span>  
+  
+ <span data-ttu-id="23b30-125">Когда обновления отправляются в поток отрисовки, поток отрисовки копирует измененные прямоугольники из заднего буфера в передний.</span><span class="sxs-lookup"><span data-stu-id="23b30-125">When updates are sent to the rendering thread, the rendering thread copies the changed rectangles from the back buffer to the front buffer.</span></span> <span data-ttu-id="23b30-126">Система отрисовки управляет этим обменом во избежание взаимоблокировок и перерисовки артефактов, таких как "уничтожение".</span><span class="sxs-lookup"><span data-stu-id="23b30-126">The rendering system controls this exchange to avoid deadlocks and redraw artifacts, such as "tearing".</span></span>  
+  
+   
+  
+## Examples  
+ <span data-ttu-id="23b30-127">В следующем примере показано, <xref:System.Windows.Media.Imaging.WriteableBitmap> как можно использовать в качестве источника <xref:System.Windows.Controls.Image> для рисования пикселей при перемещении мыши.</span><span class="sxs-lookup"><span data-stu-id="23b30-127">The following example demonstrates how a <xref:System.Windows.Media.Imaging.WriteableBitmap> can be used as the source of an <xref:System.Windows.Controls.Image> to draw pixels when the mouse moves.</span></span>  
+  
+ [!code-csharp[WriteableBitmap2#WriteableBitmapFullPage](~/samples/snippets/csharp/VS_Snippets_Wpf/WriteableBitmap2/CS/Program.cs#writeablebitmapfullpage)]  
+  
+ ]]></format>
+    </remarks>
+    <altmember cref="T:System.Windows.Media.Imaging.BitmapSource" />
+  </Docs>
+  <Members>
+    <MemberGroup MemberName=".ctor">
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary><span data-ttu-id="23b30-128">Инициализирует новый экземпляр класса <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-128">Initializes a new instance of the <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" /> class.</span></span></summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public WriteableBitmap (System.Windows.Media.Imaging.BitmapSource source);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.Windows.Media.Imaging.BitmapSource source) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Media.Imaging.WriteableBitmap.#ctor(System.Windows.Media.Imaging.BitmapSource)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (source As BitmapSource)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; WriteableBitmap(System::Windows::Media::Imaging::BitmapSource ^ source);" />
+      <MemberSignature Language="F#" Value="new System.Windows.Media.Imaging.WriteableBitmap : System.Windows.Media.Imaging.BitmapSource -&gt; System.Windows.Media.Imaging.WriteableBitmap" Usage="new System.Windows.Media.Imaging.WriteableBitmap source" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters>
+        <Parameter Name="source" Type="System.Windows.Media.Imaging.BitmapSource" />
+      </Parameters>
+      <Docs>
+        <param name="source"><span data-ttu-id="23b30-129">Объект <see cref="T:System.Windows.Media.Imaging.BitmapSource" />, используемый для инициализации.</span><span class="sxs-lookup"><span data-stu-id="23b30-129">The <see cref="T:System.Windows.Media.Imaging.BitmapSource" /> to use for initialization.</span></span></param>
+        <summary><span data-ttu-id="23b30-130">Инициализирует новый экземпляр класса <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" /> с использованием заданного типа <see cref="T:System.Windows.Media.Imaging.BitmapSource" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-130">Initializes a new instance of the <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" /> class using the given <see cref="T:System.Windows.Media.Imaging.BitmapSource" />.</span></span></summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <span data-ttu-id="23b30-131">Конструктор <xref:System.Windows.Media.Imaging.WriteableBitmap.%23ctor%28System.Int32%2CSystem.Int32%2CSystem.Double%2CSystem.Double%2CSystem.Windows.Media.PixelFormat%2CSystem.Windows.Media.Imaging.BitmapPalette%29> предпочтительнее, чем использовать этот конструктор.</span><span class="sxs-lookup"><span data-stu-id="23b30-131">The <xref:System.Windows.Media.Imaging.WriteableBitmap.%23ctor%28System.Int32%2CSystem.Int32%2CSystem.Double%2CSystem.Double%2CSystem.Windows.Media.PixelFormat%2CSystem.Windows.Media.Imaging.BitmapPalette%29> constructor is preferred over using this constructor.</span></span>  
+  
+ <span data-ttu-id="23b30-132">Если `source` не использует формат точечного рисунка, поддерживаемый изначально, преобразования формата применяются для каждого обновления кадра, что снижает производительность.</span><span class="sxs-lookup"><span data-stu-id="23b30-132">If `source` does not use a natively supported bitmap format, format conversions are applied for each frame update, which reduces performance.</span></span>  
+  
+ ]]></format>
+        </remarks>
+        <permission cref="T:System.Security.Permissions.SecurityPermission"><span data-ttu-id="23b30-133">для доступа к неуправляемым ресурсам.</span><span class="sxs-lookup"><span data-stu-id="23b30-133">for access to unmanaged resources.</span></span> <span data-ttu-id="23b30-134">Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-134">Security action: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />.</span></span> <span data-ttu-id="23b30-135">Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></span><span class="sxs-lookup"><span data-stu-id="23b30-135">Associated enumeration: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></span></span></permission>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public WriteableBitmap (int pixelWidth, int pixelHeight, double dpiX, double dpiY, System.Windows.Media.PixelFormat pixelFormat, System.Windows.Media.Imaging.BitmapPalette palette);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(int32 pixelWidth, int32 pixelHeight, float64 dpiX, float64 dpiY, valuetype System.Windows.Media.PixelFormat pixelFormat, class System.Windows.Media.Imaging.BitmapPalette palette) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Media.Imaging.WriteableBitmap.#ctor(System.Int32,System.Int32,System.Double,System.Double,System.Windows.Media.PixelFormat,System.Windows.Media.Imaging.BitmapPalette)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; WriteableBitmap(int pixelWidth, int pixelHeight, double dpiX, double dpiY, System::Windows::Media::PixelFormat pixelFormat, System::Windows::Media::Imaging::BitmapPalette ^ palette);" />
+      <MemberSignature Language="F#" Value="new System.Windows.Media.Imaging.WriteableBitmap : int * int * double * double * System.Windows.Media.PixelFormat * System.Windows.Media.Imaging.BitmapPalette -&gt; System.Windows.Media.Imaging.WriteableBitmap" Usage="new System.Windows.Media.Imaging.WriteableBitmap (pixelWidth, pixelHeight, dpiX, dpiY, pixelFormat, palette)" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters>
+        <Parameter Name="pixelWidth" Type="System.Int32" />
+        <Parameter Name="pixelHeight" Type="System.Int32" />
+        <Parameter Name="dpiX" Type="System.Double" />
+        <Parameter Name="dpiY" Type="System.Double" />
+        <Parameter Name="pixelFormat" Type="System.Windows.Media.PixelFormat" />
+        <Parameter Name="palette" Type="System.Windows.Media.Imaging.BitmapPalette" />
+      </Parameters>
+      <Docs>
+        <param name="pixelWidth"><span data-ttu-id="23b30-136">Требуемая ширина растрового изображения.</span><span class="sxs-lookup"><span data-stu-id="23b30-136">The desired width of the bitmap.</span></span></param>
+        <param name="pixelHeight"><span data-ttu-id="23b30-137">Требуемая высота растрового изображения.</span><span class="sxs-lookup"><span data-stu-id="23b30-137">The desired height of the bitmap.</span></span></param>
+        <param name="dpiX"><span data-ttu-id="23b30-138">Разрешение растрового изображения по горизонтали в [!INCLUDE[TLA#tla_dpi](~/includes/tlasharptla-dpi-md.md)].</span><span class="sxs-lookup"><span data-stu-id="23b30-138">The horizontal [!INCLUDE[TLA#tla_dpi](~/includes/tlasharptla-dpi-md.md)] of the bitmap.</span></span></param>
+        <param name="dpiY"><span data-ttu-id="23b30-139">Разрешение растрового изображения по вертикали в [!INCLUDE[TLA#tla_dpi](~/includes/tlasharptla-dpi-md.md)].</span><span class="sxs-lookup"><span data-stu-id="23b30-139">The vertical [!INCLUDE[TLA#tla_dpi](~/includes/tlasharptla-dpi-md.md)] of the bitmap.</span></span></param>
+        <param name="pixelFormat"><span data-ttu-id="23b30-140">Формат <see cref="T:System.Windows.Media.PixelFormat" /> растрового изображения.</span><span class="sxs-lookup"><span data-stu-id="23b30-140">The <see cref="T:System.Windows.Media.PixelFormat" /> of the bitmap.</span></span></param>
+        <param name="palette"><span data-ttu-id="23b30-141">Формат <see cref="T:System.Windows.Media.Imaging.BitmapPalette" /> растрового изображения.</span><span class="sxs-lookup"><span data-stu-id="23b30-141">The <see cref="T:System.Windows.Media.Imaging.BitmapPalette" /> of the bitmap.</span></span></param>
+        <summary><span data-ttu-id="23b30-142">Инициализирует новый экземпляр класса <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" /> заданными параметрами.</span><span class="sxs-lookup"><span data-stu-id="23b30-142">Initializes a new instance of the <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" /> class with the specified parameters.</span></span></summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <span data-ttu-id="23b30-143">Предпочтительные значения для `pixelFormat` — <xref:System.Windows.Media.PixelFormats.Bgr32%2A> и <xref:System.Windows.Media.PixelFormats.Pbgra32%2A>.</span><span class="sxs-lookup"><span data-stu-id="23b30-143">The preferred values for `pixelFormat` are <xref:System.Windows.Media.PixelFormats.Bgr32%2A> and <xref:System.Windows.Media.PixelFormats.Pbgra32%2A>.</span></span> <span data-ttu-id="23b30-144">Эти форматы изначально поддерживаются и не нуждаются в преобразовании формата.</span><span class="sxs-lookup"><span data-stu-id="23b30-144">These formats are natively supported and do not require a format conversion.</span></span> <span data-ttu-id="23b30-145">Для `pixelFormat` других значений требуется преобразование формата для каждого обновления кадра, что снижает производительность.</span><span class="sxs-lookup"><span data-stu-id="23b30-145">Other `pixelFormat` values require a format conversion for each frame update, which reduces performance.</span></span>  
+  
+ ]]></format>
+        </remarks>
+        <permission cref="T:System.Security.Permissions.SecurityPermission"><span data-ttu-id="23b30-146">для доступа к неуправляемым ресурсам.</span><span class="sxs-lookup"><span data-stu-id="23b30-146">for access to unmanaged resources.</span></span> <span data-ttu-id="23b30-147">Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-147">Security action: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />.</span></span> <span data-ttu-id="23b30-148">Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></span><span class="sxs-lookup"><span data-stu-id="23b30-148">Associated enumeration: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></span></span></permission>
+      </Docs>
+    </Member>
+    <Member MemberName="AddDirtyRect">
+      <MemberSignature Language="C#" Value="public void AddDirtyRect (System.Windows.Int32Rect dirtyRect);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void AddDirtyRect(valuetype System.Windows.Int32Rect dirtyRect) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect(System.Windows.Int32Rect)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub AddDirtyRect (dirtyRect As Int32Rect)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void AddDirtyRect(System::Windows::Int32Rect dirtyRect);" />
+      <MemberSignature Language="F#" Value="member this.AddDirtyRect : System.Windows.Int32Rect -&gt; unit" Usage="writeableBitmap.AddDirtyRect dirtyRect" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="dirtyRect" Type="System.Windows.Int32Rect" />
+      </Parameters>
+      <Docs>
+        <param name="dirtyRect"><span data-ttu-id="23b30-149">Объект <see cref="T:System.Windows.Int32Rect" />, представляющий измененную область.</span><span class="sxs-lookup"><span data-stu-id="23b30-149">An <see cref="T:System.Windows.Int32Rect" /> representing the area that changed.</span></span> <span data-ttu-id="23b30-150">Измерения в пикселях.</span><span class="sxs-lookup"><span data-stu-id="23b30-150">Dimensions are in pixels.</span></span></param>
+        <summary><span data-ttu-id="23b30-151">Указывает измененную область растрового изображения.</span><span class="sxs-lookup"><span data-stu-id="23b30-151">Specifies the area of the bitmap that changed.</span></span></summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <span data-ttu-id="23b30-152">Вызовите <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A> метод, чтобы указать изменения, внесенные кодом в задний буфер.</span><span class="sxs-lookup"><span data-stu-id="23b30-152">Call the <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A> method to indicate changes your code has made to the back buffer.</span></span>  
+  
+ <span data-ttu-id="23b30-153">При многократном вызове этого метода измененные области суммируются в достаточном, но не обязательно минимальном представлении.</span><span class="sxs-lookup"><span data-stu-id="23b30-153">When you call this method multiple times, the changed areas are accumulated in a sufficient, but not necessarily minimal, representation.</span></span> <span data-ttu-id="23b30-154">Для повышения эффективности только те области, которые помечены как "грязные", гарантированно копируются в передний буфер.</span><span class="sxs-lookup"><span data-stu-id="23b30-154">For efficiency, only the areas that are marked as dirty are guaranteed to be copied forward to the front buffer.</span></span> <span data-ttu-id="23b30-155">Тем не менее любая часть точечного рисунка может быть скопирована вперед, поэтому необходимо убедиться, что весь задний буфер всегда действителен.</span><span class="sxs-lookup"><span data-stu-id="23b30-155">However, any portion of the bitmap may be copied forward, so you must ensure that the entire back buffer is always valid.</span></span>  
+  
+ <span data-ttu-id="23b30-156">Вызывайте <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> <xref:System.Windows.Media.Imaging.WriteableBitmap> метод только между вызовами методов и, как описано в комментариях к классу. <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A></span><span class="sxs-lookup"><span data-stu-id="23b30-156">Call the <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A> method only between calls to the <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> and <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> methods, as described in the <xref:System.Windows.Media.Imaging.WriteableBitmap> class remarks.</span></span>  
+  
+   
+  
+## Examples  
+ <span data-ttu-id="23b30-157">В следующем примере кода показано, как задать область заднего буфера, измененную с помощью <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A> метода.</span><span class="sxs-lookup"><span data-stu-id="23b30-157">The following code example shows how to specify the area of the back buffer that changed by using the <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A> method.</span></span>  
+  
+ [!code-csharp[WriteableBitmap2#2](~/samples/snippets/csharp/VS_Snippets_Wpf/WriteableBitmap2/CS/Program.cs#2)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException"><span data-ttu-id="23b30-158">Растровое изображение не было заблокировано вызовом метода <see cref="M:System.Windows.Media.Imaging.WriteableBitmap.Lock" /> или <see cref="M:System.Windows.Media.Imaging.WriteableBitmap.TryLock(System.Windows.Duration)" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-158">The bitmap has not been locked by a call to the <see cref="M:System.Windows.Media.Imaging.WriteableBitmap.Lock" /> or <see cref="M:System.Windows.Media.Imaging.WriteableBitmap.TryLock(System.Windows.Duration)" /> methods.</span></span></exception>
+        <exception cref="T:System.ArgumentOutOfRangeException"><span data-ttu-id="23b30-159">Параметр <paramref name="dirtyRect" /> выходит за пределы растрового изображения <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-159"><paramref name="dirtyRect" /> falls outside the bounds of the <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.</span></span></exception>
+        <permission cref="T:System.Security.Permissions.SecurityPermission"><span data-ttu-id="23b30-160">для доступа к неуправляемым ресурсам.</span><span class="sxs-lookup"><span data-stu-id="23b30-160">for access to unmanaged resources.</span></span> <span data-ttu-id="23b30-161">Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-161">Security action: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />.</span></span> <span data-ttu-id="23b30-162">Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></span><span class="sxs-lookup"><span data-stu-id="23b30-162">Associated enumeration: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></span></span></permission>
+      </Docs>
+    </Member>
+    <Member MemberName="BackBuffer">
+      <MemberSignature Language="C#" Value="public IntPtr BackBuffer { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance native int BackBuffer" />
+      <MemberSignature Language="DocId" Value="P:System.Windows.Media.Imaging.WriteableBitmap.BackBuffer" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property BackBuffer As IntPtr" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property IntPtr BackBuffer { IntPtr get(); };" />
+      <MemberSignature Language="F#" Value="member this.BackBuffer : nativeint" Usage="System.Windows.Media.Imaging.WriteableBitmap.BackBuffer" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>get: System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>set: System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.IntPtr</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary><span data-ttu-id="23b30-163">Возвращает указатель на задний буфер.</span><span class="sxs-lookup"><span data-stu-id="23b30-163">Gets a pointer to the back buffer.</span></span></summary>
+        <value><span data-ttu-id="23b30-164">Объект <see cref="T:System.IntPtr" />, который указывает на базовый адрес заднего буфера.</span><span class="sxs-lookup"><span data-stu-id="23b30-164">An <see cref="T:System.IntPtr" /> that points to the base address of the back buffer.</span></span></value>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <span data-ttu-id="23b30-165">Задний буфер содержит содержимое растрового изображения в формате пикселей, запрошенном пользователем.</span><span class="sxs-lookup"><span data-stu-id="23b30-165">The back buffer contains the bitmap contents in the pixel format requested by the user.</span></span>  
+  
+ <span data-ttu-id="23b30-166">Обновление заднего буфера только между вызовами <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> методов и. <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A></span><span class="sxs-lookup"><span data-stu-id="23b30-166">Update the back buffer only between calls to the <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> and <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> methods.</span></span> <span data-ttu-id="23b30-167">Если вы не подписаны на рабочий процесс блокировки или разблокировки, <xref:System.Windows.Media.Imaging.WriteableBitmap> описанный в комментариях к классу, может произойти неопределенное поведение, например разрыв.</span><span class="sxs-lookup"><span data-stu-id="23b30-167">If you do not follow the Lock/Unlock workflow described in the <xref:System.Windows.Media.Imaging.WriteableBitmap> class remarks, undefined behaviors, such as tearing, can occur.</span></span>  
+  
+ <span data-ttu-id="23b30-168">Адрес заднего буфера не изменяется.</span><span class="sxs-lookup"><span data-stu-id="23b30-168">The address of the back buffer does not change.</span></span>  
+  
+## <a name="thread-safety"></a><span data-ttu-id="23b30-169">Потокобезопасность</span><span class="sxs-lookup"><span data-stu-id="23b30-169">Thread Safety</span></span>  
+ <span data-ttu-id="23b30-170">Можно передать <xref:System.Windows.Media.Imaging.WriteableBitmap.BackBuffer%2A> указатель на внешние компоненты и другие потоки для обработки, но в этом случае необходимо предоставить собственную координацию потоков.</span><span class="sxs-lookup"><span data-stu-id="23b30-170">You can pass the <xref:System.Windows.Media.Imaging.WriteableBitmap.BackBuffer%2A> pointer to external components and other threads for processing, but if you do, you must provide you own thread coordination.</span></span> <span data-ttu-id="23b30-171">В частности, необходимо убедиться, что поток пользовательского интерфейса указывает измененные области путем вызова <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A> метода, а поток пользовательского интерфейса разблокирует буфер путем <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> вызова метода.</span><span class="sxs-lookup"><span data-stu-id="23b30-171">In particular, you must ensure that the UI thread specifies changed areas by calling the <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A> method, and that the UI thread unlocks the buffer by calling the <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> method.</span></span>  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="BackBufferStride">
+      <MemberSignature Language="C#" Value="public int BackBufferStride { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 BackBufferStride" />
+      <MemberSignature Language="DocId" Value="P:System.Windows.Media.Imaging.WriteableBitmap.BackBufferStride" />
+      <MemberSignature Language="VB.NET" Value="Public ReadOnly Property BackBufferStride As Integer" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; property int BackBufferStride { int get(); };" />
+      <MemberSignature Language="F#" Value="member this.BackBufferStride : int" Usage="System.Windows.Media.Imaging.WriteableBitmap.BackBufferStride" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary><span data-ttu-id="23b30-172">Возвращает значение, указывающее количество байтов в одной строке данных о пикселях.</span><span class="sxs-lookup"><span data-stu-id="23b30-172">Gets a value indicating the number of bytes in a single row of pixel data.</span></span></summary>
+        <value><span data-ttu-id="23b30-173">Целое число, указывающее количество байтов в одной строке данных о пикселях.</span><span class="sxs-lookup"><span data-stu-id="23b30-173">An integer indicating the number of bytes in a single row of pixel data.</span></span></value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Clone">
+      <MemberSignature Language="C#" Value="public System.Windows.Media.Imaging.WriteableBitmap Clone ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.Windows.Media.Imaging.WriteableBitmap Clone() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Media.Imaging.WriteableBitmap.Clone" />
+      <MemberSignature Language="VB.NET" Value="Public Function Clone () As WriteableBitmap" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Windows::Media::Imaging::WriteableBitmap ^ Clone();" />
+      <MemberSignature Language="F#" Value="override this.Clone : unit -&gt; System.Windows.Media.Imaging.WriteableBitmap" Usage="writeableBitmap.Clone " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Windows.Media.Imaging.WriteableBitmap</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary><span data-ttu-id="23b30-174">Создает изменяемый клон данного объекта <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />, делая глубокие копии значений этого объекта.</span><span class="sxs-lookup"><span data-stu-id="23b30-174">Creates a modifiable clone of this <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />, making deep copies of this object's values.</span></span> <span data-ttu-id="23b30-175">При копировании свойств зависимостей этот метод копирует ссылки на ресурсы и привязки данных (которые могут уже не быть разрешимыми), но не копирует анимации и их текущие значения.</span><span class="sxs-lookup"><span data-stu-id="23b30-175">When copying dependency properties, this method copies resource references and data bindings (but they might no longer resolve) but not animations or their current values.</span></span></summary>
+        <returns><span data-ttu-id="23b30-176">Изменяемая копия текущего объекта.</span><span class="sxs-lookup"><span data-stu-id="23b30-176">A modifiable clone of the current object.</span></span> <span data-ttu-id="23b30-177">Свойство <see cref="P:System.Windows.Freezable.IsFrozen" /> клонированного объекта будет содержать значение <see langword="false" />, даже если свойство <see cref="P:System.Windows.Freezable.IsFrozen" /> исходного объекта содержало значение <see langword="true." />.</span><span class="sxs-lookup"><span data-stu-id="23b30-177">The cloned object's <see cref="P:System.Windows.Freezable.IsFrozen" /> property will be <see langword="false" /> even if the source's <see cref="P:System.Windows.Freezable.IsFrozen" /> property was <see langword="true." /></span></span></returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <span data-ttu-id="23b30-178">Этот метод используется для создания изменяемых копий замороженных <xref:System.Windows.Freezable> объектов (или любого <xref:System.Windows.Freezable> объекта).</span><span class="sxs-lookup"><span data-stu-id="23b30-178">This method is used to produce modifiable copies of frozen <xref:System.Windows.Freezable> objects (or any <xref:System.Windows.Freezable> object).</span></span> <span data-ttu-id="23b30-179">Для удобства этот метод затеняет унаследованную версию с реализацией со строгой типизацией.</span><span class="sxs-lookup"><span data-stu-id="23b30-179">For convenience, this method shadows the inherited version with a strongly typed implementation.</span></span>  
+  
+ <span data-ttu-id="23b30-180">Для получения дополнительной информации см. <xref:System.Windows.Freezable.Clone%2A?displayProperty=nameWithType>.</span><span class="sxs-lookup"><span data-stu-id="23b30-180">For more information, see <xref:System.Windows.Freezable.Clone%2A?displayProperty=nameWithType>.</span></span>  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CloneCore">
+      <MemberSignature Language="C#" Value="protected override void CloneCore (System.Windows.Freezable sourceFreezable);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void CloneCore(class System.Windows.Freezable sourceFreezable) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Media.Imaging.WriteableBitmap.CloneCore(System.Windows.Freezable)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Sub CloneCore (sourceFreezable As Freezable)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override void CloneCore(System::Windows::Freezable ^ sourceFreezable);" />
+      <MemberSignature Language="F#" Value="override this.CloneCore : System.Windows.Freezable -&gt; unit" Usage="writeableBitmap.CloneCore sourceFreezable" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityTreatAsSafe</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="sourceFreezable" Type="System.Windows.Freezable" />
+      </Parameters>
+      <Docs>
+        <param name="sourceFreezable">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CloneCurrentValue">
+      <MemberSignature Language="C#" Value="public System.Windows.Media.Imaging.WriteableBitmap CloneCurrentValue ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.Windows.Media.Imaging.WriteableBitmap CloneCurrentValue() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Media.Imaging.WriteableBitmap.CloneCurrentValue" />
+      <MemberSignature Language="VB.NET" Value="Public Function CloneCurrentValue () As WriteableBitmap" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; System::Windows::Media::Imaging::WriteableBitmap ^ CloneCurrentValue();" />
+      <MemberSignature Language="F#" Value="override this.CloneCurrentValue : unit -&gt; System.Windows.Media.Imaging.WriteableBitmap" Usage="writeableBitmap.CloneCurrentValue " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Windows.Media.Imaging.WriteableBitmap</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary><span data-ttu-id="23b30-181">Создает модифицируемый клон данного объекта <see cref="T:System.Windows.Media.Animation.ByteAnimationUsingKeyFrames" />, делая глубокие копии текущих значений этого объекта.</span><span class="sxs-lookup"><span data-stu-id="23b30-181">Creates a modifiable clone of this <see cref="T:System.Windows.Media.Animation.ByteAnimationUsingKeyFrames" /> object, making deep copies of this object's current values.</span></span> <span data-ttu-id="23b30-182">Ссылки на ресурсы, привязки данных и анимации не копируются, но копируются их текущие значения.</span><span class="sxs-lookup"><span data-stu-id="23b30-182">Resource references, data bindings, and animations are not copied, but their current values are.</span></span></summary>
+        <returns><span data-ttu-id="23b30-183">Изменяемая копия текущего объекта.</span><span class="sxs-lookup"><span data-stu-id="23b30-183">A modifiable clone of the current object.</span></span> <span data-ttu-id="23b30-184">Свойство <see cref="P:System.Windows.Freezable.IsFrozen" /> клонированного объекта будет содержать значение <see langword="false" />, даже если свойство <see cref="P:System.Windows.Freezable.IsFrozen" /> исходного объекта содержало значение <see langword="true" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-184">The cloned object's <see cref="P:System.Windows.Freezable.IsFrozen" /> property will be <see langword="false" /> even if the source's <see cref="P:System.Windows.Freezable.IsFrozen" /> property was <see langword="true" />.</span></span></returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <span data-ttu-id="23b30-185">Этот метод используется для создания изменяемых копий замороженных <xref:System.Windows.Freezable> объектов (или любого <xref:System.Windows.Freezable> объекта).</span><span class="sxs-lookup"><span data-stu-id="23b30-185">This method is used to produce modifiable copies of frozen <xref:System.Windows.Freezable> objects (or any <xref:System.Windows.Freezable> object).</span></span> <span data-ttu-id="23b30-186">Для удобства этот метод затеняет унаследованную версию с реализацией со строгой типизацией.</span><span class="sxs-lookup"><span data-stu-id="23b30-186">For convenience, this method shadows the inherited version with a strongly typed implementation.</span></span>  
+  
+ <span data-ttu-id="23b30-187">Для получения дополнительной информации см. <xref:System.Windows.Freezable.CloneCurrentValue%2A?displayProperty=nameWithType>.</span><span class="sxs-lookup"><span data-stu-id="23b30-187">For more information, see <xref:System.Windows.Freezable.CloneCurrentValue%2A?displayProperty=nameWithType>.</span></span>  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CloneCurrentValueCore">
+      <MemberSignature Language="C#" Value="protected override void CloneCurrentValueCore (System.Windows.Freezable sourceFreezable);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void CloneCurrentValueCore(class System.Windows.Freezable sourceFreezable) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Media.Imaging.WriteableBitmap.CloneCurrentValueCore(System.Windows.Freezable)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Sub CloneCurrentValueCore (sourceFreezable As Freezable)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override void CloneCurrentValueCore(System::Windows::Freezable ^ sourceFreezable);" />
+      <MemberSignature Language="F#" Value="override this.CloneCurrentValueCore : System.Windows.Freezable -&gt; unit" Usage="writeableBitmap.CloneCurrentValueCore sourceFreezable" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityTreatAsSafe</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="sourceFreezable" Type="System.Windows.Freezable" />
+      </Parameters>
+      <Docs>
+        <param name="sourceFreezable">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CreateInstanceCore">
+      <MemberSignature Language="C#" Value="protected override System.Windows.Freezable CreateInstanceCore ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance class System.Windows.Freezable CreateInstanceCore() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Media.Imaging.WriteableBitmap.CreateInstanceCore" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Function CreateInstanceCore () As Freezable" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override System::Windows::Freezable ^ CreateInstanceCore();" />
+      <MemberSignature Language="F#" Value="override this.CreateInstanceCore : unit -&gt; System.Windows.Freezable" Usage="writeableBitmap.CreateInstanceCore " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Windows.Freezable</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="FreezeCore">
+      <MemberSignature Language="C#" Value="protected override bool FreezeCore (bool isChecking);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance bool FreezeCore(bool isChecking) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Media.Imaging.WriteableBitmap.FreezeCore(System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Function FreezeCore (isChecking As Boolean) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override bool FreezeCore(bool isChecking);" />
+      <MemberSignature Language="F#" Value="override this.FreezeCore : bool -&gt; bool" Usage="writeableBitmap.FreezeCore isChecking" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityTreatAsSafe</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="isChecking" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="isChecking">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetAsFrozenCore">
+      <MemberSignature Language="C#" Value="protected override void GetAsFrozenCore (System.Windows.Freezable sourceFreezable);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void GetAsFrozenCore(class System.Windows.Freezable sourceFreezable) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Media.Imaging.WriteableBitmap.GetAsFrozenCore(System.Windows.Freezable)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Sub GetAsFrozenCore (sourceFreezable As Freezable)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override void GetAsFrozenCore(System::Windows::Freezable ^ sourceFreezable);" />
+      <MemberSignature Language="F#" Value="override this.GetAsFrozenCore : System.Windows.Freezable -&gt; unit" Usage="writeableBitmap.GetAsFrozenCore sourceFreezable" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityTreatAsSafe</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="sourceFreezable" Type="System.Windows.Freezable" />
+      </Parameters>
+      <Docs>
+        <param name="sourceFreezable">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetCurrentValueAsFrozenCore">
+      <MemberSignature Language="C#" Value="protected override void GetCurrentValueAsFrozenCore (System.Windows.Freezable sourceFreezable);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void GetCurrentValueAsFrozenCore(class System.Windows.Freezable sourceFreezable) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Media.Imaging.WriteableBitmap.GetCurrentValueAsFrozenCore(System.Windows.Freezable)" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Sub GetCurrentValueAsFrozenCore (sourceFreezable As Freezable)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override void GetCurrentValueAsFrozenCore(System::Windows::Freezable ^ sourceFreezable);" />
+      <MemberSignature Language="F#" Value="override this.GetCurrentValueAsFrozenCore : System.Windows.Freezable -&gt; unit" Usage="writeableBitmap.GetCurrentValueAsFrozenCore sourceFreezable" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityTreatAsSafe</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="sourceFreezable" Type="System.Windows.Freezable" />
+      </Parameters>
+      <Docs>
+        <param name="sourceFreezable">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Lock">
+      <MemberSignature Language="C#" Value="public void Lock ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Lock() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Media.Imaging.WriteableBitmap.Lock" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Lock ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Lock();" />
+      <MemberSignature Language="F#" Value="member this.Lock : unit -&gt; unit" Usage="writeableBitmap.Lock " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary><span data-ttu-id="23b30-188">Резервирует задний буфер для обновлений.</span><span class="sxs-lookup"><span data-stu-id="23b30-188">Reserves the back buffer for updates.</span></span></summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <span data-ttu-id="23b30-189"><xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> Метод увеличивает число блокировок.</span><span class="sxs-lookup"><span data-stu-id="23b30-189">The <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> method increments the lock count.</span></span> <span data-ttu-id="23b30-190">Если блокировка заблокирована, система отрисовки не отправляет обновления, <xref:System.Windows.Media.Imaging.WriteableBitmap> пока не будет полностью разблокирована вызовами <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> метода. <xref:System.Windows.Media.Imaging.WriteableBitmap></span><span class="sxs-lookup"><span data-stu-id="23b30-190">When a <xref:System.Windows.Media.Imaging.WriteableBitmap> is locked, the rendering system does not send updates until the <xref:System.Windows.Media.Imaging.WriteableBitmap> is fully unlocked by calls to the <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> method.</span></span>  
+  
+ <span data-ttu-id="23b30-191">Для поддержки многопоточных <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> реализаций можно использовать метод.</span><span class="sxs-lookup"><span data-stu-id="23b30-191">You can use the <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> method to support multi-threaded implementations.</span></span> <span data-ttu-id="23b30-192">В этих сценариях поток пользовательского интерфейса блокирует точечный рисунок и предоставляет обратный буфер другим потокам.</span><span class="sxs-lookup"><span data-stu-id="23b30-192">In these scenarios, the UI thread locks the bitmap and exposes the back buffer to other threads.</span></span> <span data-ttu-id="23b30-193">Когда рабочий поток завершает кадр, поток пользовательского интерфейса добавляет измененные прямоугольники и разблокирует буфер.</span><span class="sxs-lookup"><span data-stu-id="23b30-193">When the worker thread has finished a frame, the UI thread adds changed rectangles and unlocks the buffer.</span></span>  
+  
+ <span data-ttu-id="23b30-194">Поток пользовательского интерфейса может блокироваться, когда поток отрисовки получает блокировку заднего буфера, чтобы скопировать его вперед в передний буфер.</span><span class="sxs-lookup"><span data-stu-id="23b30-194">The UI thread can block when the render thread acquires a lock on the back buffer to copy it forward to the front buffer.</span></span> <span data-ttu-id="23b30-195">Если задержка из этого блока слишком велика, используйте <xref:System.Windows.Media.Imaging.WriteableBitmap.TryLock%2A> метод для ожидания в течение короткого времени, а затем разблокируйте поток пользовательского интерфейса для выполнения других задач в то время, когда задний буфер заблокирован.</span><span class="sxs-lookup"><span data-stu-id="23b30-195">If the latency from this block is too long, use the <xref:System.Windows.Media.Imaging.WriteableBitmap.TryLock%2A> method to wait for a short time and then unblock the UI thread to perform other tasks while the back buffer is locked.</span></span>  
+  
+   
+  
+## Examples  
+ <span data-ttu-id="23b30-196">В следующем примере кода показано, как зарезервировать задний буфер с <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> помощью метода.</span><span class="sxs-lookup"><span data-stu-id="23b30-196">The following code example shows how to reserve the back buffer by using the <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> method.</span></span>  
+  
+ [!code-csharp[WriteableBitmap2#2](~/samples/snippets/csharp/VS_Snippets_Wpf/WriteableBitmap2/CS/Program.cs#2)]  
+  
+ ]]></format>
+        </remarks>
+        <altmember cref="M:System.Windows.Media.Imaging.WriteableBitmap.TryLock(System.Windows.Duration)" />
+        <altmember cref="M:System.Windows.Media.Imaging.WriteableBitmap.Unlock" />
+      </Docs>
+    </Member>
+    <Member MemberName="TryLock">
+      <MemberSignature Language="C#" Value="public bool TryLock (System.Windows.Duration timeout);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance bool TryLock(valuetype System.Windows.Duration timeout) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Media.Imaging.WriteableBitmap.TryLock(System.Windows.Duration)" />
+      <MemberSignature Language="VB.NET" Value="Public Function TryLock (timeout As Duration) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; bool TryLock(System::Windows::Duration timeout);" />
+      <MemberSignature Language="F#" Value="member this.TryLock : System.Windows.Duration -&gt; bool" Usage="writeableBitmap.TryLock timeout" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="timeout" Type="System.Windows.Duration" />
+      </Parameters>
+      <Docs>
+        <param name="timeout"><span data-ttu-id="23b30-197">Значение <see cref="T:System.Windows.Duration" />, которое представляет собой длительность периода ожидания.</span><span class="sxs-lookup"><span data-stu-id="23b30-197">A <see cref="T:System.Windows.Duration" /> that represents the length of time to wait.</span></span> <span data-ttu-id="23b30-198">Значение 0 возвращается сразу же.</span><span class="sxs-lookup"><span data-stu-id="23b30-198">A value of 0 returns immediately.</span></span> <span data-ttu-id="23b30-199">Значение свойства <see cref="P:System.Windows.Duration.Forever" /> выполняет блокировку на неопределенный промежуток времени.</span><span class="sxs-lookup"><span data-stu-id="23b30-199">A value of <see cref="P:System.Windows.Duration.Forever" /> blocks indefinitely.</span></span></param>
+        <summary><span data-ttu-id="23b30-200">Пытается заблокировать растровое изображение, ожидая не больше указанного периода времени.</span><span class="sxs-lookup"><span data-stu-id="23b30-200">Attempts to lock the bitmap, waiting for no longer than the specified length of time.</span></span></summary>
+        <returns><span data-ttu-id="23b30-201">Значение <see langword="true" />, если блокировка выполнена; в противном случае — значение <see langword="false" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-201"><see langword="true" /> if the lock was acquired; otherwise, <see langword="false" />.</span></span></returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <span data-ttu-id="23b30-202">При получении блокировки поведение <xref:System.Windows.Media.Imaging.WriteableBitmap.TryLock%2A> метода <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> совпадает с методом.</span><span class="sxs-lookup"><span data-stu-id="23b30-202">When a lock is acquired, the behavior of the <xref:System.Windows.Media.Imaging.WriteableBitmap.TryLock%2A> method is the same as the <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> method.</span></span>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentOutOfRangeException"><span data-ttu-id="23b30-203">Параметру <paramref name="timeout" /> задается значение <see cref="P:System.Windows.Duration.Automatic" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-203"><paramref name="timeout" /> is set to <see cref="P:System.Windows.Duration.Automatic" />.</span></span></exception>
+        <permission cref="T:System.Security.Permissions.SecurityPermission"><span data-ttu-id="23b30-204">для доступа к неуправляемым ресурсам.</span><span class="sxs-lookup"><span data-stu-id="23b30-204">for access to unmanaged resources.</span></span> <span data-ttu-id="23b30-205">Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-205">Security action: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />.</span></span> <span data-ttu-id="23b30-206">Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></span><span class="sxs-lookup"><span data-stu-id="23b30-206">Associated enumeration: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></span></span></permission>
+        <altmember cref="M:System.Windows.Media.Imaging.WriteableBitmap.Lock" />
+        <altmember cref="M:System.Windows.Media.Imaging.WriteableBitmap.Unlock" />
+      </Docs>
+    </Member>
+    <Member MemberName="Unlock">
+      <MemberSignature Language="C#" Value="public void Unlock ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Unlock() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Media.Imaging.WriteableBitmap.Unlock" />
+      <MemberSignature Language="VB.NET" Value="Public Sub Unlock ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void Unlock();" />
+      <MemberSignature Language="F#" Value="member this.Unlock : unit -&gt; unit" Usage="writeableBitmap.Unlock " />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary><span data-ttu-id="23b30-207">Освобождает задний буфер, чтобы сделать его доступным для отображения.</span><span class="sxs-lookup"><span data-stu-id="23b30-207">Releases the back buffer to make it available for display.</span></span></summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <span data-ttu-id="23b30-208"><xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> Метод уменьшает число блокировок.</span><span class="sxs-lookup"><span data-stu-id="23b30-208">The <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> method decrements the lock count.</span></span> <span data-ttu-id="23b30-209">Если счетчик блокировок достигнет значения 0, то при вызове <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A> метода будет запрошен проход визуализации.</span><span class="sxs-lookup"><span data-stu-id="23b30-209">When the lock count reaches 0, a render pass is requested if the <xref:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect%2A> method has been called.</span></span>  
+  
+   
+  
+## Examples  
+ <span data-ttu-id="23b30-210">В следующем примере кода показано, как освободить задний буфер с помощью <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> метода.</span><span class="sxs-lookup"><span data-stu-id="23b30-210">The following code example shows how to release the back buffer by using the <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> method.</span></span>  
+  
+ [!code-csharp[WriteableBitmap2#2](~/samples/snippets/csharp/VS_Snippets_Wpf/WriteableBitmap2/CS/Program.cs#2)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.InvalidOperationException"><span data-ttu-id="23b30-211">Растровое изображение не было заблокировано вызовом метода <see cref="M:System.Windows.Media.Imaging.WriteableBitmap.Lock" /> или <see cref="M:System.Windows.Media.Imaging.WriteableBitmap.TryLock(System.Windows.Duration)" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-211">The bitmap has not been locked by a call to the <see cref="M:System.Windows.Media.Imaging.WriteableBitmap.Lock" /> or <see cref="M:System.Windows.Media.Imaging.WriteableBitmap.TryLock(System.Windows.Duration)" /> methods.</span></span></exception>
+        <permission cref="T:System.Security.Permissions.SecurityPermission"><span data-ttu-id="23b30-212">для доступа к неуправляемым ресурсам.</span><span class="sxs-lookup"><span data-stu-id="23b30-212">for access to unmanaged resources.</span></span> <span data-ttu-id="23b30-213">Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-213">Security action: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />.</span></span> <span data-ttu-id="23b30-214">Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></span><span class="sxs-lookup"><span data-stu-id="23b30-214">Associated enumeration: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></span></span></permission>
+        <altmember cref="M:System.Windows.Media.Imaging.WriteableBitmap.Lock" />
+        <altmember cref="M:System.Windows.Media.Imaging.WriteableBitmap.AddDirtyRect(System.Windows.Int32Rect)" />
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="WritePixels">
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary><span data-ttu-id="23b30-215">Обновляет пиксели растрового изображения, доступного для записи.</span><span class="sxs-lookup"><span data-stu-id="23b30-215">Updates the pixels of the writeable bitmap.</span></span></summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="WritePixels">
+      <MemberSignature Language="C#" Value="public void WritePixels (System.Windows.Int32Rect sourceRect, Array pixels, int stride, int offset);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void WritePixels(valuetype System.Windows.Int32Rect sourceRect, class System.Array pixels, int32 stride, int32 offset) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Media.Imaging.WriteableBitmap.WritePixels(System.Windows.Int32Rect,System.Array,System.Int32,System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub WritePixels (sourceRect As Int32Rect, pixels As Array, stride As Integer, offset As Integer)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void WritePixels(System::Windows::Int32Rect sourceRect, Array ^ pixels, int stride, int offset);" />
+      <MemberSignature Language="F#" Value="member this.WritePixels : System.Windows.Int32Rect * Array * int * int -&gt; unit" Usage="writeableBitmap.WritePixels (sourceRect, pixels, stride, offset)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="sourceRect" Type="System.Windows.Int32Rect" />
+        <Parameter Name="pixels" Type="System.Array" />
+        <Parameter Name="stride" Type="System.Int32" />
+        <Parameter Name="offset" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="sourceRect"><span data-ttu-id="23b30-216">Обновляемый прямоугольник растрового изображения <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-216">The rectangle of the <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" /> to update.</span></span></param>
+        <param name="pixels"><span data-ttu-id="23b30-217">Массив пикселей, используемый для обновления растрового изображения.</span><span class="sxs-lookup"><span data-stu-id="23b30-217">The pixel array used to update the bitmap.</span></span></param>
+        <param name="stride"><span data-ttu-id="23b30-218">Шаг области обновления в <paramref name="pixels" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-218">The stride of the update region in <paramref name="pixels" />.</span></span></param>
+        <param name="offset"><span data-ttu-id="23b30-219">Смещение входного буфера.</span><span class="sxs-lookup"><span data-stu-id="23b30-219">The input buffer offset.</span></span></param>
+        <summary><span data-ttu-id="23b30-220">Обновляет пиксели в заданной области растрового изображения.</span><span class="sxs-lookup"><span data-stu-id="23b30-220">Updates the pixels in the specified region of the bitmap.</span></span></summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <span data-ttu-id="23b30-221">Для <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.Array%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> использования <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.IntPtr%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> этого метода предпочтительнее использовать перегрузки и.</span><span class="sxs-lookup"><span data-stu-id="23b30-221">The <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.Array%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> and <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.IntPtr%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> overloads are preferred over using this method.</span></span>  
+  
+> [!NOTE]
+>  <span data-ttu-id="23b30-222">В режиме частичного доверия используйте <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.Array%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> перегрузку.</span><span class="sxs-lookup"><span data-stu-id="23b30-222">In partial trust, use the <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.Array%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> overload.</span></span>  
+  
+   
+  
+## Examples  
+ <span data-ttu-id="23b30-223">В следующем примере кода показано, как обновить пиксель в обратном буфере с помощью <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%2A> метода.</span><span class="sxs-lookup"><span data-stu-id="23b30-223">The following code example shows how to update a pixel in the back buffer by using the <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%2A> method.</span></span>  
+  
+ [!code-csharp[WriteableBitmap2#3](~/samples/snippets/csharp/VS_Snippets_Wpf/WriteableBitmap2/CS/Program.cs#3)]  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentOutOfRangeException"><span data-ttu-id="23b30-224">Одно или несколько из следующих условий истинно.</span><span class="sxs-lookup"><span data-stu-id="23b30-224">One or more of the following conditions is true.</span></span>  
+  
+ <span data-ttu-id="23b30-225">Параметр <paramref name="sourceRect" /> выходит за пределы растрового изображения <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-225"><paramref name="sourceRect" /> falls outside the bounds of the <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.</span></span>  
+  
+ <span data-ttu-id="23b30-226"><paramref name="stride" /> &lt; 1</span><span class="sxs-lookup"><span data-stu-id="23b30-226"><paramref name="stride" /> &lt; 1</span></span> 
+ <span data-ttu-id="23b30-227"><paramref name="offset" /> &lt; 0</span><span class="sxs-lookup"><span data-stu-id="23b30-227"><paramref name="offset" /> &lt; 0</span></span></exception>
+        <exception cref="T:System.ArgumentNullException"><span data-ttu-id="23b30-228"><paramref name="pixels" /> — <see langword="null" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-228"><paramref name="pixels" /> is <see langword="null" />.</span></span></exception>
+        <exception cref="T:System.ArgumentException"><span data-ttu-id="23b30-229">Значение параметра <paramref name="pixels" /> имеет ранг, отличный от 1 или 2, или его длина меньше или равна 0.</span><span class="sxs-lookup"><span data-stu-id="23b30-229"><paramref name="pixels" /> has a rank other than 1 or 2, or its length is less than or equal to 0.</span></span></exception>
+        <permission cref="T:System.Security.Permissions.SecurityPermission"><span data-ttu-id="23b30-230">для доступа к неуправляемым ресурсам.</span><span class="sxs-lookup"><span data-stu-id="23b30-230">for access to unmanaged resources.</span></span> <span data-ttu-id="23b30-231">Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-231">Security action: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />.</span></span> <span data-ttu-id="23b30-232">Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></span><span class="sxs-lookup"><span data-stu-id="23b30-232">Associated enumeration: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></span></span></permission>
+      </Docs>
+    </Member>
+    <Member MemberName="WritePixels">
+      <MemberSignature Language="C#" Value="public void WritePixels (System.Windows.Int32Rect sourceRect, IntPtr buffer, int bufferSize, int stride);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void WritePixels(valuetype System.Windows.Int32Rect sourceRect, native int buffer, int32 bufferSize, int32 stride) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Media.Imaging.WriteableBitmap.WritePixels(System.Windows.Int32Rect,System.IntPtr,System.Int32,System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub WritePixels (sourceRect As Int32Rect, buffer As IntPtr, bufferSize As Integer, stride As Integer)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void WritePixels(System::Windows::Int32Rect sourceRect, IntPtr buffer, int bufferSize, int stride);" />
+      <MemberSignature Language="F#" Value="member this.WritePixels : System.Windows.Int32Rect * nativeint * int * int -&gt; unit" Usage="writeableBitmap.WritePixels (sourceRect, buffer, bufferSize, stride)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="sourceRect" Type="System.Windows.Int32Rect" />
+        <Parameter Name="buffer" Type="System.IntPtr" />
+        <Parameter Name="bufferSize" Type="System.Int32" />
+        <Parameter Name="stride" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="sourceRect"><span data-ttu-id="23b30-233">Обновляемый прямоугольник растрового изображения <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-233">The rectangle of the <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" /> to update.</span></span></param>
+        <param name="buffer"><span data-ttu-id="23b30-234">Входной буфер, используемый для обновления растрового изображения.</span><span class="sxs-lookup"><span data-stu-id="23b30-234">The input buffer used to update the bitmap.</span></span></param>
+        <param name="bufferSize"><span data-ttu-id="23b30-235">Размер входного буфера.</span><span class="sxs-lookup"><span data-stu-id="23b30-235">The size of the input buffer.</span></span></param>
+        <param name="stride"><span data-ttu-id="23b30-236">Шаг области обновления в <paramref name="buffer" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-236">The stride of the update region in <paramref name="buffer" />.</span></span></param>
+        <summary><span data-ttu-id="23b30-237">Обновляет пиксели в заданной области растрового изображения.</span><span class="sxs-lookup"><span data-stu-id="23b30-237">Updates the pixels in the specified region of the bitmap.</span></span></summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <span data-ttu-id="23b30-238">Для <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.Array%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> использования <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.IntPtr%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> этого метода предпочтительнее использовать перегрузки и.</span><span class="sxs-lookup"><span data-stu-id="23b30-238">The <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.Array%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> and <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.IntPtr%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> overloads are preferred over using this method.</span></span>  
+  
+> [!NOTE]
+>  <span data-ttu-id="23b30-239">В режиме частичного доверия используйте <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.Array%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> перегрузку.</span><span class="sxs-lookup"><span data-stu-id="23b30-239">In partial trust, use the <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.Array%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> overload.</span></span>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentOutOfRangeException"><span data-ttu-id="23b30-240">Одно или несколько из следующих условий истинно.</span><span class="sxs-lookup"><span data-stu-id="23b30-240">One or more of the following conditions is true.</span></span>  
+  
+ <span data-ttu-id="23b30-241">Параметр <paramref name="sourceRect" /> выходит за пределы растрового изображения <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-241"><paramref name="sourceRect" /> falls outside the bounds of the <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.</span></span>  
+  
+ <span data-ttu-id="23b30-242"><paramref name="bufferSize" /> &lt; 1</span><span class="sxs-lookup"><span data-stu-id="23b30-242"><paramref name="bufferSize" /> &lt; 1</span></span> 
+ <span data-ttu-id="23b30-243"><paramref name="stride" /> &lt; 1</span><span class="sxs-lookup"><span data-stu-id="23b30-243"><paramref name="stride" /> &lt; 1</span></span></exception>
+        <exception cref="T:System.ArgumentNullException"><span data-ttu-id="23b30-244">Свойство <paramref name="buffer" /> имеет значение <see langword="null" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-244"><paramref name="buffer" /> is <see langword="null" />.</span></span></exception>
+        <permission cref="T:System.Security.Permissions.SecurityPermission"><span data-ttu-id="23b30-245">для доступа к неуправляемым ресурсам.</span><span class="sxs-lookup"><span data-stu-id="23b30-245">for access to unmanaged resources.</span></span> <span data-ttu-id="23b30-246">Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-246">Security action: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />.</span></span> <span data-ttu-id="23b30-247">Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></span><span class="sxs-lookup"><span data-stu-id="23b30-247">Associated enumeration: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></span></span></permission>
+      </Docs>
+    </Member>
+    <Member MemberName="WritePixels">
+      <MemberSignature Language="C#" Value="public void WritePixels (System.Windows.Int32Rect sourceRect, Array sourceBuffer, int sourceBufferStride, int destinationX, int destinationY);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void WritePixels(valuetype System.Windows.Int32Rect sourceRect, class System.Array sourceBuffer, int32 sourceBufferStride, int32 destinationX, int32 destinationY) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Media.Imaging.WriteableBitmap.WritePixels(System.Windows.Int32Rect,System.Array,System.Int32,System.Int32,System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub WritePixels (sourceRect As Int32Rect, sourceBuffer As Array, sourceBufferStride As Integer, destinationX As Integer, destinationY As Integer)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void WritePixels(System::Windows::Int32Rect sourceRect, Array ^ sourceBuffer, int sourceBufferStride, int destinationX, int destinationY);" />
+      <MemberSignature Language="F#" Value="member this.WritePixels : System.Windows.Int32Rect * Array * int * int * int -&gt; unit" Usage="writeableBitmap.WritePixels (sourceRect, sourceBuffer, sourceBufferStride, destinationX, destinationY)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="sourceRect" Type="System.Windows.Int32Rect" />
+        <Parameter Name="sourceBuffer" Type="System.Array" />
+        <Parameter Name="sourceBufferStride" Type="System.Int32" />
+        <Parameter Name="destinationX" Type="System.Int32" />
+        <Parameter Name="destinationY" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="sourceRect"><span data-ttu-id="23b30-248">Прямоугольник в <paramref name="sourceBuffer" /> для копирования.</span><span class="sxs-lookup"><span data-stu-id="23b30-248">The rectangle in <paramref name="sourceBuffer" /> to copy.</span></span></param>
+        <param name="sourceBuffer"><span data-ttu-id="23b30-249">Входной буфер, используемый для обновления растрового изображения.</span><span class="sxs-lookup"><span data-stu-id="23b30-249">The input buffer used to update the bitmap.</span></span></param>
+        <param name="sourceBufferStride"><span data-ttu-id="23b30-250">Шаг буфера входящих данных, в байтах.</span><span class="sxs-lookup"><span data-stu-id="23b30-250">The stride of the input buffer, in bytes.</span></span></param>
+        <param name="destinationX"><span data-ttu-id="23b30-251">Конечная координата х крайнего левого пикселя в заднем буфере.</span><span class="sxs-lookup"><span data-stu-id="23b30-251">The destination x-coordinate of the left-most pixel in the back buffer.</span></span></param>
+        <param name="destinationY"><span data-ttu-id="23b30-252">Конечная координата y крайнего верхнего пикселя в заднем буфере.</span><span class="sxs-lookup"><span data-stu-id="23b30-252">The destination y-coordinate of the top-most pixel in the back buffer.</span></span></param>
+        <summary><span data-ttu-id="23b30-253">Обновляет пиксели в заданной области растрового изображения.</span><span class="sxs-lookup"><span data-stu-id="23b30-253">Updates the pixels in the specified region of the bitmap.</span></span></summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <span data-ttu-id="23b30-254">Вызовите <xref:System.Windows.Media.Imaging.WriteableBitmap> метод, чтобы `sourceBuffer`автоматически обновить содержимое. <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%2A></span><span class="sxs-lookup"><span data-stu-id="23b30-254">Call the <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%2A> method to update the <xref:System.Windows.Media.Imaging.WriteableBitmap> automatically with the contents of `sourceBuffer`.</span></span> <span data-ttu-id="23b30-255">Вызов этого метода эквивалентен использованию <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> рабочего процесса и <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> , описанного в разделе <xref:System.Windows.Media.Imaging.WriteableBitmap> примечания к классу.</span><span class="sxs-lookup"><span data-stu-id="23b30-255">Calling this method is the equivalent of using the <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> and <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> workflow described in the <xref:System.Windows.Media.Imaging.WriteableBitmap> class remarks.</span></span>  
+  
+> [!NOTE]
+>  <span data-ttu-id="23b30-256">Используйте эту перегрузку при частичном доверии.</span><span class="sxs-lookup"><span data-stu-id="23b30-256">Use this overload in partial trust.</span></span>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentOutOfRangeException"><span data-ttu-id="23b30-257">Одно или несколько из следующих условий истинно.</span><span class="sxs-lookup"><span data-stu-id="23b30-257">One or more of the following conditions is true.</span></span>  
+  
+ <span data-ttu-id="23b30-258">Параметр <paramref name="sourceRect" /> выходит за пределы растрового изображения <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-258"><paramref name="sourceRect" /> falls outside the bounds of the <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.</span></span>  
+  
+ <span data-ttu-id="23b30-259">Параметр <paramref name="destinationX" /> или <paramref name="destinationY" /> выходит за пределы растрового изображения <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-259"><paramref name="destinationX" /> or <paramref name="destinationY" /> is outside the bounds of the <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.</span></span>  
+  
+ <span data-ttu-id="23b30-260"><paramref name="sourceBufferStride" /> &lt; 1</span><span class="sxs-lookup"><span data-stu-id="23b30-260"><paramref name="sourceBufferStride" /> &lt; 1</span></span></exception>
+        <exception cref="T:System.ArgumentNullException"><span data-ttu-id="23b30-261">Свойство <paramref name="sourceBuffer" /> имеет значение <see langword="null" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-261"><paramref name="sourceBuffer" /> is <see langword="null" />.</span></span></exception>
+        <exception cref="T:System.ArgumentException"><span data-ttu-id="23b30-262">Значение параметра <paramref name="sourceBuffer" /> имеет ранг, отличный от 1 или 2, или его длина меньше или равна 0.</span><span class="sxs-lookup"><span data-stu-id="23b30-262"><paramref name="sourceBuffer" /> has a rank other than 1 or 2, or its length is less than or equal to 0.</span></span></exception>
+        <permission cref="T:System.Security.Permissions.SecurityPermission"><span data-ttu-id="23b30-263">для доступа к неуправляемым ресурсам.</span><span class="sxs-lookup"><span data-stu-id="23b30-263">for access to unmanaged resources.</span></span> <span data-ttu-id="23b30-264">Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-264">Security action: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />.</span></span> <span data-ttu-id="23b30-265">Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></span><span class="sxs-lookup"><span data-stu-id="23b30-265">Associated enumeration: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></span></span></permission>
+        <altmember cref="M:System.Windows.Media.Imaging.WriteableBitmap.WritePixels(System.Windows.Int32Rect,System.IntPtr,System.Int32,System.Int32,System.Int32,System.Int32)" />
+      </Docs>
+    </Member>
+    <Member MemberName="WritePixels">
+      <MemberSignature Language="C#" Value="public void WritePixels (System.Windows.Int32Rect sourceRect, IntPtr sourceBuffer, int sourceBufferSize, int sourceBufferStride, int destinationX, int destinationY);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void WritePixels(valuetype System.Windows.Int32Rect sourceRect, native int sourceBuffer, int32 sourceBufferSize, int32 sourceBufferStride, int32 destinationX, int32 destinationY) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Windows.Media.Imaging.WriteableBitmap.WritePixels(System.Windows.Int32Rect,System.IntPtr,System.Int32,System.Int32,System.Int32,System.Int32)" />
+      <MemberSignature Language="VB.NET" Value="Public Sub WritePixels (sourceRect As Int32Rect, sourceBuffer As IntPtr, sourceBufferSize As Integer, sourceBufferStride As Integer, destinationX As Integer, destinationY As Integer)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; void WritePixels(System::Windows::Int32Rect sourceRect, IntPtr sourceBuffer, int sourceBufferSize, int sourceBufferStride, int destinationX, int destinationY);" />
+      <MemberSignature Language="F#" Value="member this.WritePixels : System.Windows.Int32Rect * nativeint * int * int * int * int -&gt; unit" Usage="writeableBitmap.WritePixels (sourceRect, sourceBuffer, sourceBufferSize, sourceBufferStride, destinationX, destinationY)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>PresentationCore</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8">
+          <AttributeName>System.Security.SecurityCritical</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="sourceRect" Type="System.Windows.Int32Rect" />
+        <Parameter Name="sourceBuffer" Type="System.IntPtr" />
+        <Parameter Name="sourceBufferSize" Type="System.Int32" />
+        <Parameter Name="sourceBufferStride" Type="System.Int32" />
+        <Parameter Name="destinationX" Type="System.Int32" />
+        <Parameter Name="destinationY" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="sourceRect"><span data-ttu-id="23b30-266">Прямоугольник в <paramref name="sourceBuffer" /> для копирования.</span><span class="sxs-lookup"><span data-stu-id="23b30-266">The rectangle in <paramref name="sourceBuffer" /> to copy.</span></span></param>
+        <param name="sourceBuffer"><span data-ttu-id="23b30-267">Входной буфер, используемый для обновления растрового изображения.</span><span class="sxs-lookup"><span data-stu-id="23b30-267">The input buffer used to update the bitmap.</span></span></param>
+        <param name="sourceBufferSize"><span data-ttu-id="23b30-268">Размер входного буфера.</span><span class="sxs-lookup"><span data-stu-id="23b30-268">The size of the input buffer.</span></span></param>
+        <param name="sourceBufferStride"><span data-ttu-id="23b30-269">Шаг буфера входящих данных, в байтах.</span><span class="sxs-lookup"><span data-stu-id="23b30-269">The stride of the input buffer, in bytes.</span></span></param>
+        <param name="destinationX"><span data-ttu-id="23b30-270">Конечная координата х крайнего левого пикселя в заднем буфере.</span><span class="sxs-lookup"><span data-stu-id="23b30-270">The destination x-coordinate of the left-most pixel in the back buffer.</span></span></param>
+        <param name="destinationY"><span data-ttu-id="23b30-271">Конечная координата y крайнего верхнего пикселя в заднем буфере.</span><span class="sxs-lookup"><span data-stu-id="23b30-271">The destination y-coordinate of the top-most pixel in the back buffer.</span></span></param>
+        <summary><span data-ttu-id="23b30-272">Обновляет пиксели в заданной области растрового изображения.</span><span class="sxs-lookup"><span data-stu-id="23b30-272">Updates the pixels in the specified region of the bitmap.</span></span></summary>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <span data-ttu-id="23b30-273">Вызовите <xref:System.Windows.Media.Imaging.WriteableBitmap> метод, чтобы `sourceBuffer`автоматически обновить содержимое. <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%2A></span><span class="sxs-lookup"><span data-stu-id="23b30-273">Call the <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%2A> method to update the <xref:System.Windows.Media.Imaging.WriteableBitmap> automatically with the contents of `sourceBuffer`.</span></span> <span data-ttu-id="23b30-274">Вызов этого метода эквивалентен использованию <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> рабочего процесса и <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> , описанного в разделе <xref:System.Windows.Media.Imaging.WriteableBitmap> примечания к классу.</span><span class="sxs-lookup"><span data-stu-id="23b30-274">Calling this method is the equivalent of using the <xref:System.Windows.Media.Imaging.WriteableBitmap.Lock%2A> and <xref:System.Windows.Media.Imaging.WriteableBitmap.Unlock%2A> workflow described in the <xref:System.Windows.Media.Imaging.WriteableBitmap> class remarks.</span></span>  
+  
+> [!NOTE]
+>  <span data-ttu-id="23b30-275">В режиме частичного доверия используйте <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.Array%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> перегрузку.</span><span class="sxs-lookup"><span data-stu-id="23b30-275">In partial trust, use the <xref:System.Windows.Media.Imaging.WriteableBitmap.WritePixels%28System.Windows.Int32Rect%2CSystem.Array%2CSystem.Int32%2CSystem.Int32%2CSystem.Int32%29> overload.</span></span>  
+  
+ ]]></format>
+        </remarks>
+        <exception cref="T:System.ArgumentOutOfRangeException"><span data-ttu-id="23b30-276">Одно или несколько из следующих условий истинно.</span><span class="sxs-lookup"><span data-stu-id="23b30-276">One or more of the following conditions is true.</span></span>  
+  
+ <span data-ttu-id="23b30-277">Параметр <paramref name="sourceRect" /> выходит за пределы растрового изображения <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-277"><paramref name="sourceRect" /> falls outside the bounds of the <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.</span></span>  
+  
+ <span data-ttu-id="23b30-278">Параметр <paramref name="destinationX" /> или <paramref name="destinationY" /> выходит за пределы растрового изображения <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-278"><paramref name="destinationX" /> or <paramref name="destinationY" /> is outside the bounds of the <see cref="T:System.Windows.Media.Imaging.WriteableBitmap" />.</span></span>  
+  
+ <span data-ttu-id="23b30-279"><paramref name="sourceBufferSize" /> &lt; 1</span><span class="sxs-lookup"><span data-stu-id="23b30-279"><paramref name="sourceBufferSize" /> &lt; 1</span></span> 
+ <span data-ttu-id="23b30-280"><paramref name="sourceBufferStride" /> &lt; 1</span><span class="sxs-lookup"><span data-stu-id="23b30-280"><paramref name="sourceBufferStride" /> &lt; 1</span></span></exception>
+        <exception cref="T:System.ArgumentNullException"><span data-ttu-id="23b30-281">Свойство <paramref name="sourceBuffer" /> имеет значение <see langword="null" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-281"><paramref name="sourceBuffer" /> is <see langword="null" />.</span></span></exception>
+        <permission cref="T:System.Security.Permissions.SecurityPermission"><span data-ttu-id="23b30-282">для доступа к неуправляемым ресурсам.</span><span class="sxs-lookup"><span data-stu-id="23b30-282">for access to unmanaged resources.</span></span> <span data-ttu-id="23b30-283">Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />.</span><span class="sxs-lookup"><span data-stu-id="23b30-283">Security action: <see cref="F:System.Security.Permissions.SecurityAction.Demand" />.</span></span> <span data-ttu-id="23b30-284">Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></span><span class="sxs-lookup"><span data-stu-id="23b30-284">Associated enumeration: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></span></span></permission>
+        <altmember cref="M:System.Windows.Media.Imaging.WriteableBitmap.WritePixels(System.Windows.Int32Rect,System.Array,System.Int32,System.Int32,System.Int32)" />
+      </Docs>
+    </Member>
+  </Members>
+</Type>

@@ -1,0 +1,149 @@
+<Type Name="SpeechUI" FullName="System.Speech.Recognition.SpeechUI">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="f0dd771dd080109af3696f24ea2b3f91e1630c52" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70683616" /></Metadata><TypeSignature Language="C#" Value="public class SpeechUI" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit SpeechUI extends System.Object" />
+  <TypeSignature Language="DocId" Value="T:System.Speech.Recognition.SpeechUI" />
+  <TypeSignature Language="VB.NET" Value="Public Class SpeechUI" />
+  <TypeSignature Language="C++ CLI" Value="public ref class SpeechUI" />
+  <TypeSignature Language="F#" Value="type SpeechUI = class" />
+  <AssemblyInfo>
+    <AssemblyName>System.Speech</AssemblyName>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary><span data-ttu-id="7b1ed-101">Содержит текст и сведения о состоянии  для операций распознавания, отображаемых в пользовательском интерфейсе платформы для обработки речи.</span><span class="sxs-lookup"><span data-stu-id="7b1ed-101">Provides text and status information on recognition operations to be displayed in the Speech platform user interface.</span></span></summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <span data-ttu-id="7b1ed-102">Элементы <xref:System.Speech.Recognition.SpeechUI> класса можно использовать для указания точной обратной связи с конечным пользователем через пользовательский интерфейс распознавания речи.</span><span class="sxs-lookup"><span data-stu-id="7b1ed-102">The members of the <xref:System.Speech.Recognition.SpeechUI> class can be used to indicate exact feedback to the end user through the speech recognition user interface.</span></span> <span data-ttu-id="7b1ed-103">Приложение может возвращать произвольный текст и сведения об успешном или неуспешном выполнении с помощью этого класса.</span><span class="sxs-lookup"><span data-stu-id="7b1ed-103">An application can return arbitrary text and success/failure information using this class.</span></span>  
+  
+   
+  
+## Examples  
+ <span data-ttu-id="7b1ed-104">В следующем примере показан обработчик для <xref:System.Speech.Recognition.Grammar.SpeechRecognized> события.</span><span class="sxs-lookup"><span data-stu-id="7b1ed-104">The following example is a handler for the <xref:System.Speech.Recognition.Grammar.SpeechRecognized> event.</span></span> <span data-ttu-id="7b1ed-105">Это событие используется <xref:System.Speech.Recognition.Grammar> объектом, который предназначен для управления вводом пароля в форме "мой пароль —...".</span><span class="sxs-lookup"><span data-stu-id="7b1ed-105">This event is used by a <xref:System.Speech.Recognition.Grammar> that is designed to handle password input in the form "My password is …".</span></span>  
+  
+ <span data-ttu-id="7b1ed-106">Если пароль отсутствует или недействителен, <xref:System.Speech.Recognition.SpeechUI.SendTextFeedback%2A> отправляет сведения об ошибке в пользовательский интерфейс платформы речи.</span><span class="sxs-lookup"><span data-stu-id="7b1ed-106">If a password is not present, or not valid, <xref:System.Speech.Recognition.SpeechUI.SendTextFeedback%2A> sends error information to the Speech platform user interface.</span></span>  
+  
+```  
+  
+grammar.SpeechRecognized +=   
+delegate(object sender, SpeechRecognizedEventArgs eventArgs)   
+{  
+  SemanticValue semantics = eventArgs.Result.Semantics;  
+  RecognitionResult result=eventArgs.Result;  
+  
+  if (!semantics.ContainsKey("Password"))   
+  {  
+    SpeechUI.SendTextFeedback(eventArgs.Result, "No Password Provided", false);  
+  }  
+  else   
+  {  
+    RecognizedAudio pwdAudio = result.GetAudioForWordRange(  
+                  result.Words[3],  
+                  result.Words[result.Words.Count - 1]);  
+    MemoryStream pwdMemoryStream = new MemoryStream();  
+    pwdAudio.WriteToAudioStream(pwdMemoryStream);  
+    if (!IsValidPwd(pwdMemoryStream))   
+    {  
+      string badPwd = System.IO.Path.GetTempPath() +   
+              "BadPwd" + (new Random()).Next().ToString() + ".wav";  
+      FileStream waveStream = new FileStream(badPwd, FileMode.Create);  
+      pwdAudio.WriteToWaveStream(waveStream);  
+      waveStream.Flush();  
+      waveStream.Close();  
+      SpeechUI.SendTextFeedback(eventArgs.Result, "Invalid Password", false);  
+    }  
+  }  
+};  
+```  
+  
+ ]]></format>
+    </remarks>
+  </Docs>
+  <Members>
+    <Member MemberName="SendTextFeedback">
+      <MemberSignature Language="C#" Value="public static bool SendTextFeedback (System.Speech.Recognition.RecognitionResult result, string feedback, bool isSuccessfulAction);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool SendTextFeedback(class System.Speech.Recognition.RecognitionResult result, string feedback, bool isSuccessfulAction) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.Speech.Recognition.SpeechUI.SendTextFeedback(System.Speech.Recognition.RecognitionResult,System.String,System.Boolean)" />
+      <MemberSignature Language="VB.NET" Value="Public Shared Function SendTextFeedback (result As RecognitionResult, feedback As String, isSuccessfulAction As Boolean) As Boolean" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; static bool SendTextFeedback(System::Speech::Recognition::RecognitionResult ^ result, System::String ^ feedback, bool isSuccessfulAction);" />
+      <MemberSignature Language="F#" Value="static member SendTextFeedback : System.Speech.Recognition.RecognitionResult * string * bool -&gt; bool" Usage="System.Speech.Recognition.SpeechUI.SendTextFeedback (result, feedback, isSuccessfulAction)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.Speech</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="result" Type="System.Speech.Recognition.RecognitionResult" />
+        <Parameter Name="feedback" Type="System.String" />
+        <Parameter Name="isSuccessfulAction" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="result"><span data-ttu-id="7b1ed-107">Допустимый экземпляр <see cref="T:System.Speech.Recognition.RecognitionResult" />.</span><span class="sxs-lookup"><span data-stu-id="7b1ed-107">A valid <see cref="T:System.Speech.Recognition.RecognitionResult" /> instance.</span></span></param>
+        <param name="feedback"><span data-ttu-id="7b1ed-108">Объект <see cref="T:System.String" />, содержащий комментарий об операции распознавания, выдавшей результат <paramref name="result" /> объекта <see cref="T:System.Speech.Recognition.RecognitionResult" />.</span><span class="sxs-lookup"><span data-stu-id="7b1ed-108">A <see cref="T:System.String" /> containing a comment about the recognition operation that produced the <see cref="T:System.Speech.Recognition.RecognitionResult" /><paramref name="result" />.</span></span></param>
+        <param name="isSuccessfulAction"><span data-ttu-id="7b1ed-109"><see langword="bool" />, указывающий, считает ли приложение операцию распознавания успешно завершенной.</span><span class="sxs-lookup"><span data-stu-id="7b1ed-109">A <see langword="bool" /> indicating whether the application deemed the recognition operation a success.</span></span></param>
+        <summary><span data-ttu-id="7b1ed-110">Отправляет сведения о состоянии и описательный текст для операции распознавания в пользовательский интерфейс платформы обработки речи.</span><span class="sxs-lookup"><span data-stu-id="7b1ed-110">Sends status and descriptive text to the Speech platform user interface about the status of a recognition operation.</span></span></summary>
+        <returns><span data-ttu-id="7b1ed-111"><see langword="true" />, если сведения, предоставленные в метод (<paramref name="Feedback" /> и <paramref name="isSuccessfulAction" />), были успешно сделаны доступными для пользовательского интерфейса платформы обработки речи, и <see langword="false" />, если операция завершилась с ошибкой.</span><span class="sxs-lookup"><span data-stu-id="7b1ed-111"><see langword="true" /> if the information provided to the method (<paramref name="Feedback" />, and <paramref name="isSuccessfulAction" />) was successfully made available to the Speech platform user interface, and <see langword="false" /> if the operation failed.</span></span></returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ <span data-ttu-id="7b1ed-112"><xref:System.Speech.Recognition.SpeechUI.SendTextFeedback%2A>можно использовать, чтобы указать, что операция распознавания не соответствует определенным критериям, даже если входные данные были распознаны.</span><span class="sxs-lookup"><span data-stu-id="7b1ed-112"><xref:System.Speech.Recognition.SpeechUI.SendTextFeedback%2A> can be used to indicate that a recognition operation failed to meet certain criteria, even if the input was recognized.</span></span>  
+  
+ <span data-ttu-id="7b1ed-113">Примером является проверка сведений о коде безопасности, где входные данные были полностью распознаны, но данные проверки были неверны.</span><span class="sxs-lookup"><span data-stu-id="7b1ed-113">An example is the verification of security code information, where the input was fully recognized, but the verification information was wrong.</span></span>  
+  
+   
+  
+## Examples  
+ <span data-ttu-id="7b1ed-114">В следующем примере показан обработчик <xref:System.Speech.Recognition.Grammar.SpeechRecognized> события.</span><span class="sxs-lookup"><span data-stu-id="7b1ed-114">The following example is a handler for a <xref:System.Speech.Recognition.Grammar.SpeechRecognized> event.</span></span> <span data-ttu-id="7b1ed-115">Это событие используется <xref:System.Speech.Recognition.Grammar> обработчиком, который предназначен для работы с вводом пароля в форме: "мой пароль —...".</span><span class="sxs-lookup"><span data-stu-id="7b1ed-115">This event is used by a <xref:System.Speech.Recognition.Grammar> that is designed to handle password input of the form, "My password is …".</span></span>  
+  
+ <span data-ttu-id="7b1ed-116">Если пароль отсутствует или недействителен, **сендтекстфидбакк** используется для отправки сведений об ошибках в пользовательский интерфейс платформы распознавания речи.</span><span class="sxs-lookup"><span data-stu-id="7b1ed-116">If a password is not present, or not valid, **SendTextFeedback** is used to send error information to the Speech platform user interface.</span></span>  
+  
+```  
+  
+grammar.SpeechRecognized +=  
+delegate(object sender, SpeechRecognizedEventArgs eventArgs)   
+{  
+  SemanticValue semantics = eventArgs.Result.Semantics;  
+  RecognitionResult result=eventArgs.Result;  
+  
+  if (!semantics.ContainsKey("Password"))   
+  {  
+    SpeechUI.SendTextFeedback(eventArgs.Result, "No Password Provided", false);  
+  }  
+  else  
+  {  
+    RecognizedAudio pwdAudio = result.GetAudioForWordRange(  
+              result.Words[3],  
+              result.Words[result.Words.Count - 1]);  
+    MemoryStream pwdMemoryStream = new MemoryStream();  
+    pwdAudio.WriteToAudioStream(pwdMemoryStream);  
+    if (!IsValidPwd(pwdMemoryStream))   
+    {  
+      string badPwd = System.IO.Path.GetTempPath() + "BadPwd" +   
+               (new Random()).Next().ToString() + ".wav";  
+      FileStream waveStream = new FileStream(badPwd, FileMode.Create);  
+      pwdAudio.WriteToWaveStream(waveStream);  
+      waveStream.Flush();  
+      waveStream.Close();  
+      SpeechUI.SendTextFeedback(eventArgs.Result, "Invalid Password", false);  
+    }  
+  }  
+};  
+```  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
