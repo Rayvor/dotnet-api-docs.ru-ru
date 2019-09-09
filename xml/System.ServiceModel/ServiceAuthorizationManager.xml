@@ -1,0 +1,279 @@
+<Type Name="ServiceAuthorizationManager" FullName="System.ServiceModel.ServiceAuthorizationManager">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="dabac9b426fe5b947f596cfd5e79305a6b24d2dd" /><Meta Name="ms.sourcegitcommit" Value="88014e1c5440e3df4f66ef04393854d15b1fd534" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70612746" /></Metadata><TypeSignature Language="C#" Value="public class ServiceAuthorizationManager" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit ServiceAuthorizationManager extends System.Object" />
+  <TypeSignature Language="DocId" Value="T:System.ServiceModel.ServiceAuthorizationManager" />
+  <TypeSignature Language="VB.NET" Value="Public Class ServiceAuthorizationManager" />
+  <TypeSignature Language="C++ CLI" Value="public ref class ServiceAuthorizationManager" />
+  <TypeSignature Language="F#" Value="type ServiceAuthorizationManager = class" />
+  <AssemblyInfo>
+    <AssemblyName>System.ServiceModel</AssemblyName>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>Обеспечивает проверку для предоставления доступа к операциям службы (авторизации).</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Этот класс отвечает за оценку всех политик (правил, определяющих, что разрешено делать пользователю), сравнение политик с утверждениями, сделанными клиентом, присвоение полученному в результате объекту <xref:System.IdentityModel.Policy.AuthorizationContext> объекта <xref:System.ServiceModel.ServiceSecurityContext>, и принятие решения об авторизации (предоставить вызывающему объекту доступ к данной операции службы или отказать в доступе).  
+  
+ <xref:System.ServiceModel.ServiceAuthorizationManager.CheckAccessCore%2A> Метод вызывается инфраструктурой Windows Communication Foundation (WCF) каждый раз при попытке доступа к ресурсу. Этот метод возвращает значение `true` или значение `false` для разрешения доступа или отказа в нем соответственно.  
+  
+ Компонент является частью инфраструктуры*модели удостоверений WCF.* <xref:System.ServiceModel.ServiceAuthorizationManager> Модель удостоверения позволяет создавать пользовательские политики авторизации и пользовательские схемы авторизации. Дополнительные сведения о принципах работы модели удостоверений см. [в статье Управление утверждениями и авторизацией с помощью модели удостоверений](~/docs/framework/wcf/feature-details/managing-claims-and-authorization-with-the-identity-model.md).  
+  
+## <a name="custom-authorization"></a>Пользовательская авторизация  
+ Этот класс не выполняет никакой авторизации и предоставляет пользователям доступ ко всем операциям службы. Для обеспечения более строгой авторизации необходимо создать пользовательский диспетчер авторизации для проверки пользовательских политик. Для этого необходимо создать класс, наследуемый от этого класса, и переопределить метод <xref:System.ServiceModel.ServiceAuthorizationManager.CheckAccessCore%2A>. Укажите экземпляр производного класса посредством свойства <xref:System.ServiceModel.Dispatcher.DispatchRuntime.ServiceAuthorizationManager%2A>.  
+  
+ В методе <xref:System.ServiceModel.ServiceAuthorizationManager.CheckAccessCore%2A> приложение может использовать объект <xref:System.ServiceModel.OperationContext> для доступа к удостоверению вызывающего объекта (<xref:System.ServiceModel.OperationContext.ServiceSecurityContext%2A>).  
+  
+ Путем получения свойства <xref:System.ServiceModel.OperationContext.IncomingMessageHeaders%2A>, которое возвращает объект <xref:System.ServiceModel.Channels.MessageHeaders>, приложение может получить доступ к службе (<xref:System.ServiceModel.Channels.MessageHeaders.To%2A>) и к операции (<xref:System.ServiceModel.Channels.MessageHeaders.Action%2A>).  
+  
+ Путем получения свойства <xref:System.ServiceModel.OperationContext.RequestContext%2A>, которое возвращает объект <xref:System.ServiceModel.Channels.RequestContext>, приложение может получить доступ ко всему приложению запроса (<xref:System.ServiceModel.Channels.RequestContext.RequestMessage%2A>) и принять соответствующее решение об авторизации.  
+  
+ Пример см. в разделе [как создать пользовательский диспетчер авторизации для службы](~/docs/framework/wcf/extending/how-to-create-a-custom-authorization-manager-for-a-service.md).  
+  
+ Для создания пользовательских политик авторизации реализуйте класс <xref:System.IdentityModel.Policy.IAuthorizationPolicy>.  Пример см. в разделе [как создать настраиваемую политику авторизации](~/docs/framework/wcf/extending/how-to-create-a-custom-authorization-policy.md).  
+  
+ Для создания пользовательского утверждения используйте класс <xref:System.IdentityModel.Claims.Claim>.  Пример см. в разделе [как создать настраиваемое утверждение](~/docs/framework/wcf/extending/how-to-create-a-custom-claim.md). Для сравнения пользовательских утверждений необходимо сравнить утверждения, как показано в подокне ["как сравнивать утверждения"](~/docs/framework/wcf/extending/how-to-compare-claims.md).  
+  
+ Дополнительные сведения см. в разделе [Пользовательская авторизация](~/docs/framework/wcf/extending/custom-authorization.md).  
+  
+ Вы можете задать тип настраиваемого диспетчера авторизации с помощью [ &lt;ServiceAuthorization&gt; ](~/docs/framework/configure-apps/file-schema/wcf/serviceauthorization-element.md) в файле конфигурации клиентского приложения.  
+  
+   
+  
+## Examples  
+ В следующем примере показан класс `MyServiceAuthorizationManager`, наследуемый от класса <xref:System.ServiceModel.ServiceAuthorizationManager> и переопределяющий метод <xref:System.ServiceModel.ServiceAuthorizationManager.CheckAccessCore%2A>.  
+  
+ [!code-csharp[c_CustomAuthMgr#2](~/samples/snippets/csharp/VS_Snippets_CFX/c_customauthmgr/cs/c_customauthmgr.cs#2)]
+ [!code-vb[c_CustomAuthMgr#2](~/samples/snippets/visualbasic/VS_Snippets_CFX/c_customauthmgr/vb/c_customauthmgr.vb#2)]  
+  
+ ]]></format>
+    </remarks>
+    <altmember cref="T:System.IdentityModel.Claims.ClaimSet" />
+    <altmember cref="T:System.IdentityModel.Claims.Claim" />
+    <related type="Article" href="https://msdn.microsoft.com/library/4f90311a-2593-462e-9174-2f7ac78217b9">Пользовательская авторизация</related>
+    <related type="Article" href="https://msdn.microsoft.com/library/6214afde-44c1-4bf5-ba07-5ad6493620ea">Как создать пользовательский Аусоризатионманажер для службы</related>
+    <related type="Article" href="https://msdn.microsoft.com/library/05b0549b-882d-4660-b6f0-5678543e5475">Как создать настраиваемую политику авторизации</related>
+    <related type="Article" href="https://msdn.microsoft.com/library/d619976b-eda3-475e-ac23-c7988a2dceb0">Как создать настраиваемое утверждение</related>
+    <related type="Article" href="https://msdn.microsoft.com/library/0c4ec84d-53df-408f-8953-9bc437f56c28">Руководство. Сравнение утверждений</related>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public ServiceAuthorizationManager ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceModel.ServiceAuthorizationManager.#ctor" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New ()" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; ServiceAuthorizationManager();" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceModel</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <Parameters />
+      <Docs>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.ServiceModel.ServiceAuthorizationManager" />.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <MemberGroup MemberName="CheckAccess">
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceModel</AssemblyName>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Docs>
+        <summary>Проверяет авторизацию для данного контекста операции и необязательного сообщения.</summary>
+      </Docs>
+    </MemberGroup>
+    <Member MemberName="CheckAccess">
+      <MemberSignature Language="C#" Value="public virtual bool CheckAccess (System.ServiceModel.OperationContext operationContext);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance bool CheckAccess(class System.ServiceModel.OperationContext operationContext) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceModel.ServiceAuthorizationManager.CheckAccess(System.ServiceModel.OperationContext)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual bool CheckAccess(System::ServiceModel::OperationContext ^ operationContext);" />
+      <MemberSignature Language="F#" Value="abstract member CheckAccess : System.ServiceModel.OperationContext -&gt; bool&#xA;override this.CheckAccess : System.ServiceModel.OperationContext -&gt; bool" Usage="serviceAuthorizationManager.CheckAccess operationContext" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceModel</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="operationContext" Type="System.ServiceModel.OperationContext" />
+      </Parameters>
+      <Docs>
+        <param name="operationContext"><see cref="T:System.ServiceModel.OperationContext" />.</param>
+        <summary>Проверяет авторизацию для данного контекста операции.</summary>
+        <returns>Значение <see langword="true" />, если доступ предоставляется; в противном случае — значение <see langword="false" />. Значение по умолчанию — <see langword="true" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ В общем случае приложения должны переопределять метод <xref:System.ServiceModel.ServiceAuthorizationManager.CheckAccessCore%2A>, а не этот метод.  
+  
+ Переопределять метод <xref:System.ServiceModel.ServiceAuthorizationManager.CheckAccess%2A> следует, если приложение связывает с полученным объектом <xref:System.ServiceModel.ServiceSecurityContext> (или вводит для него) другой набор политик; также можно предоставить другую модель оценки (создания цепочки) политик.  
+  
+ Этот метод отвечает за вызов метода <xref:System.ServiceModel.ServiceAuthorizationManager.CheckAccessCore%2A>.  
+  
+   
+  
+## Examples  
+ В следующем коде показано, как переопределить этот метод для применения пользовательских требований управления доступом.  
+  
+ [!code-csharp[c_Federation#1](~/samples/snippets/csharp/VS_Snippets_CFX/c_federation/cs/source.cs#1)]
+ [!code-vb[c_Federation#1](~/samples/snippets/visualbasic/VS_Snippets_CFX/c_federation/vb/source.vb#1)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CheckAccess">
+      <MemberSignature Language="C#" Value="public virtual bool CheckAccess (System.ServiceModel.OperationContext operationContext, ref System.ServiceModel.Channels.Message message);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance bool CheckAccess(class System.ServiceModel.OperationContext operationContext, class System.ServiceModel.Channels.Message&amp; message) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceModel.ServiceAuthorizationManager.CheckAccess(System.ServiceModel.OperationContext,System.ServiceModel.Channels.Message@)" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; virtual bool CheckAccess(System::ServiceModel::OperationContext ^ operationContext, System::ServiceModel::Channels::Message ^ % message);" />
+      <MemberSignature Language="F#" Value="abstract member CheckAccess : System.ServiceModel.OperationContext *  -&gt; bool&#xA;override this.CheckAccess : System.ServiceModel.OperationContext *  -&gt; bool" Usage="serviceAuthorizationManager.CheckAccess (operationContext, message)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceModel</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute FrameworkAlternate="netframework-4.0">
+          <AttributeName>System.Runtime.TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="operationContext" Type="System.ServiceModel.OperationContext" />
+        <Parameter Name="message" Type="System.ServiceModel.Channels.Message" RefType="ref" />
+      </Parameters>
+      <Docs>
+        <param name="operationContext"><see cref="T:System.ServiceModel.OperationContext" />.</param>
+        <param name="message">Объект <see cref="T:System.ServiceModel.Channels.Message" />, который требуется проанализировать для принятия решения об авторизации.</param>
+        <summary>Проверяет авторизацию для данного контекста операции, когда требуется доступ к сообщению.</summary>
+        <returns>Значение <see langword="true" />, если доступ предоставляется; в противном случае — значение <see langword="false" />. Значение по умолчанию — <see langword="true" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ В общем случае приложения должны переопределять метод <xref:System.ServiceModel.ServiceAuthorizationManager.CheckAccessCore%2A>, а не этот метод, который следует использовать только в случае, если решение об авторизации зависит от тела сообщения. В связи с вопросами производительности при возможности следует внести изменения в приложение, чтобы решение об авторизации не требовало доступа к телу сообщения.  
+  
+ Переопределять этот метод следует, если приложение связывает с полученными объектами <xref:System.ServiceModel.ServiceSecurityContext> и <xref:System.ServiceModel.Channels.Message> (или вводит для них) другой набор политик; также можно предоставить другую модель оценки (создания цепочки) политик.  
+  
+ Этот метод отвечает за вызов метода <xref:System.ServiceModel.ServiceAuthorizationManager.CheckAccessCore%2A>.  
+  
+   
+  
+## Examples  
+ В следующем коде показано, как переопределить этот метод для применения пользовательских требований управления доступом, предусматривающих доступ к тексту сообщения.  
+  
+ [!code-csharp[c_Federation#6](~/samples/snippets/csharp/VS_Snippets_CFX/c_federation/cs/source.cs#6)]
+ [!code-vb[c_Federation#6](~/samples/snippets/visualbasic/VS_Snippets_CFX/c_federation/vb/source.vb#6)]  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CheckAccessCore">
+      <MemberSignature Language="C#" Value="protected virtual bool CheckAccessCore (System.ServiceModel.OperationContext operationContext);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance bool CheckAccessCore(class System.ServiceModel.OperationContext operationContext) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceModel.ServiceAuthorizationManager.CheckAccessCore(System.ServiceModel.OperationContext)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual bool CheckAccessCore(System::ServiceModel::OperationContext ^ operationContext);" />
+      <MemberSignature Language="F#" Value="abstract member CheckAccessCore : System.ServiceModel.OperationContext -&gt; bool&#xA;override this.CheckAccessCore : System.ServiceModel.OperationContext -&gt; bool" Usage="serviceAuthorizationManager.CheckAccessCore operationContext" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceModel</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="operationContext" Type="System.ServiceModel.OperationContext" />
+      </Parameters>
+      <Docs>
+        <param name="operationContext">Объект <see cref="T:System.ServiceModel.OperationContext" /> для текущего запроса авторизации.</param>
+        <summary>Проверяет авторизацию для данного контекста операции на основе оценки политики по умолчанию.</summary>
+        <returns>Значение <see langword="true" />, если доступ предоставляется; в противном случае — значение <see langword="false" />. Значение по умолчанию — <see langword="true" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Объект <xref:System.ServiceModel.OperationContext.ServiceSecurityContext%2A> обычно является результатом оценки политики по умолчанию.  
+  
+ Для предоставления пользовательских решений об авторизации переопределите этот метод.  
+  
+ Этот метод можно использовать для принятия решений об авторизации на основе наборов утверждений, выводимых из входящих маркеров или добавляемых посредством внешних политик авторизации. Он также способен принимать решения об авторизации на основе свойств входящих сообщений, например заголовка действия.  
+  
+ В этом методе приложение может использовать параметр `operationContext` для доступа к удостоверению вызывающего объекта (<xref:System.ServiceModel.OperationContext.ServiceSecurityContext%2A>). Путем возвращения объекта <xref:System.ServiceModel.Channels.RequestContext> из свойства <xref:System.ServiceModel.OperationContext.RequestContext%2A> приложение может получить доступ ко всему сообщению запроса (<xref:System.ServiceModel.Channels.RequestContext.RequestMessage%2A>). Путем возвращения объекта <xref:System.ServiceModel.Channels.MessageHeaders> из свойства <xref:System.ServiceModel.OperationContext.IncomingMessageHeaders%2A> приложение может получить доступ к URL-адресу службы (<xref:System.ServiceModel.Channels.MessageHeaders.To%2A>) и операции (<xref:System.ServiceModel.Channels.MessageHeaders.Action%2A>). Располагая этими сведениями, приложение может принять соответствующее решение об авторизации.  
+  
+ Утверждения, делаемые пользователем, находятся в свойстве <xref:System.IdentityModel.Claims.ClaimSet>, которое возвращается свойством <xref:System.IdentityModel.Policy.AuthorizationContext.ClaimSets%2A> объекта `AuthorizationContext`. Текущий объект `AuthorizationContext` возвращается свойством <xref:System.ServiceModel.OperationContext.ServiceSecurityContext%2A> класса <xref:System.ServiceModel.OperationContext>.  
+  
+   
+  
+## Examples  
+ В следующем примере показано переопределение метода <xref:System.ServiceModel.ServiceAuthorizationManager.CheckAccessCore%2A>.  
+  
+ [!code-csharp[c_CustomAuthMgr#6](~/samples/snippets/csharp/VS_Snippets_CFX/c_customauthmgr/cs/c_customauthmgr.cs#6)]
+ [!code-vb[c_CustomAuthMgr#6](~/samples/snippets/visualbasic/VS_Snippets_CFX/c_customauthmgr/vb/c_customauthmgr.vb#6)]  
+  
+ Другой пример см. [в разделе как создать пользовательский диспетчер авторизации для службы](~/docs/framework/wcf/extending/how-to-create-a-custom-authorization-manager-for-a-service.md).  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetAuthorizationPolicies">
+      <MemberSignature Language="C#" Value="protected virtual System.Collections.ObjectModel.ReadOnlyCollection&lt;System.IdentityModel.Policy.IAuthorizationPolicy&gt; GetAuthorizationPolicies (System.ServiceModel.OperationContext operationContext);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance class System.Collections.ObjectModel.ReadOnlyCollection`1&lt;class System.IdentityModel.Policy.IAuthorizationPolicy&gt; GetAuthorizationPolicies(class System.ServiceModel.OperationContext operationContext) cil managed" />
+      <MemberSignature Language="DocId" Value="M:System.ServiceModel.ServiceAuthorizationManager.GetAuthorizationPolicies(System.ServiceModel.OperationContext)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual System::Collections::ObjectModel::ReadOnlyCollection&lt;System::IdentityModel::Policy::IAuthorizationPolicy ^&gt; ^ GetAuthorizationPolicies(System::ServiceModel::OperationContext ^ operationContext);" />
+      <MemberSignature Language="F#" Value="abstract member GetAuthorizationPolicies : System.ServiceModel.OperationContext -&gt; System.Collections.ObjectModel.ReadOnlyCollection&lt;System.IdentityModel.Policy.IAuthorizationPolicy&gt;&#xA;override this.GetAuthorizationPolicies : System.ServiceModel.OperationContext -&gt; System.Collections.ObjectModel.ReadOnlyCollection&lt;System.IdentityModel.Policy.IAuthorizationPolicy&gt;" Usage="serviceAuthorizationManager.GetAuthorizationPolicies operationContext" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>System.ServiceModel</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.ObjectModel.ReadOnlyCollection&lt;System.IdentityModel.Policy.IAuthorizationPolicy&gt;</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="operationContext" Type="System.ServiceModel.OperationContext" />
+      </Parameters>
+      <Docs>
+        <param name="operationContext">Объект <see cref="T:System.ServiceModel.OperationContext" /> текущего запроса авторизации.</param>
+        <summary>Возвращает набор политик, участвующих в оценке политики.</summary>
+        <returns><see cref="T:System.Collections.ObjectModel.ReadOnlyCollection`1" /> типа <see cref="T:System.IdentityModel.Policy.IAuthorizationPolicy" />.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+ Реализация Windows Communication Foundation (WCF) предоставляет набор политик авторизации по умолчанию. В него входят основной маркер, содержащий учетные данные автора заявки, а также все вспомогательные маркеры, маркеры транспорта и внешние политики, если они заданы.  
+  
+ Можно переопределить эту реализацию и предоставить другой набор политик.  
+  
+ ]]></format>
+        </remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
