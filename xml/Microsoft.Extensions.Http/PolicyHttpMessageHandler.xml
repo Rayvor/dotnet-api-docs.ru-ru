@@ -1,0 +1,156 @@
+<Type Name="PolicyHttpMessageHandler" FullName="Microsoft.Extensions.Http.PolicyHttpMessageHandler">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="22db3465f5df6aeb38be391c2d46ba0663d7229f" /><Meta Name="ms.sourcegitcommit" Value="0084afad1b3b1cb2c8ad2c142ae3597d08bad4a7" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="10/31/2019" /><Meta Name="ms.locfileid" Value="73410160" /></Metadata><TypeSignature Language="C#" Value="public class PolicyHttpMessageHandler : System.Net.Http.DelegatingHandler" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit PolicyHttpMessageHandler extends System.Net.Http.DelegatingHandler" />
+  <TypeSignature Language="DocId" Value="T:Microsoft.Extensions.Http.PolicyHttpMessageHandler" />
+  <TypeSignature Language="VB.NET" Value="Public Class PolicyHttpMessageHandler&#xA;Inherits DelegatingHandler" />
+  <TypeSignature Language="C++ CLI" Value="public ref class PolicyHttpMessageHandler : System::Net::Http::DelegatingHandler" />
+  <TypeSignature Language="F#" Value="type PolicyHttpMessageHandler = class&#xA;    inherit DelegatingHandler" />
+  <AssemblyInfo>
+    <AssemblyName>Microsoft.Extensions.Http.Polly</AssemblyName>
+    <AssemblyVersion>2.2.0.0</AssemblyVersion>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Net.Http.DelegatingHandler</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>Реализация <see cref="T:System.Net.Http.DelegatingHandler" />, которая выполняет обработку запросов, окруженную <see cref="T:Polly.Policy" />.</summary>
+    <remarks><para>
+Эта реализация обработчика сообщений поддерживает использование политик, предоставляемых библиотекой Polly, для временной обработки и обеспечения отказоустойчивости.
+            </para>
+      <para>
+Документация, предоставленная здесь, является руководством по использованию Polly вместе с <see cref="T:System.Net.Http.IHttpClientFactory" />. Для получения достоверных сведений о Polly см. Проект Polly и его документацию (https://github.com/app-vnext/Polly)).
+            </para>
+      <para>
+Методы расширения <see cref="T:Microsoft.Extensions.DependencyInjection.PollyHttpClientBuilderExtensions" /> разработаны как удобный и правильный способ создания <see cref="T:Microsoft.Extensions.Http.PolicyHttpMessageHandler" />.
+            </para>
+      <para>
+Метод <see cref="M:Microsoft.Extensions.DependencyInjection.PollyHttpClientBuilderExtensions.AddPolicyHandler(Microsoft.Extensions.DependencyInjection.IHttpClientBuilder,Polly.IAsyncPolicy{System.Net.Http.HttpResponseMessage})" /> поддерживает создание <see cref="T:Microsoft.Extensions.Http.PolicyHttpMessageHandler" /> для любого типа политики. Сюда входят реактивные политики, такие как время ожидания или кэш, которые не потребовали первого запроса на сбой.
+            </para>
+      <para>
+        <see cref="T:Microsoft.Extensions.Http.PolicyHttpMessageHandler" /> и удобные методы <see cref="T:Microsoft.Extensions.DependencyInjection.PollyHttpClientBuilderExtensions" /> принимают только универсальный <see cref="T:Polly.IAsyncPolicy`1" />. Экземпляры универсальных политик можно создавать с помощью универсальных методов <see cref="T:Polly.Policy" />, таких как <see cref="M:Polly.Policy.TimeoutAsync``1(System.Int32)" />.
+            </para>
+      <para>
+Чтобы адаптировать существующие неуниверсальные <see cref="T:Polly.IAsyncPolicy" />, используйте код, подобный следующему: <example>
+Преобразование не универсального типа <code>IAsyncPolicy policy</code> делегата <see cref="T:Polly.IAsyncPolicy`1" />.
+            <code>
+            policy.AsAsyncPolicy&lt;HttpResponseMessage&gt;()
+            </code></example></para>
+      <para>
+Метод <see cref="M:Microsoft.Extensions.DependencyInjection.PollyHttpClientBuilderExtensions.AddTransientHttpErrorPolicy(Microsoft.Extensions.DependencyInjection.IHttpClientBuilder,System.Func{Polly.PolicyBuilder{System.Net.Http.HttpResponseMessage},Polly.IAsyncPolicy{System.Net.Http.HttpResponseMessage}})" /> является упрямого удобным методом, который поддерживает применение политики для запросов, которые не удалось выполнить из-за сбоя соединения или ошибки сервера (код состояния HTTP 5XX). Этот тип метода поддерживает только реактивные политики, такие как повторы, средство разбиения на себя или откат. Этот метод предоставляется только для удобства; При необходимости рекомендуется создавать собственные политики, если это не соответствует вашим требованиям.
+            </para>
+      <para>
+При использовании таких политик, как повторная попытка или время ожидания, следует соблюдать осторожность, так как HttpClient предоставляет собственное время ожидания через <see cref="P:System.Net.Http.HttpClient.Timeout" />.  При объединении повторов и времени ожидания <see cref="P:System.Net.Http.HttpClient.Timeout" /> будет действовать как время ожидания для всех попыток; политику времени ожидания Polly можно настроить после применения политики повтора в последовательности конфигурации, чтобы обеспечить время ожидания для каждой попытки.
+            </para>
+      <para>
+Все политики, предоставляемые Polly, предназначены для эффективного использования при длительном использовании. Некоторые политики, такие как отсеков и средство разбиения, поддерживают состояние и должны быть ограничены между вызовами, которым требуется совместное использование отсеков или состояния деостановки. Следите за тем, чтобы обеспечить правильное время существования при использовании политик и обработчиков сообщений в пользовательских сценариях. Методы расширения, предоставляемые <see cref="T:Microsoft.Extensions.DependencyInjection.PollyHttpClientBuilderExtensions" />, предназначены для назначения длительного времени существования политик и обеспечения их использования при активной функции поворота обработчика.
+            </para>
+      <para>
+<see cref="T:Microsoft.Extensions.Http.PolicyHttpMessageHandler" /> присоединяет контекст к <see cref="T:System.Net.Http.HttpRequestMessage" /> перед выполнением <see cref="T:Polly.Policy" />, если он еще не существует. <see cref="T:Polly.Context" /> будет предоставлена политике для использования внутри <see cref="T:Polly.Policy" /> и в других обработчиках сообщений.
+            </para></remarks>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public PolicyHttpMessageHandler (Polly.IAsyncPolicy&lt;System.Net.Http.HttpResponseMessage&gt; policy);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class Polly.IAsyncPolicy`1&lt;class System.Net.Http.HttpResponseMessage&gt; policy) cil managed" />
+      <MemberSignature Language="DocId" Value="M:Microsoft.Extensions.Http.PolicyHttpMessageHandler.#ctor(Polly.IAsyncPolicy{System.Net.Http.HttpResponseMessage})" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (policy As IAsyncPolicy(Of HttpResponseMessage))" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; PolicyHttpMessageHandler(Polly::IAsyncPolicy&lt;System::Net::Http::HttpResponseMessage ^&gt; ^ policy);" />
+      <MemberSignature Language="F#" Value="new Microsoft.Extensions.Http.PolicyHttpMessageHandler : Polly.IAsyncPolicy&lt;System.Net.Http.HttpResponseMessage&gt; -&gt; Microsoft.Extensions.Http.PolicyHttpMessageHandler" Usage="new Microsoft.Extensions.Http.PolicyHttpMessageHandler policy" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>Microsoft.Extensions.Http.Polly</AssemblyName>
+        <AssemblyVersion>2.2.0.0</AssemblyVersion>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="policy" Type="Polly.IAsyncPolicy&lt;System.Net.Http.HttpResponseMessage&gt;" />
+      </Parameters>
+      <Docs>
+        <param name="policy">Политика.</param>
+        <summary>Создает новый экземпляр <see cref="T:Microsoft.Extensions.Http.PolicyHttpMessageHandler" />.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public PolicyHttpMessageHandler (Func&lt;System.Net.Http.HttpRequestMessage,Polly.IAsyncPolicy&lt;System.Net.Http.HttpResponseMessage&gt;&gt; policySelector);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(class System.Func`2&lt;class System.Net.Http.HttpRequestMessage, class Polly.IAsyncPolicy`1&lt;class System.Net.Http.HttpResponseMessage&gt;&gt; policySelector) cil managed" />
+      <MemberSignature Language="DocId" Value="M:Microsoft.Extensions.Http.PolicyHttpMessageHandler.#ctor(System.Func{System.Net.Http.HttpRequestMessage,Polly.IAsyncPolicy{System.Net.Http.HttpResponseMessage}})" />
+      <MemberSignature Language="VB.NET" Value="Public Sub New (policySelector As Func(Of HttpRequestMessage, IAsyncPolicy(Of HttpResponseMessage)))" />
+      <MemberSignature Language="C++ CLI" Value="public:&#xA; PolicyHttpMessageHandler(Func&lt;System::Net::Http::HttpRequestMessage ^, Polly::IAsyncPolicy&lt;System::Net::Http::HttpResponseMessage ^&gt; ^&gt; ^ policySelector);" />
+      <MemberSignature Language="F#" Value="new Microsoft.Extensions.Http.PolicyHttpMessageHandler : Func&lt;System.Net.Http.HttpRequestMessage, Polly.IAsyncPolicy&lt;System.Net.Http.HttpResponseMessage&gt;&gt; -&gt; Microsoft.Extensions.Http.PolicyHttpMessageHandler" Usage="new Microsoft.Extensions.Http.PolicyHttpMessageHandler policySelector" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>Microsoft.Extensions.Http.Polly</AssemblyName>
+        <AssemblyVersion>2.2.0.0</AssemblyVersion>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="policySelector" Type="System.Func&lt;System.Net.Http.HttpRequestMessage,Polly.IAsyncPolicy&lt;System.Net.Http.HttpResponseMessage&gt;&gt;" />
+      </Parameters>
+      <Docs>
+        <param name="policySelector">Функция, которая может выбрать нужную политику для заданного <see cref="T:System.Net.Http.HttpRequestMessage" />.</param>
+        <summary>Создает новый экземпляр <see cref="T:Microsoft.Extensions.Http.PolicyHttpMessageHandler" />.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SendAsync">
+      <MemberSignature Language="C#" Value="protected override System.Threading.Tasks.Task&lt;System.Net.Http.HttpResponseMessage&gt; SendAsync (System.Net.Http.HttpRequestMessage request, System.Threading.CancellationToken cancellationToken);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance class System.Threading.Tasks.Task`1&lt;class System.Net.Http.HttpResponseMessage&gt; SendAsync(class System.Net.Http.HttpRequestMessage request, valuetype System.Threading.CancellationToken cancellationToken) cil managed" />
+      <MemberSignature Language="DocId" Value="M:Microsoft.Extensions.Http.PolicyHttpMessageHandler.SendAsync(System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override System::Threading::Tasks::Task&lt;System::Net::Http::HttpResponseMessage ^&gt; ^ SendAsync(System::Net::Http::HttpRequestMessage ^ request, System::Threading::CancellationToken cancellationToken);" />
+      <MemberSignature Language="F#" Value="abstract member SendAsync : System.Net.Http.HttpRequestMessage * System.Threading.CancellationToken -&gt; System.Threading.Tasks.Task&lt;System.Net.Http.HttpResponseMessage&gt;&#xA;override this.SendAsync : System.Net.Http.HttpRequestMessage * System.Threading.CancellationToken -&gt; System.Threading.Tasks.Task&lt;System.Net.Http.HttpResponseMessage&gt;" Usage="policyHttpMessageHandler.SendAsync (request, cancellationToken)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>Microsoft.Extensions.Http.Polly</AssemblyName>
+        <AssemblyVersion>2.2.0.0</AssemblyVersion>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Threading.Tasks.Task&lt;System.Net.Http.HttpResponseMessage&gt;</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="request" Type="System.Net.Http.HttpRequestMessage" />
+        <Parameter Name="cancellationToken" Type="System.Threading.CancellationToken" />
+      </Parameters>
+      <Docs>
+        <param name="request">To be added.</param>
+        <param name="cancellationToken">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+        <inheritdoc />
+      </Docs>
+    </Member>
+    <Member MemberName="SendCoreAsync">
+      <MemberSignature Language="C#" Value="protected virtual System.Threading.Tasks.Task&lt;System.Net.Http.HttpResponseMessage&gt; SendCoreAsync (System.Net.Http.HttpRequestMessage request, Polly.Context context, System.Threading.CancellationToken cancellationToken);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance class System.Threading.Tasks.Task`1&lt;class System.Net.Http.HttpResponseMessage&gt; SendCoreAsync(class System.Net.Http.HttpRequestMessage request, class Polly.Context context, valuetype System.Threading.CancellationToken cancellationToken) cil managed" />
+      <MemberSignature Language="DocId" Value="M:Microsoft.Extensions.Http.PolicyHttpMessageHandler.SendCoreAsync(System.Net.Http.HttpRequestMessage,Polly.Context,System.Threading.CancellationToken)" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; virtual System::Threading::Tasks::Task&lt;System::Net::Http::HttpResponseMessage ^&gt; ^ SendCoreAsync(System::Net::Http::HttpRequestMessage ^ request, Polly::Context ^ context, System::Threading::CancellationToken cancellationToken);" />
+      <MemberSignature Language="F#" Value="abstract member SendCoreAsync : System.Net.Http.HttpRequestMessage * Polly.Context * System.Threading.CancellationToken -&gt; System.Threading.Tasks.Task&lt;System.Net.Http.HttpResponseMessage&gt;&#xA;override this.SendCoreAsync : System.Net.Http.HttpRequestMessage * Polly.Context * System.Threading.CancellationToken -&gt; System.Threading.Tasks.Task&lt;System.Net.Http.HttpResponseMessage&gt;" Usage="policyHttpMessageHandler.SendCoreAsync (request, context, cancellationToken)" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>Microsoft.Extensions.Http.Polly</AssemblyName>
+        <AssemblyVersion>2.2.0.0</AssemblyVersion>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Threading.Tasks.Task&lt;System.Net.Http.HttpResponseMessage&gt;</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="request" Type="System.Net.Http.HttpRequestMessage" />
+        <Parameter Name="context" Type="Polly.Context" />
+        <Parameter Name="cancellationToken" Type="System.Threading.CancellationToken" />
+      </Parameters>
+      <Docs>
+        <param name="request"><see cref="T:System.Net.Http.HttpRequestMessage" />.</param>
+        <param name="context"><see cref="T:Polly.Context" />.</param>
+        <param name="cancellationToken"><see cref="T:System.Threading.CancellationToken" />.</param>
+        <summary>Вызывается в ходе выполнения <see cref="T:Polly.Policy" /> для обработки запроса.</summary>
+        <returns>Возвращает <see cref="T:System.Threading.Tasks.Task`1" />, выдающий ответ после завершения.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
