@@ -1,0 +1,80 @@
+<Type Name="LoggingEventSource" FullName="Microsoft.Extensions.Logging.EventSource.LoggingEventSource">
+  <Metadata><Meta Name="ms.openlocfilehash" Value="6971d9c39297efc4e895f22b6d96a3785890c8e9" /><Meta Name="ms.sourcegitcommit" Value="0084afad1b3b1cb2c8ad2c142ae3597d08bad4a7" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="10/31/2019" /><Meta Name="ms.locfileid" Value="73408410" /></Metadata><TypeSignature Language="C#" Value="public sealed class LoggingEventSource : System.Diagnostics.Tracing.EventSource" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi sealed beforefieldinit LoggingEventSource extends System.Diagnostics.Tracing.EventSource" />
+  <TypeSignature Language="DocId" Value="T:Microsoft.Extensions.Logging.EventSource.LoggingEventSource" />
+  <TypeSignature Language="VB.NET" Value="Public NotInheritable Class LoggingEventSource&#xA;Inherits EventSource" />
+  <TypeSignature Language="C++ CLI" Value="public ref class LoggingEventSource sealed : System::Diagnostics::Tracing::EventSource" />
+  <TypeSignature Language="F#" Value="type LoggingEventSource = class&#xA;    inherit EventSource" />
+  <AssemblyInfo>
+    <AssemblyName>Microsoft.Extensions.Logging.EventSource</AssemblyName>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Diagnostics.Tracing.EventSource</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Attributes>
+    <Attribute FrameworkAlternate="dotnet-plat-ext-3.0">
+      <AttributeName>System.Diagnostics.Tracing.EventSource(Name="Microsoft-Extensions-Logging")</AttributeName>
+    </Attribute>
+  </Attributes>
+  <Docs>
+    <summary>Класс LoggingEventSource является связующим звеном между всеми журналами на основе ILogger и журналами на основе EventSource и EventListener.
+            
+Для включения этого ведения журнала используется следующий источник событий: 
+Microsoft-Extensions-Logging 
+При включении источника событий заданный уровень событий явным образом преобразуется в уровень, связанный с ILogger (то есть Debug = verbose, Informational = Informational ... Critical == Critical). 
+Это позволяет без лишних усилий выполнять фильтрацию по уровню событий.
+            
+Для более точного управления можно указать следующий аргумент источника событий: 
+FilterSpecs 
+Аргумент FilterSpecs представляет собой список спецификаций, разделенных точкой с запятой.   Каждая спецификация имеет следующий вид: 
+SPEC =                          // пустая спецификация, аналогично * | NAME                     // просто имя, уровень по умолчанию — level | NAME : LEVEL            // указывает уровень для определенного средства ведения журнала (может иметь суффикс *).
+            
+Здесь Name — это имя ILoggger (с учетом регистра). Имя может иметь суффикс "*", выступающий в роли подстановочного знака.   Например, "Net*" соответствует любому средству ведения журнала, имя которого начинается со строки "Net".
+            
+LEVEL — это число или строка LogLevel. 0=Trace, 1=Debug, 2=Information, 3=Warning, 4=Error, 5=Critical. Определяет уровень связанного шаблона.  Если номер не указан (первая форма спецификации), используется уровень по умолчанию для источника событий.
+            
+Если имени соответствуют несколько шаблонов, используется первое совпадение.
+            
+Помимо уровня и аргумента FilterSpecs, можно также задать ключевые слова источника событий.  Полное определение ключевых слов приведено ниже, однако, как правило, необходимо определить следующие ключевые слова: 
+* Keywords.Message — вы получаете событие с проанализированными данными;
+* Keywords.JsonMessage — вы получаете событие с проанализированными данными, но в виде большого двоичного объекта JSON (не разбитого по аргументу...); * Keywords.FormattedMessage — вы получаете событие с данными, отформатированными в виде строки. 
+Обычно включается только одно из этих ключевых слов, но вы можете включить их все (и получить одни и те же данные в трех разных формах).
+            
+Пример использования 
+В этом примере показано, как можно использовать EventListener для получения данных ILogging. 
+class MyEventListener : EventListener { protected override void OnEventSourceCreated(EventSource eventSource) { if (eventSource.Name == "Microsoft-Extensions-Logging") { // Инициализация строкового словаря аргументов, передаваемого в источник событий.
+// Для средств ведения журнала, имена которых соответствуют шаблону App*, устанавливается уровень Information, а для остальных (*) — уровень по умолчанию (то есть EventLevel.Error). var args = new Dictionary&lt;string, string&gt;() { { "FilterSpecs", "App*:Information;*" } }; // В качестве уровня (детализации) по умолчанию устанавливается Error; в этом случае запрашиваются только отформатированные сообщения.
+EnableEvents(eventSource, EventLevel.Error, LoggingEventSource.Keywords.FormattedMessage, args); } } protected override void OnEventWritten(EventWrittenEventArgs eventData) { // Ожидается отформатированное сообщение о событии, которое имеет следующую структуру аргументов (согласно определению в LoggingEventSource).
+// FormattedMessage(LogLevel Level, int FactoryID, string LoggerName, string EventId, string FormattedMessage); if (eventData.EventName == "FormattedMessage") Console.WriteLine("Logger {0}: {1}", eventData.Payload[2], eventData.Payload[4]); } }</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+  <Members>
+    <Member MemberName="OnEventCommand">
+      <MemberSignature Language="C#" Value="protected override void OnEventCommand (System.Diagnostics.Tracing.EventCommandEventArgs command);" FrameworkAlternate="dotnet-plat-ext-3.0" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void OnEventCommand(class System.Diagnostics.Tracing.EventCommandEventArgs command) cil managed" FrameworkAlternate="dotnet-plat-ext-3.0" />
+      <MemberSignature Language="DocId" Value="M:Microsoft.Extensions.Logging.EventSource.LoggingEventSource.OnEventCommand(System.Diagnostics.Tracing.EventCommandEventArgs)" FrameworkAlternate="dotnet-plat-ext-3.0" />
+      <MemberSignature Language="VB.NET" Value="Protected Overrides Sub OnEventCommand (command As EventCommandEventArgs)" FrameworkAlternate="dotnet-plat-ext-3.0" />
+      <MemberSignature Language="C++ CLI" Value="protected:&#xA; override void OnEventCommand(System::Diagnostics::Tracing::EventCommandEventArgs ^ command);" FrameworkAlternate="dotnet-plat-ext-3.0" />
+      <MemberSignature Language="F#" Value="override this.OnEventCommand : System.Diagnostics.Tracing.EventCommandEventArgs -&gt; unit" Usage="loggingEventSource.OnEventCommand command" FrameworkAlternate="dotnet-plat-ext-3.0" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyName>Microsoft.Extensions.Logging.EventSource</AssemblyName>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="command" Type="System.Diagnostics.Tracing.EventCommandEventArgs" Index="0" FrameworkAlternate="dotnet-plat-ext-3.0" />
+      </Parameters>
+      <Docs>
+        <param name="command">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+        <inheritdoc />
+      </Docs>
+    </Member>
+  </Members>
+</Type>
