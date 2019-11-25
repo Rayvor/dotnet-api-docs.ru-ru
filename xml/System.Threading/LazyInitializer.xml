@@ -1,5 +1,5 @@
 <Type Name="LazyInitializer" FullName="System.Threading.LazyInitializer">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="43cffb2d42f4615cece05e04e3d6c89a3c02e387" /><Meta Name="ms.sourcegitcommit" Value="0084afad1b3b1cb2c8ad2c142ae3597d08bad4a7" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="10/31/2019" /><Meta Name="ms.locfileid" Value="73380753" /></Metadata><TypeSignature Language="C#" Value="public static class LazyInitializer" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="19a9cea9a7caa1bb7e43249d9fcee2f86c4d25d8" /><Meta Name="ms.sourcegitcommit" Value="385ff23cc00fe9aa1c93460c62603b45c2041d0b" /><Meta Name="ms.translationtype" Value="HT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="11/22/2019" /><Meta Name="ms.locfileid" Value="74387980" /></Metadata><TypeSignature Language="C#" Value="public static class LazyInitializer" />
   <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract sealed beforefieldinit LazyInitializer extends System.Object" />
   <TypeSignature Language="DocId" Value="T:System.Threading.LazyInitializer" />
   <TypeSignature Language="VB.NET" Value="Public Class LazyInitializer" />
@@ -27,7 +27,7 @@
   </Base>
   <Interfaces />
   <Docs>
-    <summary>Обеспечивает процедуры инициализации адаптирующегося типа.</summary>
+    <summary>Provides lazy initialization routines.</summary>
     <remarks>
       <format type="text/markdown"><![CDATA[  
   
@@ -71,7 +71,7 @@ ExpensiveData dataToUse = LazyInitializer.EnsureInitialized(ref _data, ref _data
         <AssemblyVersion>4.1.0.0</AssemblyVersion>
       </AssemblyInfo>
       <Docs>
-        <summary>Инициализирует целевой тип, если он еще не инициализирован.</summary>
+        <summary>Initializes a target type if it hasn't already been initialized.</summary>
       </Docs>
     </MemberGroup>
     <Member MemberName="EnsureInitialized&lt;T&gt;">
@@ -113,10 +113,10 @@ ExpensiveData dataToUse = LazyInitializer.EnsureInitialized(ref _data, ref _data
         <Parameter Name="target" Type="T" RefType="ref" />
       </Parameters>
       <Docs>
-        <typeparam name="T">Тип инициализируемой ссылки.</typeparam>
-        <param name="target">Ссылка, которую необходимо инициализировать, если она еще не инициализирована.</param>
-        <summary>Инициализирует целевой ссылочный тип его конструктором типа без параметров, если он еще не инициализирован.</summary>
-        <returns>Инициализированный объект.</returns>
+        <typeparam name="T">Тип ссылки, которая должна быть инициализирована.</typeparam>
+        <param name="target">A reference to initialize if it has not already been initialized.</param>
+        <summary>Initializes a target reference type with the type's parameterless constructor if it hasn't already been initialized.</summary>
+        <returns>The initialized object.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
@@ -125,12 +125,12 @@ ExpensiveData dataToUse = LazyInitializer.EnsureInitialized(ref _data, ref _data
   
  Этот метод может одновременно использоваться несколькими потоками для инициализации `target`.  
   
- В случае, если несколько потоков обращаются к этому методу параллельно, можно создать несколько экземпляров `T`, но только один из них будет сохранен в `target`. В таком случае этот метод не будет удалять объекты, которые не были сохранены. Если такие объекты должны быть удалены, то вызывающему объекту следует определить, не использовался ли объект, а затем соответствующим образом удалить объект.  
+ В случае, если несколько потоков обращаются к этому методу параллельно, можно создать несколько экземпляров `T`, но только один из них будет сохранен в `target` и возвращен. В таком случае этот метод не будет удалять объекты, которые не были сохранены. Если такие объекты должны быть удалены, используйте перегрузку, которая принимает `valueFactory` и уничтожает объект, если он не ссылается на один и тот же сохраненный объект.
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.MemberAccessException">Разрешения на доступ к конструктору типа <paramref name="T" /> отсутствовали.</exception>
-        <exception cref="T:System.MissingMemberException">У типа <paramref name="T" /> нет конструктора без параметров.</exception>
+        <exception cref="T:System.MemberAccessException">Permissions to access the constructor of type <paramref name="T" /> were missing.</exception>
+        <exception cref="T:System.MissingMemberException">Type <paramref name="T" /> does not have a parameterless constructor.</exception>
         <related type="Article" href="~/docs/framework/performance/lazy-initialization.md">Отложенная инициализация</related>
       </Docs>
     </Member>
@@ -174,11 +174,11 @@ ExpensiveData dataToUse = LazyInitializer.EnsureInitialized(ref _data, ref _data
         <Parameter Name="valueFactory" Type="System.Func&lt;T&gt;" />
       </Parameters>
       <Docs>
-        <typeparam name="T">Тип инициализируемой ссылки.</typeparam>
-        <param name="target">Ссылка, которую необходимо инициализировать, если она еще не инициализирована.</param>
-        <param name="valueFactory">Функция, которая вызывается для инициализации ссылки.</param>
-        <summary>Инициализирует целевой ссылочный тип с использованием указанной функцией, если он еще не инициализирован.</summary>
-        <returns>Инициализированный объект.</returns>
+        <typeparam name="T">Тип ссылки, которая должна быть инициализирована.</typeparam>
+        <param name="target">The reference to initialize if it hasn't already been initialized.</param>
+        <param name="valueFactory">The function that is called to initialize the reference.</param>
+        <summary>Initializes a target reference type by using a specified function if it hasn't already been initialized.</summary>
+        <returns>The initialized object.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
@@ -191,8 +191,8 @@ ExpensiveData dataToUse = LazyInitializer.EnsureInitialized(ref _data, ref _data
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.MissingMemberException">У типа <paramref name="T" /> нет конструктора без параметров.</exception>
-        <exception cref="T:System.InvalidOperationException"><paramref name="valueFactory" /> вернул значение NULL (Nothing в Visual Basic).</exception>
+        <exception cref="T:System.MissingMemberException">Type <paramref name="T" /> does not have a parameterless constructor.</exception>
+        <exception cref="T:System.InvalidOperationException"><paramref name="valueFactory" /> returned null (Nothing in Visual Basic).</exception>
         <related type="Article" href="~/docs/framework/performance/lazy-initialization.md">Отложенная инициализация</related>
       </Docs>
     </Member>
@@ -233,12 +233,12 @@ ExpensiveData dataToUse = LazyInitializer.EnsureInitialized(ref _data, ref _data
         <Parameter Name="syncLock" Type="System.Object" RefType="ref" />
       </Parameters>
       <Docs>
-        <typeparam name="T">Тип инициализируемой ссылки.</typeparam>
-        <param name="target">Ссылка или значение типа <c>T</c>, которое необходимо инициализировать, если оно еще не инициализировано.</param>
-        <param name="initialized">Ссылка на логическое значение, определяющее, инициализирована ли цель.</param>
-        <param name="syncLock">Ссылка на объект, используемый как взаимоисключающая блокировка для инициализации параметра <paramref name="target" />. Если <paramref name="syncLock" /> равно <see langword="null" />, то нового объект будет создан экземпляр.</param>
-        <summary>Инициализирует целевой ссылочный тип или тип значения его конструктором без параметров, если он еще не инициализирован.</summary>
-        <returns>Инициализированный объект.</returns>
+        <typeparam name="T">Тип ссылки, которая должна быть инициализирована.</typeparam>
+        <param name="target">A reference or value of type <c>T</c> to initialize if it hasn't already been initialized.</param>
+        <param name="initialized">A reference to a Boolean value that determines whether the target has already been initialized.</param>
+        <param name="syncLock">A reference to an object used as the mutually exclusive lock for initializing <paramref name="target" />. If <paramref name="syncLock" /> is <see langword="null" />, a new object will be instantiated.</param>
+        <summary>Initializes a target reference or value type with its parameterless constructor if it hasn't already been initialized.</summary>
+        <returns>The initialized object.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
@@ -247,8 +247,8 @@ ExpensiveData dataToUse = LazyInitializer.EnsureInitialized(ref _data, ref _data
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.MemberAccessException">Разрешения на доступ к конструктору типа <paramref name="T" /> отсутствовали.</exception>
-        <exception cref="T:System.MissingMemberException">У типа <paramref name="T" /> нет конструктора без параметров.</exception>
+        <exception cref="T:System.MemberAccessException">Permissions to access the constructor of type <paramref name="T" /> were missing.</exception>
+        <exception cref="T:System.MissingMemberException">Type <paramref name="T" /> does not have a parameterless constructor.</exception>
         <related type="Article" href="~/docs/framework/performance/lazy-initialization.md">Отложенная инициализация</related>
       </Docs>
     </Member>
@@ -288,12 +288,12 @@ ExpensiveData dataToUse = LazyInitializer.EnsureInitialized(ref _data, ref _data
         <Parameter Name="valueFactory" Type="System.Func&lt;T&gt;" Index="2" FrameworkAlternate="netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netstandard-2.1" />
       </Parameters>
       <Docs>
-        <typeparam name="T">Тип инициализируемой ссылки.</typeparam>
-        <param name="target">Ссылка, которую необходимо инициализировать, если она еще не инициализирована.</param>
-        <param name="syncLock">Ссылка на объект, используемый как взаимоисключающая блокировка для инициализации параметра <paramref name="target" />. Если <paramref name="syncLock" /> равно <see langword="null" />, то нового объект будет создан экземпляр.</param>
-        <param name="valueFactory">Метод, который необходимо вызвать для инициализации <paramref name="target" />.</param>
-        <summary>Инициализирует целевой ссылочный тип указанной функцией, если он еще не инициализирован.</summary>
-        <returns>Инициализированный объект.</returns>
+        <typeparam name="T">Тип ссылки, которая должна быть инициализирована.</typeparam>
+        <param name="target">A reference to initialize if it has not already been initialized.</param>
+        <param name="syncLock">A reference to an object used as the mutually exclusive lock for initializing <paramref name="target" />. If <paramref name="syncLock" /> is <see langword="null" />, a new object will be instantiated.</param>
+        <param name="valueFactory">The method to invoke to initialize <paramref name="target" />.</param>
+        <summary>Initializes a target reference type with a specified function if it has not already been initialized.</summary>
+        <returns>The initialized object.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -335,13 +335,13 @@ ExpensiveData dataToUse = LazyInitializer.EnsureInitialized(ref _data, ref _data
         <Parameter Name="valueFactory" Type="System.Func&lt;T&gt;" />
       </Parameters>
       <Docs>
-        <typeparam name="T">Тип инициализируемой ссылки.</typeparam>
-        <param name="target">Ссылка или значение типа <c>T</c>, которое необходимо инициализировать, если оно еще не инициализировано.</param>
-        <param name="initialized">Ссылка на логическое значение, определяющее, инициализирована ли цель.</param>
-        <param name="syncLock">Ссылка на объект, используемый как взаимоисключающая блокировка для инициализации параметра <paramref name="target" />. Если <paramref name="syncLock" /> равно <see langword="null" />, то нового объект будет создан экземпляр.</param>
-        <param name="valueFactory">Функция, которая вызывается для инициализации ссылки или значения.</param>
-        <summary>Инициализирует целевой ссылочный тип или тип значения с использованием указанной функцией, если он еще не инициализирован.</summary>
-        <returns>Инициализированный объект.</returns>
+        <typeparam name="T">Тип ссылки, которая должна быть инициализирована.</typeparam>
+        <param name="target">A reference or value of type <c>T</c> to initialize if it hasn't already been initialized.</param>
+        <param name="initialized">A reference to a Boolean value that determines whether the target has already been initialized.</param>
+        <param name="syncLock">A reference to an object used as the mutually exclusive lock for initializing <paramref name="target" />. If <paramref name="syncLock" /> is <see langword="null" />, a new object will be instantiated.</param>
+        <param name="valueFactory">The function that is called to initialize the reference or value.</param>
+        <summary>Initializes a target reference or value type by using a specified function if it hasn't already been initialized.</summary>
+        <returns>The initialized object.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
@@ -350,8 +350,8 @@ ExpensiveData dataToUse = LazyInitializer.EnsureInitialized(ref _data, ref _data
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.MemberAccessException">Разрешения на доступ к конструктору типа <paramref name="T" /> отсутствовали.</exception>
-        <exception cref="T:System.MissingMemberException">У типа <paramref name="T" /> нет конструктора без параметров.</exception>
+        <exception cref="T:System.MemberAccessException">Permissions to access the constructor of type <paramref name="T" /> were missing.</exception>
+        <exception cref="T:System.MissingMemberException">Type <paramref name="T" /> does not have a parameterless constructor.</exception>
         <related type="Article" href="~/docs/framework/performance/lazy-initialization.md">Отложенная инициализация</related>
       </Docs>
     </Member>
