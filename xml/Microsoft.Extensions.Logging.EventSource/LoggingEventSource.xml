@@ -1,5 +1,5 @@
 <Type Name="LoggingEventSource" FullName="Microsoft.Extensions.Logging.EventSource.LoggingEventSource">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="6971d9c39297efc4e895f22b6d96a3785890c8e9" /><Meta Name="ms.sourcegitcommit" Value="0084afad1b3b1cb2c8ad2c142ae3597d08bad4a7" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="10/31/2019" /><Meta Name="ms.locfileid" Value="73408410" /></Metadata><TypeSignature Language="C#" Value="public sealed class LoggingEventSource : System.Diagnostics.Tracing.EventSource" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="4a0d9418fc6fd1112e04bdbe206324340fc5f3bb" /><Meta Name="ms.sourcegitcommit" Value="385ff23cc00fe9aa1c93460c62603b45c2041d0b" /><Meta Name="ms.translationtype" Value="HT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="11/22/2019" /><Meta Name="ms.locfileid" Value="74385927" /></Metadata><TypeSignature Language="C#" Value="public sealed class LoggingEventSource : System.Diagnostics.Tracing.EventSource" />
   <TypeSignature Language="ILAsm" Value=".class public auto ansi sealed beforefieldinit LoggingEventSource extends System.Diagnostics.Tracing.EventSource" />
   <TypeSignature Language="DocId" Value="T:Microsoft.Extensions.Logging.EventSource.LoggingEventSource" />
   <TypeSignature Language="VB.NET" Value="Public NotInheritable Class LoggingEventSource&#xA;Inherits EventSource" />
@@ -19,36 +19,73 @@
     </Attribute>
   </Attributes>
   <Docs>
-    <summary>Класс LoggingEventSource является связующим звеном между всеми журналами на основе ILogger и журналами на основе EventSource и EventListener.
+    <summary>Класс LoggingEventSource является связующим звеном между всеми журналами на основе ILogger и журналами на основе EventSource и EventListener.</summary>
+    <remarks>
+      <format type="text/markdown"><![CDATA[
+
+## Remarks
+
+Чтобы включить ведение журнала, включите объект EventSource с именем `Microsoft-Extensions-Logging`.
             
-Для включения этого ведения журнала используется следующий источник событий: 
-Microsoft-Extensions-Logging 
-При включении источника событий заданный уровень событий явным образом преобразуется в уровень, связанный с ILogger (то есть Debug = verbose, Informational = Informational ... Critical == Critical). 
+Когда EventSource включается, заданный Евентлевел преобразуется в очевидный путь к уровню, связанному с ILogger (таким образом, Debug = Verbose, информационный = информационный... Критическое = = критическое)
+            
 Это позволяет без лишних усилий выполнять фильтрацию по уровню событий.
             
-Для более точного управления можно указать следующий аргумент источника событий: 
-FilterSpecs 
-Аргумент FilterSpecs представляет собой список спецификаций, разделенных точкой с запятой.   Каждая спецификация имеет следующий вид: 
-SPEC =                          // пустая спецификация, аналогично * | NAME                     // просто имя, уровень по умолчанию — level | NAME : LEVEL            // указывает уровень для определенного средства ведения журнала (может иметь суффикс *).
+Для более точного управления можно указать аргумент EventSource с именем `FilterSpecs`.
             
-Здесь Name — это имя ILoggger (с учетом регистра). Имя может иметь суффикс "*", выступающий в роли подстановочного знака.   Например, "Net*" соответствует любому средству ведения журнала, имя которого начинается со строки "Net".
+Аргумент `FilterSpecs` — это список спецификаций, разделенных точкой с запятой. Каждая спецификация имеет следующий вид:
+
+```
+SPEC =                          // empty spec, same as *
+     | NAME                     // Just a name the level is the default level
+     | NAME : LEVEL            // specifies level for a particular logger (can have a * suffix).
+```
+            
+Где name — имя Илоггжер (case имеет значение), имя может иметь \*, который выступает в качестве СУФФИКСа в качестве подстановочного знака. Таким словами, NET\* будет соответствовать любым средствам ведения журнала, которые начинаются с "NET".
             
 LEVEL — это число или строка LogLevel. 0=Trace, 1=Debug, 2=Information, 3=Warning, 4=Error, 5=Critical. Определяет уровень связанного шаблона.  Если номер не указан (первая форма спецификации), используется уровень по умолчанию для источника событий.
             
 Если имени соответствуют несколько шаблонов, используется первое совпадение.
             
-Помимо уровня и аргумента FilterSpecs, можно также задать ключевые слова источника событий.  Полное определение ключевых слов приведено ниже, однако, как правило, необходимо определить следующие ключевые слова: 
-* Keywords.Message — вы получаете событие с проанализированными данными;
-* Keywords.JsonMessage — вы получаете событие с проанализированными данными, но в виде большого двоичного объекта JSON (не разбитого по аргументу...); * Keywords.FormattedMessage — вы получаете событие с данными, отформатированными в виде строки. 
-Обычно включается только одно из этих ключевых слов, но вы можете включить их все (и получить одни и те же данные в трех разных формах).
+Помимо аргумента Level и Филтерспек, можно также задать ключевые слова EventSource. Полное определение ключевых слов приведено ниже, однако, как правило, необходимо определить следующие ключевые слова:
             
-Пример использования 
-В этом примере показано, как можно использовать EventListener для получения данных ILogging. 
-class MyEventListener : EventListener { protected override void OnEventSourceCreated(EventSource eventSource) { if (eventSource.Name == "Microsoft-Extensions-Logging") { // Инициализация строкового словаря аргументов, передаваемого в источник событий.
-// Для средств ведения журнала, имена которых соответствуют шаблону App*, устанавливается уровень Information, а для остальных (*) — уровень по умолчанию (то есть EventLevel.Error). var args = new Dictionary&lt;string, string&gt;() { { "FilterSpecs", "App*:Information;*" } }; // В качестве уровня (детализации) по умолчанию устанавливается Error; в этом случае запрашиваются только отформатированные сообщения.
-EnableEvents(eventSource, EventLevel.Error, LoggingEventSource.Keywords.FormattedMessage, args); } } protected override void OnEventWritten(EventWrittenEventArgs eventData) { // Ожидается отформатированное сообщение о событии, которое имеет следующую структуру аргументов (согласно определению в LoggingEventSource).
-// FormattedMessage(LogLevel Level, int FactoryID, string LoggerName, string EventId, string FormattedMessage); if (eventData.EventName == "FormattedMessage") Console.WriteLine("Logger {0}: {1}", eventData.Payload[2], eventData.Payload[4]); } }</summary>
-    <remarks>To be added.</remarks>
+* Keywords. Message — вы получаете событие с данными в проанализированной форме.
+* Keywords. Жсонмессаже — вы получаете событие с данными в форме синтаксического анализа, но в виде большого двоичного объекта JSON (не разбивается по аргументам...)
+* Keywords. Форматтедмессаже — вы получаете событие с данными в формате строки.
+            
+Предполагается, что в каждый момент времени будет включено только одно из этих ключевых слов, но их можно включить и получить одни и те же данные тремя разными способами.
+            
+## Examples
+            
+В следующем примере показано, как использовать EventListener для получения сведений о Илоггинг:
+            
+```csharp
+class MyEventListener : EventListener 
+{
+    protected override void OnEventSourceCreated(EventSource eventSource) 
+    {
+        if (eventSource.Name == "Microsoft-Extensions-Logging") 
+        {
+            // initialize a string, string dictionary of arguments to pass to the EventSource.
+            // Turn on loggers matching App* to Information, everything else (*) is the default level (which is EventLevel.Error)
+            var args = new Dictionary&lt;string, string&gt;() { { "FilterSpecs", "App*:Information;*" } };
+            // Set the default level (verbosity) to Error, and only ask for the formatted messages in this case.
+            EnableEvents(eventSource, EventLevel.Error, LoggingEventSource.Keywords.FormattedMessage, args);
+        }
+    }
+
+    protected override void OnEventWritten(EventWrittenEventArgs eventData) 
+    {
+        // Look for the formatted message event, which has the following argument layout (as defined in the LoggingEventSource.
+        // FormattedMessage(LogLevel Level, int FactoryID, string LoggerName, string EventId, string FormattedMessage);
+        if (eventData.EventName == "FormattedMessage")
+            Console.WriteLine("Logger {0}: {1}", eventData.Payload[2], eventData.Payload[4]);
+    }
+}
+```
+
+ ]]></format>
+    </remarks>
   </Docs>
   <Members>
     <Member MemberName="OnEventCommand">
