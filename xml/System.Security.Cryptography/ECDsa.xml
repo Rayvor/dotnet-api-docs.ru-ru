@@ -1,5 +1,5 @@
 <Type Name="ECDsa" FullName="System.Security.Cryptography.ECDsa">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="a8670886d7271ee02f24c6127a1b3652a392b633" /><Meta Name="ms.sourcegitcommit" Value="2b0967e04b047f6709322418d97215dfcef6a938" /><Meta Name="ms.translationtype" Value="HT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="11/20/2019" /><Meta Name="ms.locfileid" Value="74236381" /></Metadata><TypeSignature Language="C#" Value="public abstract class ECDsa : System.Security.Cryptography.AsymmetricAlgorithm" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="33335829f2dbd14ab1eb2623bcc1c84bf9d8e6af" /><Meta Name="ms.sourcegitcommit" Value="0cb8bc0854af5bc6af4211b6cf43cbda48e9f6c8" /><Meta Name="ms.translationtype" Value="HT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="12/04/2019" /><Meta Name="ms.locfileid" Value="74798126" /></Metadata><TypeSignature Language="C#" Value="public abstract class ECDsa : System.Security.Cryptography.AsymmetricAlgorithm" />
   <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract beforefieldinit ECDsa extends System.Security.Cryptography.AsymmetricAlgorithm" />
   <TypeSignature Language="DocId" Value="T:System.Security.Cryptography.ECDsa" />
   <TypeSignature Language="VB.NET" Value="Public MustInherit Class ECDsa&#xA;Inherits AsymmetricAlgorithm" />
@@ -455,8 +455,8 @@
         <Parameter Name="curve" Type="System.Security.Cryptography.ECCurve" Index="0" FrameworkAlternate="netcore-1.0;netcore-1.1;netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netstandard-1.6;netstandard-2.0;netstandard-2.1;xamarinandroid-7.1;xamarinios-10.8" />
       </Parameters>
       <Docs>
-        <param name="curve">Кривая для использования.</param>
-        <summary>При переопределении в производном классе создает новую пару открытого и закрытого ключей для указанной кривой.</summary>
+        <param name="curve">Кривая, используемая для создания ключа.</param>
+        <summary>При переопределении в производном классе создает новую пару открытого и закрытого эфемерных ключей для указанной кривой, заменяющую текущий ключ.</summary>
         <remarks>To be added.</remarks>
         <exception cref="T:System.NotSupportedException">Производный класс должен переопределять этот метод.</exception>
       </Docs>
@@ -1092,7 +1092,7 @@
         <summary>Вычисляет хэш-значение фрагмента заданного массива байтов с помощью указанного алгоритма хэширования и подписывает результирующее хэш-значение.</summary>
         <returns>Подпись ECDSA для указанных данных.</returns>
         <remarks>To be added.</remarks>
-        <exception cref="T:System.ArgumentNullException"><paramref name="data" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="data" /> имеет значение <see langword="null" />.</exception>
         <exception cref="T:System.ArgumentException"><paramref name="hashAlgorithm" />.<see cref="P:System.Security.Cryptography.HashAlgorithmName.Name" /> имеет значение <see langword="null" /> или <see cref="F:System.String.Empty" />.</exception>
         <exception cref="T:System.ArgumentOutOfRangeException">Значение параметра <paramref name="offset" /> меньше нуля.  
   
@@ -1138,7 +1138,7 @@
       <Docs>
         <param name="hash">Хэш-значение подписываемых данных.</param>
         <summary>Создает цифровую подпись для указанного хэш-значения.</summary>
-        <returns>Цифровая подпись, состоящая из указанного хэш-значения, зашифрованного с помощью закрытого ключа.</returns>
+        <returns>Цифровая подпись для указанного хэш-значения.</returns>
         <remarks>To be added.</remarks>
         <exception cref="T:System.ArgumentNullException">Параметр <paramref name="hash" /> имеет значение <see langword="null" />.</exception>
       </Docs>
@@ -1405,13 +1405,22 @@
         <Parameter Name="bytesWritten" Type="System.Int32" RefType="out" Index="3" FrameworkAlternate="netcore-2.1;netcore-2.2;netcore-3.0;netstandard-2.1" />
       </Parameters>
       <Docs>
-        <param name="data">To be added.</param>
-        <param name="destination">To be added.</param>
-        <param name="hashAlgorithm">To be added.</param>
-        <param name="bytesWritten">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="data">Данные, предназначенные для хэширования.</param>
+        <param name="destination">Буфер для получения значения хэша.</param>
+        <param name="hashAlgorithm">Алгоритм, который будет использоваться для хэширования данных.</param>
+        <param name="bytesWritten">Этот метод возвращает общее количество байтов, записанных в <paramref name="destination" />. Этот параметр обрабатывается как неинициализированный.</param>
+        <summary>Пытается вычислить хэш-значение указанного диапазона байтов только для чтения в заданное назначение с помощью указанного алгоритма хэширования.</summary>
+        <returns><see langword="false" />, если <paramref name="destination" /> имеет недостаточную длину для получения хэш-значения.</returns>
+        <remarks>
+          <format type="text/markdown"><![CDATA[  
+  
+## Remarks  
+
+Реализация по умолчанию этого метода заключается в вызове <xref:System.Security.Cryptography.ECDsa.HashData(System.Byte[],System.Int32,System.Int32,System.Security.Cryptography.HashAlgorithmName)> и копировании результата в `destination`.
+Производные типы должны переопределять этот метод, чтобы избежать создания промежуточного массива.
+  
+ ]]></format>
+        </remarks>
       </Docs>
     </Member>
     <Member MemberName="TrySignData">
@@ -1443,12 +1452,12 @@
         <Parameter Name="bytesWritten" Type="System.Int32" RefType="out" Index="3" FrameworkAlternate="netcore-2.1;netcore-2.2;netcore-3.0;netstandard-2.1" />
       </Parameters>
       <Docs>
-        <param name="data">To be added.</param>
-        <param name="destination">To be added.</param>
-        <param name="hashAlgorithm">To be added.</param>
-        <param name="bytesWritten">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <param name="data">Данные, которые должны быть подписаны.</param>
+        <param name="destination">Буфер для получения подписи.</param>
+        <param name="hashAlgorithm">Алгоритм хэширования данных, которые должны быть подписаны.</param>
+        <param name="bytesWritten">Этот метод возвращает общее количество байтов, записанных в <paramref name="destination" />. Этот параметр обрабатывается как неинициализированный.</param>
+        <summary>Пытается вычислить цифровую подпись ECDSA указанного диапазона байтов только для чтения в предоставленное назначение с помощью указанного алгоритма хэширования и текущего ключа.</summary>
+        <returns><see langword="false" />, если <paramref name="destination" /> имеет недостаточную длину для получения подписи.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -1480,11 +1489,11 @@
         <Parameter Name="bytesWritten" Type="System.Int32" RefType="out" Index="2" FrameworkAlternate="netcore-2.1;netcore-2.2;netcore-3.0;netstandard-2.1" />
       </Parameters>
       <Docs>
-        <param name="hash">To be added.</param>
-        <param name="destination">To be added.</param>
-        <param name="bytesWritten">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <param name="hash">Хэш-значение подписываемых данных.</param>
+        <param name="destination">Буфер для получения подписи.</param>
+        <param name="bytesWritten">Этот метод возвращает общее количество байтов, записанных в <paramref name="destination" />. Этот параметр обрабатывается как неинициализированный.</param>
+        <summary>Пытается вычислить цифровую подпись ECDSA указанного диапазона байтов только для чтения, представляющего собой хэш данных, в заданное назначение с помощью текущего ключа.</summary>
+        <returns><see langword="false" />, если <paramref name="destination" /> имеет недостаточную длину для получения подписи.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -1496,7 +1505,7 @@
         <AssemblyVersion>4.3.0.0</AssemblyVersion>
       </AssemblyInfo>
       <Docs>
-        <summary>Проверяет допустимость цифровой подписи.</summary>
+        <summary>Проверяет, подходит ли цифровая подпись для текущего ключа и заданных данных, с помощью указанного хэш-алгоритма.</summary>
       </Docs>
     </MemberGroup>
     <Member MemberName="VerifyData">
@@ -1536,13 +1545,13 @@
         <param name="data">Подписанные данные.</param>
         <param name="signature">Данные подписи, которые требуется поверить.</param>
         <param name="hashAlgorithm">Алгоритм хэширования, используемый для создания хэш-значения данных.</param>
-        <summary>Проверяет допустимость цифровой подписи путем вычисления хэш-значения заданных данных с помощью указанного алгоритма хэширования и его сравнения с предоставленной подписью.</summary>
+        <summary>Проверяет, подходит ли цифровая подпись для текущего ключа и заданных данных, с помощью указанного хэш-алгоритма.</summary>
         <returns>Значение <see langword="true" />, если подпись является допустимой; в противном случае — значение <see langword="false" />.</returns>
         <remarks>To be added.</remarks>
         <exception cref="T:System.ArgumentNullException">Свойство <paramref name="data" /> имеет значение <see langword="null" />.  
   
 - или - 
- <paramref name="signature" /> — <see langword="null" />.</exception>
+ Свойство <paramref name="signature" /> имеет значение <see langword="null" />.</exception>
         <exception cref="T:System.ArgumentException"><paramref name="hashAlgorithm" />.<see cref="P:System.Security.Cryptography.HashAlgorithmName.Name" /> имеет значение <see langword="null" /> или <see cref="F:System.String.Empty" />.</exception>
       </Docs>
     </Member>
@@ -1583,7 +1592,7 @@
         <param name="data">Подписанные данные.</param>
         <param name="signature">Данные подписи, которые требуется поверить.</param>
         <param name="hashAlgorithm">Алгоритм хэширования, используемый для создания хэш-значения данных.</param>
-        <summary>Проверяет допустимость цифровой подписи путем вычисления хэш-значения заданного потока с помощью указанного алгоритма хэширования и его сравнения с предоставленной подписью.</summary>
+        <summary>Проверяет, подходит ли цифровая подпись для текущего ключа и заданных данных, с помощью указанного хэш-алгоритма.</summary>
         <returns>Значение <see langword="true" />, если подпись является допустимой; в противном случае — значение <see langword="false" />.</returns>
         <remarks>To be added.</remarks>
         <exception cref="T:System.ArgumentNullException">Свойство <paramref name="data" /> имеет значение <see langword="null" />.  
@@ -1621,12 +1630,13 @@
         <Parameter Name="hashAlgorithm" Type="System.Security.Cryptography.HashAlgorithmName" Index="2" FrameworkAlternate="netcore-2.1;netcore-2.2;netcore-3.0;netstandard-2.1" />
       </Parameters>
       <Docs>
-        <param name="data">To be added.</param>
-        <param name="signature">To be added.</param>
-        <param name="hashAlgorithm">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <param name="data">Подписанные данные.</param>
+        <param name="signature">Подпись для проверки.</param>
+        <param name="hashAlgorithm">Алгоритм хэширования, используемый для создания хэш-значения данных.</param>
+        <summary>Проверяет, подходит ли цифровая подпись для текущего ключа и заданных данных, с помощью указанного хэш-алгоритма.</summary>
+        <returns>Значение <see langword="true" />, если подпись является допустимой; в противном случае — значение <see langword="false" />.</returns>
         <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentException"><paramref name="hashAlgorithm" />.<see cref="P:System.Security.Cryptography.HashAlgorithmName.Name" /> имеет значение <see langword="null" /> или <see cref="F:System.String.Empty" />.</exception>
       </Docs>
     </Member>
     <Member MemberName="VerifyData">
@@ -1670,7 +1680,7 @@
         <param name="count">Количество байтов, хэширование которых необходимо выполнить.</param>
         <param name="signature">Данные подписи, которые требуется поверить.</param>
         <param name="hashAlgorithm">Алгоритм хэширования, используемый для создания хэш-значения данных.</param>
-        <summary>Проверяет допустимость цифровой подписи путем вычисления хэш-значения данных во фрагменте массива байтов с помощью указанного алгоритма хэширования и его сравнения с предоставленной подписью.</summary>
+        <summary>Проверяет, подходит ли цифровая подпись для используемого ключа и предоставленного фрагмента данных, с помощью указанного хэш-алгоритма.</summary>
         <returns>Значение <see langword="true" />, если подпись является допустимой; в противном случае — значение <see langword="false" />.</returns>
         <remarks>To be added.</remarks>
         <exception cref="T:System.ArgumentNullException">Свойство <paramref name="data" /> имеет значение <see langword="null" />.  
@@ -1721,18 +1731,12 @@
         <Parameter Name="signature" Type="System.Byte[]" />
       </Parameters>
       <Docs>
-        <param name="hash">Хэш-значение блока данных.</param>
-        <param name="signature">Проверяемая цифровая подпись.</param>
-        <summary>Проверяет цифровую подпись на соответствие указанному хэш-значению.</summary>
-        <returns>Значение <see langword="true" />, если хэш-значение соответствует расшифрованной подписи; в противном случае — значение <see langword="false" />.</returns>
-        <remarks>
-          <format type="text/markdown"><![CDATA[  
-  
-## Remarks  
- Подпись сначала расшифровывается с помощью открытого ключа, а затем сравнивается с хэш-значением для проверки.  
-  
- ]]></format>
-        </remarks>
+        <param name="hash">Хэш-значение проверяемых данных.</param>
+        <param name="signature">Цифровая подпись данных, которую требуется проверить с использованием хэш-значения.</param>
+        <summary>Проверяет, подходит ли цифровая подпись для используемого ключа и заданного хэша данных.</summary>
+        <returns>Значение <see langword="true" />, если подпись является допустимой; в противном случае — значение <see langword="false" />.</returns>
+        <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentNullException">Значение параметра <paramref name="hash" /> или <paramref name="signature" /> — <see langword="null" />.</exception>
       </Docs>
     </Member>
     <Member MemberName="VerifyHash">
@@ -1762,10 +1766,10 @@
         <Parameter Name="signature" Type="System.ReadOnlySpan&lt;System.Byte&gt;" Index="1" FrameworkAlternate="netcore-2.1;netcore-2.2;netcore-3.0;netstandard-2.1" />
       </Parameters>
       <Docs>
-        <param name="hash">To be added.</param>
-        <param name="signature">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <param name="hash">Хэш-значение проверяемых данных.</param>
+        <param name="signature">Цифровая подпись данных, которую требуется проверить с использованием хэш-значения.</param>
+        <summary>Проверяет, подходит ли цифровая подпись для используемого ключа и заданного хэша данных.</summary>
+        <returns>Значение <see langword="true" />, если подпись является допустимой; в противном случае — значение <see langword="false" />.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
