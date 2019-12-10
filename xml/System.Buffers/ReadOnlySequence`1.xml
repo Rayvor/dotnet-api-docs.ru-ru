@@ -1,5 +1,5 @@
 <Type Name="ReadOnlySequence&lt;T&gt;" FullName="System.Buffers.ReadOnlySequence&lt;T&gt;">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="950af3d1586452bc44a25cd976b48a9ee7e3b2ba" /><Meta Name="ms.sourcegitcommit" Value="0084afad1b3b1cb2c8ad2c142ae3597d08bad4a7" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="10/31/2019" /><Meta Name="ms.locfileid" Value="73376079" /></Metadata><TypeSignature Language="C#" Value="public struct ReadOnlySequence&lt;T&gt;" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="181fdb5c23969a42d7417eae16a42399138acf9c" /><Meta Name="ms.sourcegitcommit" Value="6c0b6310824199ff476e4a9eec6e9ed0bd1a51c9" /><Meta Name="ms.translationtype" Value="HT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="12/05/2019" /><Meta Name="ms.locfileid" Value="74874832" /></Metadata><TypeSignature Language="C#" Value="public struct ReadOnlySequence&lt;T&gt;" />
   <TypeSignature Language="ILAsm" Value=".class public sequential ansi sealed beforefieldinit ReadOnlySequence`1&lt;T&gt; extends System.ValueType" />
   <TypeSignature Language="DocId" Value="T:System.Buffers.ReadOnlySequence`1" />
   <TypeSignature Language="VB.NET" Value="Public Structure ReadOnlySequence(Of T)" />
@@ -28,7 +28,7 @@
     </Attribute>
   </Attributes>
   <Docs>
-    <typeparam name="T">To be added.</typeparam>
+    <typeparam name="T">Тип элементов в последовательности, доступной только для чтения.</typeparam>
     <summary>Представляет последовательность, которая может считывать последовательные наборы <typeparamref name="T" />.</summary>
     <remarks>To be added.</remarks>
   </Docs>
@@ -55,11 +55,11 @@
         <Parameter Name="memory" Type="System.ReadOnlyMemory&lt;T&gt;" />
       </Parameters>
       <Docs>
-        <param name="memory">To be added.</param>
+        <param name="memory">Блок памяти, доступный только для чтения, с элементами типа <typeparamref name="T" />.</param>
         <summary>Создает экземпляр класса <see cref="T:System.Buffers.ReadOnlySequence`1" /> из <see cref="T:System.ReadOnlyMemory`1" />.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
-Потребитель должен управлять временем существования памяти до тех пор, пока <see cref="T:System.Buffers.ReadOnlySequence`1" /> больше не используется.
+Потребитель должен управлять временем существования памяти, пока <see cref="T:System.Buffers.ReadOnlySequence`1" /> больше не используется.
 
 ]]></format>
         </remarks>
@@ -148,12 +148,22 @@
         <Parameter Name="endIndex" Type="System.Int32" />
       </Parameters>
       <Docs>
-        <param name="startSegment">To be added.</param>
-        <param name="startIndex">To be added.</param>
-        <param name="endSegment">To be added.</param>
-        <param name="endIndex">To be added.</param>
+        <param name="startSegment">Начальный узел связанного списка в памяти.</param>
+        <param name="startIndex">Положение в начале последовательности в <paramref name="startSegment" />.</param>
+        <param name="endSegment">Конечный узел связанного списка в памяти.</param>
+        <param name="endIndex">Положение в конце последовательности в <paramref name="endSegment" />.</param>
         <summary>Создает экземпляр класса <see cref="T:System.Buffers.ReadOnlySequence`1" /> из связанного списка в памяти, который представлен начальным и конечным сегментами и соответствующими индексами для них.</summary>
         <remarks>To be added.</remarks>
+        <exception cref="T:System.ArgumentNullException">Значение параметра <paramref name="startSegment" /> или <paramref name="endSegment" /> — <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentOutOfRangeException">Выполняющийся индекс <paramref name="startSegment" /> больше выполняющегося индекса <paramref name="endSegment" />, при том что <paramref name="startSegment" /> отличается от <paramref name="endSegment" />.
+
+- или -
+
+<paramref name="startSegment" /> равен <paramref name="endSegment" />, но <paramref name="endIndex" /> меньше <paramref name="startIndex" />.
+
+- или -
+
+<paramref name="startIndex" /> превышает длину базового блока памяти <paramref name="startSegment" />.</exception>
       </Docs>
     </Member>
     <Member MemberName="Empty">
@@ -314,9 +324,9 @@
         <Parameter Name="offset" Type="System.Int64" />
       </Parameters>
       <Docs>
-        <param name="offset">To be added.</param>
+        <param name="offset">Смещение от начала последовательности.</param>
         <summary>Возвращает новый экземпляр <see cref="T:System.SequencePosition" /> в положении <paramref name="offset" /> от начала последовательности.</summary>
-        <returns>To be added.</returns>
+        <returns>Объект, представляющий положение последовательности, которая начинается с указанного <paramref name="offset" /> от начала последовательности.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -346,10 +356,10 @@
         <Parameter Name="origin" Type="System.SequencePosition" />
       </Parameters>
       <Docs>
-        <param name="offset">To be added.</param>
-        <param name="origin">To be added.</param>
-        <summary>Возвращает новый экземпляр <see cref="T:System.SequencePosition" /> в положении <paramref name="offset" />, считая от <paramref name="origin" />.</summary>
-        <returns>Новый объект, который начинается с позиции <paramref name="offset" /> в исходном объекте.</returns>
+        <param name="offset">Смещение от указанного положения последовательности <paramref name="origin" />.</param>
+        <param name="origin">Положение последовательности, представляющее точку, с которой начинается смещение.</param>
+        <summary>Возвращает новое положение <see cref="T:System.SequencePosition" />, начинающееся с указанного смещения от положения <paramref name="origin" />.</summary>
+        <returns>Объект, представляющий положение последовательности, которая начинается с положения <paramref name="offset" /> указанного объекта положения <paramref name="origin" />.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -777,8 +787,8 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <summary>Возвращает строку, представляющую текущую последовательность.</summary>
+        <returns>Строка, представляющая текущую последовательность.</returns>
         <remarks>To be added.</remarks>
         <inheritdoc />
       </Docs>
