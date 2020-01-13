@@ -1,5 +1,5 @@
 <Type Name="SafeHandle" FullName="System.Runtime.InteropServices.SafeHandle">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="ad7545414a8b614fddcbaa418ec5c86f7f69a5bc" /><Meta Name="ms.sourcegitcommit" Value="a22d0855bbf24d893f43605f8b7e3a44bd9551a5" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="09/05/2019" /><Meta Name="ms.locfileid" Value="70342062" /></Metadata><TypeSignature Language="C#" Value="public abstract class SafeHandle : System.Runtime.ConstrainedExecution.CriticalFinalizerObject, IDisposable" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="13010d5de95557b8ecafdd65def1d285e1783788" /><Meta Name="ms.sourcegitcommit" Value="8ae9a18b248625c8e1851e607c00346a64849587" /><Meta Name="ms.translationtype" Value="HT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="12/17/2019" /><Meta Name="ms.locfileid" Value="75165125" /></Metadata><TypeSignature Language="C#" Value="public abstract class SafeHandle : System.Runtime.ConstrainedExecution.CriticalFinalizerObject, IDisposable" />
   <TypeSignature Language="ILAsm" Value=".class public sequential ansi abstract beforefieldinit SafeHandle extends System.Runtime.ConstrainedExecution.CriticalFinalizerObject implements class System.IDisposable" />
   <TypeSignature Language="DocId" Value="T:System.Runtime.InteropServices.SafeHandle" />
   <TypeSignature Language="VB.NET" Value="Public MustInherit Class SafeHandle&#xA;Inherits CriticalFinalizerObject&#xA;Implements IDisposable" />
@@ -29,6 +29,7 @@
     <AssemblyName>System.Runtime</AssemblyName>
     <AssemblyVersion>4.2.0.0</AssemblyVersion>
     <AssemblyVersion>4.2.1.0</AssemblyVersion>
+    <AssemblyVersion>4.2.2.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Object</BaseTypeName>
@@ -45,12 +46,12 @@
     </Attribute>
   </Attributes>
   <Docs>
-    <summary>Представляет класс обертки для дескрипторов операционной системы. Этот класс должен наследоваться.</summary>
+    <summary>Представляет класс-оболочку для обработчиков операционной системы. Этот класс должен наследоваться.</summary>
     <remarks>
       <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- <xref:System.Runtime.InteropServices.SafeHandle> Класс обеспечивает критическую обработку ресурсов обработки, предотвращая преждевременное освобождение дескрипторов мусора и перезапуская Windows для ссылки на непреднамеренно неуправляемые объекты.  
+ Класс <xref:System.Runtime.InteropServices.SafeHandle> обеспечивает критически важное завершение обработки ресурсов, предотвращая преждевременное освобождение дескрипторов мусора и перезапуская Windows для ссылки на непреднамеренно неуправляемые объекты.  
   
  Этот раздел включает следующие подразделы:  
   
@@ -60,41 +61,41 @@
   
 <a name="Why"></a>   
 ## <a name="why-safehandle"></a>Зачем SafeHandle?  
- До .NET Framework версии 2,0 все дескрипторы операционной системы можно инкапсулировать только в <xref:System.IntPtr> управляемом объекте-оболочке. Хотя это был удобный способ взаимодействия с машинным кодом, дескрипторы могут быть утечки из-за асинхронных исключений, таких как неожиданное прерывание потока или переполнение стека. Эти асинхронные исключения являются препятствием для очистки ресурсов операционной системы и могут выполняться практически в любом месте приложения.  
+ До .NET Framework версии 2,0 все дескрипторы операционной системы могут быть инкапсулированы только в <xref:System.IntPtr> управляемом объекте-оболочке. Хотя это был удобный способ взаимодействия с машинным кодом, дескрипторы могут быть утечки из-за асинхронных исключений, таких как неожиданное прерывание потока или переполнение стека. Эти асинхронные исключения являются препятствием для очистки ресурсов операционной системы и могут выполняться практически в любом месте приложения.  
   
- Несмотря на то, <xref:System.Object.Finalize%2A?displayProperty=nameWithType> что переопределения метода позволяют очищать неуправляемые ресурсы, когда объект уничтожается сборщиком мусора, в некоторых обстоятельствах объекты, допускающие завершение, могут быть освобождены при сборке мусора при вызове метода в рамках вызова неуправляемого кода. обращение. Если метод завершения освобождает маркер, переданный в вызов этого вызова неуправляемого кода, это может привести к обработке повреждений. Этот обработчик можно также освободить, пока метод блокируется во время вызова неуправляемого кода, например при чтении файла.  
+ Несмотря на то, что переопределения метода <xref:System.Object.Finalize%2A?displayProperty=nameWithType> позволяют очищать неуправляемые ресурсы, когда объект уничтожается сборщиком мусора, в некоторых обстоятельствах объекты, допускающие завершение работы, могут быть освобождены при сборке мусора во время выполнения метода в вызове неуправляемого кода. Если метод завершения освобождает маркер, переданный в вызов этого вызова неуправляемого кода, это может привести к обработке повреждений. Этот обработчик можно также освободить, пока метод блокируется во время вызова неуправляемого кода, например при чтении файла.  
   
  Более важно, так как Windows агрессивно перезапускает дескрипторы, обработчик может быть перезапущен и указывать на другой ресурс, который может содержать конфиденциальные данные. Это называется повторной атакой и может повредить данные и представлять угрозу безопасности.  
   
 <a name="Does"></a>   
 ## <a name="what-safehandle-does"></a>Что делает SafeHandle  
- <xref:System.Runtime.InteropServices.SafeHandle> Класс упрощает некоторые из этих проблем со временем существования объектов и интегрируется с вызовом неуправляемого кода, чтобы ресурсы операционной системы не были утечки. <xref:System.Runtime.InteropServices.SafeHandle> Класс разрешает проблемы времени существования объектов, назначая и освобождая дескрипторы без прерывания. Он содержит критический метод завершения, гарантирующий, что маркер закрывается и гарантированно выполняется во <xref:System.AppDomain> время непредвиденных выгрузок, даже если вызов неуправляемого кода предполагается, что вызывается в поврежденном состоянии.  
+ Класс <xref:System.Runtime.InteropServices.SafeHandle> упрощает несколько из этих проблем времени существования объектов и интегрируется с вызовом неуправляемого кода, чтобы ресурсы операционной системы не были утечки. Класс <xref:System.Runtime.InteropServices.SafeHandle> разрешает проблемы времени существования объектов, назначая и освобождая дескрипторы без прерывания. Он содержит критический метод завершения, который обеспечивает закрытие маркера и гарантирует его выполнение во время непредвиденных <xref:System.AppDomain> выгрузок, даже если вызов неуправляемого кода предполагается в поврежденном состоянии.  
   
- Поскольку <xref:System.Runtime.InteropServices.SafeHandle> наследует от <xref:System.Runtime.ConstrainedExecution.CriticalFinalizerObject>, все некритические методы завершения вызываются перед любыми критическими методами завершения. Методы завершения вызываются для объектов, которые больше не находятся на одном и том же этапе сборки мусора. Например, <xref:System.IO.FileStream> объект может выполнять нормальный метод завершения для сброса существующих буферизованных данных без риска утечки или перезапуска дескриптора. Это очень слабое упорядочение между критическими и некритическими методами завершения не предназначено для общего использования. Он существует в основном для помощи в переносе существующих библиотек, позволяя использовать <xref:System.Runtime.InteropServices.SafeHandle> эти библиотеки без изменения их семантики. Кроме того, критический метод завершения и все, что он вызывает, <xref:System.Runtime.InteropServices.SafeHandle.ReleaseHandle?displayProperty=nameWithType> например метод, должны находиться в области ограниченного выполнения. Это накладывает ограничения на то, какой код может быть написан в графе вызовов метода завершения.  
+ Поскольку <xref:System.Runtime.InteropServices.SafeHandle> наследуется от <xref:System.Runtime.ConstrainedExecution.CriticalFinalizerObject>, все некритические методы завершения вызываются перед любыми критическими методами завершения. Методы завершения вызываются для объектов, которые больше не находятся на одном и том же этапе сборки мусора. Например, объект <xref:System.IO.FileStream> может выполнять нормальный метод завершения для сброса существующих буферизованных данных без риска утечки или перезапуска дескриптора. Это очень слабое упорядочение между критическими и некритическими методами завершения не предназначено для общего использования. Он существует в основном для помощи в переносе существующих библиотек, позволяя этим библиотекам использовать <xref:System.Runtime.InteropServices.SafeHandle> без изменения их семантики. Кроме того, критический финализатор и все, что он вызывает, например метод <xref:System.Runtime.InteropServices.SafeHandle.ReleaseHandle?displayProperty=nameWithType>, должны находиться в области ограниченного выполнения. Это накладывает ограничения на то, какой код может быть написан в графе вызовов метода завершения.  
   
- Операции вызова неуправляемого кода автоматически увеличивают число ссылок дескрипторов, инкапсулированных в <xref:System.Runtime.InteropServices.SafeHandle> , и уменьшают их после завершения. Это гарантирует, что этот обработчик не будет перезапущен или неожиданно закрыт.  
+ Операции вызова неуправляемого кода автоматически увеличивают число ссылок дескрипторов, инкапсулированных <xref:System.Runtime.InteropServices.SafeHandle>, и уменьшают их после завершения. Это гарантирует, что этот обработчик не будет перезапущен или неожиданно закрыт.  
   
- Можно указать владение базовым маркером при построении <xref:System.Runtime.InteropServices.SafeHandle> объектов, указав значение `ownsHandle` для аргумента в <xref:System.Runtime.InteropServices.SafeHandle> конструкторе класса. Определяет, будет ли <xref:System.Runtime.InteropServices.SafeHandle> объект освобождать обработчик после удаления объекта.  Это полезно для дескрипторов с требованиями к времени существования довольно необычная или для использования дескриптора, время существования которого управляется кем-то другим.  
+ Можно указать владение базовым маркером при построении <xref:System.Runtime.InteropServices.SafeHandle> объектов, указав значение аргумента `ownsHandle` в конструкторе класса <xref:System.Runtime.InteropServices.SafeHandle>. Определяет, будет ли объект <xref:System.Runtime.InteropServices.SafeHandle> освобождать обработчик после удаления объекта.  Это полезно для дескрипторов с требованиями к времени существования довольно необычная или для использования дескриптора, время существования которого управляется кем-то другим.  
   
 <a name="Derived"></a>   
 ## <a name="classes-derived-from-safehandle"></a>Классы, производные от SafeHandle  
- <xref:System.Runtime.InteropServices.SafeHandle>— Это абстрактный класс-оболочка для дескрипторов операционной системы. Наследовать от этого класса сложно. Вместо этого используйте производные классы в пространстве имен <xref:Microsoft.Win32.SafeHandles>, которые предоставляют безопасные дескрипторы для следующих элементов.  
+ <xref:System.Runtime.InteropServices.SafeHandle> является абстрактным классом-оболочкой для дескрипторов операционной системы. Наследовать от этого класса сложно. Вместо этого используйте производные классы в пространстве имен <xref:Microsoft.Win32.SafeHandles>, которые предоставляют безопасные дескрипторы для следующих элементов:  
   
--   Файлы ( <xref:Microsoft.Win32.SafeHandles.SafeFileHandle> класс).  
+-   Файлы (класс <xref:Microsoft.Win32.SafeHandles.SafeFileHandle>).  
   
--   Файлы, отображенные в <xref:Microsoft.Win32.SafeHandles.SafeMemoryMappedFileHandle> памяти (класс).  
+-   Файлы, сопоставленные с памятью (класс <xref:Microsoft.Win32.SafeHandles.SafeMemoryMappedFileHandle>).  
   
--   Каналы ( <xref:Microsoft.Win32.SafeHandles.SafePipeHandle> класс).  
+-   Каналы (класс <xref:Microsoft.Win32.SafeHandles.SafePipeHandle>).  
   
--   Представления памяти ( <xref:Microsoft.Win32.SafeHandles.SafeMemoryMappedViewHandle> класс).  
+-   Представления памяти (класс <xref:Microsoft.Win32.SafeHandles.SafeMemoryMappedViewHandle>).  
   
--   Конструкции шифрования ( <xref:Microsoft.Win32.SafeHandles.SafeNCryptHandle>классы, <xref:Microsoft.Win32.SafeHandles.SafeNCryptKeyHandle>, <xref:Microsoft.Win32.SafeHandles.SafeNCryptProviderHandle>и <xref:Microsoft.Win32.SafeHandles.SafeNCryptSecretHandle> ).  
+-   Конструкции шифрования (классы <xref:Microsoft.Win32.SafeHandles.SafeNCryptHandle>, <xref:Microsoft.Win32.SafeHandles.SafeNCryptKeyHandle>, <xref:Microsoft.Win32.SafeHandles.SafeNCryptProviderHandle>и <xref:Microsoft.Win32.SafeHandles.SafeNCryptSecretHandle>).  
   
--   Процессы ( <xref:Microsoft.Win32.SafeHandles.SafeProcessHandle> класс).  
+-   Процессы (класс <xref:Microsoft.Win32.SafeHandles.SafeProcessHandle>).  
   
--   Разделы реестра ( <xref:Microsoft.Win32.SafeHandles.SafeRegistryHandle> класс).  
+-   Разделы реестра (класс <xref:Microsoft.Win32.SafeHandles.SafeRegistryHandle>).  
   
--   Дескрипторы ожидания ( <xref:Microsoft.Win32.SafeHandles.SafeWaitHandle> класс).  
+-   Дескрипторы ожидания (класс <xref:Microsoft.Win32.SafeHandles.SafeWaitHandle>).  
   
    
   
@@ -105,7 +106,7 @@
   
  `HexViewer <filename> -Fault`  
   
- При необходимости укажите `-Fault` намеренно попытаться утечку дескриптора, прервать поток в определенном окне. Используйте средство Windows Perfmon. exe для наблюдения за количеством маркеров при внедрении ошибок.  
+ При необходимости укажите `-Fault`, чтобы намеренно попытаться утечку дескриптора путем прерывания потока в определенном окне. Используйте средство Windows Perfmon. exe для наблюдения за количеством маркеров при внедрении ошибок.  
   
  [!code-csharp[SafeHandle#1](~/samples/snippets/csharp/VS_Snippets_CLR/SafeHandle/CS/program.cs#1)]  
   
@@ -113,11 +114,11 @@
     </remarks>
     <permission cref="F:System.Security.Permissions.SecurityAction.InheritanceDemand">Полный уровень доверия для разработчиков производных классов. Этот член не может наследоваться частично доверенным кодом.</permission>
     <permission cref="T:System.Security.SecurityCriticalAttribute">требуется полное доверие для немедленного вызывающего объекта. Этот член не может использоваться частично доверенным или прозрачным кодом.</permission>
-    <block subset="none" type="overrides"><para>Чтобы создать класс, производный <see cref="T:System.Runtime.InteropServices.SafeHandle" />от, необходимо уметь создавать и освобождать обработчик операционной системы. Этот процесс отличается для различных типов обработки, так как некоторые используют функцию [CloseHandle](https://msdn.microsoft.com/library/windows/desktop/ms724211.aspx) , а другие — более конкретные функции, такие как [UnmapViewOfFile](https://msdn.microsoft.com/library/windows/desktop/aa366882.aspx) или [финдклосе](https://msdn.microsoft.com/library/windows/desktop/aa364413.aspx). По этой причине необходимо создать производный класс <see cref="T:System.Runtime.InteropServices.SafeHandle" /> для каждого типа обработчика операционной системы, который необходимо перенести в защищенный обработчик.  
+    <block subset="none" type="overrides"><para>Чтобы создать класс, производный от <see cref="T:System.Runtime.InteropServices.SafeHandle" />, необходимо уметь создавать и освобождать обработчик операционной системы. Этот процесс отличается для различных типов обработки, так как некоторые используют функцию [CloseHandle](https://msdn.microsoft.com/library/windows/desktop/ms724211.aspx) , а другие — более конкретные функции, такие как [UnmapViewOfFile](https://msdn.microsoft.com/library/windows/desktop/aa366882.aspx) или [финдклосе](https://msdn.microsoft.com/library/windows/desktop/aa364413.aspx). По этой причине необходимо создать производный класс <see cref="T:System.Runtime.InteropServices.SafeHandle" /> для каждого типа обработчика операционной системы, который требуется включить в защищенный обработчик.  
   
 При наследовании от класса <see cref="T:System.Runtime.InteropServices.SafeHandle" /> необходимо переопределить следующие члены: <see cref="P:System.Runtime.InteropServices.SafeHandle.IsInvalid" /> и <see cref="M:System.Runtime.InteropServices.SafeHandle.ReleaseHandle" />.  
   
-Кроме того, необходимо предоставить конструктор без параметров, который вызывает базовый конструктор со значением, представляющим недопустимое значение Handle, и <see cref="T:System.Boolean" /> значение, указывающее, принадлежит ли собственный обработчик к <see cref="T:System.Runtime.InteropServices.SafeHandle" /> , и, соответственно, должен быть освобожден. <see cref="T:System.Runtime.InteropServices.SafeHandle" /> когда он был удален.</para></block>
+Кроме того, необходимо предоставить конструктор без параметров, который вызывает базовый конструктор со значением, представляющим недопустимое значение Handle, и <see cref="T:System.Boolean" /> значение, указывающее, владеет ли машинный код <see cref="T:System.Runtime.InteropServices.SafeHandle" /> и, следовательно, должен быть освобожден при удалении этого <see cref="T:System.Runtime.InteropServices.SafeHandle" />.</para></block>
     <altmember cref="N:Microsoft.Win32.SafeHandles" />
     <altmember cref="T:System.Runtime.InteropServices.CriticalHandle" />
     <altmember cref="T:System.Runtime.ConstrainedExecution.CriticalFinalizerObject" />
@@ -184,6 +185,7 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <Attributes>
         <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8;netstandard-1.5">
@@ -202,11 +204,11 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Если параметр имеет `false`значение, <xref:System.Runtime.InteropServices.SafeHandle.ReleaseHandle%2A> метод никогда не вызывается, поэтому не рекомендуется использовать этот параметр, так как ваш код может привести к утечке ресурсов. `ownsHandle`  
+ Если параметр `ownsHandle` имеет значение `false`, <xref:System.Runtime.InteropServices.SafeHandle.ReleaseHandle%2A> никогда не вызывается; Поэтому не рекомендуется использовать это значение параметра, так как ваш код может привести к утечке ресурсов.  
   
  ]]></format>
         </remarks>
-        <exception cref="T:System.TypeLoadException">Производный класс находится в сборке без разрешения на доступ к неуправляемому коду.</exception>
+        <exception cref="T:System.TypeLoadException">Производный класс находится в сборке без разрешения доступа для неуправляемого кода.</exception>
         <permission cref="F:System.Security.Permissions.SecurityAction.InheritanceDemand">Полный уровень доверия для разработчиков производных классов. Этот член не может наследоваться частично доверенным кодом.</permission>
         <permission cref="T:System.Security.SecurityCriticalAttribute">требуется полное доверие для немедленного вызывающего объекта. Этот член не может использоваться частично доверенным или прозрачным кодом.</permission>
       </Docs>
@@ -234,6 +236,7 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <AssemblyInfo>
         <AssemblyName>System.Runtime.Handles</AssemblyName>
@@ -259,16 +262,16 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Вызов метода <xref:System.Runtime.InteropServices.SafeHandle.Dispose%2A> или позволяет освободить ресурсы. <xref:System.Runtime.InteropServices.SafeHandle.Close%2A> Это может произойти не сразу, если другие потоки используют один и тот же объект безопасного обработчика, но будут выполняться, как только это будет происходить. Хотя большинству классов, использующих <xref:System.Runtime.InteropServices.SafeHandle> класс, не требуется предоставлять метод завершения, иногда это необходимо (например, для очистки буферов файлов или записи данных обратно в память). В этом случае класс может предоставить метод завершения, который гарантированно будет выполняться перед <xref:System.Runtime.InteropServices.SafeHandle> запуском критического метода завершения.  
+ Вызов метода <xref:System.Runtime.InteropServices.SafeHandle.Close%2A> или <xref:System.Runtime.InteropServices.SafeHandle.Dispose%2A> позволяет освободить ресурсы. Это может произойти не сразу, если другие потоки используют один и тот же объект безопасного обработчика, но будут выполняться, как только это будет происходить. Хотя большинству классов, использующих класс <xref:System.Runtime.InteropServices.SafeHandle>, не требуется предоставлять метод завершения, иногда это необходимо (например, для очистки буферов файлов или записи данных обратно в память). В этом случае класс может предоставить метод завершения, который гарантированно будет выполняться до запуска <xref:System.Runtime.InteropServices.SafeHandle> критического метода завершения.  
   
- По завершении <xref:System.Runtime.InteropServices.SafeHandle.Dispose%2A> использования <xref:System.Runtime.InteropServices.SafeHandle> объекта вызовите метод или.<xref:System.Runtime.InteropServices.SafeHandle.Close%2A>  
+ По завершении использования объекта <xref:System.Runtime.InteropServices.SafeHandle> вызовите метод <xref:System.Runtime.InteropServices.SafeHandle.Close%2A> или <xref:System.Runtime.InteropServices.SafeHandle.Dispose%2A>.  
   
 > [!NOTE]
->  Всегда <xref:System.Runtime.InteropServices.SafeHandle.Close%2A> вызывайте <xref:System.Runtime.InteropServices.SafeHandle.Dispose%2A> или перед тем, как освободить последнюю ссылку <xref:System.Runtime.InteropServices.SafeHandle> на объект. В противном случае используемые им ресурсы не будут освобождены до тех пор, пока сборщик мусора не вызовет для объекта <xref:System.Runtime.InteropServices.SafeHandle> метод <xref:System.Runtime.InteropServices.SafeHandle.Finalize%2A>.  
+>  Перед освобождением последней ссылки на объект <xref:System.Runtime.InteropServices.SafeHandle> всегда вызывайте <xref:System.Runtime.InteropServices.SafeHandle.Close%2A> или <xref:System.Runtime.InteropServices.SafeHandle.Dispose%2A>. В противном случае используемые им ресурсы не будут освобождены до тех пор, пока сборщик мусора не вызовет метод <xref:System.Runtime.InteropServices.SafeHandle> объекта <xref:System.Runtime.InteropServices.SafeHandle.Finalize%2A>.  
   
  ]]></format>
         </remarks>
-        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
       </Docs>
     </Member>
     <Member MemberName="DangerousAddRef">
@@ -303,6 +306,7 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <Attributes>
         <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8;netstandard-1.5">
@@ -325,14 +329,14 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Метод не позволяет среде CLR высвободить память, используемую маркером (что происходит, когда среда выполнения <xref:System.Runtime.InteropServices.SafeHandle.ReleaseHandle%2A> вызывает метод). <xref:System.Runtime.InteropServices.SafeHandle.DangerousAddRef%2A> Этот метод можно использовать для ручного увеличения счетчика ссылок на <xref:System.Runtime.InteropServices.SafeHandle> экземпляре. <xref:System.Runtime.InteropServices.SafeHandle.DangerousAddRef%2A>Возвращает логическое значение с помощью `ref` параметра (`success`), который указывает, успешно ли был увеличен счетчик ссылок. Это позволяет выполнить логику программы в случае сбоя. `false` Перед `success` вызовом<xref:System.Runtime.InteropServices.SafeHandle.DangerousAddRef%2A>необходимо задать значение. Если `success` имеет `true`значение, избегайте утечки ресурсов <xref:System.Runtime.InteropServices.SafeHandle.DangerousAddRef%2A> путем сопоставления вызова с с соответствующим вызовом <xref:System.Runtime.InteropServices.SafeHandle.DangerousRelease%2A>.  
+ Метод <xref:System.Runtime.InteropServices.SafeHandle.DangerousAddRef%2A> предотвращает высвобождение памяти средой CLR, используемой маркером (что происходит, когда среда выполнения вызывает метод <xref:System.Runtime.InteropServices.SafeHandle.ReleaseHandle%2A>). Этот метод можно использовать для ручного увеличения счетчика ссылок на экземпляре <xref:System.Runtime.InteropServices.SafeHandle>. <xref:System.Runtime.InteropServices.SafeHandle.DangerousAddRef%2A> возвращает логическое значение с помощью параметра `ref` (`success`), который указывает, успешно ли был увеличен счетчик ссылок. Это позволяет выполнить логику программы в случае сбоя. Перед вызовом <xref:System.Runtime.InteropServices.SafeHandle.DangerousAddRef%2A>необходимо задать `false` `success`. Если `success` `true`, следует избегать утечки ресурсов путем сопоставления вызова <xref:System.Runtime.InteropServices.SafeHandle.DangerousAddRef%2A> с соответствующим вызовом <xref:System.Runtime.InteropServices.SafeHandle.DangerousRelease%2A>.  
   
 > [!CAUTION]
 >  Этот метод предназначен для опытных пользователей и всегда должен использоваться аккуратно. Чтобы избежать утечки ресурсов обработки, всегда вызывайте этот метод в области ограниченного выполнения (CER), где прерывание потока не может прервать обработку.  
   
  ]]></format>
         </remarks>
-        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
         <altmember cref="M:System.Runtime.InteropServices.SafeHandle.DangerousRelease" />
       </Docs>
     </Member>
@@ -368,6 +372,7 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <Attributes>
         <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8;netstandard-1.5">
@@ -383,19 +388,19 @@
       <Parameters />
       <Docs>
         <summary>Возвращает значение поля <see cref="F:System.Runtime.InteropServices.SafeHandle.handle" />.</summary>
-        <returns>Указатель <see langword="IntPtr" />, представляющий значение поля <see cref="F:System.Runtime.InteropServices.SafeHandle.handle" />. Если дескриптор был помечен как неправильный с помощью <see cref="M:System.Runtime.InteropServices.SafeHandle.SetHandleAsInvalid" />, этот метод, тем не менее, возвращает исходное значение дескриптора, которое может быть устаревшим.</returns>
+        <returns>Указатель <see langword="IntPtr" />, представляющий значение поля <see cref="F:System.Runtime.InteropServices.SafeHandle.handle" />. Если дескриптор был помечен как недопустимый с помощью <see cref="M:System.Runtime.InteropServices.SafeHandle.SetHandleAsInvalid" />, этот метод, тем не менее, возвращает исходное значение дескриптора, которое может быть устаревшим.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Этот метод можно использовать для получения фактического значения Handle из экземпляра <xref:System.Runtime.InteropServices.SafeHandle> производного класса. Этот метод необходим для обеспечения обратной совместимости, так как многие свойства в .NET Framework типы `IntPtr` возвращаемых маркеров. `IntPtr`типы обработчиков представляют собой зависящие от платформы типы, используемые для представления указателя или маркера.  
+ Этот метод можно использовать для получения фактического значения Handle из экземпляра производного класса <xref:System.Runtime.InteropServices.SafeHandle>. Этот метод необходим для обеспечения обратной совместимости, так как многие свойства в .NET Framework возвращают `IntPtr` типы обработчиков. `IntPtr` типы обработчиков — это типы, зависящие от платформы, используемые для представления указателя или маркера.  
   
 > [!CAUTION]
->  Использование метода может привести к угрозам безопасности, так как, если маркер был помечен как недопустимый с помощью <xref:System.Runtime.InteropServices.SafeHandle.SetHandleAsInvalid%2A>, <xref:System.Runtime.InteropServices.SafeHandle.DangerousGetHandle%2A> по-прежнему возвращает исходное, потенциально устаревшее значение Handle. <xref:System.Runtime.InteropServices.SafeHandle.DangerousGetHandle%2A> Возвращаемый обработчик также может быть очищен в любой момент. В лучшем случае это означает, что обработка может внезапно прерывать работу. В худшем случае, если обработчик или ресурс, представляемый этим маркером, предоставляется ненадежному коду, это может привести к атаке безопасности при повторном использовании или возвращенном обработчике. Например, недоверенный вызывающий объект может запрашивать данные только что возвращенного маркера и получить сведения для совершенно несвязанного ресурса. Дополнительные сведения <xref:System.Runtime.InteropServices.SafeHandle.DangerousAddRef%2A> об использовании <xref:System.Runtime.InteropServices.SafeHandle.DangerousRelease%2A> месодсафелисм.вописании<xref:System.Runtime.InteropServices.SafeHandle.DangerousGetHandle%2A> методов и.  
+>  Использование метода <xref:System.Runtime.InteropServices.SafeHandle.DangerousGetHandle%2A> может привести к угрозам безопасности, так как, если маркер был помечен как недопустимый с <xref:System.Runtime.InteropServices.SafeHandle.SetHandleAsInvalid%2A>, <xref:System.Runtime.InteropServices.SafeHandle.DangerousGetHandle%2A> по-прежнему возвращает исходное, потенциально устаревшее значение Handle. Возвращаемый обработчик также может быть очищен в любой момент. В лучшем случае это означает, что обработка может внезапно прерывать работу. В худшем случае, если обработчик или ресурс, представляемый этим маркером, предоставляется ненадежному коду, это может привести к атаке безопасности при повторном использовании или возвращенном обработчике. Например, недоверенный вызывающий объект может запрашивать данные только что возвращенного маркера и получить сведения для совершенно несвязанного ресурса. Дополнительные сведения об использовании <xref:System.Runtime.InteropServices.SafeHandle.DangerousGetHandle%2A> месодсафели см. в описании методов <xref:System.Runtime.InteropServices.SafeHandle.DangerousAddRef%2A> и <xref:System.Runtime.InteropServices.SafeHandle.DangerousRelease%2A>.  
   
  ]]></format>
         </remarks>
-        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
       </Docs>
     </Member>
     <Member MemberName="DangerousRelease">
@@ -430,6 +435,7 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <Attributes>
         <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8;netstandard-1.5">
@@ -449,14 +455,14 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- <xref:System.Runtime.InteropServices.SafeHandle.DangerousRelease%2A> Метод является аналогом <xref:System.Runtime.InteropServices.SafeHandle.DangerousAddRef%2A>. Необходимо всегда сопоставлять вызов <xref:System.Runtime.InteropServices.SafeHandle.DangerousRelease%2A> метода с успешным <xref:System.Runtime.InteropServices.SafeHandle.DangerousAddRef%2A>вызовом.  
+ Метод <xref:System.Runtime.InteropServices.SafeHandle.DangerousRelease%2A> является аналогом <xref:System.Runtime.InteropServices.SafeHandle.DangerousAddRef%2A>. Необходимо всегда сопоставлять вызов метода <xref:System.Runtime.InteropServices.SafeHandle.DangerousRelease%2A> с успешным вызовом <xref:System.Runtime.InteropServices.SafeHandle.DangerousAddRef%2A>.  
   
 > [!CAUTION]
->  Этот метод предназначен для опытных пользователей и всегда должен использоваться аккуратно. Чтобы избежать утечки ресурсов обработки, всегда вызывайте этот метод в области ограниченного выполнения (CER), где прерывание потока не может прервать обработку. Точно так же, как несовпадающие <xref:System.Runtime.InteropServices.SafeHandle.DangerousAddRef%2A> вызовы могут вызвать утечки ресурсов, <xref:System.Runtime.InteropServices.SafeHandle.DangerousRelease%2A> несовпадающие вызовы могут привести к тому, что недопустимые состояния дескриптора станут видимыми для других потоков. Не предоставляйте <xref:System.Runtime.InteropServices.SafeHandle.DangerousAddRef%2A> или <xref:System.Runtime.InteropServices.SafeHandle.DangerousRelease%2A> не вызывает ненадежный код.  
+>  Этот метод предназначен для опытных пользователей и всегда должен использоваться аккуратно. Чтобы избежать утечки ресурсов обработки, всегда вызывайте этот метод в области ограниченного выполнения (CER), где прерывание потока не может прервать обработку. Так же, как несопоставленные вызовы <xref:System.Runtime.InteropServices.SafeHandle.DangerousAddRef%2A> могут вызвать утечки ресурсов, несовпадающие <xref:System.Runtime.InteropServices.SafeHandle.DangerousRelease%2A> вызовы могут привести к тому, что недопустимые состояния дескриптора станут видимыми для других потоков. Не предоставляйте <xref:System.Runtime.InteropServices.SafeHandle.DangerousAddRef%2A> или <xref:System.Runtime.InteropServices.SafeHandle.DangerousRelease%2A> вызовы ненадежного кода.  
   
  ]]></format>
         </remarks>
-        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
         <altmember cref="M:System.Runtime.InteropServices.SafeHandle.DangerousAddRef(System.Boolean@)" />
       </Docs>
     </Member>
@@ -504,6 +510,7 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <Attributes>
         <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8;netstandard-1.5">
@@ -523,16 +530,16 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Вызов метода <xref:System.Runtime.InteropServices.SafeHandle.Dispose%2A> или позволяет освободить ресурсы. <xref:System.Runtime.InteropServices.SafeHandle.Close%2A> Это может произойти не сразу, если другие потоки используют один и тот же экземпляр безопасного обработчика, но будут выполняться, как только это будет происходить. Хотя большинству классов <xref:System.Runtime.InteropServices.SafeHandle> , использующих, не требуется предоставлять метод завершения, иногда это необходимо (например, для очистки буферов файлов или записи данных обратно в память). В этом случае они могут предоставить метод завершения, который гарантированно будет выполняться перед <xref:System.Runtime.InteropServices.SafeHandle> запуском критического метода завершения.  
+ Вызов метода <xref:System.Runtime.InteropServices.SafeHandle.Close%2A> или <xref:System.Runtime.InteropServices.SafeHandle.Dispose%2A> позволяет освободить ресурсы. Это может произойти не сразу, если другие потоки используют один и тот же экземпляр безопасного обработчика, но будут выполняться, как только это будет происходить. Хотя большинству классов, использующих <xref:System.Runtime.InteropServices.SafeHandle>, не требуется предоставлять метод завершения, иногда это необходимо (например, для очистки буферов файлов или записи данных обратно в память). В этом случае они могут предоставить метод завершения, который гарантированно будет выполняться до запуска <xref:System.Runtime.InteropServices.SafeHandle> критического метода завершения.  
   
- По завершении <xref:System.Runtime.InteropServices.SafeHandle.Dispose%2A> использования <xref:System.Runtime.InteropServices.SafeHandle> объекта вызовите метод или.<xref:System.Runtime.InteropServices.SafeHandle.Close%2A> <xref:System.Runtime.InteropServices.SafeHandle.Close%2A> Метод<xref:System.Runtime.InteropServices.SafeHandle> оставляет объект в непригодном для использования состоянии.  
+ По завершении использования объекта <xref:System.Runtime.InteropServices.SafeHandle> вызовите метод <xref:System.Runtime.InteropServices.SafeHandle.Close%2A> или <xref:System.Runtime.InteropServices.SafeHandle.Dispose%2A>. Метод <xref:System.Runtime.InteropServices.SafeHandle.Close%2A> оставляет объект <xref:System.Runtime.InteropServices.SafeHandle> в непригодном для использования состоянии.  
   
 > [!NOTE]
->  Всегда вызывайте <xref:System.Runtime.InteropServices.SafeHandle.Close%2A> метод <xref:System.Runtime.InteropServices.SafeHandle.Dispose%2A> или перед тем, как освободить последнюю ссылку на <xref:System.Runtime.InteropServices.SafeHandle> объект. В противном случае используемые им ресурсы не будут освобождены до тех пор, пока сборщик мусора не вызовет для объекта <xref:System.Runtime.InteropServices.SafeHandle> метод <xref:System.Runtime.InteropServices.SafeHandle.Finalize%2A>.  
+>  Всегда вызывайте метод <xref:System.Runtime.InteropServices.SafeHandle.Close%2A> или <xref:System.Runtime.InteropServices.SafeHandle.Dispose%2A> перед тем, как освободить последнюю ссылку на объект <xref:System.Runtime.InteropServices.SafeHandle>. В противном случае используемые им ресурсы не будут освобождены до тех пор, пока сборщик мусора не вызовет метод <xref:System.Runtime.InteropServices.SafeHandle> объекта <xref:System.Runtime.InteropServices.SafeHandle.Finalize%2A>.  
   
  ]]></format>
         </remarks>
-        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
       </Docs>
     </Member>
     <Member MemberName="Dispose">
@@ -567,6 +574,7 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <Attributes>
         <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8;netstandard-1.5">
@@ -589,11 +597,11 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Никогда не следует явно вызывать <xref:System.Runtime.InteropServices.SafeHandle.Dispose%2A> метод с параметром, для `false`которого `disposing` задано значение.  
+ Никогда не следует явно вызывать метод <xref:System.Runtime.InteropServices.SafeHandle.Dispose%2A> с параметром `disposing`, для которого задано значение `false`.  
   
  ]]></format>
         </remarks>
-        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
       </Docs>
     </Member>
     <Member MemberName="Finalize">
@@ -628,6 +636,7 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <Attributes>
         <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8;netstandard-1.5">
@@ -644,11 +653,11 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Метод является деструктором <xref:System.Runtime.InteropServices.SafeHandle> для класса. <xref:System.Runtime.InteropServices.SafeHandle.Finalize%2A> Код приложения не должен вызывать этот метод напрямую.  
+ Метод <xref:System.Runtime.InteropServices.SafeHandle.Finalize%2A> является деструктором для класса <xref:System.Runtime.InteropServices.SafeHandle>. Код приложения не должен вызывать этот метод напрямую.  
   
  ]]></format>
         </remarks>
-        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
         <altmember cref="M:System.Runtime.InteropServices.SafeHandle.Dispose" />
       </Docs>
     </Member>
@@ -684,6 +693,7 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.IntPtr</ReturnType>
@@ -732,6 +742,7 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <Attributes>
         <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8;netstandard-1.5">
@@ -745,21 +756,21 @@
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Получает значение, показывающее, является ли дескриптор закрытым.</summary>
+        <summary>Возвращает значение, показывающее, является ли дескриптор закрытым.</summary>
         <value>Значение<see langword="true" /> , если дескриптор закрыт, в противном случае — значение <see langword="false" />.</value>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Метод возвращает значение, указывающее, больше не <xref:System.Runtime.InteropServices.SafeHandle> связан ли маркер объекта с машинным ресурсом. <xref:System.Runtime.InteropServices.SafeHandle.IsClosed%2A> Это отличается от определения <xref:System.Runtime.InteropServices.SafeHandle.IsInvalid%2A> свойства, которое определяет, всегда ли данный обработчик считается недопустимым. <xref:System.Runtime.InteropServices.SafeHandle.IsClosed%2A> Метод`true` возвращает значение в следующих случаях:  
+ Метод <xref:System.Runtime.InteropServices.SafeHandle.IsClosed%2A> возвращает значение, указывающее, что обработчик объекта <xref:System.Runtime.InteropServices.SafeHandle> больше не связан с машинным ресурсом. Это отличается от определения свойства <xref:System.Runtime.InteropServices.SafeHandle.IsInvalid%2A>, которое определяет, всегда ли данный обработчик считаться недопустимым. Метод <xref:System.Runtime.InteropServices.SafeHandle.IsClosed%2A> возвращает значение `true` в следующих случаях:  
   
--   Вызван <xref:System.Runtime.InteropServices.SafeHandle.SetHandleAsInvalid%2A> метод.  
+-   Вызван метод <xref:System.Runtime.InteropServices.SafeHandle.SetHandleAsInvalid%2A>.  
   
--   Вызван метод или <xref:System.Runtime.InteropServices.SafeHandle.Close%2A> метод, и в других потоках нет ссылок на <xref:System.Runtime.InteropServices.SafeHandle> объект. <xref:System.Runtime.InteropServices.SafeHandle.Dispose%2A>  
+-   Был вызван метод <xref:System.Runtime.InteropServices.SafeHandle.Dispose%2A> или метод <xref:System.Runtime.InteropServices.SafeHandle.Close%2A> и отсутствуют ссылки на объект <xref:System.Runtime.InteropServices.SafeHandle> в других потоках.  
   
  ]]></format>
         </remarks>
-        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
       </Docs>
     </Member>
     <Member MemberName="IsInvalid">
@@ -794,6 +805,7 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <Attributes>
         <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8;netstandard-1.5">
@@ -804,26 +816,26 @@
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>При переопределении в производном классе получает значение, показывающее, допустимо ли значение дескриптора.</summary>
+        <summary>При переопределении в производном классе возвращает значение, показывающее, допустимо ли значение дескриптора.</summary>
         <value>Значение <see langword="true" />, если значение дескриптора является неправильным; в противном случае — значение <see langword="false" />.</value>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Производные классы должны реализовывать <xref:System.Runtime.InteropServices.SafeHandle.IsInvalid%2A> свойство, чтобы среда CLR могла определить, требуется ли критическая финализация. Производные классы должны предоставлять реализацию, соответствующую общему типу поддерживаемых им обработчиков (0 или-1 является недопустимым). Затем эти классы можно сделать производными для конкретных типов безопасного обработчика.  
+ Производные классы должны реализовывать свойство <xref:System.Runtime.InteropServices.SafeHandle.IsInvalid%2A>, чтобы среда CLR могла определить, требуется ли критическая финализация. Производные классы должны предоставлять реализацию, соответствующую общему типу поддерживаемых им обработчиков (0 или-1 является недопустимым). Затем эти классы можно сделать производными для конкретных типов безопасного обработчика.  
   
- В <xref:System.Runtime.InteropServices.SafeHandle> <xref:System.Runtime.InteropServices.SafeHandle.IsClosed%2A> отличиеотсвойства,котороесообщает,завершилсялиобъектспомощьюбазовогомаркера,свойствовычисляет,всегдасчитаетсялизначениеданногообработчика<xref:System.Runtime.InteropServices.SafeHandle.IsInvalid%2A> недопустимым. Таким образом, <xref:System.Runtime.InteropServices.SafeHandle.IsInvalid%2A> свойство всегда возвращает одно и то же значение для любого значения обработчика.  
+ В отличие от свойства <xref:System.Runtime.InteropServices.SafeHandle.IsClosed%2A>, которое сообщает, завершен ли объект <xref:System.Runtime.InteropServices.SafeHandle> с помощью базового маркера, свойство <xref:System.Runtime.InteropServices.SafeHandle.IsInvalid%2A> вычисляет, всегда ли заданное значение обработчика считается недопустимым. Таким образом, свойство <xref:System.Runtime.InteropServices.SafeHandle.IsInvalid%2A> всегда возвращает одно и то же значение для любого значения обработчика.  
   
    
   
 ## Examples  
- В следующем примере проверяется, успешно ли открыт файл. Этот пример кода является частью большого примера, <xref:System.Runtime.InteropServices.SafeHandle> приведенного для класса.  
+ В следующем примере проверяется, успешно ли открыт файл. Этот пример кода является частью большого примера, приведенного для класса <xref:System.Runtime.InteropServices.SafeHandle>.  
   
  [!code-csharp[SafeHandle#2](~/samples/snippets/csharp/VS_Snippets_CLR/SafeHandle/CS/program.cs#2)]  
   
  ]]></format>
         </remarks>
-        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
       </Docs>
     </Member>
     <Member MemberName="ReleaseHandle">
@@ -858,6 +870,7 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <Attributes>
         <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8;netstandard-1.5">
@@ -875,24 +888,24 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Метод гарантированно вызывается только один раз и только в том случае, если этот маркер является допустимым <xref:System.Runtime.InteropServices.SafeHandle.IsInvalid%2A> , как определено свойством. <xref:System.Runtime.InteropServices.SafeHandle.ReleaseHandle%2A> Реализуйте этот метод в <xref:System.Runtime.InteropServices.SafeHandle> производных классах для выполнения любого кода, необходимого для освобождения этого обработчика. Поскольку одна из функций <xref:System.Runtime.InteropServices.SafeHandle> является гарантией предотвращения утечек ресурсов, код в <xref:System.Runtime.InteropServices.SafeHandle.ReleaseHandle%2A> реализации не должен быть успешным. Сборщик мусора вызывает <xref:System.Runtime.InteropServices.SafeHandle.ReleaseHandle%2A> после выполнения обычных методов завершения для объектов, которые были собраны в то же время. Сборщик мусора гарантирует, что ресурсы вызывают этот метод, и что метод не будет прерван во время выполнения. Этот метод будет подготовлен как область ограниченного выполнения (CER) во время создания экземпляра (вместе со всеми методами в его статическом детерминированном графе вызовов). Хотя это предотвращает прерывание потока, необходимо следить за тем, чтобы в переопределенном <xref:System.Runtime.InteropServices.SafeHandle.ReleaseHandle%2A> методе не были введены пути ошибок. В частности, примените <xref:System.Runtime.ConstrainedExecution.ReliabilityContractAttribute> атрибут к любым методам, которые <xref:System.Runtime.InteropServices.SafeHandle.ReleaseHandle%2A>вызываются из. В большинстве случаев этот код должен быть следующим:  
+ Метод <xref:System.Runtime.InteropServices.SafeHandle.ReleaseHandle%2A> гарантированно вызывается только один раз и только в том случае, если этот маркер допустим, как определено свойством <xref:System.Runtime.InteropServices.SafeHandle.IsInvalid%2A>. Реализуйте этот метод в <xref:System.Runtime.InteropServices.SafeHandle> производных классах, чтобы выполнить любой код, необходимый для освобождения этого обработчика. Поскольку одной из функций <xref:System.Runtime.InteropServices.SafeHandle> является обеспечение предотвращения утечек ресурсов, код в реализации <xref:System.Runtime.InteropServices.SafeHandle.ReleaseHandle%2A> не должен быть успешным. Сборщик мусора вызывает <xref:System.Runtime.InteropServices.SafeHandle.ReleaseHandle%2A> после запуска обычных методов завершения для объектов, которые были собраны в то же время. Сборщик мусора гарантирует, что ресурсы вызывают этот метод, и что метод не будет прерван во время выполнения. Этот метод будет подготовлен как область ограниченного выполнения (CER) во время создания экземпляра (вместе со всеми методами в его статическом детерминированном графе вызовов). Хотя это предотвращает прерывание потока, необходимо следить за тем, чтобы не указывать какие-либо пути ошибок в переопределенном методе <xref:System.Runtime.InteropServices.SafeHandle.ReleaseHandle%2A>. В частности, примените атрибут <xref:System.Runtime.ConstrainedExecution.ReliabilityContractAttribute> к любым методам, которые вызываются из <xref:System.Runtime.InteropServices.SafeHandle.ReleaseHandle%2A>. В большинстве случаев этот код должен быть следующим:  
   
  `ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)`  
   
- Кроме того, для простой очистки (например, вызова API `CloseHandle` Windows в виде файла) можно проверить возвращаемое значение для вызова одиночной платформы. Для сложной очистки может существовать множество программных логики и много вызовов методов, некоторые из которых могут завершиться ошибкой. Необходимо убедиться, что в логике программы есть резервный код для каждого из этих вариантов.  
+ Кроме того, для простой очистки (например, вызова API Windows `CloseHandle` для файла) можно проверить возвращаемое значение для вызова одиночной платформы. Для сложной очистки может существовать множество программных логики и много вызовов методов, некоторые из которых могут завершиться ошибкой. Необходимо убедиться, что в логике программы есть резервный код для каждого из этих вариантов.  
   
- Если <xref:System.Runtime.InteropServices.SafeHandle.ReleaseHandle%2A> метод `false` возвращает по какой-либо причине, он создает помощник по отладке управляемого кода [releaseHandleFailed](~/docs/framework/debug-trace-profile/releasehandlefailed-mda.md) .  Это помогает определить случаи, когда попытка освободить ресурсы завершается ошибкой.  
+ Если <xref:System.Runtime.InteropServices.SafeHandle.ReleaseHandle%2A> возвращает `false` по любой причине, он создает помощник по отладке управляемого кода [releaseHandleFailed](~/docs/framework/debug-trace-profile/releasehandlefailed-mda.md) .  Это помогает определить случаи, когда попытка освободить ресурсы завершается ошибкой.  
   
    
   
 ## Examples  
- Следующий пример кода освобождает дескриптор и является частью большого примера, <xref:System.Runtime.InteropServices.SafeHandle> предоставляемого для класса.  
+ Следующий пример кода освобождает дескриптор и является частью большего примера, приведенного для класса <xref:System.Runtime.InteropServices.SafeHandle>.  
   
  [!code-csharp[SafeHandle#3](~/samples/snippets/csharp/VS_Snippets_CLR/SafeHandle/CS/program.cs#3)]  
   
  ]]></format>
         </remarks>
-        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
         <related type="Article" href="https://msdn.microsoft.com/library/76994ee6-9fa9-4059-b813-26578d24427c">Диагностика ошибок времени выполнения с помощью помощников по отладке управляемого кода</related>
         <related type="Article" href="https://msdn.microsoft.com/library/44cd98ba-95e5-40a1-874d-e8e163612c51">ReleaseHandleFailed</related>
       </Docs>
@@ -929,6 +942,7 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <Attributes>
         <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8;netstandard-1.5">
@@ -951,11 +965,11 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- <xref:System.Runtime.InteropServices.SafeHandle.SetHandle%2A> Используйте метод только в том случае, если требуется поддержка уже существующего дескриптора (например, если дескриптор возвращается в виде структуры), поскольку .NET Framework инфраструктура COM-взаимодействия не поддерживает маршалинг дескрипторов вывода в структуре.  
+ Используйте метод <xref:System.Runtime.InteropServices.SafeHandle.SetHandle%2A>, только если требуется поддержка уже существующего дескриптора (например, если дескриптор возвращается в виде структуры), поскольку .NET Framework инфраструктура COM-взаимодействия не поддерживает маршалинг дескрипторов вывода в структуре.  
   
  ]]></format>
         </remarks>
-        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
       </Docs>
     </Member>
     <Member MemberName="SetHandleAsInvalid">
@@ -990,6 +1004,7 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <Attributes>
         <Attribute FrameworkAlternate="netframework-2.0;netframework-3.0;netframework-3.5;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8;netstandard-1.5">
@@ -1004,18 +1019,18 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>Помечает дескриптор, как больше не используемый.</summary>
+        <summary>Помечает дескриптор как больше не используемый.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Вызовите <xref:System.Runtime.InteropServices.SafeHandle.SetHandleAsInvalid%2A> метод, только если известно, что ваш обработчик больше не ссылается на ресурс. Это не изменяет значение <xref:System.Runtime.InteropServices.SafeHandle.handle> поля; оно помечает только маркер как закрытый. Затем этот маркер может содержать потенциально устаревшее значение. Результатом этого вызова является отсутствие попыток освободить ресурсы.  
+ Вызовите метод <xref:System.Runtime.InteropServices.SafeHandle.SetHandleAsInvalid%2A>, только если известно, что ваш обработчик больше не ссылается на ресурс. Это не изменяет значение поля <xref:System.Runtime.InteropServices.SafeHandle.handle>. Он помечает только маркер как закрытый. Затем этот маркер может содержать потенциально устаревшее значение. Результатом этого вызова является отсутствие попыток освободить ресурсы.  
   
- Как и в <xref:System.Runtime.InteropServices.SafeHandle.SetHandle%2A> случае с методом <xref:System.Runtime.InteropServices.SafeHandle.SetHandleAsInvalid%2A> , используйте только в том случае, если требуется поддержка уже существующего маркера.  
+ Как и в случае с методом <xref:System.Runtime.InteropServices.SafeHandle.SetHandle%2A>, используйте <xref:System.Runtime.InteropServices.SafeHandle.SetHandleAsInvalid%2A> только в том случае, если требуется поддержка уже существующего маркера.  
   
  ]]></format>
         </remarks>
-        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие по обеспечению безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление:<see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
+        <permission cref="T:System.Security.Permissions.SecurityPermission">разрешение на вызов неуправляемого кода. Действие безопасности: <see cref="F:System.Security.Permissions.SecurityAction.LinkDemand" />. Связанное перечисление: <see cref="F:System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode" /></permission>
       </Docs>
     </Member>
   </Members>
