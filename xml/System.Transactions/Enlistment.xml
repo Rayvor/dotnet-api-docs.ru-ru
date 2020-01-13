@@ -1,5 +1,5 @@
 <Type Name="Enlistment" FullName="System.Transactions.Enlistment">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="e3bad3e9226c1557eaec7e5b083189eeeb39b6c1" /><Meta Name="ms.sourcegitcommit" Value="bc24a3ba616ee1df8b858f9400cae4f058ea3a7e" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="06/19/2019" /><Meta Name="ms.locfileid" Value="67243222" /></Metadata><TypeSignature Language="C#" Value="public class Enlistment" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="1d6e073f818a0de51d9ccad56f7d145a459ca90e" /><Meta Name="ms.sourcegitcommit" Value="8ae9a18b248625c8e1851e607c00346a64849587" /><Meta Name="ms.translationtype" Value="HT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="12/17/2019" /><Meta Name="ms.locfileid" Value="75158417" /></Metadata><TypeSignature Language="C#" Value="public class Enlistment" />
   <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit Enlistment extends System.Object" />
   <TypeSignature Language="DocId" Value="T:System.Transactions.Enlistment" />
   <TypeSignature Language="VB.NET" Value="Public Class Enlistment" />
@@ -20,6 +20,7 @@
     <AssemblyName>System.Transactions.Local</AssemblyName>
     <AssemblyVersion>4.0.0.0</AssemblyVersion>
     <AssemblyVersion>4.0.1.0</AssemblyVersion>
+    <AssemblyVersion>4.0.2.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Object</BaseTypeName>
@@ -31,16 +32,16 @@
       <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Когда <xref:System.Transactions.Transaction.EnlistVolatile%2A> и <xref:System.Transactions.Transaction.EnlistDurable%2A> методы <xref:System.Transactions.Transaction> объекта вызываются для зачисления участника в список транзакции, эти функции возвращают этот объект, описывающий зачисление.  
+ При вызове методов <xref:System.Transactions.Transaction.EnlistVolatile%2A> и <xref:System.Transactions.Transaction.EnlistDurable%2A> объекта <xref:System.Transactions.Transaction> для прикрепления участника в транзакции они возвращают этот объект, описывающий прикрепление.  
   
- На завершающем этапе фиксации транзакции диспетчер транзакций передает этот объект реализация диспетчера ресурсов <xref:System.Transactions.IEnlistmentNotification> интерфейс, который включен в транзакции. В частности, диспетчер транзакций вызывает либо <xref:System.Transactions.IEnlistmentNotification.Commit%2A> или <xref:System.Transactions.IEnlistmentNotification.Rollback%2A> метод участника, в зависимости от ли последний решила фиксации или отката транзакции. Участник должен вызывать <xref:System.Transactions.Enlistment.Done%2A> метод этого объекта, чтобы позволить диспетчеру транзакций знать, что он завершил свою работу.  
+ На последнем этапе фиксации транзакции диспетчер транзакций передает этот объект диспетчеру ресурсов, реализующему интерфейс <xref:System.Transactions.IEnlistmentNotification>, который прикрепляется к транзакции. В частности, диспетчер транзакций вызывает метод <xref:System.Transactions.IEnlistmentNotification.Commit%2A> или <xref:System.Transactions.IEnlistmentNotification.Rollback%2A> участника в зависимости от того, было ли Последнее решение зафиксировать или откатить транзакцию. Участник должен вызвать метод <xref:System.Transactions.Enlistment.Done%2A> этого объекта, чтобы диспетчер транзакций знал, что он завершил свою работу.  
   
- Перечисления можно вызвать <xref:System.Transactions.Enlistment.Done%2A> в любое время перед его вызван метод <xref:System.Transactions.PreparingEnlistment.Prepared%2A> на этапе подготовки.  Таким образом, зачисление нас чтения только голос, это означает, что оно голосует за фиксацию транзакции, но не требуется для получения окончательного результата. Обратите внимание, что после <xref:System.Transactions.Enlistment.Done%2A> вызывается метод, включенный в список участник не получает дальнейших уведомлений от диспетчера транзакций.  
+ Прикрепление может вызывать метод <xref:System.Transactions.Enlistment.Done%2A> в любое время до вызова <xref:System.Transactions.PreparingEnlistment.Prepared%2A> на этапе подготовки.  Таким образом, прикрепление приводит к преобразованию голосования только для чтения. Это означает, что он будет фиксироваться в транзакции, но не должен получить окончательный результат. Обратите внимание, что после вызова метода <xref:System.Transactions.Enlistment.Done%2A> прикрепленный участник не получит дальнейшие уведомления от диспетчера транзакций.  
   
    
   
 ## Examples  
- В следующем примере показана реализация <xref:System.Transactions.IEnlistmentNotification> интерфейс и когда <xref:System.Transactions.Enlistment.Done%2A> метод должен вызываться.  
+ В следующем примере показана реализация интерфейса <xref:System.Transactions.IEnlistmentNotification>, а также при вызове метода <xref:System.Transactions.Enlistment.Done%2A>.  
   
  [!code-csharp[Tx_Enlist#2](~/samples/snippets/csharp/VS_Snippets_CFX/tx_enlist/cs/enlist.cs#2)]
  [!code-vb[Tx_Enlist#2](~/samples/snippets/visualbasic/VS_Snippets_CFX/tx_enlist/vb/enlist.vb#2)]  
@@ -50,7 +51,7 @@
     <threadsafe>Данный тип потокобезопасен.</threadsafe>
     <altmember cref="T:System.Transactions.PreparingEnlistment" />
     <altmember cref="T:System.Transactions.IEnlistmentNotification" />
-    <related type="Article" href="~/docs/framework/data/transactions/enlisting-resources-as-participants-in-a-transaction.md">Зачисление ресурсов в качестве участников в транзакции</related>
+    <related type="Article" href="~/docs/framework/data/transactions/enlisting-resources-as-participants-in-a-transaction.md">Прикрепление ресурсов в качестве участников транзакции</related>
   </Docs>
   <Members>
     <Member MemberName="Done">
@@ -76,6 +77,7 @@
         <AssemblyName>System.Transactions.Local</AssemblyName>
         <AssemblyVersion>4.0.0.0</AssemblyVersion>
         <AssemblyVersion>4.0.1.0</AssemblyVersion>
+        <AssemblyVersion>4.0.2.0</AssemblyVersion>
       </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Void</ReturnType>
@@ -87,17 +89,17 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- На завершающем этапе фиксации транзакции диспетчер транзакций вызывает <xref:System.Transactions.IEnlistmentNotification.Commit%2A>, <xref:System.Transactions.IEnlistmentNotification.Rollback%2A> или <xref:System.Transactions.IEnlistmentNotification.InDoubt%2A> метод участника, в зависимости от того, является ли необходимости фиксации или отката транзакции. Диспетчер ресурсов должен выполнить любые действия, необходимые для завершения транзакции и затем информировать диспетчер транзакций о завершении, вызвав <xref:System.Transactions.Enlistment.Done%2A> метод `enlistment` параметра.  
+ На последнем этапе фиксации транзакции диспетчер транзакций вызывает метод <xref:System.Transactions.IEnlistmentNotification.Commit%2A>, <xref:System.Transactions.IEnlistmentNotification.Rollback%2A> или <xref:System.Transactions.IEnlistmentNotification.InDoubt%2A> участника в зависимости от того, следует ли зафиксировать или откатить транзакцию. Диспетчер ресурсов должен выполнить все действия, необходимые для завершения транзакции, а затем сообщить диспетчеру транзакций о завершении, вызвав метод <xref:System.Transactions.Enlistment.Done%2A> для параметра `enlistment`.  
   
- Если диспетчер ресурсов включен в список, но не отвечает, вызвав <xref:System.Transactions.Enlistment.Done%2A> , диспетчер транзакций сомнения в том, что диспетчер ресурсов получил вызов соответствующих уведомлений. Таким образом диспетчер транзакций находится в состоянии ожидания ответа и сохраняет сведения, относящиеся к этой транзакции.  Если <xref:System.Transactions.Enlistment.Done%2A> — никогда не вызывается, этот элемент информации хранятся бессрочно в памяти или в системном ресурсе. Это приводит к ресурсам, не может быть освобождена. В случае распределенной транзакции это со временем заполняет журнала MSDTC, которое останавливает процесс MSDTC. В случае транзакции, управляемой координатором <xref:System.Transactions>, это приводит к постепенному увеличению потребления памяти процессом диспетчера ресурсов. Таким образом, важно вызывать <xref:System.Transactions.Enlistment.Done%2A> метод диспетчер ресурсов по окончании с вашей операции подготовки.  
+ Если диспетчер ресурсов прикрепляет надежно, но не отвечает, вызывая метод <xref:System.Transactions.Enlistment.Done%2A>, диспетчер транзакций не гарантирует, что диспетчер ресурсов получил соответствующий вызов уведомления. Таким образом диспетчер транзакций продолжает ожидание ответа и сохраняет сведения, относящиеся к этой транзакции.  Если <xref:System.Transactions.Enlistment.Done%2A> никогда не вызывается, этот фрагмент информации хранится в неопределенном объеме памяти или в ресурсе на уровне системы. Это приводит к невозможности освобождения ресурсов. В случае распределенной транзакции это может в конечном итоге заполнить журнал MSDTC, который останавливает процесс MSDTC. В случае транзакции, управляемой <xref:System.Transactions>, это приводит к постепенному и непрерывному увеличению потребления памяти процессом диспетчера ресурсов. Поэтому важно вызвать метод <xref:System.Transactions.Enlistment.Done%2A> после того, как диспетчер ресурсов завершит свою работу.  
   
- Перечисления можно вызвать <xref:System.Transactions.Enlistment.Done%2A> в любое время перед его вызван метод <xref:System.Transactions.PreparingEnlistment.Prepared%2A> на этапе подготовки. Таким образом, зачисление нас чтения только голос, это означает, что оно голосует за фиксацию транзакции, но не требуется для получения окончательного результата. Обратите внимание, что после вызова этого метода, включенный в список участник не получает дальнейших уведомлений от диспетчера транзакций.  
+ Прикрепление может вызывать метод <xref:System.Transactions.Enlistment.Done%2A> в любое время до вызова <xref:System.Transactions.PreparingEnlistment.Prepared%2A> на этапе подготовки. Таким образом, прикрепление приводит к преобразованию голосования только для чтения. Это означает, что он будет фиксироваться в транзакции, но не должен получить окончательный результат. Обратите внимание, что после вызова этого метода прикрепленный участник не получит дальнейшие уведомления от диспетчера транзакций.  
   
  ]]></format>
         </remarks>
         <altmember cref="T:System.Transactions.PreparingEnlistment" />
         <altmember cref="T:System.Transactions.IEnlistmentNotification" />
-        <related type="Article" href="~/docs/framework/data/transactions/enlisting-resources-as-participants-in-a-transaction.md">Зачисление ресурсов в качестве участников в транзакции</related>
+        <related type="Article" href="~/docs/framework/data/transactions/enlisting-resources-as-participants-in-a-transaction.md">Прикрепление ресурсов в качестве участников транзакции</related>
       </Docs>
     </Member>
   </Members>
