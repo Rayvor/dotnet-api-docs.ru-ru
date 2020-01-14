@@ -1,5 +1,5 @@
 <Type Name="IArgumentProvider" FullName="System.Linq.Expressions.IArgumentProvider">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="978f18032b1aec687a3f90531a776cb2a47a2705" /><Meta Name="ms.sourcegitcommit" Value="bc24a3ba616ee1df8b858f9400cae4f058ea3a7e" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="06/19/2019" /><Meta Name="ms.locfileid" Value="67244480" /></Metadata><TypeSignature Language="C#" Value="public interface IArgumentProvider" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="4707d5b432079f7fbab7d53beca370220bc24978" /><Meta Name="ms.sourcegitcommit" Value="8ae9a18b248625c8e1851e607c00346a64849587" /><Meta Name="ms.translationtype" Value="HT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="12/17/2019" /><Meta Name="ms.locfileid" Value="75131299" /></Metadata><TypeSignature Language="C#" Value="public interface IArgumentProvider" />
   <TypeSignature Language="ILAsm" Value=".class public interface auto ansi abstract IArgumentProvider" />
   <TypeSignature Language="DocId" Value="T:System.Linq.Expressions.IArgumentProvider" />
   <TypeSignature Language="VB.NET" Value="Public Interface IArgumentProvider" />
@@ -11,6 +11,7 @@
     <AssemblyVersion>4.1.0.0</AssemblyVersion>
     <AssemblyVersion>4.2.0.0</AssemblyVersion>
     <AssemblyVersion>4.2.1.0</AssemblyVersion>
+    <AssemblyVersion>4.2.2.0</AssemblyVersion>
   </AssemblyInfo>
   <AssemblyInfo>
     <AssemblyName>System.Core</AssemblyName>
@@ -30,19 +31,19 @@
       
 ## Remarks
 
-Не следует использовать этот API.  Он является открытым только из-за рефакторинга сборки и существует только для внутренней оптимизации производительности. В результате два способа оптимизации, которые уменьшают размер деревьев:
+Не следует использовать этот API.  Он открыт только в результате рефакторинга сборок и существует только для внутренней оптимизации производительности. Он включает две оптимизации, уменьшающие размер деревьев:
   
-1. Он позволяет узлам держаться <xref:System.Collections.Generic.IList%601> вместо <xref:System.Collections.ObjectModel.ReadOnlyCollection%601>.  Это уменьшает затраты на выделение только для чтения коллекцию для каждого узла.
+1. Он позволяет узлам удерживать <xref:System.Collections.Generic.IList%601> вместо <xref:System.Collections.ObjectModel.ReadOnlyCollection%601>.  Это экономит затраты на выделение коллекции только для чтения для каждого узла.
   
-2. Он позволяет специализированных подклассов создаваемого удержанием на определенное число аргументов (например, `Block2`, `Block2`, `Block4`).  Таким образом, эти узлы не, требуется выделять оба <xref:System.Collections.ObjectModel.ReadOnlyCollection%601> и массив для хранения их элементов, что экономит 32 байта на каждый узел.  Этот прием используется в различных узлов, включая <xref:System.Linq.Expressions.BlockExpression>, <xref:System.Linq.Expressions.InvocationExpression>, и <xref:System.Linq.Expressions.MethodCallExpression>.
+2. Он позволяет создавать специализированные подклассы, которые содержат определенное количество аргументов (например, `Block2`, `Block2`, `Block4`).  Таким образом, эти узлы не выделяют как <xref:System.Collections.ObjectModel.ReadOnlyCollection%601>, так и массив для хранения их элементов, тем самым сохраняя 32 байт на узел.  Этот метод используется различными узлами, включая <xref:System.Linq.Expressions.BlockExpression>, <xref:System.Linq.Expressions.InvocationExpression>и <xref:System.Linq.Expressions.MethodCallExpression>.
             
-Узлы дерева выражения по-прежнему предоставляют исходные свойства LINQ <xref:System.Collections.ObjectModel.ReadOnlyCollection%601> объектов. Это делается путем повторного использования поля для хранения массива или элемент, который обычно хранятся в массиве.
+Узлы дерева выражения продолжают предоставлять исходные свойства LINQ объектов <xref:System.Collections.ObjectModel.ReadOnlyCollection%601>. Это делается путем повторного использования поля для хранения как массива, так и элемента, который обычно хранится в массиве.
             
-В случае массива коллекции типизируется в <xref:System.Collections.Generic.IList%601> вместо <xref:System.Collections.ObjectModel.ReadOnlyCollection%601>. Когда узел изначально создается, он является массивом.  Компилятор или служебные программы в этой библиотеке доступа к элементам через этот интерфейс. Доступ к элементам массива повышает уровень массива для <xref:System.Collections.ObjectModel.ReadOnlyCollection%601>.
+Для массива Case коллекция вводится в <xref:System.Collections.Generic.IList%601> вместо <xref:System.Collections.ObjectModel.ReadOnlyCollection%601>. При первоначальном создании узла он является массивом.  Компилятор или служебные программы в этой библиотеке обращаются к элементам через этот интерфейс. Доступ к элементам массива повышает массив до <xref:System.Collections.ObjectModel.ReadOnlyCollection%601>.
             
-В случае объекта первый аргумент хранится в поле, типизированном в <xref:System.Object>. Когда узел изначально создается, это поле содержит <xref:System.Linq.Expressions.Expression> первого аргумента.  Когда компилятор и служебные программы в этой библиотеке доступа к аргументам, они снова использовать этот интерфейс и метод доступа для первого аргумента использует внутренний `Expression.ReturnObject<T>(System.Object)` вспомогательный метод для возврата объекта, который обрабатывает <xref:System.Linq.Expressions.Expression> или <xref:System.Collections.ObjectModel.ReadOnlyCollection%601> случая. Когда пользователь обращается к <xref:System.Collections.ObjectModel.ReadOnlyCollection%601>, поле объекта обновляется для хранения непосредственно на <xref:System.Collections.ObjectModel.ReadOnlyCollection%601>.
+Для объекта Case первый аргумент хранится в поле, введенном в <xref:System.Object>. При первоначальном создании узла это поле содержит <xref:System.Linq.Expressions.Expression> первого аргумента.  Когда компилятор и служебные программы в этой библиотеке обращаются к аргументам, они снова используют этот интерфейс, а метод доступа для первого аргумента использует внутренний вспомогательный метод `Expression.ReturnObject<T>(System.Object)` для возврата объекта, обрабатывающего <xref:System.Linq.Expressions.Expression> или <xref:System.Collections.ObjectModel.ReadOnlyCollection%601>. Когда пользователь обращается к <xref:System.Collections.ObjectModel.ReadOnlyCollection%601>, поле объекта обновляется для непосредственного размещения на <xref:System.Collections.ObjectModel.ReadOnlyCollection%601>.
             
-Очень важно, <xref:System.Linq.Expressions.Expression> свойства согласованно возвращает такой же <xref:System.Collections.ObjectModel.ReadOnlyCollection%601>. В противном случае произойдет останов обход дерева перезаписи, используемые посетителей-выражений. Это критическое изменение LINQ v1 для возврата различных <xref:System.Collections.ObjectModel.ReadOnlyCollection%601> с использованием того же <xref:System.Linq.Expressions.Expression> узла. В настоящее время пользователи могут использовать удостоверение объекта, чтобы определить, изменилась ли узел.  Хранение <xref:System.Collections.ObjectModel.ReadOnlyCollection%601> в перегруженном поле оба позволяет сократить использование памяти и обеспечивает совместимость для открытого API-интерфейса.
+Важно, чтобы <xref:System.Linq.Expressions.Expression> свойства последовательно возвращали один и тот же <xref:System.Collections.ObjectModel.ReadOnlyCollection%601>. В противном случае обходное дерево перезаписи, используемое посетителями выражения, будет нарушено. Это критическое изменение из LINQ v1 для возврата разных <xref:System.Collections.ObjectModel.ReadOnlyCollection%601> из одного и того же <xref:System.Linq.Expressions.Expression> узла. В настоящее время пользователи могут использовать удостоверение объекта, чтобы определить, изменился ли узел.  Хранение <xref:System.Collections.ObjectModel.ReadOnlyCollection%601> в перегруженном поле позволяет уменьшить использование памяти и обеспечивает совместимость с общедоступным API.
 
       ]]></format>
     </remarks>
@@ -62,6 +63,7 @@
         <AssemblyVersion>4.1.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <AssemblyInfo>
         <AssemblyName>System.Core</AssemblyName>
@@ -79,7 +81,7 @@
       <Docs>
         <summary>Возвращает число аргументов для узла дерева выражения. Этот интерфейс API предназначен только для внутреннего использования.</summary>
         <value>Число аргументов для узла дерева выражения в виде <see cref="T:System.Int32" />.</value>
-        <remarks>Не следует использовать этот API. Он является открытым только из-за рефакторинга сборки, и он используется системой для оптимизации производительности.</remarks>
+        <remarks>Не следует использовать этот API. Она является общедоступной только из-за рефакторинга сборок и используется внутренне для оптимизации производительности.</remarks>
       </Docs>
     </Member>
     <Member MemberName="GetArgument">
@@ -96,6 +98,7 @@
         <AssemblyVersion>4.1.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <AssemblyInfo>
         <AssemblyName>System.Core</AssemblyName>
