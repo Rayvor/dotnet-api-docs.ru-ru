@@ -1,5 +1,5 @@
 <Type Name="AutoResetEvent" FullName="System.Threading.AutoResetEvent">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="6c72b3fc762735a05e86e1f0909983982e425393" /><Meta Name="ms.sourcegitcommit" Value="055a4a82a0b08bfbdc21bd1347fb71f7fe2c099e" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="08/15/2019" /><Meta Name="ms.locfileid" Value="69229590" /></Metadata><TypeSignature Language="C#" Value="public sealed class AutoResetEvent : System.Threading.EventWaitHandle" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="9e6098621f5f19e3db4f83b158e21ab3f784ad58" /><Meta Name="ms.sourcegitcommit" Value="8ae9a18b248625c8e1851e607c00346a64849587" /><Meta Name="ms.translationtype" Value="HT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="12/17/2019" /><Meta Name="ms.locfileid" Value="75116869" /></Metadata><TypeSignature Language="C#" Value="public sealed class AutoResetEvent : System.Threading.EventWaitHandle" />
   <TypeSignature Language="ILAsm" Value=".class public auto ansi sealed beforefieldinit AutoResetEvent extends System.Threading.EventWaitHandle" />
   <TypeSignature Language="DocId" Value="T:System.Threading.AutoResetEvent" />
   <TypeSignature Language="VB.NET" Value="Public NotInheritable Class AutoResetEvent&#xA;Inherits EventWaitHandle" />
@@ -11,6 +11,7 @@
     <AssemblyVersion>4.0.10.0</AssemblyVersion>
     <AssemblyVersion>4.1.0.0</AssemblyVersion>
     <AssemblyVersion>4.1.1.0</AssemblyVersion>
+    <AssemblyVersion>4.1.2.0</AssemblyVersion>
   </AssemblyInfo>
   <AssemblyInfo>
     <AssemblyName>mscorlib</AssemblyName>
@@ -40,35 +41,35 @@
       <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Вы используете `AutoResetEvent`, <xref:System.Threading.ManualResetEvent>и <xref:System.Threading.EventWaitHandle> для взаимодействия потоков (или передачи потока). Дополнительные сведения см. в разделе [взаимодействие потоков или сигнализация](~/docs/standard/threading/overview-of-synchronization-primitives.md#thread-interaction-or-signaling) статьи [Общие сведения о примитивах синхронизации](~/docs/standard/threading/overview-of-synchronization-primitives.md) .  
+ Для взаимодействия потоков (или потоковых сигналов) используются `AutoResetEvent`, <xref:System.Threading.ManualResetEvent>и <xref:System.Threading.EventWaitHandle>. Дополнительные сведения см. в разделе [взаимодействие потоков или сигнализация](~/docs/standard/threading/overview-of-synchronization-primitives.md#thread-interaction-or-signaling) статьи [Общие сведения о примитивах синхронизации](~/docs/standard/threading/overview-of-synchronization-primitives.md) .  
   
 > [!IMPORTANT]
 >  Этот тип реализует интерфейс <xref:System.IDisposable>. По окончании использования выдаленную ему память следует прямо или косвенно освободить. Чтобы сделать это прямо, вызовите его метод <xref:System.IDisposable.Dispose%2A> в блоке `try`/`catch`. Чтобы сделать это косвенно, используйте языковые конструкции, такие как `using` (в C#) или `Using` (в Visual Basic). Дополнительные сведения см. в разделе "Использование объекта, реализующего IDisposable" в статье об интерфейсе <xref:System.IDisposable>.  
   
- Поток ожидает сигнал, вызывая [AutoResetEvent. WaitOne](xref:System.Threading.WaitHandle.WaitOne%2A). Если находится в несигнальном состоянии, поток блокируется до вызова [AutoResetEvent. Set.](xref:System.Threading.EventWaitHandle.Set%2A) `AutoResetEvent`  
+ Поток ожидает сигнал, вызывая [AutoResetEvent. WaitOne](xref:System.Threading.WaitHandle.WaitOne%2A). Если `AutoResetEvent` находится в несигнальном состоянии, поток блокируется до вызова [AutoResetEvent. Set](xref:System.Threading.EventWaitHandle.Set%2A) .  
   
- Вызов `Set` сигналов`AutoResetEvent` для освобождения ожидающего потока. `AutoResetEvent`остается сигнальным до тех пор, пока не будет освобожден один ожидающий поток, а затем автоматически вернется в несигнальное состояние. Если потоки не ожидают, состояние остается неограниченным.  
+ Вызов `Set` сигнализирует `AutoResetEvent`, чтобы освободить ожидающий поток. `AutoResetEvent` остается сигнальным до тех пор, пока не будет освобожден один ожидающий поток, а затем автоматически вернется в несигнальное состояние. Если потоки не ожидают, состояние остается неограниченным.  
   
- Если поток вызывает <xref:System.Threading.WaitHandle.WaitOne%2A> , <xref:System.Threading.AutoResetEvent> пока находится в сигнальном состоянии, поток не блокируется. Метод <xref:System.Threading.AutoResetEvent> освобождает поток немедленно и возвращается в несигнальное состояние.  
+ Если поток вызывает <xref:System.Threading.WaitHandle.WaitOne%2A>, когда <xref:System.Threading.AutoResetEvent> находится в сигнальном состоянии, поток не блокируется. <xref:System.Threading.AutoResetEvent> освобождает поток немедленно и возвращается в несигнальное состояние.  
   
 > [!IMPORTANT]
->  Нет никакой гарантии, что каждый вызов <xref:System.Threading.EventWaitHandle.Set%2A> метода приведет к освобождению потока. Если два вызова находятся слишком близко друг к другу, так что второй вызов происходит до освобождения потока, освобождается только один поток. Это так, как если бы второй вызов не происходил. Кроме того, <xref:System.Threading.EventWaitHandle.Set%2A> если вызывается, когда нет потоков, ожидающих <xref:System.Threading.AutoResetEvent> обработки, а уже имеется сигнальное состояние, вызов не действует.  
+>  Нет никакой гарантии, что каждый вызов метода <xref:System.Threading.EventWaitHandle.Set%2A> будет освобождать поток. Если два вызова находятся слишком близко друг к другу, так что второй вызов происходит до освобождения потока, освобождается только один поток. Это так, как если бы второй вызов не происходил. Кроме того, если <xref:System.Threading.EventWaitHandle.Set%2A> вызывается, когда нет потоков, ожидающих обработки, и <xref:System.Threading.AutoResetEvent> уже имеет сигнал, вызов не действует.  
   
- Вы можете управлять начальным состоянием `AutoResetEvent` , передавая логическое значение конструктору: `true` , если начальное состояние сигнальное и `false` в противном случае.  
+ Вы можете управлять начальным состоянием `AutoResetEvent`, передав конструктору логическое значение: `true`, если начальное состояние сигнальное, и `false` в противном случае.  
   
- `AutoResetEvent`также может использоваться с `static` <xref:System.Threading.WaitHandle.WaitAll%2A> методами и <xref:System.Threading.WaitHandle.WaitAny%2A> .  
+ `AutoResetEvent` также можно использовать с методами `static` <xref:System.Threading.WaitHandle.WaitAll%2A> и <xref:System.Threading.WaitHandle.WaitAny%2A>.  
   
- Начиная с версии .NET Framework 2,0, <xref:System.Threading.AutoResetEvent> наследуется от нового <xref:System.Threading.EventWaitHandle> класса. Функционально эквивалентен <xref:System.Threading.EventWaitHandle> созданному с помощью <xref:System.Threading.EventResetMode.AutoReset?displayProperty=nameWithType>. <xref:System.Threading.AutoResetEvent>  
+ Начиная с версии .NET Framework 2,0, <xref:System.Threading.AutoResetEvent> является производным от нового класса <xref:System.Threading.EventWaitHandle>. <xref:System.Threading.AutoResetEvent> функционально эквивалентен <xref:System.Threading.EventWaitHandle>, созданному с помощью <xref:System.Threading.EventResetMode.AutoReset?displayProperty=nameWithType>.  
   
 > [!NOTE]
->  <xref:System.Threading.AutoResetEvent> В<xref:System.Threading.EventWaitHandle> отличие от класса класс предоставляет доступ к именованным событиям системных событий синхронизации.  
+>  В отличие от класса <xref:System.Threading.AutoResetEvent> класс <xref:System.Threading.EventWaitHandle> предоставляет доступ к именованным событиям системной синхронизации.  
   
    
   
 ## Examples  
- В следующем примере показано, как использовать <xref:System.Threading.AutoResetEvent> для освобождения одного потока за раз путем <xref:System.Threading.EventWaitHandle.Set%2A> вызова метода (в базовом классе) каждый раз, когда пользователь нажимает клавишу **Ввод** . В примере запускаются три потока, которые ожидают <xref:System.Threading.AutoResetEvent> , что было создано в сигнальном состоянии. Первый поток освобождается немедленно, так как <xref:System.Threading.AutoResetEvent> уже находится в сигнальном состоянии. Это приведет <xref:System.Threading.AutoResetEvent> к сбросу состояния в несигнальное состояние, чтобы последующий блок потоков был заблокирован. Заблокированные потоки освобождаются до тех пор, пока пользователь не выйдет их по одному, нажав клавишу **Ввод** .  
+ В следующем примере показано, как использовать <xref:System.Threading.AutoResetEvent> для освобождения одного потока за раз путем вызова метода <xref:System.Threading.EventWaitHandle.Set%2A> (в базовом классе) каждый раз, когда пользователь нажимает клавишу **Ввод** . В примере запускаются три потока, ожидающие <xref:System.Threading.AutoResetEvent>, которые были созданы в сигнальном состоянии. Первый поток освобождается немедленно, так как <xref:System.Threading.AutoResetEvent> уже находится в сигнальном состоянии. Это приведет к сбросу <xref:System.Threading.AutoResetEvent> в несигнальное состояние, чтобы последующий блок потоков был заблокирован. Заблокированные потоки освобождаются до тех пор, пока пользователь не выйдет их по одному, нажав клавишу **Ввод** .  
   
- После того как потоки освобождаются от первого <xref:System.Threading.AutoResetEvent>, они ожидают другой <xref:System.Threading.AutoResetEvent> , который был создан в несигнальном состоянии. Все три потока блокируют, поэтому <xref:System.Threading.EventWaitHandle.Set%2A> метод должен вызываться три раза, чтобы освободить все.  
+ После освобождения потоков от первого <xref:System.Threading.AutoResetEvent>они ожидают другого <xref:System.Threading.AutoResetEvent>, созданного в несигнальном состоянии. Все три потока блокируют, поэтому метод <xref:System.Threading.EventWaitHandle.Set%2A> должен вызываться три раза, чтобы освободить их.  
   
  [!code-cpp[System.Threading.AutoResetEvent#3](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.AutoResetEvent/CPP/simplerisbetter.cpp#3)]
  [!code-csharp[System.Threading.AutoResetEvent#3](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.AutoResetEvent/CS/simplerisbetter.cs#3)]
@@ -96,6 +97,7 @@
         <AssemblyVersion>4.0.10.0</AssemblyVersion>
         <AssemblyVersion>4.1.0.0</AssemblyVersion>
         <AssemblyVersion>4.1.1.0</AssemblyVersion>
+        <AssemblyVersion>4.1.2.0</AssemblyVersion>
       </AssemblyInfo>
       <AssemblyInfo>
         <AssemblyName>mscorlib</AssemblyName>
@@ -124,13 +126,13 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Examples  
- В следующем примере используется <xref:System.Threading.AutoResetEvent> для синхронизации действий двух потоков. Первый поток, который является потоком приложения, выполняется `Main`. Он записывает значения в защищенный ресурс, который является `static` полем`Shared` (в Visual Basic) с `number`именем. Второй поток выполняет статический `ThreadProc` метод, который считывает значения, `Main`записанные.  
+ В следующем примере используется <xref:System.Threading.AutoResetEvent> для синхронизации действий двух потоков. Первый поток, который является потоком приложения, выполняет `Main`. Он записывает значения в защищенный ресурс, который является `static` (`Shared` в Visual Basic) с именем `number`. Второй поток выполняет статический метод `ThreadProc`, который считывает значения, записанные `Main`.  
   
- `ThreadProc` Метод ожидает<xref:System.Threading.AutoResetEvent>. При `Main` вызове`ThreadProc` метода в<xref:System.Threading.AutoResetEvent>метод считывает одно значение. <xref:System.Threading.EventWaitHandle.Set%2A> Параметр <xref:System.Threading.AutoResetEvent> немедленно сбрасывается, `ThreadProc` поэтому метод ждет повторно.  
+ Метод `ThreadProc` ожидает <xref:System.Threading.AutoResetEvent>. Когда `Main` вызывает метод <xref:System.Threading.EventWaitHandle.Set%2A> на <xref:System.Threading.AutoResetEvent>, метод `ThreadProc` считывает одно значение. <xref:System.Threading.AutoResetEvent> немедленно сбрасывается, поэтому метод `ThreadProc` снова ждет.  
   
- Логика программы гарантирует, что `ThreadProc` метод никогда не будет считывать одно и то же значение два раза. Это не гарантирует, что `ThreadProc` метод будет считывать каждое значение, `Main`записанное. Это гарантирует необходимость второй <xref:System.Threading.AutoResetEvent> блокировки.  
+ Логика программы гарантирует, что метод `ThreadProc` никогда не будет считывать одно и то же значение два раза. Это не гарантирует, что метод `ThreadProc` будет считывать каждое значение, записанное `Main`. Это гарантирует необходимость второй блокировки <xref:System.Threading.AutoResetEvent>.  
   
- После каждой операции `Main` <xref:System.Threading.Thread.Sleep%2A?displayProperty=nameWithType> записи вызывается метод, чтобы дать второму потоку возможность выполнить операцию. В противном случае на компьютере `Main` с одним процессором будет записываться множество значений между любыми двумя операциями чтения.  
+ После каждой операции записи `Main` выдает вызов метода <xref:System.Threading.Thread.Sleep%2A?displayProperty=nameWithType>, чтобы придать второму потоку возможность выполнить операцию. В противном случае на компьютере с одним процессором `Main` будет записывать много значений между любыми двумя операциями чтения.  
   
  [!code-cpp[System.Threading.AutoResetEvent#1](~/samples/snippets/cpp/VS_Snippets_CLR_System/system.Threading.AutoResetEvent/CPP/class1.cpp#1)]
  [!code-csharp[System.Threading.AutoResetEvent#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.Threading.AutoResetEvent/CS/class1.cs#1)]
@@ -167,7 +169,7 @@
       <Parameters />
       <Docs>
         <summary>Задает несигнальное состояние события, вызывая блокирование потоков.</summary>
-        <returns><see langword="true" />, если операция прошла успешно; в противном случае — <see langword="false" />.</returns>
+        <returns>Значение <see langword="true" />, если операция выполнена успешно; в противном случае — значение <see langword="false" />.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -195,7 +197,7 @@
       <Parameters />
       <Docs>
         <summary>Задает сигнальное состояние события, позволяя одному или нескольким ожидающим потокам продолжить.</summary>
-        <returns><see langword="true" />, если операция прошла успешно; в противном случае — <see langword="false" />.</returns>
+        <returns>Значение <see langword="true" />, если операция выполнена успешно; в противном случае — значение <see langword="false" />.</returns>
         <remarks>
           <format type="text/markdown"><![CDATA[
 
@@ -203,7 +205,7 @@
 Метод Set освобождает один поток. Если нет ожидающих потоков, дескриптор ожидания остается сигнальным до тех пор, пока поток не попытается его подождать или пока не будет вызван метод Reset.
 
 > [!IMPORTANT]
-> Нет никакой гарантии, что каждый вызов метода Set выдаст поток. Если два вызова находятся слишком близко друг к другу, так что второй вызов происходит до освобождения потока, выдается только один поток, как если бы второй вызов не произошел. Кроме того, если метод set вызывается, когда отсутствуют потоки, ожидающие обработки <xref:System.Threading.AutoResetEvent> , и уже получил сигнал, вызов не действует.
+> Нет никакой гарантии, что каждый вызов метода Set выдаст поток. Если два вызова находятся слишком близко друг к другу, так что второй вызов происходит до освобождения потока, выдается только один поток, как если бы второй вызов не произошел. Кроме того, если метод set вызывается, когда нет потоков, ожидающих обработки, а <xref:System.Threading.AutoResetEvent> уже имеет сигнал, вызов не действует.
 
 ]]></format>
         </remarks>
