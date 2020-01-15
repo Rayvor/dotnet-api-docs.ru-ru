@@ -1,5 +1,5 @@
 <Type Name="TaskScheduler" FullName="System.Threading.Tasks.TaskScheduler">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="87f581e4666a42d1ea6037aa75f9d64296c41160" /><Meta Name="ms.sourcegitcommit" Value="055a4a82a0b08bfbdc21bd1347fb71f7fe2c099e" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="08/15/2019" /><Meta Name="ms.locfileid" Value="69229833" /></Metadata><TypeSignature Language="C#" Value="public abstract class TaskScheduler" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="59e88bc9b363c87e030660b4cdc70d3f74162419" /><Meta Name="ms.sourcegitcommit" Value="8ae9a18b248625c8e1851e607c00346a64849587" /><Meta Name="ms.translationtype" Value="HT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="12/17/2019" /><Meta Name="ms.locfileid" Value="75158976" /></Metadata><TypeSignature Language="C#" Value="public abstract class TaskScheduler" />
   <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract beforefieldinit TaskScheduler extends System.Object" />
   <TypeSignature Language="DocId" Value="T:System.Threading.Tasks.TaskScheduler" />
   <TypeSignature Language="VB.NET" Value="Public MustInherit Class TaskScheduler" />
@@ -24,6 +24,7 @@
     <AssemblyName>System.Runtime</AssemblyName>
     <AssemblyVersion>4.2.0.0</AssemblyVersion>
     <AssemblyVersion>4.2.1.0</AssemblyVersion>
+    <AssemblyVersion>4.2.2.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Object</BaseTypeName>
@@ -43,11 +44,11 @@
       <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Экземпляр <xref:System.Threading.Tasks.TaskScheduler> класса представляет планировщик задач. Планировщик задач гарантирует, что работа над задачей в итоге будет выполнена.  
+ Экземпляр класса <xref:System.Threading.Tasks.TaskScheduler> представляет планировщик задач. Планировщик задач гарантирует, что работа над задачей в итоге будет выполнена.  
   
  Планировщик заданий по умолчанию основан на пуле потоков .NET Framework 4, который обеспечивает перехват работы для балансировки нагрузки, вставку/удаление потока для максимальной пропускной способности и общее повышение производительности. Его должно быть достаточно для большинства сценариев.  
   
- <xref:System.Threading.Tasks.TaskScheduler> Класс также служит точкой расширения для всей настраиваемой логики планирования.  Сюда входят такие механизмы, как планирование выполнения задачи и выполнение запланированных задач для отладчиков. Если требуются специальные функции, можно создать пользовательский планировщик и включить его для определенных задач или запросов.  
+ Класс <xref:System.Threading.Tasks.TaskScheduler> также служит точкой расширения для всей настраиваемой логики планирования.  Сюда входят такие механизмы, как планирование выполнения задачи и выполнение запланированных задач для отладчиков. Если требуются специальные функции, можно создать пользовательский планировщик и включить его для определенных задач или запросов.  
   
  В этом разделе.  
 [Планировщик задач по умолчанию и пул потоков](#Default)  
@@ -59,15 +60,15 @@
   
 <a name="Default"></a>   
 ## <a name="the-default-task-scheduler-and-the-thread-pool"></a>Планировщик задач по умолчанию и пул потоков  
- Планировщик по умолчанию для библиотеки параллельных задач и PLINQ использует пул потоков .NET Framework, представленный <xref:System.Threading.ThreadPool> классом, для постановки в очередь и выполнения работы. Пул потоков использует сведения, предоставляемые <xref:System.Threading.Tasks.Task> типом для эффективной поддержки детализированного параллелизма (кратковременных единиц работы), которые часто представляют параллельные задачи и запросы.  
+ Планировщик по умолчанию для библиотеки параллельных задач и PLINQ использует пул потоков .NET Framework, который представлен классом <xref:System.Threading.ThreadPool>, для постановки в очередь и выполнения работы. Пул потоков использует сведения, предоставляемые типом <xref:System.Threading.Tasks.Task>, для эффективной поддержки точного параллелизма (единиц работы с кратковременным временем существования), которые часто представляют параллельные задачи и запросы.  
   
 <a name="Queues"></a>   
 ### <a name="the-global-queue-vs-local-queues"></a>Глобальная очередь и локальные очереди  
- Пул потоков поддерживает глобальную очередь FIFO (по принципу "первым поступил — первым обслужен") для потоков в каждом домене приложения. Всякий раз, когда <xref:System.Threading.ThreadPool.QueueUserWorkItem%2A?displayProperty=nameWithType> программа вызывает <xref:System.Threading.ThreadPool.UnsafeQueueUserWorkItem%2A?displayProperty=nameWithType>метод (или), работа помещается в эту общую очередь и в конечном итоге удаляется из очереди в следующий поток, который становится доступным. Начиная с .NET Framework 4, эта очередь была улучшена для использования алгоритма без блокировки, похожего на <xref:System.Collections.Concurrent.ConcurrentQueue%601> класс. Используя эту реализацию без блокировки, пул потоков тратит меньше времени, когда он помещает рабочие элементы в очередь и освобождает их. Это преимущество производительности доступно для всех программ, использующих пул потоков.  
+ Пул потоков поддерживает глобальную очередь FIFO (по принципу "первым поступил — первым обслужен") для потоков в каждом домене приложения. Всякий раз, когда программа вызывает метод <xref:System.Threading.ThreadPool.QueueUserWorkItem%2A?displayProperty=nameWithType> (или <xref:System.Threading.ThreadPool.UnsafeQueueUserWorkItem%2A?displayProperty=nameWithType>), работа помещается в эту общую очередь и в конечном итоге удаляется из очереди в следующий поток, который становится доступным. Начиная с .NET Framework 4, эта очередь была улучшена для использования алгоритма без блокировки, который напоминает класс <xref:System.Collections.Concurrent.ConcurrentQueue%601>. Используя эту реализацию без блокировки, пул потоков тратит меньше времени, когда он помещает рабочие элементы в очередь и освобождает их. Это преимущество производительности доступно для всех программ, использующих пул потоков.  
   
  Задачи верхнего уровня, которые являются задачами, не созданными в контексте других задач, помещаются в глобальную очередь так же, как и другие рабочие элементы. Однако вложенные или дочерние задачи, создаваемые в контексте других задач, обрабатываются по-другому. Дочерняя или вложенная задача помещается в локальную очередь, относящуюся к потоку, в котором выполняется родительская задача. Родительская задача может быть задачей верхнего уровня или дочерней задачей другой задачи. Когда этот поток готов для дополнительной работы, сначала он выполняет поиск в локальной очереди. Если в ней существует ожидающие рабочие элементы, к ним возможен быстрый доступ. Доступ к локальным очередям осуществляется по принципу "последним порядку выхода" (ЛИФО), чтобы сохранить локальность кэша и уменьшить состязание. Дополнительные сведения о дочерних задачах и вложенных задачах см. в разделе [присоединенные и отсоединенные дочерние задачи](~/docs/standard/parallel-programming/attached-and-detached-child-tasks.md).  
   
- Использование локальных очередей не только сокращает нагрузку на глобальную очередь, но и использует преимущества локального использования данных. Рабочие элементы в локальной очереди часто ссылаются на структуры данных, которые физически находятся рядом друг с другом в памяти. В этих случаях данные уже находятся в кэше после выполнения первой задачи и могут быть быстро доступны. [Параллельный LINQ (PLINQ)](~/docs/standard/parallel-programming/parallel-linq-plinq.md) и <xref:System.Threading.Tasks.Parallel> класс используют вложенные задачи и дочерние задачи широко и обеспечивают значительное ускорение с помощью локальных рабочих очередей.  
+ Использование локальных очередей не только сокращает нагрузку на глобальную очередь, но и использует преимущества локального использования данных. Рабочие элементы в локальной очереди часто ссылаются на структуры данных, которые физически находятся рядом друг с другом в памяти. В этих случаях данные уже находятся в кэше после выполнения первой задачи и могут быть быстро доступны. Как [параллельный LINQ (PLINQ)](~/docs/standard/parallel-programming/parallel-linq-plinq.md) , так и класс <xref:System.Threading.Tasks.Parallel> используют вложенные задачи и дочерние задачи широко и обеспечивают значительное ускорение с помощью локальных рабочих очередей.  
   
 <a name="Stealing"></a>   
 ### <a name="work-stealing"></a>Перенос нагрузки  
@@ -79,30 +80,30 @@
   
 <a name="Inlining"></a>   
 ### <a name="task-inlining"></a>Встраивание задач  
- В некоторых случаях, когда <xref:System.Threading.Tasks.Task> ожидается, он может выполняться синхронно в потоке, который выполняет операцию ожидания. Это повышает производительность, предотвращая необходимость в дополнительном потоке и вместо этого использует существующий поток, который в противном случае был бы заблокирован. Чтобы предотвратить возникновение ошибок из-за повторного входа, встраивание задачи происходит только в том случае, если целевой объект ожидания находится в локальной очереди соответствующего потока.  
+ В некоторых случаях, когда ожидается <xref:System.Threading.Tasks.Task>, он может выполняться синхронно в потоке, который выполняет операцию ожидания. Это повышает производительность, предотвращая необходимость в дополнительном потоке и вместо этого использует существующий поток, который в противном случае был бы заблокирован. Чтобы предотвратить возникновение ошибок из-за повторного входа, встраивание задачи происходит только в том случае, если целевой объект ожидания находится в локальной очереди соответствующего потока.  
   
 <a name="Sync"></a>   
 ## <a name="specifying-a-synchronization-context"></a>Указание контекста синхронизации  
  С помощью метода <xref:System.Threading.Tasks.TaskScheduler.FromCurrentSynchronizationContext%2A?displayProperty=nameWithType> можно указать, что задачу необходимо планировать для запуска в определенном потоке. Это полезно на платформах, например Windows Forms и Windows Presentation Foundation, где доступ к объектам пользовательского интерфейса часто ограничен кодом, выполняемым в том же потоке, в котором был создан этот объект пользовательского интерфейса.  
   
- В следующем примере <xref:System.Threading.Tasks.TaskScheduler.FromCurrentSynchronizationContext%2A?displayProperty=nameWithType> метод в приложении Windows Presentation Foundation (WPF) используется для планирования задачи в том же потоке, в котором был создан элемент управления пользовательского интерфейса.   В примере создается мозаика из изображений, которые выбираются случайным образом из указанного каталога. Объекты WPF используются для загрузки и изменения размера изображений. Необработанные пиксели затем передаются в задачу, <xref:System.Threading.Tasks.Parallel.For%2A> которая использует цикл для записи пиксельных данных в большой однобайтовый массив. Синхронизация не требуется, поскольку две плитки не занимают одни и те же элементы массива. Плитки также можно записать в любом порядке, так как их расположение вычисляется независимо от любой другой плитки. После этого большой массив передается задаче, выполняемой в потоке пользовательского интерфейса, в котором данные пикселей загружаются в элемент управления Image.  
+ В следующем примере используется метод <xref:System.Threading.Tasks.TaskScheduler.FromCurrentSynchronizationContext%2A?displayProperty=nameWithType> в приложении Windows Presentation Foundation (WPF) для планирования задачи в том же потоке, в котором был создан элемент управления пользовательского интерфейса.   В примере создается мозаика из изображений, которые выбираются случайным образом из указанного каталога. Объекты WPF используются для загрузки и изменения размера изображений. Необработанные пиксели затем передаются в задачу, которая использует цикл <xref:System.Threading.Tasks.Parallel.For%2A> для записи пиксельных данных в большой однобайтовый массив. Синхронизация не требуется, поскольку две плитки не занимают одни и те же элементы массива. Плитки также можно записать в любом порядке, так как их расположение вычисляется независимо от любой другой плитки. После этого большой массив передается задаче, выполняемой в потоке пользовательского интерфейса, в котором данные пикселей загружаются в элемент управления Image.  
   
- В примере данные перемещаются из потока пользовательского интерфейса, изменяются с помощью параллельных <xref:System.Threading.Tasks.Task> циклов и объектов, а затем передаются обратно в задачу, выполняемую в потоке пользовательского интерфейса. Этот подход удобен, когда необходимо использовать библиотеку параллельных задач для выполнения операций, которые либо не поддерживаются API WPF, либо не выполняются достаточно быстро. Другим способом создания мозаики изображений в WPF является использование <xref:System.Windows.Controls.WrapPanel?displayProperty=nameWithType> элемента управления и добавление в него изображений. <xref:System.Windows.Controls.WrapPanel> Обрабатывает работу по размещению плиток. Однако эту работу можно выполнить только в потоке пользовательского интерфейса.  
+ В примере данные перемещаются из потока пользовательского интерфейса, изменяются с помощью параллельных циклов и <xref:System.Threading.Tasks.Task> объектов, а затем передаются обратно в задачу, выполняемую в потоке пользовательского интерфейса. Этот подход удобен, когда необходимо использовать библиотеку параллельных задач для выполнения операций, которые либо не поддерживаются API WPF, либо не выполняются достаточно быстро. Другим способом создания мозаики изображений в WPF является использование элемента управления <xref:System.Windows.Controls.WrapPanel?displayProperty=nameWithType> и добавление в него изображений. <xref:System.Windows.Controls.WrapPanel> обрабатывает работу по размещению плиток. Однако эту работу можно выполнить только в потоке пользовательского интерфейса.  
   
  [!code-csharp[TPL_SyncContext#01](~/samples/snippets/csharp/VS_Snippets_Misc/tpl_synccontext/cs/mainwindow.xaml.cs#01)]
  [!code-vb[TPL_SyncContext#01](~/samples/snippets/visualbasic/VS_Snippets_Misc/tpl_synccontext/vb/MainWindow.xaml.vb#01)]  
   
- Чтобы создать пример, создайте проект приложения WPF в Visual Studio и назовите его WPF_CS1 (для проекта C# WPF) или WPF_VB1 (для проекта WPF Visual Basic). Затем выполните следующие действия.  
+ Чтобы создать пример, создайте проект приложения WPF в Visual Studio и назовите его WPF_CS1 (для проекта C# WPF) или WPF_VB1 (для Visual Basic проекта WPF). Затем выполните следующие действия.  
   
-1. В режиме конструктора перетащите <xref:System.Windows.Controls.Image> элемент управления из **области элементов** в левый верхний угол области конструктора. В текстовом поле **имя** окна **свойства** назовите элемент управления "Image".    
+1. В режиме конструктора перетащите элемент управления <xref:System.Windows.Controls.Image> из области **элементов** в левый верхний угол области конструктора. В текстовом поле **имя** окна **свойства** назовите элемент управления "Image".    
   
-2. Перетащите элемент управления из **области элементов** в нижнюю левую часть окна приложения. <xref:System.Windows.Controls.Button> В представлении XAML укажите <xref:System.Windows.Controls.ContentControl.Content%2A> свойство кнопки как "создать мозаику" и укажите его <xref:System.Windows.FrameworkElement.Width> свойство как "100". Соедините событие с обработчиком `Click="button_Click"`событий, определенным в `<Button>` коде примера, добавив к элементу. `button_Click` <xref:System.Windows.Controls.Primitives.ButtonBase.Click> В текстовом поле **имя** окна **свойства** назовите элемент управления "Кнопка".  
+2. Перетащите элемент управления <xref:System.Windows.Controls.Button> из **области элементов** в нижнюю левую часть окна приложения. В представлении XAML укажите <xref:System.Windows.Controls.ContentControl.Content%2A> свойство кнопки как "создать мозаику" и укажите для свойства <xref:System.Windows.FrameworkElement.Width> значение "100". Соедините событие <xref:System.Windows.Controls.Primitives.ButtonBase.Click> с обработчиком событий `button_Click`, определенным в коде примера, добавив `Click="button_Click"` к элементу `<Button>`. В текстовом поле **имя** окна **свойства** назовите элемент управления "Кнопка".  
   
 3. Замените все содержимое файла MainWindow.xaml.cs или MainWindow. XAML. vb кодом из этого примера. Для проекта C# WPF убедитесь, что имя рабочей области совпадает с именем проекта. 
   
 4. Пример считывает изображения JPEG из каталога с именем К:\усерс\публик\пиктурес\сампле pictures\\. Либо создайте каталог и поместите в него некоторые образы, либо измените путь, чтобы он ссылался на другой каталог, содержащий образы. 
   
-Этот пример имеет некоторые ограничения. Например, поддерживаются только изображения размером 32 бит на пиксель; изображения в других форматах повреждаются <xref:System.Windows.Media.Imaging.BitmapImage> объектом во время операции изменения размера. Кроме того, исходные изображения должны быть больше, чем размер плитки. В качестве дальнейшего упражнения можно добавить функциональные возможности для обработки нескольких форматов пикселей и размеров файлов.  
+Этот пример имеет некоторые ограничения. Например, поддерживаются только изображения размером 32 бит на пиксель; изображения в других форматах повреждаются объектом <xref:System.Windows.Media.Imaging.BitmapImage> во время операции изменения размера. Кроме того, исходные изображения должны быть больше, чем размер плитки. В качестве дальнейшего упражнения можно добавить функциональные возможности для обработки нескольких форматов пикселей и размеров файлов.  
   
 ## Examples  
  Следующий пример взят из [примеров для параллельного программирования с .NET Framework 4](https://go.microsoft.com/fwlink/?LinkID=165717) на веб-сайте коллекции кода MSDN.  Он создает настраиваемый планировщик задач, ограничивающий количество потоков, используемых приложением. Затем он запускает два набора задач и отображает сведения о задаче и потоке, в котором выполняются задачи.  
@@ -110,11 +111,11 @@
  [!code-csharp[TPL_Schedulers#02](~/samples/snippets/csharp/VS_Snippets_Misc/tpl_schedulers/cs/limitex1.cs#02)]
  [!code-vb[TPL_Schedulers#02](~/samples/snippets/visualbasic/VS_Snippets_Misc/tpl_schedulers/vb/module2.vb#02)]  
   
- Кроме того, в галерее кода доступно несколько планировщиков заданий: [Примеры для параллельного программирования с .NET Framework 4](https://go.microsoft.com/fwlink/?LinkID=165717).  
+ Кроме того, в галерее кода доступны несколько планировщиков заданий: [примеры для параллельного программирования с помощью .NET Framework 4](https://go.microsoft.com/fwlink/?LinkID=165717).  
   
  ]]></format>
     </remarks>
-    <threadsafe>Все члены абстрактного <see cref="T:System.Threading.Tasks.TaskScheduler" /> типа являются потокобезопасными и могут использоваться из нескольких потоков одновременно.</threadsafe>
+    <threadsafe>Все члены абстрактного типа <see cref="T:System.Threading.Tasks.TaskScheduler" /> являются потокобезопасными и могут использоваться из нескольких потоков одновременно.</threadsafe>
     <altmember cref="T:System.Threading.Tasks.TaskScheduler" />
     <related type="Article" href="~/docs/standard/parallel-programming/task-parallel-library-tpl.md">Библиотека параллельных задач (TPL)</related>
   </Docs>
@@ -145,6 +146,7 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <Parameters />
       <Docs>
@@ -181,6 +183,7 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Threading.Tasks.TaskScheduler</ReturnType>
@@ -192,7 +195,7 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Если не вызывается из задачи, <xref:System.Threading.Tasks.TaskScheduler.Current%2A> будет <xref:System.Threading.Tasks.TaskScheduler.Default%2A> возвращен планировщик.  
+ Если в задаче не вызывается, <xref:System.Threading.Tasks.TaskScheduler.Current%2A> вернет планировщик <xref:System.Threading.Tasks.TaskScheduler.Default%2A>.  
   
  Для получения дополнительной информации см. <xref:System.Threading.Tasks.TaskScheduler>.  
   
@@ -229,6 +232,7 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Threading.Tasks.TaskScheduler</ReturnType>
@@ -305,6 +309,7 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Threading.Tasks.TaskScheduler</ReturnType>
@@ -317,7 +322,7 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Все <xref:System.Threading.Tasks.Task> экземпляры, помещенные в очередь к возвращенному планировщику, будут выполняться посредством вызова <xref:System.Threading.SynchronizationContext.Post%2A> метода в этом контексте.  
+ Все экземпляры <xref:System.Threading.Tasks.Task>, помещенные в очередь на возвращенный планировщик, будут выполняться посредством вызова метода <xref:System.Threading.SynchronizationContext.Post%2A> в этом контексте.  
   
  Для получения дополнительной информации см. <xref:System.Threading.Tasks.TaskScheduler>.  
   
@@ -354,6 +359,7 @@
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <Attributes>
         <Attribute FrameworkAlternate="netcore-1.0;netcore-1.1;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netstandard-1.0;netstandard-1.1;netstandard-1.2;netstandard-1.3;netstandard-1.4;netstandard-1.6;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8;netcore-2.0;dotnet-uwp-10.0">
@@ -371,7 +377,7 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Класс, производный <xref:System.Threading.Tasks.TaskScheduler> от, реализует этот метод для поддержки интеграции с отладчиками. Этот метод будет вызываться только .NET Framework, когда отладчик запрашивает доступ к данным. Возвращаемые перечислимые значения будут обойтися с помощью служебных программ отладки для доступа к задачам, находящихся в очереди данного планировщика, что позволяет отладчику предоставить представление этих сведений в пользовательском интерфейсе.  
+ Класс, производный от <xref:System.Threading.Tasks.TaskScheduler>, реализует этот метод для поддержки интеграции с отладчиками. Этот метод будет вызываться только .NET Framework, когда отладчик запрашивает доступ к данным. Возвращаемые перечислимые значения будут обойтися с помощью служебных программ отладки для доступа к задачам, находящихся в очереди данного планировщика, что позволяет отладчику предоставить представление этих сведений в пользовательском интерфейсе.  
   
  Важно отметить, что при вызове этого метода все остальные потоки в процессе будут заморожены. Поэтому важно избегать синхронизации с другими потоками, которые могут привести к блокировке. Если требуется синхронизация и вы не можете получить блокировку в этом методе, следует создать исключение, чтобы отладчик не блокировал его. В следующем примере показан один из возможных подходов в C#:
   
@@ -398,7 +404,7 @@ protected override IEnumerable<Task> GetScheduledTasks()
   
  Возвращаемое перечислимое значение никогда не должно быть равно null. Если в настоящее время нет задач, поставленных в очередь, вместо нее должно возвращаться пустое перечислимое значение.  
   
- Разработчики, реализующие пользовательские отладчики, не должны вызывать этот метод напрямую, но вместо этого следует использовать `GetScheduledTasksForDebugger` внутренний метод `internal Task[] GetScheduledTasksForDebugger()`-оболочку:. Этот метод-оболочка возвращает массив задач вместо перечислимого. Чтобы получить список активных планировщиков, используйте внутренний метод `internal static TaskScheduler[] GetTaskSchedulersForDebugger()`. Этот статический метод возвращает массив всех активных <xref:System.Threading.Tasks.TaskScheduler> экземпляров. Затем можно использовать `GetScheduledTasksForDebugger` в каждом экземпляре планировщика для получения списка запланированных задач.  
+ Разработчики, реализующие пользовательские отладчики, не должны вызывать этот метод напрямую, но вместо этого следует использовать внутренний метод-оболочка `GetScheduledTasksForDebugger`: `internal Task[] GetScheduledTasksForDebugger()`. Этот метод-оболочка возвращает массив задач вместо перечислимого. Чтобы получить список активных планировщиков, используйте внутренний метод `internal static TaskScheduler[] GetTaskSchedulersForDebugger()`. Этот статический метод возвращает массив всех активных экземпляров <xref:System.Threading.Tasks.TaskScheduler>. Затем можно использовать `GetScheduledTasksForDebugger` для каждого экземпляра планировщика, чтобы получить список запланированных задач.  
   
  ]]></format>
         </remarks>
@@ -434,6 +440,7 @@ protected override IEnumerable<Task> GetScheduledTasks()
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Int32</ReturnType>
@@ -480,6 +487,7 @@ protected override IEnumerable<Task> GetScheduledTasks()
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Int32</ReturnType>
@@ -525,6 +533,7 @@ protected override IEnumerable<Task> GetScheduledTasks()
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <Attributes>
         <Attribute FrameworkAlternate="netcore-1.0;netcore-1.1;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netstandard-1.0;netstandard-1.1;netstandard-1.2;netstandard-1.3;netstandard-1.4;netstandard-1.6;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8;netcore-2.0;dotnet-uwp-10.0">
@@ -544,7 +553,7 @@ protected override IEnumerable<Task> GetScheduledTasks()
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Класс, производный <xref:System.Threading.Tasks.TaskScheduler> от, реализует этот метод, чтобы принимать задачи, запланированные в планировщике.  
+ Класс, производный от <xref:System.Threading.Tasks.TaskScheduler>, реализует этот метод для принятия задач, запланированных в планировщике.  
   
  Типичная реализация сохранит задачу во внутренней структуре данных, которая будет обслуживаться потоками, которые будут выполнять эти задачи в будущем.  
   
@@ -583,6 +592,7 @@ protected override IEnumerable<Task> GetScheduledTasks()
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <Attributes>
         <Attribute FrameworkAlternate="netcore-1.0;netcore-1.1;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netstandard-1.0;netstandard-1.1;netstandard-1.2;netstandard-1.3;netstandard-1.4;netstandard-1.6;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8;netcore-2.0;dotnet-uwp-10.0">
@@ -605,7 +615,7 @@ protected override IEnumerable<Task> GetScheduledTasks()
 ## Remarks  
  Для получения дополнительной информации см. <xref:System.Threading.Tasks.TaskScheduler>.  
   
- Этот метод может выполняться в блоке finally; Поэтому он должен возвращать как можно быстрее, чтобы все ресурсы, такие <xref:System.Threading.CancellationTokenRegistration> как объекты, могли быть удалены своевременно.  
+ Этот метод может выполняться в блоке finally; Поэтому он должен возвращать как можно быстрее, чтобы все ресурсы, такие как <xref:System.Threading.CancellationTokenRegistration> объекты, можно было своевременно удалять.  
   
  ]]></format>
         </remarks>
@@ -640,6 +650,7 @@ protected override IEnumerable<Task> GetScheduledTasks()
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <Attributes>
         <Attribute FrameworkAlternate="netcore-1.0;netcore-1.1;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netstandard-1.0;netstandard-1.1;netstandard-1.2;netstandard-1.3;netstandard-1.4;netstandard-1.6;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8;netcore-2.0;dotnet-uwp-10.0">
@@ -660,9 +671,9 @@ protected override IEnumerable<Task> GetScheduledTasks()
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Реализации планировщика предоставляются с экземплярами <xref:System.Threading.Tasks.Task> , которые выполняются с помощью <xref:System.Threading.Tasks.TaskScheduler.QueueTask%2A> метода или <xref:System.Threading.Tasks.TaskScheduler.TryExecuteTaskInline%2A> метода. Если планировщик считает, что он подходит для выполнения указанной задачи, <xref:System.Threading.Tasks.TaskScheduler.TryExecuteTask%2A> для этого следует использовать. Трексекутетаск обрабатывает все аспекты выполнения задачи, включая вызов действия, обработку исключений, управление состоянием и управление жизненным циклом.  
+ Реализации планировщика предоставляются с <xref:System.Threading.Tasks.Task> экземплярами, которые выполняются с помощью метода <xref:System.Threading.Tasks.TaskScheduler.QueueTask%2A> или метода <xref:System.Threading.Tasks.TaskScheduler.TryExecuteTaskInline%2A>. Когда планировщик считает, что он подходит для выполнения предоставленной задачи, для этого следует использовать <xref:System.Threading.Tasks.TaskScheduler.TryExecuteTask%2A>. Трексекутетаск обрабатывает все аспекты выполнения задачи, включая вызов действия, обработку исключений, управление состоянием и управление жизненным циклом.  
   
- <xref:System.Threading.Tasks.TaskScheduler.TryExecuteTask%2A>должен использоваться только для задач, предоставленных этому планировщику .NET Framework инфраструктурой. Его не следует использовать для выполнения произвольных задач, полученных с помощью пользовательских механизмов.  
+ <xref:System.Threading.Tasks.TaskScheduler.TryExecuteTask%2A> должны использоваться только для задач, предоставленных этому планировщику .NET Framework инфраструктурой. Его не следует использовать для выполнения произвольных задач, полученных с помощью пользовательских механизмов.  
   
  ]]></format>
         </remarks>
@@ -697,6 +708,7 @@ protected override IEnumerable<Task> GetScheduledTasks()
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <Attributes>
         <Attribute FrameworkAlternate="netcore-1.0;netcore-1.1;netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netstandard-1.0;netstandard-1.1;netstandard-1.2;netstandard-1.3;netstandard-1.4;netstandard-1.6;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8;netcore-2.0;dotnet-uwp-10.0">
@@ -719,9 +731,9 @@ protected override IEnumerable<Task> GetScheduledTasks()
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Класс, производный <xref:System.Threading.Tasks.TaskScheduler> от, реализует эту функцию для поддержки встроенного выполнения задачи в потоке, которая инициирует ожидание этого объекта задачи. Встроенное выполнение является необязательным, и запрос может быть отклонен путем возвращения значения false. Тем не менее, чем больше задач может быть встроено, тем лучше масштабируется планировщик. Фактически, планировщик, слишком маленький, может быть подвержен взаимоблокировкам. Правильная реализация должна обеспечивать возможность успешного выполнения запроса, который выполняется в соответствии с политиками, гарантированными планировщиком. Например, если планировщик использует выделенный поток для выполнения задач, все запросы на встраивание из этого потока должны быть выполнены.  
+ Класс, производный от <xref:System.Threading.Tasks.TaskScheduler>, реализует эту функцию для поддержки встроенного выполнения задачи в потоке, которая инициирует ожидание этого объекта задачи. Встроенное выполнение является необязательным, и запрос может быть отклонен путем возвращения значения false. Тем не менее, чем больше задач может быть встроено, тем лучше масштабируется планировщик. Фактически, планировщик, слишком маленький, может быть подвержен взаимоблокировкам. Правильная реализация должна обеспечивать возможность успешного выполнения запроса, который выполняется в соответствии с политиками, гарантированными планировщиком. Например, если планировщик использует выделенный поток для выполнения задач, все запросы на встраивание из этого потока должны быть выполнены.  
   
- Если планировщик решает выполнить встроенное выполнение, он должен сделать это, вызвав <xref:System.Threading.Tasks.TaskScheduler.TryExecuteTask%2A> метод базового TaskScheduler с предоставленным объектом Task, выполнив распространение возвращаемого значения. Кроме того, планировщик может подойти к удалению встроенной задачи из ее внутренних структур данных, если он решит обработать запрос встраивания. Однако обратите внимание, что в некоторых обстоятельствах планировщику может быть предложено выполнить встраивание задачи, которая ранее не была предоставлена с помощью <xref:System.Threading.Tasks.TaskScheduler.QueueTask%2A> метода.  
+ Если планировщик решает выполнить встроенное выполнение, он должен сделать это, вызвав метод <xref:System.Threading.Tasks.TaskScheduler.TryExecuteTask%2A> базового TaskScheduler с предоставленным объектом Task, выполнив распространение возвращаемого значения. Кроме того, планировщик может подойти к удалению встроенной задачи из ее внутренних структур данных, если он решит обработать запрос встраивания. Однако обратите внимание, что в некоторых обстоятельствах планировщику может быть предложено выполнить встраивание задачи, которая ранее не была предоставлена с помощью метода <xref:System.Threading.Tasks.TaskScheduler.QueueTask%2A>.  
   
  Производный планировщик отвечает за обеспечение того, что вызывающий поток подходит для выполнения данной задачи до тех пор, пока применяются собственные политики планирования и выполнения.  
   
@@ -762,6 +774,7 @@ protected override IEnumerable<Task> GetScheduledTasks()
         <AssemblyName>System.Runtime</AssemblyName>
         <AssemblyVersion>4.2.0.0</AssemblyVersion>
         <AssemblyVersion>4.2.1.0</AssemblyVersion>
+        <AssemblyVersion>4.2.2.0</AssemblyVersion>
       </AssemblyInfo>
       <Attributes>
         <Attribute FrameworkAlternate="netframework-4.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0;netframework-4.8">
@@ -782,7 +795,7 @@ protected override IEnumerable<Task> GetScheduledTasks()
 ## Remarks  
  Это событие уровня домена приложения предоставляет механизм для предотвращения срабатывания политики эскалации исключений (которая по умолчанию завершает процесс).  
   
- Чтобы разработчикам было проще писать асинхронный код на основе задач, он [!INCLUDE[net_v45](~/includes/net-v45-md.md)] изменяет поведение исключения по умолчанию для незамеченных исключений. Хотя исключения, незамеченные, по <xref:System.Threading.Tasks.TaskScheduler.UnobservedTaskException> -прежнему вызывают исключение, процесс по умолчанию не завершается. Вместо этого исключение обрабатывается средой выполнения после возникновения события, независимо от того, наблюдает ли обработчик событий с исключением. Это поведение можно настроить. Начиная с [!INCLUDE[net_v45](~/includes/net-v45-md.md)], можно [`<ThrowUnobservedTaskExceptions>`](~/docs/framework/configure-apps/file-schema/runtime/throwunobservedtaskexceptions-element.md) использовать элемент Configuration, чтобы вернуться [!INCLUDE[net_v40_long](~/includes/net-v40-long-md.md)] к поведению и завершить процесс:  
+ Чтобы разработчикам было проще писать асинхронный код на основе задач, [!INCLUDE[net_v45](~/includes/net-v45-md.md)] изменяет поведение исключения по умолчанию для незамеченных исключений. Хотя незамеченные исключения по-прежнему вызывают исключение <xref:System.Threading.Tasks.TaskScheduler.UnobservedTaskException>, процесс по умолчанию не завершается. Вместо этого исключение обрабатывается средой выполнения после возникновения события, независимо от того, наблюдает ли обработчик событий с исключением. Это поведение можно настроить. Начиная с [!INCLUDE[net_v45](~/includes/net-v45-md.md)]можно использовать элемент конфигурации [`<ThrowUnobservedTaskExceptions>`](~/docs/framework/configure-apps/file-schema/runtime/throwunobservedtaskexceptions-element.md) , чтобы вернуться к поведению [!INCLUDE[net_v40_long](~/includes/net-v40-long-md.md)] и завершить процесс:  
   
 ```xml  
 <configuration>   
@@ -796,7 +809,7 @@ protected override IEnumerable<Task> GetScheduledTasks()
  ]]></format>
         </remarks>
         <related type="Article" href="~/docs/standard/parallel-programming/task-parallel-library-tpl.md">Библиотека параллельных задач (TPL)</related>
-        <related type="Article" href="~/docs/framework/configure-apps/file-schema/runtime/throwunobservedtaskexceptions-element.md">&lt;Сровунобсерведтаскексцептионс&gt; , элемент</related>
+        <related type="Article" href="~/docs/framework/configure-apps/file-schema/runtime/throwunobservedtaskexceptions-element.md">&lt;Сровунобсерведтаскексцептионс&gt; элемент</related>
       </Docs>
     </Member>
   </Members>

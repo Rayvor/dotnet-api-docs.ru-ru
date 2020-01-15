@@ -1,5 +1,5 @@
 <Type Name="CancellationTokenSource" FullName="System.Threading.CancellationTokenSource">
-  <Metadata><Meta Name="ms.openlocfilehash" Value="509f734265234b6b9cc1e250226f10c318bb1629" /><Meta Name="ms.sourcegitcommit" Value="634678f7ccd2928c6b2cf792a301b079b63639af" /><Meta Name="ms.translationtype" Value="MT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="07/26/2019" /><Meta Name="ms.locfileid" Value="68541282" /></Metadata><TypeSignature Language="C#" Value="public class CancellationTokenSource : IDisposable" />
+  <Metadata><Meta Name="ms.openlocfilehash" Value="59e0628d3780d3ffc5ea245486d0ac56e92f2e1a" /><Meta Name="ms.sourcegitcommit" Value="8ae9a18b248625c8e1851e607c00346a64849587" /><Meta Name="ms.translationtype" Value="HT" /><Meta Name="ms.contentlocale" Value="ru-RU" /><Meta Name="ms.lasthandoff" Value="12/17/2019" /><Meta Name="ms.locfileid" Value="75158807" /></Metadata><TypeSignature Language="C#" Value="public class CancellationTokenSource : IDisposable" />
   <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit CancellationTokenSource extends System.Object implements class System.IDisposable" />
   <TypeSignature Language="DocId" Value="T:System.Threading.CancellationTokenSource" />
   <TypeSignature Language="VB.NET" Value="Public Class CancellationTokenSource&#xA;Implements IDisposable" />
@@ -11,6 +11,7 @@
     <AssemblyVersion>4.0.10.0</AssemblyVersion>
     <AssemblyVersion>4.1.0.0</AssemblyVersion>
     <AssemblyVersion>4.1.1.0</AssemblyVersion>
+    <AssemblyVersion>4.1.2.0</AssemblyVersion>
   </AssemblyInfo>
   <AssemblyInfo>
     <AssemblyName>mscorlib</AssemblyName>
@@ -43,9 +44,9 @@
 ## Remarks  
  Начиная с [!INCLUDE[net_v40_long](~/includes/net-v40-long-md.md)], .NET Framework использует единую модель для совместной отмены асинхронных или долго выполняющихся синхронных операций, включающих два объекта:  
   
--   Объект, предоставляющий токен отмены <xref:System.Threading.CancellationTokenSource.Token%2A> через свойство и отправляющий сообщение <xref:System.Threading.CancellationTokenSource.Cancel%2A> об отмене путем вызова метода или <xref:System.Threading.CancellationTokenSource.CancelAfter%2A>. <xref:System.Threading.CancellationTokenSource>  
+-   Объект <xref:System.Threading.CancellationTokenSource>, который предоставляет маркер отмены через свойство <xref:System.Threading.CancellationTokenSource.Token%2A> и отправляет сообщение об отмене путем вызова его метода <xref:System.Threading.CancellationTokenSource.Cancel%2A> или <xref:System.Threading.CancellationTokenSource.CancelAfter%2A>.  
   
--   <xref:System.Threading.CancellationToken> Объект, который указывает, запрошена ли отмена.  
+-   Объект <xref:System.Threading.CancellationToken>, указывающий, запрошена ли отмена.  
   
  Общая схема реализации модели совместной отмены выглядит следующим образом:  
   
@@ -53,11 +54,11 @@
   
 -   В каждую задачу или поток, ожидающий отмены, передается токен, возвращенный свойством <xref:System.Threading.CancellationTokenSource.Token%2A?displayProperty=nameWithType>.  
   
--   Вызовите <xref:System.Threading.CancellationToken.IsCancellationRequested%2A?displayProperty=nameWithType> метод из операций, получающих токен отмены. Предоставление механизма для каждой задачи или потока, отвечающего на запрос отмены. Если вы решили отменить операцию и точно то, как она выполняется, зависит от логики приложения.  
+-   Вызовите метод <xref:System.Threading.CancellationToken.IsCancellationRequested%2A?displayProperty=nameWithType> из операций, получающих токен отмены. Предоставление механизма для каждой задачи или потока, отвечающего на запрос отмены. Если вы решили отменить операцию и точно то, как она выполняется, зависит от логики приложения.  
   
--   Вызывается метод <xref:System.Threading.CancellationTokenSource.Cancel%2A?displayProperty=nameWithType> для предоставления уведомления об отмене. При этом <xref:System.Threading.CancellationToken.IsCancellationRequested%2A?displayProperty=nameWithType> свойству каждой копии `true`токена отмены присваивается значение.  
+-   Вызывается метод <xref:System.Threading.CancellationTokenSource.Cancel%2A?displayProperty=nameWithType> для предоставления уведомления об отмене. Это задает для свойства <xref:System.Threading.CancellationToken.IsCancellationRequested%2A?displayProperty=nameWithType> каждой копии токена отмены значение `true`.  
   
--   По завершении работы <xref:System.Threading.CancellationTokenSource> с объектом вызовите метод.<xref:System.Threading.CancellationTokenSource.Dispose%2A>  
+-   По завершении работы с объектом <xref:System.Threading.CancellationTokenSource> вызовите метод <xref:System.Threading.CancellationTokenSource.Dispose%2A>.  
   
  См. дополнительные сведения об [отмене в управляемых потоках](~/docs/standard/threading/cancellation-in-managed-threads.md).  
   
@@ -69,14 +70,14 @@
 ## Examples  
  В следующем примере генератор случайных чисел используется для эмуляции приложения сбора данных, которое считывает 10 целочисленных значений из одиннадцати различных инструментов. Нулевое значение указывает на то, что измерение завершилось ошибкой для одного инструмента. в этом случае операция должна быть отменена, а общее среднее значение не должно вычисляться.  
   
- Чтобы справиться с возможной отменой операции, в примере создается экземпляр <xref:System.Threading.CancellationTokenSource> объекта, который создает токен отмены, который передается <xref:System.Threading.Tasks.TaskFactory> в объект. Объект <xref:System.Threading.Tasks.TaskFactory> , в свою очередь, передает токен отмены каждой из задач, ответственных за сбор данных для конкретного инструмента. <xref:System.Threading.Tasks.TaskFactory.ContinueWhenAll%60%602%28System.Threading.Tasks.Task%7B%60%600%7D%5B%5D%2CSystem.Func%7BSystem.Threading.Tasks.Task%7B%60%600%7D%5B%5D%2C%60%601%7D%2CSystem.Threading.CancellationToken%29?displayProperty=nameWithType> Метод вызывается, чтобы гарантировать, что среднее вычисляется только после успешного сбора всех считываний. Если задача не выполнена, поскольку она была отменена, вызов <xref:System.Threading.Tasks.TaskFactory.ContinueWhenAll%2A?displayProperty=nameWithType> метода вызывает исключение.  
+ Чтобы справиться с возможной отменой операции, в примере создается экземпляр <xref:System.Threading.CancellationTokenSource> объекта, который создает токен отмены, который передается в объект <xref:System.Threading.Tasks.TaskFactory>. Объект <xref:System.Threading.Tasks.TaskFactory>, в свою очередь, передает маркер отмены в каждую из задач, ответственных за сбор данных для конкретного инструмента. Метод <xref:System.Threading.Tasks.TaskFactory.ContinueWhenAll%60%602%28System.Threading.Tasks.Task%7B%60%600%7D%5B%5D%2CSystem.Func%7BSystem.Threading.Tasks.Task%7B%60%600%7D%5B%5D%2C%60%601%7D%2CSystem.Threading.CancellationToken%29?displayProperty=nameWithType> вызывается, чтобы убедиться, что среднее значение вычисляется только после успешного сбора всех считываний. Если задача не выполнена, поскольку она была отменена, вызов метода <xref:System.Threading.Tasks.TaskFactory.ContinueWhenAll%2A?displayProperty=nameWithType> создает исключение.  
   
  [!code-csharp[System.Threading.CancellationTokenSource.Class#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.threading.cancellationtokensource.class/cs/cancel1.cs#1)]
  [!code-vb[System.Threading.CancellationTokenSource.Class#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.threading.cancellationtokensource.class/vb/cancel1.vb#1)]  
   
  ]]></format>
     </remarks>
-    <threadsafe>Все открытые и защищенные члены <see cref="T:System.Threading.CancellationTokenSource" /> являются потокобезопасными и могут использоваться одновременно из нескольких потоков, за <see cref="M:System.Threading.CancellationTokenSource.Dispose" />исключением, которое должно использоваться только после завершения <see cref="T:System.Threading.CancellationTokenSource" /> всех остальных операций с объектом.</threadsafe>
+    <threadsafe>Все открытые и защищенные члены <see cref="T:System.Threading.CancellationTokenSource" /> являются потокобезопасными и могут использоваться параллельно из нескольких потоков, за исключением <see cref="M:System.Threading.CancellationTokenSource.Dispose" />, которые должны использоваться только при завершении всех остальных операций в <see cref="T:System.Threading.CancellationTokenSource" /> объекте.</threadsafe>
     <related type="Article" href="~/docs/standard/threading/cancellation-in-managed-threads.md">Отмена</related>
     <related type="Article" href="~/docs/standard/parallel-programming/task-cancellation.md">Отмена задач</related>
   </Docs>
@@ -105,6 +106,7 @@
         <AssemblyVersion>4.0.10.0</AssemblyVersion>
         <AssemblyVersion>4.1.0.0</AssemblyVersion>
         <AssemblyVersion>4.1.1.0</AssemblyVersion>
+        <AssemblyVersion>4.1.2.0</AssemblyVersion>
       </AssemblyInfo>
       <AssemblyInfo>
         <AssemblyName>mscorlib</AssemblyName>
@@ -143,6 +145,7 @@
         <AssemblyVersion>4.0.10.0</AssemblyVersion>
         <AssemblyVersion>4.1.0.0</AssemblyVersion>
         <AssemblyVersion>4.1.1.0</AssemblyVersion>
+        <AssemblyVersion>4.1.2.0</AssemblyVersion>
       </AssemblyInfo>
       <AssemblyInfo>
         <AssemblyName>mscorlib</AssemblyName>
@@ -155,18 +158,18 @@
         <AssemblyVersion>2.1.0.0</AssemblyVersion>
       </AssemblyInfo>
       <Parameters>
-        <Parameter Name="millisecondsDelay" Type="System.Int32" Index="0" FrameworkAlternate="dotnet-uwp-10.0;netcore-1.0;netcore-1.1;netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netstandard-1.0;netstandard-1.1;netstandard-1.2;netstandard-1.3;netstandard-1.4;netstandard-1.6;netstandard-2.0;netstandard-2.1;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
+        <Parameter Name="millisecondsDelay" Type="System.Int32" Index="0" FrameworkAlternate="dotnet-uwp-10.0;netcore-1.0;netcore-1.1;netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netcore-3.1;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netstandard-1.0;netstandard-1.1;netstandard-1.2;netstandard-1.3;netstandard-1.4;netstandard-1.6;netstandard-2.0;netstandard-2.1;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
         <param name="millisecondsDelay">Интервал времени ожидания в миллисекундах перед отменой этого класса <see cref="T:System.Threading.CancellationTokenSource" />.</param>
-        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Threading.CancellationTokenSource" />, который будет отменен после определенной задержка (в миллисекундах).</summary>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Threading.CancellationTokenSource" />, который будет отменен после указанной задержки (в миллисекундах).</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Обратный отсчет для `millisecondsDelay` начинается во время вызова конструктора.  По истечении срока сформированный <xref:System.Threading.CancellationTokenSource> объект отменяется (если он еще не был отменен). `millisecondsDelay`  
+ Обратный отсчет для `millisecondsDelay` начинается во время вызова конструктора.  После истечения срока действия `millisecondsDelay` созданная <xref:System.Threading.CancellationTokenSource> отменяется (если она еще не была отменена).  
   
- Последующие вызовы метода <xref:System.Threading.CancellationTokenSource.CancelAfter%2A> будут `millisecondsDelay` сбрасывать для созданного <xref:System.Threading.CancellationTokenSource>, если он еще не был отменен.  
+ Последующие вызовы <xref:System.Threading.CancellationTokenSource.CancelAfter%2A> будут сбрасывать `millisecondsDelay` для созданного <xref:System.Threading.CancellationTokenSource>, если он еще не был отменен.  
   
  ]]></format>
         </remarks>
@@ -187,6 +190,7 @@
         <AssemblyVersion>4.0.10.0</AssemblyVersion>
         <AssemblyVersion>4.1.0.0</AssemblyVersion>
         <AssemblyVersion>4.1.1.0</AssemblyVersion>
+        <AssemblyVersion>4.1.2.0</AssemblyVersion>
       </AssemblyInfo>
       <AssemblyInfo>
         <AssemblyName>mscorlib</AssemblyName>
@@ -199,18 +203,18 @@
         <AssemblyVersion>2.1.0.0</AssemblyVersion>
       </AssemblyInfo>
       <Parameters>
-        <Parameter Name="delay" Type="System.TimeSpan" Index="0" FrameworkAlternate="dotnet-uwp-10.0;netcore-1.0;netcore-1.1;netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netstandard-1.0;netstandard-1.1;netstandard-1.2;netstandard-1.3;netstandard-1.4;netstandard-1.6;netstandard-2.0;netstandard-2.1;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
+        <Parameter Name="delay" Type="System.TimeSpan" Index="0" FrameworkAlternate="dotnet-uwp-10.0;netcore-1.0;netcore-1.1;netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netcore-3.1;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netstandard-1.0;netstandard-1.1;netstandard-1.2;netstandard-1.3;netstandard-1.4;netstandard-1.6;netstandard-2.0;netstandard-2.1;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
         <param name="delay">Интервал времени ожидания перед отменой этого класса <see cref="T:System.Threading.CancellationTokenSource" />.</param>
-        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Threading.CancellationTokenSource" />, который будет отменен после определенного периода времени.</summary>
+        <summary>Инициализирует новый экземпляр класса <see cref="T:System.Threading.CancellationTokenSource" />, который будет отменен после указанного периода времени.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Обратный отсчет для задержки начинается во время вызова конструктора. По истечении задержки сформированная <xref:System.Threading.CancellationTokenSource> отменяется, если она еще не была отменена.  
+ Обратный отсчет для задержки начинается во время вызова конструктора. По истечении задержки сконструированная <xref:System.Threading.CancellationTokenSource> отменяется, если она еще не была отменена.  
   
- Последующие вызовы метода <xref:System.Threading.CancellationTokenSource.CancelAfter%2A> будут сбрасывать задержку для созданного <xref:System.Threading.CancellationTokenSource>, если она еще не была отменена.  
+ Последующие вызовы <xref:System.Threading.CancellationTokenSource.CancelAfter%2A> будут сбрасывать задержку для созданной <xref:System.Threading.CancellationTokenSource>, если она еще не была отменена.  
   
  ]]></format>
         </remarks>
@@ -244,6 +248,7 @@
         <AssemblyVersion>4.0.10.0</AssemblyVersion>
         <AssemblyVersion>4.1.0.0</AssemblyVersion>
         <AssemblyVersion>4.1.1.0</AssemblyVersion>
+        <AssemblyVersion>4.1.2.0</AssemblyVersion>
       </AssemblyInfo>
       <AssemblyInfo>
         <AssemblyName>mscorlib</AssemblyName>
@@ -265,19 +270,19 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Связанный <xref:System.Threading.CancellationToken> объект будет уведомлен об отмене и будет переходить в состояние, где <xref:System.Threading.CancellationToken.IsCancellationRequested%2A> возвращает значение true.  
+ Связанная <xref:System.Threading.CancellationToken> будет уведомлена об отмене и будет переходить в состояние, где <xref:System.Threading.CancellationToken.IsCancellationRequested%2A> возвращает значение true.  
   
- Будут выполнены любые обратные вызовы или операции, которые <xref:System.Threading.CancellationToken> можно отменять, зарегистрированные в.  
+ Будут выполнены любые обратные вызовы или операции, которые можно отменять, зарегистрированные в <xref:System.Threading.CancellationToken>.  
   
- Рекомендуется, чтобы отменяемые операции и обратные вызовы <xref:System.Threading.CancellationToken> , зарегистрированные, не вызывали исключения. 
+ Рекомендуется отменять операции и обратные вызовы, зарегистрированные в <xref:System.Threading.CancellationToken> не создавать исключения. 
  
- Эта перегрузка отмены выполнит статистическую обработку всех исключений <xref:System.AggregateException>, порожденных в, так что один обратный вызов, создающий исключение, не будет препятствовать выполнению других зарегистрированных обратных вызовов. 
+ Эта перегрузка отмены выполнит статистическую обработку всех исключений, порожденных в <xref:System.AggregateException>, чтобы один обратный вызов, создающий исключение, не препятствовал выполнению других зарегистрированных обратных вызовов. 
    
   
 ## Examples  
  В следующем примере генератор случайных чисел используется для эмуляции приложения сбора данных, которое считывает 10 целочисленных значений из одиннадцати различных инструментов. Нулевое значение указывает на то, что измерение завершилось ошибкой для одного инструмента. в этом случае операция должна быть отменена, а общее среднее значение не должно вычисляться.  
   
- Чтобы справиться с возможной отменой операции, в примере создается экземпляр <xref:System.Threading.CancellationTokenSource> объекта, который создает токен отмены, который передается <xref:System.Threading.Tasks.TaskFactory> в объект. Объект <xref:System.Threading.Tasks.TaskFactory> , в свою очередь, передает токен отмены каждой из задач, ответственных за сбор данных для конкретного инструмента. <xref:System.Threading.Tasks.TaskFactory.ContinueWhenAll%60%602%28System.Threading.Tasks.Task%7B%60%600%7D%5B%5D%2CSystem.Func%7BSystem.Threading.Tasks.Task%7B%60%600%7D%5B%5D%2C%60%601%7D%2CSystem.Threading.CancellationToken%29?displayProperty=nameWithType> Метод вызывается, чтобы гарантировать, что среднее вычисляется только после успешного сбора всех считываний. Если задача не выполнена, поскольку она была отменена, вызов <xref:System.Threading.Tasks.TaskFactory.ContinueWhenAll%2A?displayProperty=nameWithType> метода вызывает исключение.  
+ Чтобы справиться с возможной отменой операции, в примере создается экземпляр <xref:System.Threading.CancellationTokenSource> объекта, который создает токен отмены, который передается в объект <xref:System.Threading.Tasks.TaskFactory>. Объект <xref:System.Threading.Tasks.TaskFactory>, в свою очередь, передает маркер отмены в каждую из задач, ответственных за сбор данных для конкретного инструмента. Метод <xref:System.Threading.Tasks.TaskFactory.ContinueWhenAll%60%602%28System.Threading.Tasks.Task%7B%60%600%7D%5B%5D%2CSystem.Func%7BSystem.Threading.Tasks.Task%7B%60%600%7D%5B%5D%2C%60%601%7D%2CSystem.Threading.CancellationToken%29?displayProperty=nameWithType> вызывается, чтобы убедиться, что среднее значение вычисляется только после успешного сбора всех считываний. Если задача не выполнена, поскольку она была отменена, вызов метода <xref:System.Threading.Tasks.TaskFactory.ContinueWhenAll%2A?displayProperty=nameWithType> создает исключение.  
   
  [!code-csharp[System.Threading.CancellationTokenSource.Class#1](~/samples/snippets/csharp/VS_Snippets_CLR_System/system.threading.cancellationtokensource.class/cs/cancel1.cs#1)]
  [!code-vb[System.Threading.CancellationTokenSource.Class#1](~/samples/snippets/visualbasic/VS_Snippets_CLR_System/system.threading.cancellationtokensource.class/vb/cancel1.vb#1)]  
@@ -304,6 +309,7 @@
         <AssemblyVersion>4.0.10.0</AssemblyVersion>
         <AssemblyVersion>4.1.0.0</AssemblyVersion>
         <AssemblyVersion>4.1.1.0</AssemblyVersion>
+        <AssemblyVersion>4.1.2.0</AssemblyVersion>
       </AssemblyInfo>
       <AssemblyInfo>
         <AssemblyName>mscorlib</AssemblyName>
@@ -328,15 +334,15 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Связанный <xref:System.Threading.CancellationToken> объект будет уведомлен об отмене и перейдет в состояние, в котором <xref:System.Threading.CancellationToken.IsCancellationRequested%2A> возвращается `true`значение.  
+ Связанная <xref:System.Threading.CancellationToken> будет уведомлена об отмене и будет переходить в состояние, где <xref:System.Threading.CancellationToken.IsCancellationRequested%2A> возвращает `true`.  
   
- Будут выполнены любые обратные вызовы или операции, которые <xref:System.Threading.CancellationToken> можно отменять, зарегистрированные в. Обратные вызовы будут выполняться синхронно в порядке ЛИФО. 
+ Будут выполнены любые обратные вызовы или операции, которые можно отменять, зарегистрированные в <xref:System.Threading.CancellationToken>. Обратные вызовы будут выполняться синхронно в порядке ЛИФО. 
   
- Рекомендуется, чтобы отменяемые операции и обратные вызовы <xref:System.Threading.CancellationToken> , зарегистрированные, не вызывали исключения. 
+ Рекомендуется отменять операции и обратные вызовы, зарегистрированные в <xref:System.Threading.CancellationToken> не создавать исключения. 
   
- Если `throwOnFirstException` имеет `true`значение, то исключение немедленно распространяет из вызова <xref:System.Threading.CancellationTokenSource.Cancel%2A>, предотвращая обработку оставшихся обратных вызовов и отменяемых операций.  
+ Если `throwOnFirstException` `true`, исключение немедленно выдается из вызова <xref:System.Threading.CancellationTokenSource.Cancel%2A>, предотвращая обработку оставшихся обратных вызовов и отменяемых операций.  
   
- Если `throwOnFirstException` имеет `false`значение, эта перегрузка выполнит статистическую обработку <xref:System.AggregateException>всех исключений, порожденных в, чтобы один обратный вызов, создающий исключение, не препятствовал выполнению других зарегистрированных обратных вызовов.  
+ Если `throwOnFirstException` `false`, эта перегрузка выполнит статистическую обработку всех исключений, порожденных в <xref:System.AggregateException>, чтобы один обратный вызов, создающий исключение, не препятствовал выполнению других зарегистрированных обратных вызовов.  
   
  ]]></format>
         </remarks>
@@ -371,6 +377,7 @@
         <AssemblyVersion>4.0.10.0</AssemblyVersion>
         <AssemblyVersion>4.1.0.0</AssemblyVersion>
         <AssemblyVersion>4.1.1.0</AssemblyVersion>
+        <AssemblyVersion>4.1.2.0</AssemblyVersion>
       </AssemblyInfo>
       <AssemblyInfo>
         <AssemblyName>mscorlib</AssemblyName>
@@ -386,18 +393,18 @@
         <ReturnType>System.Void</ReturnType>
       </ReturnValue>
       <Parameters>
-        <Parameter Name="millisecondsDelay" Type="System.Int32" Index="0" FrameworkAlternate="dotnet-uwp-10.0;netcore-1.0;netcore-1.1;netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netstandard-1.0;netstandard-1.1;netstandard-1.2;netstandard-1.3;netstandard-1.4;netstandard-1.6;netstandard-2.0;netstandard-2.1;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
+        <Parameter Name="millisecondsDelay" Type="System.Int32" Index="0" FrameworkAlternate="dotnet-uwp-10.0;netcore-1.0;netcore-1.1;netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netcore-3.1;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netstandard-1.0;netstandard-1.1;netstandard-1.2;netstandard-1.3;netstandard-1.4;netstandard-1.6;netstandard-2.0;netstandard-2.1;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
         <param name="millisecondsDelay">Интервал времени ожидания перед отменой этого объекта <see cref="T:System.Threading.CancellationTokenSource" />.</param>
-        <summary>Планирует операции отмены для данного объекта <see cref="T:System.Threading.CancellationTokenSource" /> после указанного числа миллисекунд.</summary>
+        <summary>Планирует операцию отмены для данного объекта <see cref="T:System.Threading.CancellationTokenSource" /> после указанного числа миллисекунд.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Обратный отсчет для, `millisecondsDelay` который начинается во время этого вызова. По `millisecondsDelay` истечении срока действия <xref:System.Threading.CancellationTokenSource> этот параметр отменяется, если он еще не был отменен.  
+ Обратный отсчет для `millisecondsDelay` начинается во время этого вызова. После истечения срока действия `millisecondsDelay` этот <xref:System.Threading.CancellationTokenSource> отменяется, если он еще не был отменен.  
   
- Последующие вызовы канцелафтер будут сбрасывать `millisecondsDelay` для этого <xref:System.Threading.CancellationTokenSource>, если он еще не был отменен.  
+ Последующие вызовы Канцелафтер будут сбрасывать `millisecondsDelay` для этого <xref:System.Threading.CancellationTokenSource>, если он еще не был отменен.  
   
  ]]></format>
         </remarks>
@@ -419,6 +426,7 @@
         <AssemblyVersion>4.0.10.0</AssemblyVersion>
         <AssemblyVersion>4.1.0.0</AssemblyVersion>
         <AssemblyVersion>4.1.1.0</AssemblyVersion>
+        <AssemblyVersion>4.1.2.0</AssemblyVersion>
       </AssemblyInfo>
       <AssemblyInfo>
         <AssemblyName>mscorlib</AssemblyName>
@@ -434,11 +442,11 @@
         <ReturnType>System.Void</ReturnType>
       </ReturnValue>
       <Parameters>
-        <Parameter Name="delay" Type="System.TimeSpan" Index="0" FrameworkAlternate="dotnet-uwp-10.0;netcore-1.0;netcore-1.1;netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netstandard-1.0;netstandard-1.1;netstandard-1.2;netstandard-1.3;netstandard-1.4;netstandard-1.6;netstandard-2.0;netstandard-2.1;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
+        <Parameter Name="delay" Type="System.TimeSpan" Index="0" FrameworkAlternate="dotnet-uwp-10.0;netcore-1.0;netcore-1.1;netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netcore-3.1;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netstandard-1.0;netstandard-1.1;netstandard-1.2;netstandard-1.3;netstandard-1.4;netstandard-1.6;netstandard-2.0;netstandard-2.1;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
         <param name="delay">Интервал времени ожидания перед отменой этого объекта <see cref="T:System.Threading.CancellationTokenSource" />.</param>
-        <summary>Планирует операции отмены для данного объекта <see cref="T:System.Threading.CancellationTokenSource" /> после указанного промежутка времени.</summary>
+        <summary>Планирует операцию отмены для данного объекта <see cref="T:System.Threading.CancellationTokenSource" /> после указанного периода времени.</summary>
         <remarks>
           <format type="text/markdown"><![CDATA[
             The countdown for the delay starts during this call.  When the delay expires, 
@@ -478,6 +486,7 @@
         <AssemblyVersion>4.0.10.0</AssemblyVersion>
         <AssemblyVersion>4.1.0.0</AssemblyVersion>
         <AssemblyVersion>4.1.1.0</AssemblyVersion>
+        <AssemblyVersion>4.1.2.0</AssemblyVersion>
       </AssemblyInfo>
       <AssemblyInfo>
         <AssemblyName>mscorlib</AssemblyName>
@@ -507,7 +516,7 @@
         <returns>Объект <see cref="T:System.Threading.CancellationTokenSource" />, связанный с исходными токенами.</returns>
         <remarks>To be added.</remarks>
         <exception cref="T:System.ObjectDisposedException">Объект <see cref="T:System.Threading.CancellationTokenSource" />, связанный с одним исходным токеном, был удален.</exception>
-        <exception cref="T:System.ArgumentNullException">Свойство <paramref name="tokens" /> имеет значение <see langword="null" />.</exception>
+        <exception cref="T:System.ArgumentNullException"><paramref name="tokens" /> имеет значение <see langword="null" />.</exception>
         <exception cref="T:System.ArgumentException">Параметр <paramref name="tokens" /> пуст.</exception>
         <related type="Article" href="~/docs/standard/threading/cancellation-in-managed-threads.md">Отмена</related>
         <related type="Article" href="~/docs/standard/parallel-programming/task-cancellation.md">Отмена задач</related>
@@ -528,6 +537,7 @@
         <AssemblyVersion>4.0.10.0</AssemblyVersion>
         <AssemblyVersion>4.1.0.0</AssemblyVersion>
         <AssemblyVersion>4.1.1.0</AssemblyVersion>
+        <AssemblyVersion>4.1.2.0</AssemblyVersion>
       </AssemblyInfo>
       <AssemblyInfo>
         <AssemblyName>mscorlib</AssemblyName>
@@ -586,6 +596,7 @@
         <AssemblyVersion>4.0.10.0</AssemblyVersion>
         <AssemblyVersion>4.1.0.0</AssemblyVersion>
         <AssemblyVersion>4.1.1.0</AssemblyVersion>
+        <AssemblyVersion>4.1.2.0</AssemblyVersion>
       </AssemblyInfo>
       <AssemblyInfo>
         <AssemblyName>mscorlib</AssemblyName>
@@ -607,7 +618,7 @@
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Вызовите метод `Dispose` по окончании использования класса <xref:System.Threading.CancellationTokenSource>. Метод `Dispose` оставляет класс <xref:System.Threading.CancellationTokenSource> в непригодном для использования состоянии. После вызова `Dispose`необходимо освободить все ссылки <xref:System.Threading.CancellationTokenSource> на, чтобы сборщик мусора мог освободить память, которую <xref:System.Threading.CancellationTokenSource> занимают.  
+ Вызовите метод `Dispose` по окончании использования класса <xref:System.Threading.CancellationTokenSource>. Метод `Dispose` оставляет класс <xref:System.Threading.CancellationTokenSource> в непригодном для использования состоянии. После вызова метода `Dispose` необходимо освободить все ссылки на объект <xref:System.Threading.CancellationTokenSource>, чтобы сборщик мусора мог освободить память, занимаемую объектом <xref:System.Threading.CancellationTokenSource>.  
   
  Дополнительные сведения см. в разделе [Очистка неуправляемых ресурсов](~/docs/standard/garbage-collection/unmanaged.md) и [Реализация метода Dispose](~/docs/standard/garbage-collection/implementing-dispose.md).  
   
@@ -632,6 +643,7 @@
         <AssemblyVersion>4.0.10.0</AssemblyVersion>
         <AssemblyVersion>4.1.0.0</AssemblyVersion>
         <AssemblyVersion>4.1.1.0</AssemblyVersion>
+        <AssemblyVersion>4.1.2.0</AssemblyVersion>
       </AssemblyInfo>
       <AssemblyInfo>
         <AssemblyName>mscorlib</AssemblyName>
@@ -647,10 +659,10 @@
         <ReturnType>System.Void</ReturnType>
       </ReturnValue>
       <Parameters>
-        <Parameter Name="disposing" Type="System.Boolean" Index="0" FrameworkAlternate="dotnet-uwp-10.0;netcore-1.0;netcore-1.1;netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netstandard-1.0;netstandard-1.1;netstandard-1.2;netstandard-1.3;netstandard-1.4;netstandard-1.6;netstandard-2.0;netstandard-2.1;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
+        <Parameter Name="disposing" Type="System.Boolean" Index="0" FrameworkAlternate="dotnet-uwp-10.0;netcore-1.0;netcore-1.1;netcore-2.0;netcore-2.1;netcore-2.2;netcore-3.0;netcore-3.1;netframework-4.5;netframework-4.5.1;netframework-4.5.2;netframework-4.6;netframework-4.6.1;netframework-4.6.2;netframework-4.7;netframework-4.7.1;netframework-4.7.2;netframework-4.8;netstandard-1.0;netstandard-1.1;netstandard-1.2;netstandard-1.3;netstandard-1.4;netstandard-1.6;netstandard-2.0;netstandard-2.1;xamarinandroid-7.1;xamarinios-10.8;xamarinmac-3.0" />
       </Parameters>
       <Docs>
-        <param name="disposing">Значение <see langword="true" /> позволяет освободить управляемые и неуправляемые ресурсы; значение <see langword="false" /> позволяет освободить только неуправляемые ресурсы.</param>
+        <param name="disposing">Значение <see langword="true" /> позволяет освободить как управляемые, так и неуправляемые ресурсы; значение <see langword="false" /> освобождает только неуправляемые ресурсы.</param>
         <summary>Освобождает неуправляемые ресурсы, используемые классом <see cref="T:System.Threading.CancellationTokenSource" /> (при необходимости освобождает и управляемые ресурсы).</summary>
         <remarks>To be added.</remarks>
       </Docs>
@@ -669,6 +681,7 @@
         <AssemblyVersion>4.0.10.0</AssemblyVersion>
         <AssemblyVersion>4.1.0.0</AssemblyVersion>
         <AssemblyVersion>4.1.1.0</AssemblyVersion>
+        <AssemblyVersion>4.1.2.0</AssemblyVersion>
       </AssemblyInfo>
       <AssemblyInfo>
         <AssemblyName>mscorlib</AssemblyName>
@@ -690,14 +703,14 @@
       </ReturnValue>
       <Docs>
         <summary>Получает значение, указывающее, есть ли для данного объекта <see cref="T:System.Threading.CancellationTokenSource" /> запрос на отмену.</summary>
-        <value>Значение <see langword="true" />, если для данного объекта <see cref="T:System.Threading.CancellationTokenSource" /> есть запрос на отмену; в противном случае — значение <see langword="false" />.</value>
+        <value><see langword="true" />, если для этого <see cref="T:System.Threading.CancellationTokenSource" />была запрошена отмена; в противном случае <see langword="false" />.</value>
         <remarks>
           <format type="text/markdown"><![CDATA[  
   
 ## Remarks  
- Это свойство указывает, была ли запрошена отмена для этого источника маркера, например из-за вызова его <xref:System.Threading.CancellationTokenSource.Cancel%2A> метода.  
+ Это свойство указывает, была ли запрошена отмена для этого источника маркера, например из-за вызова метода <xref:System.Threading.CancellationTokenSource.Cancel%2A>.  
   
- Если это свойство возвращает `true`значение, оно гарантирует только то, что была запрошена отмена. Это не гарантирует, что каждый обработчик, зарегистрированный в соответствующем маркере, завершил выполнение, а запросы отмены были переданы всем зарегистрированным обработчикам. Может потребоваться дополнительная синхронизация, особенно в случаях, когда связанные объекты отменяются одновременно.  
+ Если это свойство возвращает `true`, оно только гарантирует, что была запрошена отмена. Это не гарантирует, что каждый обработчик, зарегистрированный в соответствующем маркере, завершил выполнение, а запросы отмены были переданы всем зарегистрированным обработчикам. Может потребоваться дополнительная синхронизация, особенно в случаях, когда связанные объекты отменяются одновременно.  
   
  ]]></format>
         </remarks>
@@ -719,6 +732,7 @@
         <AssemblyVersion>4.0.10.0</AssemblyVersion>
         <AssemblyVersion>4.1.0.0</AssemblyVersion>
         <AssemblyVersion>4.1.1.0</AssemblyVersion>
+        <AssemblyVersion>4.1.2.0</AssemblyVersion>
       </AssemblyInfo>
       <AssemblyInfo>
         <AssemblyName>mscorlib</AssemblyName>
